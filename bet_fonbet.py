@@ -1,3 +1,4 @@
+# coding:utf-8
 from random import choice, random
 import hmac
 from hashlib import sha512

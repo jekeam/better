@@ -1,3 +1,4 @@
+# coding:utf-8
 import requests
 from proxy_worker import del_proxy
 import time

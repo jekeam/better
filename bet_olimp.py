@@ -1,3 +1,4 @@
+# coding:utf-8
 from utils import *
 from hashlib import md5
 import urllib3
