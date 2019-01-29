@@ -1,0 +1,14 @@
+{
+  "fonbet": {
+    "http": "http://suineg:8veh34@176.116.20.37:4610",
+    "https": "https://suineg:8veh34@176.116.20.37:4610"
+  },
+  "olimp": {
+    "http": "http://suineg:8veh34@176.116.20.37:4610",
+    "https": "https://suineg:8veh34@176.116.20.37:4610"
+  },
+  "bet365": {
+    "http": "",
+    "https": ""
+  }
+}

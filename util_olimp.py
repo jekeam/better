@@ -1,0 +1,400 @@
+# coding: utf-8
+from hashlib import md5
+import requests
+# if __name__=='__main__':
+from proxy_worker import del_proxy
+import re
+import time
+from exceptions import OlimpMatchСompleted, TimeOut
+from utils import prnts
+
+olimp_url = 'http://176.223.130.230:10600'  # http://olimp.com
+
+olimp_secret_key = 'b2c59ba4-7702-4b12-bef5-0908391851d9'
+
+olimp_head = {
+    'Content-Type': 'application/x-www-form-urlencoded',
+    'Connection': 'Keep-Alive',
+    'Accept-Encoding': 'gzip',
+    'User-Agent': 'okhttp/3.9.1'
+}
+
+olimp_data = {
+    "live": 1,
+    # "sport_id": 1,
+    "sport_id": 1,
+    "platforma": "ANDROID1",
+    "lang_id": 0,
+    "time_shift": 0
+}
+
+abbreviations = {
+    "Победапервой": "П1",
+    "Победавторой": "П2",
+
+    "Ничья": "Н",
+    "Перваянепроиграет": "П1Н",
+    "Втораянепроиграет": "П2Н",
+    "Ничьейнебудет": "12",
+
+    "Обезабьют:да": "ОЗД",
+    "Обезабьют:нет": "ОЗН",
+    "Т1забьет:да": "КЗ1",
+    "Т1забьет:нет": "КНЗ1",
+    "Т2забьет:да": "КЗ2",
+    "Т2забьет:нет": "КНЗ2",
+    "Тоталбол": "ТБ({})",
+    "Тоталмен": "ТМ({})",
+    "Тотал1-готаймабол": "1ТБ({})",
+    "Тотал1-готаймамен": "1ТМ({})",
+    "Тотал2-готаймабол": "2ТБ({})",
+    "Тотал2-готаймамен": "2ТМ({})",
+    # "Т1бол":"ИТБ1({})",
+    # "Т1мен":"ИТМ1({})",
+    # "Т2бол":"ИТБ2({})",
+    # "Т2мен":"ИТМ2({})"
+    "Т1бол": "ТБ1({})",
+    "Т1мен": "ТМ1({})",
+    "Т2бол": "ТБ2({})",
+    "Т2мен": "ТМ2({})"
+}
+
+
+def olimp_get_xtoken(payload, secret_key):
+    sorted_values = [str(payload[key]) for key in sorted(payload.keys())]
+    to_encode = ";".join(sorted_values + [secret_key])
+    return {"X-TOKEN": md5(to_encode.encode()).hexdigest()}
+
+
+def get_matches_olimp(proxies, proxy):
+    global olimp_data
+    global olimp_head
+
+    try:
+        proxy = {'http': proxy}
+        #prnts('Olimp set proxy: ' + proxy.get('http'), 'hide')
+    except Exception as e:
+        err_str = 'Olimp error set proxy: ' + str(e)
+        prnts(err_str)
+        raise ValueError(err_str)
+
+    olimp_data_ll = olimp_data.copy()
+    olimp_data_ll.update({'lang_id': 2})
+
+    olimp_head_ll = olimp_head
+    olimp_head_ll.update(olimp_get_xtoken(olimp_data_ll, olimp_secret_key))
+    olimp_head_ll.pop('Accept-Language', None)
+    try:
+        resp = requests.post(
+            olimp_url + '/api/slice/',
+            data=olimp_data_ll,
+            headers=olimp_head_ll,
+            timeout=5.51,
+            verify=False,
+            proxies=proxy,
+        )
+        try:
+            res = resp.json()
+        except Exception as e:
+            err_str = 'Olimp error : ' + str(e)
+            prnts(err_str)
+            raise ValueError('Exception: ' + str(e))
+
+        if res.get("error").get('err_code') == 0:
+            return res.get('data'), resp.elapsed.total_seconds()
+        else:
+            err_str = res.get("error")
+            err_str = 'Olimp error : ' + str(err_str)
+            prnts(err_str)
+            raise ValueError(str(err_str))
+
+    except requests.exceptions.Timeout as e:
+        err_str = 'Олимп, код ошибки Timeout: ' + str(e)
+        prnts(err_str)
+        proxies = del_proxy(proxy.get('http'), proxies)
+        raise TimeOut(err_str)
+    except requests.exceptions.ConnectionError as e:
+        err_str = 'Олимп, код ошибки ConnectionError: ' + str(e)
+        prnts(err_str)
+        proxies = del_proxy(proxy.get('http'), proxies)
+        raise ValueError(err_str)
+    except requests.exceptions.RequestException as e:
+        err_str = 'Олимп, код ошибки RequestException: ' + str(e)
+        prnts(err_str)
+        proxies = del_proxy(proxy.get('http'), proxies)
+        raise ValueError(err_str)
+    except Exception as e:
+        err_str = 'Олимп, код ошибки Exception: ' + str(e)
+        prnts(err_str)
+        proxies = del_proxy(proxy.get('http'), proxies)
+        raise ValueError(err_str)
+
+
+def get_xtoken(payload, secret_key):
+    sorted_values = [str(payload[key]) for key in sorted(payload.keys())]
+    to_encode = ";".join(sorted_values + [secret_key])
+
+    X_TOKEN = md5(to_encode.encode()).hexdigest()
+    return {"X-TOKEN": X_TOKEN}
+
+
+def to_abb(sbet):
+    value = re.findall('\((.*)\)', sbet)[0]
+    key = re.sub('\((.*)\)', '', sbet)
+    abr = ''
+    # error to_add("ХунтеларК.(Аякс)(0.5)бол"), value=Аякс)(0.5, key=ХунтеларК.бол
+    try:
+        abr = abbreviations[key].format(value)
+    except:
+        # pass
+        prnts('error to_add("' + sbet + '"), value=' + value + ', key=' + key)
+    return abr
+
+
+def get_match_olimp(match_id, proxi_list, proxy):
+    global olimp_url
+    global olimp_data
+    olimp_data_m = olimp_data.copy()
+
+    olimp_data_m.update({'id': match_id})
+    olimp_data_m.update({'lang_id': 0})
+
+    olimp_stake_head = olimp_head.copy()
+
+    token = get_xtoken(olimp_data_m, olimp_secret_key)
+    #prnts(str(time.time()) + ' ' + proxy + ' ' + str(olimp_data_m) + ' ' + str(token), 'hide')
+
+    olimp_stake_head.update(token)
+    olimp_stake_head.pop('Accept-Language', None)
+
+    try:
+        proxy = {'http': proxy}
+        #prnts('Olimp: set proxy by ' + str(match_id) + ': ' + str(proxy.get('http')), 'hide')
+    except Exception as e:
+        err_str = 'Olimp error set proxy by ' + str(match_id) + ': ' + str(e)
+        prnts(err_str)
+        raise ValueError(err_str)
+
+    try:
+        resp = requests.post(
+            olimp_url + '/api/stakes/',
+            data=olimp_data_m,
+            headers=olimp_stake_head,
+            timeout=6.51,
+            verify=False,
+            proxies=proxy
+        )
+        try:
+            res = resp.json()
+        except Exception as e:
+            err_str = 'Olimp error by ' + str(match_id) + ': ' + str(e)
+            prnts(err_str)
+            raise ValueError(err_str)
+        # {"error": {"err_code": 404, "err_desc": "Прием ставок приостановлен"}, "data": null}
+        if res.get("error").get('err_code', 999) in (0, 404):
+            return res.get('data'), resp.elapsed.total_seconds()
+        else:
+            err = res.get("error")
+            prnts(str(err))
+            raise ValueError(str(err.get('err_code')))
+
+    except requests.exceptions.Timeout as e:
+        err_str = 'Олимп, код ошибки Timeout: ' + str(e)
+        prnts(err_str)
+        proxi_list = del_proxy(proxy.get('http'), proxi_list)
+        raise TimeOut(err_str)
+
+    except requests.exceptions.ConnectionError as e:
+        err_str = 'Олимп ' + str(match_id) + ', код ошибки ConnectionError: ' + str(e)
+        prnts(err_str)
+        proxi_list = del_proxy(proxy.get('http'), proxi_list)
+        raise ValueError(err_str)
+    except requests.exceptions.RequestException as e:
+        err_str = 'Олимп ' + str(match_id) + ', код ошибки RequestException: ' + str(e)
+        prnts(err_str)
+        proxi_list = del_proxy(proxy.get('http'), proxi_list)
+        raise ValueError(err_str)
+    except Exception as e:
+        if str(e) == '404':
+            raise OlimpMatchСompleted('Олимп, матч ' + str(match_id) + ' завершен, поток выключен!')
+        err_str = 'Олимп ' + str(match_id) + ', код ошибки Exception: ' + str(e)
+        prnts(err_str)
+        proxi_list = del_proxy(proxy.get('http'), proxi_list)
+        raise ValueError(err_str)
+
+
+def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy):
+    resp, time_resp = get_match_olimp(match_id, proxies_olimp, proxy)
+    # Очистим дстарые данные
+    # if bets_olimp.get(str(match_id)):
+    # bets_olimp[str(match_id)] = dict()
+
+    time_start_proc = time.time()
+
+    # print(resp)
+    # if str(match_id) == '46088996':
+    # prnts(json.dumps(resp, ensure_ascii=False))
+    #     f = open('olimp.txt', 'a+')
+    #     f.write(json.dumps(resp, ensure_ascii=False))
+    #     f.write('\n')
+    #     # prnts('olimp: '+json.dumps(resp, ensure_ascii=False))
+
+    # prnts(json.dumps(resp, ensure_ascii=False, indent=4))
+    # prnts(json.dumps(resp, ensure_ascii=False))
+    # exit()
+    math_block = \
+        True \
+            if not resp \
+               or str(resp.get('ms', '1')) != '2' \
+               or resp.get('error', {'err_code': 0}).get('err_code') == 404 \
+            else False \
+        # 1 - block, 2 - available
+    if not math_block:
+
+        timer = resp.get('t', '')
+
+        minute = -1
+        try:
+            minute = re.findall(
+                '\d{1,2}\"',
+                resp.get('scd', '')
+            )[0].replace('"', '')
+        except:
+            pass
+
+        skId = resp.get('sport_id')
+        skName = resp.get('sn')
+        sport_name = resp.get('cn')
+        name = resp.get('n')
+        score = ''
+        try:
+            score = resp.get('sc', '0:0').split(' ')[0]
+        except:
+            prnts('util_olimp: error split: ' + str(resp.get('sc', '0:0')))
+
+        try:
+            bets_olimp[str(match_id)].update({
+                'sport_id': skId,
+                'sport_name': skName,
+                'league': sport_name,
+                'name': name,
+                'score': score,
+                'time_start': timer,
+                'time_req': time.time()
+            })
+        except:
+            bets_olimp[str(match_id)] = {
+                'sport_id': skId,
+                'sport_name': skName,
+                'league': sport_name,
+                'name': name,
+                'score': score,
+                'time_start': timer,
+                'time_req': time.time(),
+                'kofs': {}
+            }
+
+        for c in resp.get('it', []):
+            if c.get('n', '') in ['Основные', 'Голы', 'Инд.тотал', 'Доп.тотал', 'Исходы по таймам']:  # 'Угловые'
+                for d in c.get('i', []):
+                    if 'Обе забьют: ' \
+                            in d.get('n', '') \
+                            or 'забьет: ' \
+                            in d.get('n', '') \
+                            or 'Никто не забьет: ' \
+                            in d.get('n', '') \
+                            or 'Победа ' \
+                            in d.get('n', '') \
+                            or d.get('n', '').endswith(' бол') \
+                            or d.get('n', '').endswith(' мен') \
+                            or 'Первая не проиграет' \
+                            in d.get('n', '') \
+                            or 'Вторая не проиграет' \
+                            in d.get('n', '') \
+                            or 'Ничьей не будет' \
+                            in d.get('n', '') \
+                            or 'Ничья' \
+                            in d.get('n', ''):
+                        key_r = d.get('n', '').replace(resp.get('c1', ''), 'Т1') \
+                            .replace(resp.get('c2', ''), 'Т2')
+                        coef = str([
+                                       abbreviations[c.replace(' ', '')]
+                                       if c.replace(' ', '') in abbreviations.keys()
+                                       else c.replace(' ', '')
+                                       if '(' not in c.replace(' ', '')
+                                       else to_abb(c.replace(' ', ''))
+                                       for c in [key_r]
+                                   ][0])
+                        hist5 = \
+                            bets_olimp[str(match_id)].get('kofs', {}).get(coef, {}).get('hist', {}).get('4', 0)
+                        hist4 = \
+                            bets_olimp[str(match_id)].get('kofs', {}).get(coef, {}).get('hist', {}).get('3', 0)
+                        hist3 = \
+                            bets_olimp[str(match_id)].get('kofs', {}).get(coef, {}).get('hist', {}).get('2', 0)
+                        hist2 = \
+                            bets_olimp[str(match_id)].get('kofs', {}).get(coef, {}).get('hist', {}).get('1', 0)
+                        hist1 = \
+                            bets_olimp[str(match_id)].get('kofs', {}).get(coef, {}).get('value', 0)
+                        try:
+                            bets_olimp[str(match_id)]['kofs'].update(
+                                {
+                                    coef:
+                                        {
+                                            'time_req': time.time(),
+                                            'value': d.get('v', ''),
+                                            'apid': d.get('apid', ''),
+                                            'factor': d.get('v', ''),  # d.get('p', ''),
+                                            'sport_id': skId,
+                                            'event': match_id,
+                                            'hist': {
+                                                '1': hist1,
+                                                '2': hist2,
+                                                '3': hist3,
+                                                '4': hist4,
+                                                '5': hist5
+                                            }
+                                        }
+                                }
+                            )
+                        except:
+                            pass
+                            # print('---error---')
+                            # import json
+                            # print(json.dumps(bets_olimp[str(match_id)], ensure_ascii=False))
+                            # print('------------')
+    else:
+        try:
+            bets_olimp.pop(str(match_id))
+        except:
+            pass
+
+    try:
+        for i, j in bets_olimp.get(str(match_id), {}).get('kofs', {}).copy().items():
+            if round(float(time.time() - float(j.get('time_req', 0)))) > 8:
+                try:
+                    bets_olimp[str(match_id)]['kofs'].pop(i)
+                    prnts(
+                        'Олимп, данные по котировке из БК не получены более 8 сек., котировка удалена: ' +
+                        str(match_id) + ' ' + str(i) + ' ' + str(j), 'hide'
+                    )
+                except Exception as e:
+                    prnts('Фонбет, ошибка 1 при удалении старой котирофки: ' + str(e))
+    except Exception as e:
+        prnts('Фонбет, ошибка 2 при удалении старой котирофки: ' + str(e))
+
+    # if str(match_id) == '46204691':
+    #     import json
+    #     print('------о----------')
+    #     # print(json.dumps(resp, ensure_ascii=False))
+    #     print('')
+    #     print('')
+    #     print(str(match_id), json.dumps(bets_olimp.get(str(match_id)), ensure_ascii=False))
+    #     print('')
+    #     print('')
+    #     print('--------о--------')
+    #     time.sleep(10)
+    return time_resp + (time.time() - time_start_proc)
+
+
+if __name__ == "__main__":
+    pass
