@@ -1,1 +1,3 @@
-print(0.0==0)
+a = []
+a.append(1)
+print(a)

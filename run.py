@@ -348,7 +348,7 @@ def get_forks(all_bets, pair_mathes, bets_olimp, bets_fonbet):
 
                     if is_fork:  # or True
                         #if True:
-                        if bet_key == '46376704@13052976@П2@П1Н':
+                        if bet_key == '46371128@13011471@КЗ1@КНЗ1':
                             import json
                             prnts('\n')
                             prnts('all_bets: ' + bet_key + ' '
