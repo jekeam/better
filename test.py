@@ -1,3 +1,1 @@
-a = []
-a.append(1)
-print(a)
+print(0.0==0)
