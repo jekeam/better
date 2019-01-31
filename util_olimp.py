@@ -72,7 +72,7 @@ def get_matches_olimp(proxies, proxy):
 
     try:
         proxy = {'http': proxy}
-        #prnts('Olimp set proxy: ' + proxy.get('http'), 'hide')
+        # prnts('Olimp set proxy: ' + proxy.get('http'), 'hide')
     except Exception as e:
         err_str = 'Olimp error set proxy: ' + str(e)
         prnts(err_str)
@@ -162,14 +162,14 @@ def get_match_olimp(match_id, proxi_list, proxy):
     olimp_stake_head = olimp_head.copy()
 
     token = get_xtoken(olimp_data_m, olimp_secret_key)
-    #prnts(str(time.time()) + ' ' + proxy + ' ' + str(olimp_data_m) + ' ' + str(token), 'hide')
+    # prnts(str(time.time()) + ' ' + proxy + ' ' + str(olimp_data_m) + ' ' + str(token), 'hide')
 
     olimp_stake_head.update(token)
     olimp_stake_head.pop('Accept-Language', None)
 
     try:
         proxy = {'http': proxy}
-        #prnts('Olimp: set proxy by ' + str(match_id) + ': ' + str(proxy.get('http')), 'hide')
+        # prnts('Olimp: set proxy by ' + str(match_id) + ': ' + str(proxy.get('http')), 'hide')
     except Exception as e:
         err_str = 'Olimp error set proxy by ' + str(match_id) + ': ' + str(e)
         prnts(err_str)
@@ -225,14 +225,15 @@ def get_match_olimp(match_id, proxi_list, proxy):
 
 def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy):
     resp, time_resp = get_match_olimp(match_id, proxies_olimp, proxy)
+    key_id = str(match_id)
     # Очистим дстарые данные
-    # if bets_olimp.get(str(match_id)):
-    # bets_olimp[str(match_id)] = dict()
+    # if bets_olimp.get(key_id):
+    # bets_olimp[key_id] = dict()
 
     time_start_proc = time.time()
 
     # print(resp)
-    # if str(match_id) == '46088996':
+    # if key_id == '46088996':
     # prnts(json.dumps(resp, ensure_ascii=False))
     #     f = open('olimp.txt', 'a+')
     #     f.write(json.dumps(resp, ensure_ascii=False))
@@ -273,7 +274,7 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy):
             prnts('util_olimp: error split: ' + str(resp.get('sc', '0:0')))
 
         try:
-            bets_olimp[str(match_id)].update({
+            bets_olimp[key_id].update({
                 'sport_id': skId,
                 'sport_name': skName,
                 'league': sport_name,
@@ -283,7 +284,7 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy):
                 'time_req': time.time()
             })
         except:
-            bets_olimp[str(match_id)] = {
+            bets_olimp[key_id] = {
                 'sport_id': skId,
                 'sport_name': skName,
                 'league': sport_name,
@@ -326,17 +327,17 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy):
                                        for c in [key_r]
                                    ][0])
                         hist5 = \
-                            bets_olimp[str(match_id)].get('kofs', {}).get(coef, {}).get('hist', {}).get('4', 0)
+                            bets_olimp[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('4', 0)
                         hist4 = \
-                            bets_olimp[str(match_id)].get('kofs', {}).get(coef, {}).get('hist', {}).get('3', 0)
+                            bets_olimp[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('3', 0)
                         hist3 = \
-                            bets_olimp[str(match_id)].get('kofs', {}).get(coef, {}).get('hist', {}).get('2', 0)
+                            bets_olimp[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('2', 0)
                         hist2 = \
-                            bets_olimp[str(match_id)].get('kofs', {}).get(coef, {}).get('hist', {}).get('1', 0)
+                            bets_olimp[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('1', 0)
                         hist1 = \
-                            bets_olimp[str(match_id)].get('kofs', {}).get(coef, {}).get('value', 0)
+                            bets_olimp[key_id].get('kofs', {}).get(coef, {}).get('value', 0)
                         try:
-                            bets_olimp[str(match_id)]['kofs'].update(
+                            bets_olimp[key_id]['kofs'].update(
                                 {
                                     coef:
                                         {
@@ -360,35 +361,34 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy):
                             pass
                             # print('---error---')
                             # import json
-                            # print(json.dumps(bets_olimp[str(match_id)], ensure_ascii=False))
+                            # print(json.dumps(bets_olimp[key_id], ensure_ascii=False))
                             # print('------------')
     else:
         try:
-            bets_olimp.pop(str(match_id))
+            bets_olimp.pop(key_id)
         except:
             pass
 
     try:
-        for i, j in bets_olimp.get(str(match_id), {}).get('kofs', {}).copy().items():
+        for i, j in bets_olimp.get(key_id, {}).get('kofs', {}).copy().items():
             if round(float(time.time() - float(j.get('time_req', 0)))) > 8:
                 try:
-                    bets_olimp[str(match_id)]['kofs'].pop(i)
+                    bets_olimp[key_id]['kofs'].pop(i)
                     prnts(
                         'Олимп, данные по котировке из БК не получены более 8 сек., котировка удалена: ' +
-                        str(match_id) + ' ' + str(i) + ' ' + str(j), 'hide'
+                        key_id + ' ' + str(i) + ' ' + str(j), 'hide'
                     )
                 except Exception as e:
-                    prnts('Фонбет, ошибка 1 при удалении старой котирофки: ' + str(e))
+                    prnts('Олимп, ошибка 1 при удалении старой котирофки: ' + str(e))
     except Exception as e:
-        prnts('Фонбет, ошибка 2 при удалении старой котирофки: ' + str(e))
-
-    # if str(match_id) == '46204691':
+        prnts('Олимп, ошибка 2 при удалении старой котирофки: ' + str(e))
+    # if key_id == '46204691':
     #     import json
     #     print('------о----------')
     #     # print(json.dumps(resp, ensure_ascii=False))
     #     print('')
     #     print('')
-    #     print(str(match_id), json.dumps(bets_olimp.get(str(match_id)), ensure_ascii=False))
+    #     print(key_id, json.dumps(bets_olimp.get(key_id), ensure_ascii=False))
     #     print('')
     #     print('')
     #     print('--------о--------')

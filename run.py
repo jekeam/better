@@ -301,27 +301,16 @@ def start_compare_matches(pair_mathes, json_bk1, json_bk2):
 
 def get_forks(all_bets, pair_mathes, bets_olimp, bets_fonbet):
     while True:
-        # if False:
-        #     f = open('bets.log', 'a+')
-        #     f.write('------------------------')
-        #     f.write('\n')
-        #     f.write('bets_fonbet: ' + str(json.dumps(bets_fonbet, ensure_ascii=False)))
-        #     f.write('\n')
-        #     f.write('bets_olimp: ' + str(json.dumps(bets_olimp, ensure_ascii=False)))
-        #     f.write('\n')
-        #     prnts(all_bets)
         for key, val in all_bets.copy().items():
             if round(float(time.time() - float(val.get('time_req_olimp', 0)))) > 8 or \
                     round(float(time.time() - float(val.get('time_req_fonbet', 0)))) > 8:
-                import json
-                prnts('all_bets: ' + str(json.dumps(all_bets, ensure_ascii=False)))
+                # import json
+                # prnts('all_bets: ' + str(json.dumps(all_bets, ensure_ascii=False)))
+                # prnts('all_bets: ' + str(len(all_bets.keys())))
                 try:
                     all_bets.pop(key)
-                    prnts(
-                        'Данные по вилке из БК не получены более 8 сек., вилка удалена: ' + str(key) + ' '
-                        + str(val)  # ,
-                        # 'hide'
-                    )
+                    prnts('Данные по вилке из БК не получены более 8 сек., вилка удалена: ' + str(key))
+                    prnts(str(val), 'hide')
                 except Exception as e:
                     prnts(e)
                     pass
@@ -330,10 +319,7 @@ def get_forks(all_bets, pair_mathes, bets_olimp, bets_fonbet):
 
             math_json_olimp = bets_olimp.get(pair_math[0], {})
             math_json_fonbet = bets_fonbet.get(pair_math[1], {})
-            # prnts('------------------------')
-            # prnts('math_json_olimp:'+str(json.dumps(math_json_olimp, ensure_ascii=False)))
-            # prnts('')
-            # prnts('math_json_fonbet:'+str(json.dumps(math_json_fonbet, ensure_ascii=False)))
+
             curr_opposition = opposition.copy()
 
             for kof_type in math_json_olimp.get('kofs', {}):
@@ -354,14 +340,20 @@ def get_forks(all_bets, pair_mathes, bets_olimp, bets_fonbet):
                 k_fonbet = math_json_fonbet.get('kofs', {}).get(kof_type_fonbet, {})
 
                 v_olimp = k_olimp.get('value', 0.0)
-                v_fonbet = k_fonbet.get('value', 0.0)
+                v_fonbet = k_fonbet.get('value', 0.0) + 0.1
 
                 if v_olimp > 0.0 and v_fonbet > 0.0:
                     L = (1 / float(v_olimp)) + (1 / float(v_fonbet))
                     is_fork = True if L < 1 else False
 
                     if is_fork:  # or True
-                        # if pair_math == ['46027276', '12832237'] or True:
+                        #if True:
+                        if bet_key == '46376704@13052976@П2@П1Н':
+                            import json
+                            prnts('\n')
+                            prnts('all_bets: ' + bet_key + ' '
+                                  + str(json.dumps(all_bets.get(bet_key), ensure_ascii=False)))
+                            prnts('\n')
                         time_break_fonbet = False
                         if '(' + math_json_fonbet.get('score', '') + ')' == \
                                 math_json_fonbet.get('score_1st', '') and \

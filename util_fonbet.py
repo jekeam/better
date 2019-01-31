@@ -7,7 +7,7 @@ from utils import prnts
 
 url_fonbet_matchs = "https://line-02.ccf4ab51771cacd46d.com/live/currentLine/en/?2lzf1earo8wjksbh22s"
 url_fonbet_match = "https://23.111.80.222/line/eventView?eventId="
-UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3163.100 Safari/537.36'
+UA = 'Mozilla/5.0 (Windows NT 10; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.3163.100 Safari/537.36'
 fonbet_header = {
     'User-Agent': 'Fonbet/5.2.2b (Android 21; Phone; com.bkfonbet)',
     'Connection': 'Keep-Alive',
@@ -21,7 +21,7 @@ def get_matches_fonbet(proxies, proxy):
 
     try:
         proxy = {'http': proxy}
-        #prnts('Fonbet set proxy: ' + proxy.get('http'), 'hide')
+        # prnts('Fonbet set proxy: ' + proxy.get('http'), 'hide')
     except Exception as e:
         err_str = 'Fonbet error set proxy: ' + str(e)
         prnts(err_str)
@@ -70,7 +70,7 @@ def get_match_fonbet(match_id, proxi_list, proxy):
 
     try:
         proxy = {'http': proxy}
-        #prnts('Fonbet: set proxy by ' + str(match_id) + ': ' + str(proxy.get('http')), 'hide')
+        # prnts('Fonbet: set proxy by ' + str(match_id) + ': ' + str(proxy.get('http')), 'hide')
     except Exception as e:
         err_str = 'Fonbet error set proxy by ' + str(match_id) + ': ' + str(e)
         prnts(err_str)
@@ -123,12 +123,13 @@ def get_match_fonbet(match_id, proxi_list, proxy):
 
 def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy):
     resp, time_resp = get_match_fonbet(match_id, proxies_fonbet, proxy)
+    key_id = str(match_id)
     # Очистим дстарые данные
-    # if bets_fonbet.get(str(match_id)):
-    # bets_fonbet[str(match_id)] = dict()
+    # if bets_fonbet.get(key_id):
+    # bets_fonbet[key_id] = dict()
     time_start_proc = time.time()
 
-    # if str(match_id) in (str(12879839), str(12801238), str(12801237), str(12801241)):
+    # if key_id in (str(12879839), str(12801238), str(12801237), str(12801241)):
     #     f = open('fonbet.txt', 'a+')
     #     f.write(json.dumps(resp, ensure_ascii=False))
     #     f.write('\n')
@@ -169,7 +170,7 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy):
         if event.get('parentId') == 0 or event.get('name') in ('1st half', '2nd half'):
             if event.get('parentId') == 0:
                 try:
-                    bets_fonbet[str(match_id)].update({
+                    bets_fonbet[key_id].update({
                         'sport_id': skId,
                         'sport_name': skName,
                         'league': sport_name,
@@ -182,7 +183,7 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy):
                         'time_req': time.time()
                     })
                 except:
-                    bets_fonbet[str(match_id)] = {
+                    bets_fonbet[key_id] = {
                         'sport_id': skId,
                         'sport_name': skName,
                         'league': sport_name,
@@ -229,7 +230,7 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy):
                         pValue = kof.get('pValue', '')
                         p = kof.get('p', '')
                         if kof.get('blocked', False):
-                            value = 0.0
+                            value = 0
                             # prnts('fonbet block: '+str(name), str(kof.get('factorId')))
                         else:
                             value = kof.get('value')
@@ -237,18 +238,34 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy):
                         for vct in VICTS:
                             coef = half + str(vct[0])  # + num_team
                             if str(vct[1]) == factorId:
-                                hist5 = \
-                                    bets_fonbet[str(match_id)].get('kofs', {}).get(coef, {}).get('hist', {}).get('4', 0)
-                                hist4 = \
-                                    bets_fonbet[str(match_id)].get('kofs', {}).get(coef, {}).get('hist', {}).get('3', 0)
-                                hist3 = \
-                                    bets_fonbet[str(match_id)].get('kofs', {}).get(coef, {}).get('hist', {}).get('2', 0)
-                                hist2 = \
-                                    bets_fonbet[str(match_id)].get('kofs', {}).get(coef, {}).get('hist', {}).get('1', 0)
-                                hist1 = \
-                                    bets_fonbet[str(match_id)].get('kofs', {}).get(coef, {}).get('value', 0)
+                                hist5 = bets_fonbet[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('4', 0)
+                                hist4 = bets_fonbet[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('3', 0)
+                                hist3 = bets_fonbet[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('2', 0)
+                                hist2 = bets_fonbet[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('1', 0)
+                                hist1 = bets_fonbet[key_id].get('kofs', {}).get(coef, {}).get('value', 0)
 
-                                bets_fonbet[str(match_id)]['kofs'].update(
+                                deff_sec = \
+                                    time.time() - \
+                                    bets_fonbet[key_id].get('kofs', {}).get(coef, {}).get('time_req', 0)
+
+                                cof_is_change = True if hist1 != value or value == 0 else False
+
+                                if cof_is_change:
+                                    deff_sec = (time.time() - \
+                                                bets_fonbet[key_id].get('kofs', {}).get(coef, {}).get('time_change',
+                                                                                                      time.time()))
+                                    avg_change = \
+                                        bets_fonbet[key_id].get('kofs', {}).get(coef, {}).get('avg_change', []) \
+                                        + [deff_sec]
+                                    time_change = time.time()
+                                else:
+                                    avg_change = \
+                                        bets_fonbet[key_id].get('kofs', {}).get(coef, {}).get('avg_change', [])
+                                    time_change = \
+                                        bets_fonbet[key_id].get('kofs', {}).get(coef, {}).get('time_change',
+                                                                                              time.time())
+
+                                bets_fonbet[key_id]['kofs'].update(
                                     {
                                         coef:
                                             {
@@ -259,6 +276,8 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy):
                                                 'factor': factorId,
                                                 'score': score,
                                                 'hist': {
+                                                    'avg_change': avg_change,
+                                                    'time_change': time_change,
                                                     '1': hist1,
                                                     '2': hist2,
                                                     '3': hist3,
@@ -272,18 +291,30 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy):
                         for stake in TT:
                             coef = half + str(stake[0].format(p))  # + num_team
                             if str(stake[1]) == factorId:
-                                hist5 = \
-                                    bets_fonbet[str(match_id)].get('kofs', {}).get(coef, {}).get('hist', {}).get('4', 0)
-                                hist4 = \
-                                    bets_fonbet[str(match_id)].get('kofs', {}).get(coef, {}).get('hist', {}).get('3', 0)
-                                hist3 = \
-                                    bets_fonbet[str(match_id)].get('kofs', {}).get(coef, {}).get('hist', {}).get('2', 0)
-                                hist2 = \
-                                    bets_fonbet[str(match_id)].get('kofs', {}).get(coef, {}).get('hist', {}).get('1', 0)
-                                hist1 = \
-                                    bets_fonbet[str(match_id)].get('kofs', {}).get(coef, {}).get('value', 0)
+                                hist5 = bets_fonbet[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('4', 0)
+                                hist4 = bets_fonbet[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('3', 0)
+                                hist3 = bets_fonbet[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('2', 0)
+                                hist2 = bets_fonbet[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('1', 0)
+                                hist1 = bets_fonbet[key_id].get('kofs', {}).get(coef, {}).get('value', 0)
 
-                                bets_fonbet[str(match_id)]['kofs'].update(
+                                cof_is_change = True if hist1 != value or value == 0 else False
+
+                                if cof_is_change:
+                                    deff_sec = (time.time() - \
+                                                bets_fonbet[key_id].get('kofs', {}).get(coef, {}).get('time_change',
+                                                                                                      time.time()))
+                                    avg_change = \
+                                        bets_fonbet[key_id].get('kofs', {}).get(coef, {}).get('avg_change', []) \
+                                        + [deff_sec]
+                                    time_change = time.time()
+                                else:
+                                    avg_change = \
+                                        bets_fonbet[key_id].get('kofs', {}).get(coef, {}).get('avg_change', [])
+                                    time_change = \
+                                        bets_fonbet[key_id].get('kofs', {}).get(coef, {}).get('time_change',
+                                                                                              time.time())
+
+                                bets_fonbet[key_id]['kofs'].update(
                                     {
                                         coef:
                                             {
@@ -294,6 +325,8 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy):
                                                 'factor': factorId,
                                                 'score': score,
                                                 'hist': {
+                                                    'avg_change': avg_change,
+                                                    'time_change': time_change,
                                                     '1': hist1,
                                                     '2': hist2,
                                                     '3': hist3,
@@ -303,19 +336,19 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy):
                                             }}
                                 )
     try:
-        for i, j in bets_fonbet.get(str(match_id), {}).get('kofs', {}).copy().items():
+        for i, j in bets_fonbet.get(key_id, {}).get('kofs', {}).copy().items():
             if round(float(time.time() - float(j.get('time_req', 0)))) > 8:
                 try:
-                    bets_fonbet[str(match_id)]['kofs'].pop(i)
+                    bets_fonbet[key_id]['kofs'].pop(i)
                     prnts(
                         'Фонбет, данные по котировке из БК не получены более 8 сек., котировка удалена: ' +
-                        str(match_id) + ' ' + str(i) + ' ' + str(j), 'hide'
+                        key_id + ' ' + str(i) + ' ' + str(j), 'hide'
                     )
                 except Exception as e:
                     prnts('Фонбет, ошибка 1 при удалении старой котирофки: ' + str(e))
     except Exception as e:
         prnts('Фонбет, ошибка 2 при удалении старой котирофки: ' + str(e))
-        # if str(match_id) == '12907481':
+        # if key_id == '12907481':
     #     import json
     #     print('--------ф--------')
     #     # print(json.dumps(resp, ensure_ascii=False))
