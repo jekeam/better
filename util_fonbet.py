@@ -295,7 +295,7 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy):
                                                 'factor': factorId,
                                                 'score': score,
                                                 'hist': {
-                                                    'avg_change': [avg_change],
+                                                    'avg_change': avg_change,
                                                     'time_change': time_change,
                                                     '1': hist1,
                                                     '2': hist2,
@@ -366,7 +366,7 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy):
                                                 'factor': factorId,
                                                 'score': score,
                                                 'hist': {
-                                                    'avg_change': [avg_change],
+                                                    'avg_change': avg_change,
                                                     'time_change': time_change,
                                                     '1': hist1,
                                                     '2': hist2,

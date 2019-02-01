@@ -326,16 +326,42 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy):
                                        else to_abb(c.replace(' ', ''))
                                        for c in [key_r]
                                    ][0])
-                        hist5 = \
-                            bets_olimp[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('4', 0)
-                        hist4 = \
-                            bets_olimp[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('3', 0)
-                        hist3 = \
-                            bets_olimp[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('2', 0)
-                        hist2 = \
-                            bets_olimp[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('1', 0)
-                        hist1 = \
-                            bets_olimp[key_id].get('kofs', {}).get(coef, {}).get('value', 0)
+                        hist5 = bets_olimp[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('4', 0)
+                        hist4 = bets_olimp[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('3', 0)
+                        hist3 = bets_olimp[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('2', 0)
+                        hist2 = bets_olimp[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('1', 0)
+                        hist1 = bets_olimp[key_id].get('kofs', {}).get(coef, {}).get('value', 0)
+
+                        cof_is_change = True if hist1 != d.get('v', '') else False
+
+                        if cof_is_change:
+                            avg_change = \
+                                bets_olimp[key_id]. \
+                                    get('kofs', {}). \
+                                    get(coef, {}). \
+                                    get('hist', {}). \
+                                    get('avg_change', [])
+                            avg_change.append((time.time() -
+                                               bets_olimp[key_id].
+                                               get('kofs', {}).
+                                               get(coef, {}).
+                                               get('hist', {}).
+                                               get('time_change', time.time())))
+                            time_change = time.time()
+                        else:
+                            avg_change = \
+                                bets_olimp[key_id]. \
+                                    get('kofs', {}). \
+                                    get(coef, {}). \
+                                    get('hist', {}). \
+                                    get('avg_change', [])
+                            time_change = \
+                                bets_olimp[key_id]. \
+                                    get('kofs', {}). \
+                                    get(coef, {}). \
+                                    get('hist', {}). \
+                                    get('time_change', time.time())
+
                         try:
                             bets_olimp[key_id]['kofs'].update(
                                 {
@@ -348,6 +374,8 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy):
                                             'sport_id': skId,
                                             'event': match_id,
                                             'hist': {
+                                                'avg_change': avg_change,
+                                                'time_change': time_change,
                                                 '1': hist1,
                                                 '2': hist2,
                                                 '3': hist3,
