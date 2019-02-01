@@ -26,7 +26,8 @@ def prnt(vstr=None, hide=None):
     if vstr:
         global dtOld
         dtDeff = round((datetime.datetime.now() - dtOld).total_seconds())
-        strLog = datetime.datetime.now().strftime('%d %H:%M:%S.%f ...') + '(' + str(dtDeff).rjust(2, '0') + ')    ' + str(vstr)
+        strLog = datetime.datetime.now().strftime('%d %H:%M:%S.%f ') + '[' + str(dtDeff).rjust(2, '0') + ']    ' + \
+                 str(vstr)
         if not hide:
             dtOld = datetime.datetime.now()
             print(strLog)
@@ -36,12 +37,12 @@ def prnt(vstr=None, hide=None):
         Outfile.close()
 
 
-
 def prnts(vstr=None, hide=None):
     if vstr:
         global dtOld
         dtDeff = round((datetime.datetime.now() - dtOld).total_seconds())
-        strLog = datetime.datetime.now().strftime('%d %H:%M:%S.%f ...') + '(' + str(dtDeff).rjust(2, '0') + ')    ' + str(vstr)
+        strLog = datetime.datetime.now().strftime('%d %H:%M:%S.%f ') + '[' + str(dtDeff).rjust(2, '0') + ']    ' + \
+                 str(vstr)
         if not hide:
             dtOld = datetime.datetime.now()
             print(strLog)
@@ -49,7 +50,6 @@ def prnts(vstr=None, hide=None):
         Outfile = open('server.log', "a+", encoding='utf-8')
         Outfile.write(strLog + '\n')
         Outfile.close()
-
 
 
 def save_fork(fork_info):
