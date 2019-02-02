@@ -215,15 +215,6 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy):
                         'Goal - no goal',
                         'Total', 'Totals', 'Team Totals-1', 'Team Totals-2'):  # , '1st half', '2nd half'
 
-                    '''
-                    # не нужно, т.к. команда зашита в ИД
-                    num_team = ''
-                    if cat_name == 'Team Totals-1':
-                        num_team = '1'
-                    elif cat_name == 'Team Totals-1':
-                        num_team = '2'
-                    '''
-
                     for kof in cat.get('quotes'):
 
                         factorId = str(kof.get('factorId'))
