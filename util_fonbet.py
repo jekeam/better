@@ -171,17 +171,6 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy):
             if event.get('parentId') == 0:
                 try:
 
-                    for val in bets_fonbet.get(key_id, {}).values():
-                        for val2 in val.get('kofs', {}).values():
-                            tch_in = val2.get('hist', {}).get('time_change')
-                            tch_out = val.get('time_change_kof')
-                            if tch_in and tch_out:
-                                if tch_in > tch_out:
-                                    bets_fonbet[key_id].update({'time_change_kof': tch_in})
-                                    bets_fonbet[key_id].update({
-                                        'avg_change': bets_fonbet.get(key_id).get('avg_change').append(tch_in - tch_out)
-                                    })
-
                     bets_fonbet[key_id].update({
                         'sport_id': skId,
                         'sport_name': skName,
@@ -194,7 +183,8 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy):
                         'minute': minute,
                         'time_req': time.time()
                     })
-                except:
+                except Exception as e:
+                    print(e)
                     bets_fonbet[key_id] = {
                         'sport_id': skId,
                         'sport_name': skName,
@@ -206,8 +196,6 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy):
                         'time': timer,
                         'minute': minute,
                         'time_req': time.time(),
-                        'time_change_kof': time.time(),
-                        'avg_change': [],
                         'kofs': {}
                     }
 
