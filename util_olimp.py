@@ -374,8 +374,8 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy):
                                             'sport_id': skId,
                                             'event': match_id,
                                             'hist': {
-                                                'avg_change': avg_change,
                                                 'time_change': time_change,
+                                                'avg_change': avg_change,
                                                 '1': hist1,
                                                 '2': hist2,
                                                 '3': hist3,
