@@ -292,8 +292,8 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy):
                     'name': name,
                     'score': score,
                     'time_start': timer,
-                    'time_req': time.time(),
-                    'time_change_total': time.time(),
+                    'time_req': round(time.time()),
+                    'time_change_total': round(time.time()),
                     'avg_change_total': [],
                     'kofs': {}
                 }
@@ -344,13 +344,13 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy):
                                         get(coef, {}). \
                                         get('hist', {}). \
                                         get('avg_change', [])
-                                avg_change.append((time.time() -
-                                                   bets_olimp[key_id].
-                                                   get('kofs', {}).
-                                                   get(coef, {}).
-                                                   get('hist', {}).
-                                                   get('time_change', time.time())))
-                                time_change = time.time()
+                                avg_change.append(round(time.time() -
+                                                        bets_olimp[key_id].
+                                                        get('kofs', {}).
+                                                        get(coef, {}).
+                                                        get('hist', {}).
+                                                        get('time_change', time.time())))
+                                time_change = round(time.time())
                             else:
                                 avg_change = \
                                     bets_olimp[key_id]. \
@@ -363,14 +363,14 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy):
                                         get('kofs', {}). \
                                         get(coef, {}). \
                                         get('hist', {}). \
-                                        get('time_change', time.time())
+                                        get('time_change', round(time.time()))
 
                             try:
                                 bets_olimp[key_id]['kofs'].update(
                                     {
                                         coef:
                                             {
-                                                'time_req': time.time(),
+                                                'time_req': round(time.time()),
                                                 'value': d.get('v', ''),
                                                 'apid': d.get('apid', ''),
                                                 'factor': d.get('v', ''),  # d.get('p', ''),
@@ -406,7 +406,7 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy):
             avg_change_total = bets_olimp.get(key_id, {}).get('avg_change_total', [])
             if round(time_change_tot) < round(time_change_kof):
                 avg_change_total.append(round(time_change_kof - time_change_tot))
-                bets_olimp[key_id].update({'time_change_total': time_change_kof})
+                bets_olimp[key_id].update({'time_change_total': round(time_change_kof)})
                 bets_olimp[key_id].update({'avg_change_total': avg_change_total})
 
         try:
@@ -433,10 +433,11 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy):
         #     print('')
         #     print('--------о--------')
         #     time.sleep(10)
+        return time_resp + (time.time() - time_start_proc)
     except Exception as e:
         prnts(e)
         bets_olimp.pop(key_id)
-    return time_resp + (time.time() - time_start_proc)
+        raise ValueError(e)
 
 
 if __name__ == "__main__":

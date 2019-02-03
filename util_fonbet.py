@@ -181,7 +181,7 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy):
                             'score_1st': score_1st,
                             'time': timer,
                             'minute': minute,
-                            'time_req': time.time()
+                            'time_req': round(time.time())
                         })
                     except Exception as e:
                         # print(e)
@@ -195,8 +195,8 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy):
                             'score_1st': score_1st,
                             'time': timer,
                             'minute': minute,
-                            'time_req': time.time(),
-                            'time_change_total': time.time(),
+                            'time_req': round(time.time()),
+                            'time_change_total': round(time.time()),
                             'avg_change_total': [],
                             'kofs': {}
                         }
@@ -259,7 +259,7 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy):
                                                                 get(coef, {}).
                                                                 get('hist', {}).
                                                                 get('time_change', time.time())))
-                                        time_change = time.time()
+                                        time_change = round(time.time())
                                     elif not kof_is_block:
                                         avg_change = \
                                             bets_fonbet[key_id]. \
@@ -272,7 +272,7 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy):
                                                 get('kofs', {}). \
                                                 get(coef, {}). \
                                                 get('hist', {}). \
-                                                get('time_change', time.time())
+                                                get('time_change', round(time.time()))
 
                                     if kof_is_block:
                                         avg_change = \
@@ -281,13 +281,13 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy):
                                                 get(coef, {}). \
                                                 get('hist', {}). \
                                                 get('avg_change', [])
-                                        time_change = time.time()
+                                        time_change = round(time.time())
 
                                     bets_fonbet[key_id]['kofs'].update(
                                         {
                                             coef:
                                                 {
-                                                    'time_req': time.time(),
+                                                    'time_req': round(time.time()),
                                                     'event': event.get('id'),
                                                     'value': value,
                                                     'param': '',
@@ -333,8 +333,8 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy):
                                                                 get('kofs', {}).
                                                                 get(coef, {}).
                                                                 get('hist', {}).
-                                                                get('time_change', time.time())))
-                                        time_change = time.time()
+                                                                get('time_change', round(time.time()))))
+                                        time_change = round(time.time())
                                     elif not kof_is_block:
                                         avg_change = \
                                             bets_fonbet[key_id]. \
@@ -347,7 +347,7 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy):
                                                 get('kofs', {}). \
                                                 get(coef, {}). \
                                                 get('hist', {}). \
-                                                get('time_change', time.time())
+                                                get('time_change', round(time.time()))
 
                                     if kof_is_block:
                                         avg_change = \
@@ -356,13 +356,13 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy):
                                                 get(coef, {}). \
                                                 get('hist', {}). \
                                                 get('avg_change', [])
-                                        time_change = time.time()
+                                        time_change = round(time.time())
 
                                     bets_fonbet[key_id]['kofs'].update(
                                         {
                                             coef:
                                                 {
-                                                    'time_req': time.time(),
+                                                    'time_req': round(time.time()),
                                                     'event': event.get('id'),
                                                     'value': value,
                                                     'param': pValue,
@@ -413,7 +413,8 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy):
         #     print('')
         #     print('--------ф--------')
         #     time.sleep(5)
+        return time_resp + (time.time() - time_start_proc)
     except Exception as e:
         prnts(e)
         bets_fonbet.pop(key_id)
-    return time_resp + (time.time() - time_start_proc)
+        raise ValueError(e)

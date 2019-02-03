@@ -362,6 +362,8 @@ def get_forks(all_bets, pair_mathes, bets_olimp, bets_fonbet):
 
                         if all_bets.get(bet_key, '') != '':
 
+                            live_fork = round(time.time() - all_bets.get(bet_key, {}).get('create_fork'))
+
                             all_bets[bet_key].update({
                                 'time_last_upd': time.time(),
                                 'name': math_json_olimp.get('name', ''),
@@ -379,11 +381,12 @@ def get_forks(all_bets, pair_mathes, bets_olimp, bets_fonbet):
                                 'ol_time_change_total': math_json_olimp.get('time_change_total', 0),
                                 'ol_avg_change_total': math_json_olimp.get('avg_change_total', []),
                                 'fb_time_change_total': math_json_fonbet.get('time_change_total', 0),
-                                'fb_avg_change_total': math_json_fonbet.get('avg_change_total', [])
+                                'fb_avg_change_total': math_json_fonbet.get('avg_change_total', []),
+                                'live_fork': live_fork
                             })
 
                             if True:
-                                if '13082622' in bet_key:
+                                if '46096733' in bet_key:
                                     prnts('\n')
                                     prnts('all_bets: ' + bet_key + ' '
                                           + str(json.dumps(all_bets.get(bet_key), ensure_ascii=False)))
@@ -403,7 +406,9 @@ def get_forks(all_bets, pair_mathes, bets_olimp, bets_fonbet):
                                 'minute': math_json_fonbet.get('minute', ''),
                                 'kof_olimp': k_olimp,
                                 'kof_fonbet': k_fonbet,
-                                'time_break_fonbet': time_break_fonbet
+                                'time_break_fonbet': time_break_fonbet,
+                                'live_fork': 0,
+                                'create_fork': time.time()
                             }
                     else:
                         try:
