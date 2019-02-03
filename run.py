@@ -450,8 +450,8 @@ def get_forks(all_bets, pair_mathes, bets_olimp, bets_fonbet):
 
 
 if __name__ == '__main__':
-    proxy_filename_olimp = 'proxy_by_olimp.txt'
-    proxy_filename_fonbet = 'proxy_by_fonbet.txt'
+    proxy_filename_olimp = 'olimp.proxy'
+    proxy_filename_fonbet = 'fonbet.proxy'
 
     proxies_olimp = get_proxy_from_file(proxy_filename_olimp)
     proxies_fonbet = get_proxy_from_file(proxy_filename_fonbet)
