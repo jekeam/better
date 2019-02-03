@@ -341,7 +341,7 @@ def get_forks(all_bets, pair_mathes, bets_olimp, bets_fonbet):
                 k_olimp = math_json_olimp.get('kofs', {}).get(kof_type_olimp, {})
                 k_fonbet = math_json_fonbet.get('kofs', {}).get(kof_type_fonbet, {})
 
-                v_olimp = k_olimp.get('value', 0.0) + 0.1
+                v_olimp = k_olimp.get('value', 0.0) + 10
                 v_fonbet = k_fonbet.get('value', 0.0)
 
                 if v_olimp > 0.0 and v_fonbet > 0.0:
@@ -387,7 +387,7 @@ def get_forks(all_bets, pair_mathes, bets_olimp, bets_fonbet):
                             })
 
                             if True:
-                                if '46455369' in bet_key:
+                                if '46454647' in bet_key:
                                     file_forks = 'forks.csv'
 
                                     prnts('\n')
@@ -398,9 +398,8 @@ def get_forks(all_bets, pair_mathes, bets_olimp, bets_fonbet):
                                     if not os.path.isfile(file_forks):
                                         with open(file_forks, 'w', encoding='utf-8') as csv:
                                             csv.write(
-                                                'match_ol;match_fb;kof_ol;kof_fb;name;l;bk1_score;bk2_score;time;minute;'
-                                                'kof_olimp;avg_change;'
-                                                'kof_fonbet;avg_change;'
+                                                'match_ol;match_fb;kof_ol;kof_fb;name;l;bk1_score;bk2_score;time;'
+                                                'minute;''kof_olimp;avg_change;''kof_fonbet;avg_change;'
                                                 'time_break_fonbet;'
                                                 'ol_avg_change_total;fb_avg_change_total;live_fork;\n')
                                     if os.path.isfile(file_forks):
