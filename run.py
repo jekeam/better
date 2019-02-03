@@ -341,7 +341,7 @@ def get_forks(all_bets, pair_mathes, bets_olimp, bets_fonbet):
                 k_olimp = math_json_olimp.get('kofs', {}).get(kof_type_olimp, {})
                 k_fonbet = math_json_fonbet.get('kofs', {}).get(kof_type_fonbet, {})
 
-                v_olimp = k_olimp.get('value', 0.0) + 10
+                v_olimp = k_olimp.get('value', 0.0)
                 v_fonbet = k_fonbet.get('value', 0.0)
 
                 if v_olimp > 0.0 and v_fonbet > 0.0:
@@ -387,7 +387,7 @@ def get_forks(all_bets, pair_mathes, bets_olimp, bets_fonbet):
                             })
 
                             if True:
-                                if '46454647' in bet_key:
+                                if True:  # '46136939' in bet_key:
                                     file_forks = 'forks.csv'
 
                                     prnts('\n')
