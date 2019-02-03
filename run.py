@@ -342,7 +342,7 @@ def get_forks(all_bets, pair_mathes, bets_olimp, bets_fonbet):
                 k_fonbet = math_json_fonbet.get('kofs', {}).get(kof_type_fonbet, {})
 
                 v_olimp = k_olimp.get('value', 0.0)
-                v_fonbet = k_fonbet.get('value', 0.0)
+                v_fonbet = k_fonbet.get('value', 0.0)  # + 1
 
                 if v_olimp > 0.0 and v_fonbet > 0.0:
                     L = (1 / float(v_olimp)) + (1 / float(v_fonbet))
@@ -387,7 +387,7 @@ def get_forks(all_bets, pair_mathes, bets_olimp, bets_fonbet):
                             })
 
                             if True:
-                                if True:  # '46136939' in bet_key:
+                                if True:  # and '46136612' in bet_key:
                                     file_forks = 'forks.csv'
 
                                     prnts('\n')
@@ -400,7 +400,7 @@ def get_forks(all_bets, pair_mathes, bets_olimp, bets_fonbet):
                                             csv.write(
                                                 'cut_time;ol_time;fb_time;'
                                                 'match_ol;match_fb;kof_ol;kof_fb;name;l;bk1_score;bk2_score;time;'
-                                                'minute;''kof_olimp;avg_change;''kof_fonbet;avg_change;'
+                                                'minute;kof_olimp;avg_change;kof_fonbet;avg_change;'
                                                 'time_break_fonbet;'
                                                 'ol_avg_change_total;fb_avg_change_total;live_fork;\n'
                                             )
@@ -418,10 +418,12 @@ def get_forks(all_bets, pair_mathes, bets_olimp, bets_fonbet):
                                                 str(math_json_fonbet.get('time', '')) + ';' +
                                                 str(math_json_fonbet.get('minute', '')) + ';' +
                                                 str(k_olimp.get('value')) + ';' +
+                                                str(k_olimp.get('hist', {}).get('avg_change', [])) + ';' +
                                                 str(k_fonbet.get('value')) + ';' +
-                                                str(time_break_fonbet) + ';' +
+                                                str(k_fonbet.get('hist', {}).get('avg_change', [])) + ';' +
                                                 str(math_json_olimp.get('avg_change_total', [])) + ';' +
                                                 str(math_json_fonbet.get('avg_change_total', [])) + ';' +
+                                                str(time_break_fonbet) + ';' +
                                                 str(live_fork) + ';\n')
                         else:
                             all_bets[bet_key] = {
