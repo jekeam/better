@@ -10,6 +10,7 @@ import re
 from exceptions import *
 from server import run_server
 from utils import prnts
+import json
 import os
 from sys import exit
 from datetime import datetime
@@ -347,13 +348,6 @@ def get_forks(all_bets, pair_mathes, bets_olimp, bets_fonbet):
                     is_fork = True if L < 1 else False
 
                     if is_fork:  # or True
-                        if True:
-                            # if bet_key == '46376704@13052976@П2@П1Н':
-                            import json
-                            prnts('\n')
-                            prnts('all_bets: ' + bet_key + ' '
-                                  + str(json.dumps(all_bets.get(bet_key), ensure_ascii=False)))
-                            prnts('\n')
                         time_break_fonbet = False
                         if '(' + math_json_fonbet.get('score', '') + ')' == \
                                 math_json_fonbet.get('score_1st', '') and \
@@ -367,6 +361,7 @@ def get_forks(all_bets, pair_mathes, bets_olimp, bets_fonbet):
                         #     print('')
 
                         if all_bets.get(bet_key, '') != '':
+
                             all_bets[bet_key].update({
                                 'time_last_upd': time.time(),
                                 'name': math_json_olimp.get('name', ''),
@@ -380,8 +375,20 @@ def get_forks(all_bets, pair_mathes, bets_olimp, bets_fonbet):
                                 'minute': math_json_fonbet.get('minute', ''),
                                 'kof_olimp': k_olimp,
                                 'kof_fonbet': k_fonbet,
-                                'time_break_fonbet': time_break_fonbet
+                                'time_break_fonbet': time_break_fonbet,
+                                'ol_time_change_total': math_json_olimp.get('time_change_total', 0),
+                                'ol_avg_change_total': math_json_olimp.get('avg_change_total', []),
+                                'fb_time_change_total': math_json_fonbet.get('time_change_total', 0),
+                                'fb_avg_change_total': math_json_fonbet.get('avg_change_total', [])
                             })
+
+                            if True:
+                                if '13082622' in bet_key:
+                                    prnts('\n')
+                                    prnts('all_bets: ' + bet_key + ' '
+                                          + str(json.dumps(all_bets.get(bet_key), ensure_ascii=False)))
+                                    prnts('\n')
+
                         else:
                             all_bets[bet_key] = {
                                 'time_last_upd': time.time(),
