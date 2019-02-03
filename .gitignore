@@ -15,3 +15,5 @@ __pycache__*
 *.pyc
 __pycache__/util_olimp.cpython-37.pyc
 __pycache__/util_olimp.cpython-37.pyc
+*.pyc
+__pycache__/util_olimp.cpython-37.pyc

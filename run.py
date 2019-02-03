@@ -14,6 +14,7 @@ import json
 import os
 from sys import exit
 from datetime import datetime
+import pandas
 
 opposition = {
     '1ТБ': '1ТМ',
@@ -388,9 +389,10 @@ def get_forks(all_bets, pair_mathes, bets_olimp, bets_fonbet):
                             if True:
                                 if '46096733' in bet_key:
                                     prnts('\n')
-                                    prnts('all_bets: ' + bet_key + ' '
-                                          + str(json.dumps(all_bets.get(bet_key), ensure_ascii=False)))
+                                    str_js = json.dumps(all_bets.get(bet_key), ensure_ascii=False)
+                                    prnts('all_bets: ' + bet_key + ' ' + str(str_js))
                                     prnts('\n')
+
 
                         else:
                             all_bets[bet_key] = {
