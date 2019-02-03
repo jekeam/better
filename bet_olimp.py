@@ -45,6 +45,7 @@ class OlimpBot:
         self.balance = 0.0
         self.matchid = None
         self.cnt_bet_attempt = 1
+        self.cnt_sale_attempt = 1
         self.reg_id = None
 
         with open(os.path.join(package_dir, "proxies.json")) as file:
@@ -253,10 +254,20 @@ class OlimpBot:
                 )
                 check_status_with_resp(resp)
                 res = resp.json()
-                if str(res.get('error').get('err_code')) != str('406'):
-                    prnt('BET_OLIMP.PY: error sale bet olimp, change sum sale: ' +
-                         str(res.get('error').get('err_desc')))
-                    return self.sale_bet()
+
+                if str(res.get('error').get('err_code')) in ('406', '403'):
+                    if self.cnt_sale_attempt < 5:
+                        prnt('BET_OLIMP.PY: error sale bet olimp: ' +
+                             str(res.get('error').get('err_desc')))
+                        timer_update = 5
+                        prnt('BET_FONBET.PY: wait ' + str(timer_update) + ' sec...')
+                        time.sleep(timer_update)
+                        self.cnt_sale_attempt = self.cnt_sale_attempt + 1
+                        return self.sale_bet()
+                    else:
+                        str_err = 'BET_OLIMP.PY: error olimp sell result: ' + str(res.get('error').get('err_desc'))
+                        prnt(str_err)
+                        raise LoadException(str_err)
 
                 if str(res.get('error').get('err_code')) != str('0'):
                     prnt('BET_OLIMP.PY: error olimp sell result: ' + str(res))

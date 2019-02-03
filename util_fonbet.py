@@ -170,7 +170,6 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy):
         if event.get('parentId') == 0 or event.get('name') in ('1st half', '2nd half'):
             if event.get('parentId') == 0:
                 try:
-
                     bets_fonbet[key_id].update({
                         'sport_id': skId,
                         'sport_name': skName,
