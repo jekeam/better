@@ -331,7 +331,7 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
 def run_client():
     global server_forks
     try:
-        if 'Windows' == platform.system() and 1 == 0:
+        if 'Windows' == platform.system():  # and 1 == 0:
             conn = http.client.HTTPConnection("localhost", 80, timeout=3.51)
         else:
             conn = http.client.HTTPConnection("149.154.70.53", 80, timeout=60)
