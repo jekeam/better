@@ -83,7 +83,7 @@ def check_proxy_olimp(proxies_for_check, valid_proxies):
             x = 0
             while x < 2:
                 resp = requests.post(olimp_url + '/api/slice/', headers=olimp_head_ll, data=olimp_data_ll,
-                                     proxies={'http': prx}, timeout=4.51)
+                                     proxies={'http': prx}, timeout=3.51)
                 print('o valid: ' + str(prx), str(resp.status_code),
                       str(resp.json().get('error', '').get('err_desc', '')))
                 x = x + 1
@@ -259,7 +259,7 @@ if __name__ == '__main__':
     proxy_list = []
     proxy_list_olimp = []
     proxy_list_fonbet = []
-    proxy_list = join_proxies_to_file(5000)
+    proxy_list = join_proxies_to_file(500)
     proxy_list_olimp = check_proxies_olimp(proxy_list)
     proxy_list_fonbet = check_proxies_fonbet(proxy_list)
     save_list(proxy_list_olimp, 'proxy_by_olimp.txt')

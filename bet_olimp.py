@@ -253,6 +253,10 @@ class OlimpBot:
                 )
                 check_status_with_resp(resp)
                 res = resp.json()
+                if str(res.get('error').get('err_code')) != str('406'):
+                    prnt('BET_OLIMP.PY: error sale bet olimp, change sum sale: ' +
+                         str(res.get('error').get('err_desc')))
+                    return self.sale_bet()
 
                 if str(res.get('error').get('err_code')) != str('0'):
                     prnt('BET_OLIMP.PY: error olimp sell result: ' + str(res))
@@ -265,17 +269,15 @@ class OlimpBot:
                 timer_update = 5
                 prnt('BET_FONBET.PY: coupon is lock, time sleep ' + str(timer_update) + ' sec...')
                 time.sleep(timer_update)
-                self.sale_bet()
+                return self.sale_bet()
                 # raise LoadException("BET_OLIMP.PY: error sale bet olimp, cashout_allowed: false")
 
 
 if __name__ == '__main__':
     OLIMP_USER = {"login": "eva.yushkova.81@mail.ru", "passw": "qvF3BwrNcRcJtB6"}
-    wager_olimp = {'apid': '1118555462:45005799:1:3:-9999:3:NULL:NULL:1', 'factor': '1.4', 'sport_id': 1,
-                   'event': '45005799'}
+    wager_olimp = {'apid': '1156697718:46260036:1:3:-9999:2:0:0:1', 'factor': '1.18', 'sport_id': 1,
+                   'event': '46260036'}
     olimp = OlimpBot(OLIMP_USER)
     olimp.sign_in()
-    # olimp.place_bet(30, wager_olimp)
-    # print(olimp.get_reg_id())
-    # olimp.sale_bet()
-    # print(olimp.get_reg_id())
+    olimp.place_bet(30, wager_olimp)
+    olimp.sale_bet()
