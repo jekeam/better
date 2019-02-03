@@ -331,7 +331,7 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
 def run_client():
     global server_forks
     try:
-        if 'Windows' == platform.system():
+        if 'Windows' == platform.system() and 1 == 0:
             conn = http.client.HTTPConnection("localhost", 80, timeout=3.51)
         else:
             conn = http.client.HTTPConnection("149.154.70.53", 80, timeout=60)
@@ -382,7 +382,7 @@ time_live = datetime.datetime.now()
 
 if __name__ == '__main__':
 
-    #DEBUG = True
+    # DEBUG = True
     DEBUG = False
     prnt('DEBUG: ' + str(DEBUG))
 
@@ -458,8 +458,8 @@ if __name__ == '__main__':
                 bk1_hist = bk1_bet_json.get('hist', {})
                 bk2_hist = bk2_bet_json.get('hist', {})
 
-                k1 = bk1_bet_json['factor']
-                k2 = bk2_bet_json['value']
+                k1 = bk1_bet_json.get('factor', 0)
+                k2 = bk2_bet_json.get('value', 0)
 
                 info = name + \
                        ' ' + k1_type + '=' + str(k1) + '/' + k2_type + '=' + str(k2) + ', ' + \

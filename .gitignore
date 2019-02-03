@@ -5,3 +5,4 @@ venv
 *.txt
 *.csv
 *.proxy
+*.csv#
