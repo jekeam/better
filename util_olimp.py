@@ -282,7 +282,7 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy):
                     'name': name,
                     'score': score,
                     'time_start': timer,
-                    'time_req': time.time()
+                    'time_req': round(time.time())
                 })
             except:
                 bets_olimp[key_id] = {

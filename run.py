@@ -365,7 +365,7 @@ def get_forks(all_bets, pair_mathes, bets_olimp, bets_fonbet):
                             live_fork = round(time.time() - all_bets.get(bet_key, {}).get('create_fork'))
 
                             all_bets[bet_key].update({
-                                'time_last_upd': time.time(),
+                                'time_last_upd': round(time.time()),
                                 'name': math_json_olimp.get('name', ''),
                                 'time_req_olimp': math_json_olimp.get('time_req', 0),
                                 'time_req_fonbet': math_json_fonbet.get('time_req', 0),
@@ -394,7 +394,7 @@ def get_forks(all_bets, pair_mathes, bets_olimp, bets_fonbet):
 
                         else:
                             all_bets[bet_key] = {
-                                'time_last_upd': time.time(),
+                                'time_last_upd': round(time.time()),
                                 'name': math_json_olimp.get('name', ''),
                                 'time_req_olimp': math_json_olimp.get('time_req', 0),
                                 'time_req_fonbet': math_json_fonbet.get('time_req', 0),
@@ -408,7 +408,7 @@ def get_forks(all_bets, pair_mathes, bets_olimp, bets_fonbet):
                                 'kof_fonbet': k_fonbet,
                                 'time_break_fonbet': time_break_fonbet,
                                 'live_fork': 0,
-                                'create_fork': time.time()
+                                'create_fork': round(time.time())
                             }
                     else:
                         try:
