@@ -11,10 +11,10 @@ from exceptions import *
 from server import run_server
 from utils import prnts
 import json
+import os.path
 import os
 from sys import exit
 from datetime import datetime
-import pandas
 
 opposition = {
     '1ТБ': '1ТМ',
@@ -387,11 +387,40 @@ def get_forks(all_bets, pair_mathes, bets_olimp, bets_fonbet):
                             })
 
                             if True:
-                                if '46096733' in bet_key:
+                                if '46455369' in bet_key:
+                                    file_forks = 'forks.csv'
+
                                     prnts('\n')
                                     str_js = json.dumps(all_bets.get(bet_key), ensure_ascii=False)
                                     prnts('all_bets: ' + bet_key + ' ' + str(str_js))
                                     prnts('\n')
+
+                                    if not os.path.isfile(file_forks):
+                                        with open(file_forks, 'w', encoding='utf-8') as csv:
+                                            csv.write(
+                                                'match_ol;match_fb;kof_ol;kof_fb;name;l;bk1_score;bk2_score;time;minute;'
+                                                'kof_olimp;avg_change;'
+                                                'kof_fonbet;avg_change;'
+                                                'time_break_fonbet;'
+                                                'ol_avg_change_total;fb_avg_change_total;live_fork;\n')
+                                    if os.path.isfile(file_forks):
+                                        with open(file_forks, 'a', encoding='utf-8') as csv:
+                                            csv.write(
+                                                str(bet_key.split('@')[0]) + ';' + str(bet_key.split('@')[1]) + ';' +
+                                                str(bet_key.split('@')[2]) + ';' + str(bet_key.split('@')[3]) + ';' +
+                                                math_json_olimp.get('name', '') + ';' + str(L) + ';' +
+                                                math_json_olimp.get('score', '') + ';' +
+                                                math_json_fonbet.get('score', '') + ';' +
+                                                str(math_json_fonbet.get('time', '')) + ';' +
+                                                str(math_json_fonbet.get('minute', '')) + ';' +
+                                                str(k_olimp.get('value')) + ';' +
+                                                str(k_fonbet.get('value')) + ';' +
+                                                str(time_break_fonbet) + ';' +
+                                                str(*math_json_olimp.get('avg_change_total', [])) + ';' +
+                                                str(*math_json_fonbet.get('avg_change_total', [])) + ';' +
+                                                str(live_fork) + ';\n')
+
+
 
 
                         else:
