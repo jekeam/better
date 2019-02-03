@@ -416,5 +416,6 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy):
         return time_resp + (time.time() - time_start_proc)
     except Exception as e:
         prnts(e)
-        bets_fonbet.pop(key_id)
+        if bets_fonbet.get(key_id):
+            bets_fonbet.pop(key_id)
         raise ValueError(e)

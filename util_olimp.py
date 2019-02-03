@@ -436,7 +436,8 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy):
         return time_resp + (time.time() - time_start_proc)
     except Exception as e:
         prnts(e)
-        bets_olimp.pop(key_id)
+        if bets_olimp.get(key_id):
+            bets_olimp.pop(key_id)
         raise ValueError(e)
 
 
