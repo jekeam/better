@@ -143,7 +143,7 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
     amount_olimp, amount_fonbet = get_sum_bets(wager_olimp['factor'], wager_fonbet['value'], total_bet, 'show')
 
     if __name__ == '__main__':
-        #wait_sec = max(0, (30 - deff_max))
+        # wait_sec = max(0, (30 - deff_max))
         wait_sec = 3.51
         prnt('Wait sec: ' + str(wait_sec))
         time.sleep(wait_sec)
@@ -167,7 +167,7 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
             recheck_fb.join()
             recheck_o.join()
 
-            prnt('deff_max: ' + str(deff_max) + ', O ' + olimp_bet_type + ': ' + str(wager_olimp['factor']) + ' -> ' + 
+            prnt('deff_max: ' + str(deff_max) + ', O ' + olimp_bet_type + ': ' + str(wager_olimp['factor']) + ' -> ' +
                  str(obj['olimp']) + '| F ' + fonbet_bet_type + ': ' + str(wager_fonbet['value']) + ' -> ' + str(
                 obj['fonbet']))
 
@@ -183,23 +183,22 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
                 new_proc = round((1 - L) * 100, 2)
                 change_proc = round(new_proc - cur_proc, 2)
                 prnt('new proc: ' + str(new_proc) + '%, change: ' + str(change_proc))
-                
-                
+
                 # Проверяем, берем вилку только если она выросла в цене
                 # Если не изменилась, продолжаем мониторить, 
                 # Bначе выбразываем
                 if change_proc < 0:
-                    prnt('Fork exclude: change_proc = ' + str(change_proc)+'\n')
+                    prnt('Fork exclude: change_proc = ' + str(change_proc) + '\n')
                     return False
                 elif change_proc == 0:
-                    prnt('Check replay: change_proc = ' + str(change_proc)+'\n')
-                    return go_bets(wager_olimp,	wager_fonbet, total_bet, key, 0)
+                    prnt('Check replay: change_proc = ' + str(change_proc) + '\n')
+                    return go_bets(wager_olimp, wager_fonbet, total_bet, key, 0)
                 elif check_l(L) != '':
-                    prnt('Check replay: fork be up, but new_proc = '+str(new_proc)+'%)')
-                    return go_bets(wager_olimp,	wager_fonbet, total_bet, key, 0)
+                    prnt('Check replay: fork be up, but new_proc = ' + str(new_proc) + '%)')
+                    return go_bets(wager_olimp, wager_fonbet, total_bet, key, 0)
 
                 if check_l(L) == '' or DEBUG:
-                    
+
                     is_recheck = True
                     fork_id = int(time.time())
                     fork_info = {
