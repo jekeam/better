@@ -1,4 +1,4 @@
-chmod # coding:utf-8
+# coding:utf-8
 from util_olimp import *
 from util_fonbet import *
 from proxy_worker import get_proxy_from_file, start_proxy_saver, createBatchGenerator, get_next_proxy
