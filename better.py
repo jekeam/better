@@ -126,28 +126,6 @@ def check_fork(key, L, k1, k2, bk1_score, bk2_score, minute, time_break_fonbet, 
             fork_exclude_text + 'Вилка ' + str(round((1 - L) * 100, 2)) + '% исключена т.к. идет ' \
             + str(minute) + ' минута матча \n'
 
-    if k1 >= bk1_hist.get('1') >= bk1_hist.get('2') >= bk1_hist.get('3') >= bk1_hist.get('4') >= bk1_hist.get('5') > 0:
-        prnt(
-            'K1 растет, все ОК: ' +
-            str(k1) + '->' + str(bk1_hist.get('1')) + '->' + str(bk1_hist.get('2')) + '->' +
-            str(bk1_hist.get('3')) + '->' + str(bk1_hist.get('4')) + '->' + str(bk1_hist.get('5')), 'hide')
-    else:
-        fork_exclude_text = \
-            fork_exclude_text + 'Вилка исключена т.к. K1 падает: ' + \
-            str(k1) + '->' + str(bk1_hist.get('1')) + '->' + str(bk1_hist.get('2')) + '->' + \
-            str(bk1_hist.get('3')) + '->' + str(bk1_hist.get('5')) + '->' + str(bk1_hist.get('5')) + '\n'
-
-    if k2 >= bk2_hist.get('1') >= bk2_hist.get('2') >= bk2_hist.get('3') >= bk2_hist.get('4') >= bk2_hist.get('5') > 0:
-        prnt(
-            'К2 растет, все ОК: ' +
-            str(k2) + '->' + str(bk2_hist.get('1')) + '->' + str(bk2_hist.get('2')) + '->' +
-            str(bk2_hist.get('3')) + '->' + str(bk2_hist.get('4')) + '->' + str(bk2_hist.get('5')), 'hide')
-    else:
-        fork_exclude_text = \
-            fork_exclude_text + 'Вилка исключена т.к. К2 падает: ' + \
-            str(k2) + '->' + str(bk2_hist.get('1')) + '->' + str(bk2_hist.get('2')) + '->' + \
-            str(bk2_hist.get('3')) + '->' + str(bk2_hist.get('5')) + '->' + str(bk2_hist.get('5')) + '\n'
-
     fork_exclude_text = fork_exclude_text + check_l(L)
 
     if fork_exclude_text != '':
