@@ -126,8 +126,6 @@ def check_fork(key, L, k1, k2, bk1_score, bk2_score, minute, time_break_fonbet, 
             fork_exclude_text + 'Вилка ' + str(round((1 - L) * 100, 2)) + '% исключена т.к. идет ' \
             + str(minute) + ' минута матча \n'
 
-    fork_exclude_text = fork_exclude_text + check_l(L)
-
     if fork_exclude_text != '':
         prnt(info + '\n' + fork_exclude_text + '\n')
         v = False
@@ -185,19 +183,19 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
                 new_proc = round((1 - L) * 100, 2)
                 change_proc = round(new_proc - cur_proc, 2)
                 prnt('new proc: ' + str(new_proc) + '%, change: ' + str(change_proc))
+                
+                
+                # Проверяем, берем вилку только если она выросла в цене
+                # Если не изменилась, продолжаем мониторить, 
+                # Bначе выбразываем
+                if change_proc < 0:
+                    prnt('Fork exclude: change_proc = ' + str(change_proc)+'\n')
+                    return False
+                elif change_proc == 0:
+                    prnt('Check replay: change_proc = ' + str(change_proc)+'\n')
+                    return go_bets(wager_olimp,	wager_fonbet, total_bet, key, 0)
 
                 if check_l(L) == '' or DEBUG:
-                    
-                    # Проверяем, берем вилку только если она выросла в цене
-                    # Если не изменилась, продолжаем мониторить, 
-                    # Bначе выбразываем
-                    if change_proc < 0:
-                        prnt('Fork exclude: change_proc = ' + str(change_proc)+'\n')
-                        return False
-                    elif change_proc == 0:
-                        prnt('Check replay: change_proc = ' + str(change_proc)+'\n')
-                        return go_bets(wager_olimp,	wager_fonbet, total_bet, key, 0)
-                        
                     
                     is_recheck = True
                     fork_id = int(time.time())
