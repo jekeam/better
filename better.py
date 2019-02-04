@@ -214,36 +214,6 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
                 new_proc = round((1 - L) * 100, 2)
                 prnt('new proc: ' + str(new_proc) + '%, change: ' + str(round(new_proc - cur_proc, 2)))
 
-                # Вероятность коэфициентов до перепроверки
-                ver_k1_old = 1 / float(wager_olimp['factor'])
-                ver_k2_old = 1 / float(wager_fonbet['value'])
-                prnt(' ')
-                prnt('Значения вероятностей коэ-в до перепроверки: ' + str(ver_k1_old) + ' - ' + str(ver_k2_old))
-
-                # Вероятность коэ-ф-ов после перепроверки
-                ver_k1_new = 1 / float(obj['olimp'])
-                ver_k2_new = 1 / float(obj['fonbet'])
-                prnt('Значения вероятностей коэ-в после перепроверки: ' + str(ver_k1_new) + ' - ' + str(ver_k2_new))
-
-                # Проверяем движение коэфициентов (изменение вероятностей)
-                deff_ver_k1 = (ver_k1_old - ver_k1_new)
-                deff_ver_k2 = (ver_k2_old - ver_k2_new)
-                deff_ver = (deff_ver_k1 + deff_ver_k2)
-                prnt('Движение коэф-в: ' + '(' + str(deff_ver_k1) + ' + ' + str(deff_ver_k2) + ')=' + str(deff_ver))
-                prnt(' ')
-
-                if deff_ver < -0.5:  # or DEBUG:
-                    prnt('Deff ver: ' + str(deff_ver) + ', replay check')
-                    wager_fonbet['value'] = str(obj['fonbet'])
-                    wager_olimp['factor'] = str(obj['olimp'])
-                    go_bets(
-                        wager_olimp,
-                        wager_fonbet,
-                        total_bet,
-                        key,
-                        0
-                    )
-                    return False
                 if check_l(L) == '' or DEBUG:
                     is_recheck = True
                     fork_id = int(time.time())
