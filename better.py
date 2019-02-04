@@ -194,6 +194,9 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
                 elif change_proc == 0:
                     prnt('Check replay: change_proc = ' + str(change_proc)+'\n')
                     return go_bets(wager_olimp,	wager_fonbet, total_bet, key, 0)
+                elif check_l(L) != '':
+                    prnt('Check replay: fork be up, but new_proc = '+str(new_proc)+'%)')
+                    return go_bets(wager_olimp,	wager_fonbet, total_bet, key, 0)
 
                 if check_l(L) == '' or DEBUG:
                     
