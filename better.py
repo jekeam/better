@@ -148,14 +148,6 @@ def check_fork(key, L, k1, k2, bk1_score, bk2_score, minute, time_break_fonbet, 
             str(k2) + '->' + str(bk2_hist.get('1')) + '->' + str(bk2_hist.get('2')) + '->' + \
             str(bk2_hist.get('3')) + '->' + str(bk2_hist.get('5')) + '->' + str(bk2_hist.get('5')) + '\n'
 
-    '''
-    if k1 == k2 or k1 >= 2 <= k2:
-        fork_exclude_text = \
-            fork_exclude_text + 'Вилка ' + str(round((1 - L) * 100, 2)) \
-            + '% исключена т.к. коэф-ты в обоих БК больше или равны 2.0 или равны друг другу: ' \
-            + '(' + str(k1) + ' - ' + str(+k2) + ')\n'
-    '''
-
     fork_exclude_text = fork_exclude_text + check_l(L)
 
     if fork_exclude_text != '':
@@ -172,7 +164,7 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
     L = ((1 / float(wager_olimp['factor'])) + (1 / float(wager_fonbet['value'])))
     cur_proc = round((1 - L) * 100, 2)
 
-    amount_olimp, amount_fonbet = get_sum_bets(wager_olimp['factor'], wager_fonbet['value'], total_bet, False)
+    amount_olimp, amount_fonbet = get_sum_bets(wager_olimp['factor'], wager_fonbet['value'], total_bet, 'show')
 
     if __name__ == '__main__':
         wait_sec = max(0, (30 - deff_max))
@@ -206,7 +198,7 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
             if float(obj['olimp']) > 1 < float(obj['fonbet']):
 
                 # пересчетаем суммы ставок
-                amount_olimp, amount_fonbet = get_sum_bets(float(obj['olimp']), float(obj['fonbet']), total_bet, False)
+                amount_olimp, amount_fonbet = get_sum_bets(float(obj['olimp']), float(obj['fonbet']), total_bet, 'show')
 
                 # Выведем текую доходность вилки
                 prnt('cur proc: ' + str(cur_proc) + '%')
