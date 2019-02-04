@@ -421,9 +421,9 @@ def get_forks(all_bets, pair_mathes, bets_olimp, bets_fonbet):
                                                 str(k_olimp.get('hist', {}).get('avg_change', [])) + ';' +
                                                 str(k_fonbet.get('value')) + ';' +
                                                 str(k_fonbet.get('hist', {}).get('avg_change', [])) + ';' +
+                                                str(time_break_fonbet) + ';' +
                                                 str(math_json_olimp.get('avg_change_total', [])) + ';' +
                                                 str(math_json_fonbet.get('avg_change_total', [])) + ';' +
-                                                str(time_break_fonbet) + ';' +
                                                 str(live_fork) + ';\n')
                         else:
                             all_bets[bet_key] = {
