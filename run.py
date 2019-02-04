@@ -1,4 +1,4 @@
-# coding:utf-8
+chmod # coding:utf-8
 from util_olimp import *
 from util_fonbet import *
 from proxy_worker import get_proxy_from_file, start_proxy_saver, createBatchGenerator, get_next_proxy
@@ -9,7 +9,7 @@ from difflib import SequenceMatcher
 import re
 from exceptions import *
 from server import run_server
-from utils import prnts
+from utils import prnts, DEBUG
 import json
 import os.path
 import os
@@ -343,6 +343,9 @@ def get_forks(all_bets, pair_mathes, bets_olimp, bets_fonbet):
 
                 v_olimp = k_olimp.get('value', 0.0)
                 v_fonbet = k_fonbet.get('value', 0.0)  # + 1
+                
+                if DEBUG:
+                    v_fonbet = v_fonbet+0.1
 
                 if v_olimp > 0.0 and v_fonbet > 0.0:
                     L = (1 / float(v_olimp)) + (1 / float(v_fonbet))
@@ -457,6 +460,7 @@ def get_forks(all_bets, pair_mathes, bets_olimp, bets_fonbet):
 
 
 if __name__ == '__main__':
+    prnts('DEBUG: '+str(DEBUG))
     proxy_filename_olimp = 'olimp.proxy'
     proxy_filename_fonbet = 'fonbet.proxy'
 

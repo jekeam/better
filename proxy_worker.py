@@ -7,7 +7,7 @@ import os
 import time
 import urllib3
 from random import choice
-from utils import prnts
+from utils import prnts, DEBUG
 from hashlib import md5
 import threading
 import platform
@@ -195,7 +195,7 @@ def get_proxy_from_file(filename=None):
         global proxy_file_name
         filename = proxy_file_name
 
-    if platform.system() != 'Windows':
+    if platform.system() != 'Windows' and not DEBUG:
         os.chdir('/home/autobro/')
 
     try:

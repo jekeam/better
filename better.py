@@ -3,7 +3,7 @@ from bet_fonbet import *
 from bet_olimp import *
 import datetime
 from fork_recheck import get_kof_olimp, get_kof_fonbet
-from utils import prnt, get_account_info
+from utils import prnt, get_account_info, DEBUG
 # from client import run_client
 import threading
 from multiprocessing import Manager, Process
@@ -331,7 +331,7 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
 def run_client():
     global server_forks
     try:
-        if 'Windows' == platform.system():  # and 1 == 0:
+        if 'Windows' == platform.system() or DEBUG:
             conn = http.client.HTTPConnection("localhost", 80, timeout=3.51)
         else:
             conn = http.client.HTTPConnection("149.154.70.53", 80, timeout=60)
@@ -381,9 +381,6 @@ time_live = datetime.datetime.now()
 # wager_fonbet:{'apid': '1144260386:45874030:1:3:-9999:3:NULL:NULL:1', 'factor': '1.66', 'sport_id': 1, 'event': '45874030'}
 
 if __name__ == '__main__':
-
-    # DEBUG = True
-    DEBUG = False
     prnt('DEBUG: ' + str(DEBUG))
 
     time_get_balance = datetime.datetime.now()

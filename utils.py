@@ -6,6 +6,8 @@ import cfscrape
 import requests
 import datetime
 
+DEBUG = True
+
 package_dir = os.path.dirname(__file__)
 dtOld = datetime.datetime.now()
 
