@@ -252,7 +252,7 @@ class OlimpBot:
                     timeout=60,
                     proxies=self.proxies
                 )
-                check_status_with_resp(resp)
+                check_status_with_resp(resp, True)
                 res = resp.json()
 
                 if str(res.get('error').get('err_code')) in ('406', '403'):
