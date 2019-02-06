@@ -295,10 +295,7 @@ def run_client():
             rs = conn.getresponse()
             data = rs.read().decode('utf-8')
             data_json = json.loads(data)
-            if data_json:
-                server_forks = data_json
-            else:
-                server_forks = {}
+            server_forks = data_json
             time.sleep(1)
     except Exception as e:
         prnt(e)
