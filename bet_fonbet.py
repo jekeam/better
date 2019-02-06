@@ -613,6 +613,12 @@ class FonbetBot:
         )
         check_status_with_resp(resp)
         res = resp.json()
+        
+        if res.get('result') == "sellDelay":
+            sell_delay_sec = (float(res.get('sellDelay')) / 1000)
+            prnt('BET_FONBET.PY: sell_delay: ' + str(sell_delay_sec) + ' sec...')
+            time.sleep(sell_delay_sec)
+            return self._check_sell_result(res.get('requestId'))
 
         if res.get('result') == 'couponCompletelySold':
             sold_sum = res.get('soldSum')
