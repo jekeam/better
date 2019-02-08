@@ -410,10 +410,14 @@ if __name__ == '__main__':
                 k1 = bk1_bet_json.get('factor', 0)
                 k2 = bk2_bet_json.get('value', 0)
 
-                info = name + \
-                       ' ' + k1_type + '=' + str(k1) + '/' + k2_type + '=' + str(k2) + ', ' + \
-                       v_time + ' (' + str(minute) + ') ' + \
-                       score + ' ' + str(pair_math) + ' max deff: ' + str(deff_max)
+                try:
+                    info = name + \
+                           ' ' + k1_type + '=' + str(k1) + '/' + k2_type + '=' + str(k2) + ', ' + \
+                           v_time + ' (' + str(minute) + ') ' + \
+                           score + ' ' + str(pair_math) + ' max deff: ' + str(deff_max)
+                except Exception as e:
+                    prnts('error: '+str(e))
+                    info = ''
 
                 if 0.0 <= l < l_temp and deff_max < 10 or DEBUG:
                     bet1, bet2 = get_sum_bets(k1, k2, bet)
