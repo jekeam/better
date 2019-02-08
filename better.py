@@ -341,12 +341,10 @@ if __name__ == '__main__':
         bal1 = 20000
         bal2 = 20000
         bet = round(0.10 * (bal1 + bal2))  # Общая масксимальная сумма ставки
-        balance_line = (bal1 + bal2) / 2 / 100 * 60
     else:
         bal1 = OlimpBot(OLIMP_USER).get_balance()  # Баланс в БК1
         bal2 = FonbetBot(FONBET_USER).get_balance()  # Баланс в БК2
         bet = 280  # round(0.10 * (bal1 + bal2))  # Общая масксимальная сумма ставки
-        balance_line = (bal1 + bal2) / 2 / 100 * 60
 
     prnt('bal1: ' + str(bal1) + ' руб.')
     prnt('bal2: ' + str(bal2) + ' руб.')
@@ -359,6 +357,8 @@ if __name__ == '__main__':
     start_see_fork.start()
 
     while True:
+        
+        balance_line = (bal1 + bal2) / 2 / 100 * 60
 
         shutdown_minutes = 60 * (60 * 24)  # секунды * на кол-во (60*1) - это час
         if (datetime.datetime.now() - time_live).total_seconds() > (shutdown_minutes):
