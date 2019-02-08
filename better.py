@@ -345,7 +345,7 @@ if __name__ == '__main__':
         bal1 = OlimpBot(OLIMP_USER).get_balance()  # Баланс в БК1
         bal2 = FonbetBot(FONBET_USER).get_balance()  # Баланс в БК2
         bet = 280  # round(0.10 * (bal1 + bal2))  # Общая масксимальная сумма ставки
-    balance_line = (bal1 + bal2) / 2 / 100 * 60
+    balance_line = (bal1 + bal2) / 2 / 100 * 30
 
     prnt('bal1: ' + str(bal1) + ' руб.')
     prnt('bal2: ' + str(bal2) + ' руб.')
