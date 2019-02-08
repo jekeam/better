@@ -99,13 +99,13 @@ def check_fork(key, L, k1, k2, bk1_score, bk2_score, minute, time_break_fonbet, 
                             + str(bal1) + ', bet1=' + str(bet1) \
                             + ', bal2=' + str(bal2) + ', bet2=' + str(bet2) + '\n'
 
-    # Если баланс меньше 60% то берем плече только с коэф-м меньше 1,5
+    # Если баланс меньше 30% то берем плече только с коэф-м меньше 1,5
     if bal1 <= balance_line and k1 >= 1.3:
         fork_exclude_text = fork_exclude_text + 'Вилка ' + str(round((1 - L) * 100, 2)) \
-                            + '% исключена: баланс БК Олимп меньше 60%, а коэф-т >= 1.3 (' + str(k1) + ')\n'
+                            + '% исключена: баланс БК Олимп меньше 30%, а коэф-т >= 1.3 (' + str(k1) + ')\n'
     elif bal2 <= balance_line and k2 >= 1.3:
         fork_exclude_text = fork_exclude_text + 'Вилка ' + str(round((1 - L) * 100, 2)) \
-                            + '% исключена: баланс БК фонбет меньше 60%, а коэф-т >= 1.3 (' + str(k2) + ')\n'
+                            + '% исключена: баланс БК фонбет меньше 30%, а коэф-т >= 1.3 (' + str(k2) + ')\n'
 
     if bk1_score != bk2_score:
         fork_exclude_text = fork_exclude_text + 'Вилка ' \
