@@ -359,7 +359,7 @@ if __name__ == '__main__':
 
     while True:
         
-        balance_line = (bal1 + bal2) / 2 / 100 * 60
+        balance_line = (bal1 + bal2) / 2 / 100 * 30
 
         shutdown_minutes = 60 * (60 * 24)  # секунды * на кол-во (60*1) - это час
         if (datetime.datetime.now() - time_live).total_seconds() > (shutdown_minutes):
