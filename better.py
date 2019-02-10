@@ -80,7 +80,8 @@ def check_l(L):
         return ''
 
 
-def check_fork(key, L, k1, k2, bk1_score, bk2_score, minute, time_break_fonbet, bk1_hist, bk2_hist, info=''):
+def check_fork(key, L, k1, k2, bk1_score, bk2_score, minute, time_break_fonbet, is_2nd_half, bk1_hist, bk2_hist,
+               info=''):
     fork_exclude_text = ''
     v = True
     global bal1, bal2, balance_line
@@ -116,10 +117,10 @@ def check_fork(key, L, k1, k2, bk1_score, bk2_score, minute, time_break_fonbet, 
         fork_exclude_text = \
             fork_exclude_text + 'Вилка ' + str(round((1 - L) * 100, 2)) + '% исключена т.к. идет ' \
             + str(minute) + ' минута матча \n'
-    if 43.0 < float(minute) < 50.0 and not time_break_fonbet:  # Больше 43 минуты и не идет перерыв
+    if 43.0 < float(minute) < 50.0 and not time_break_fonbet and not is_2nd_half:  # Больше 43 минуты и не идет перерыв
         fork_exclude_text = \
             fork_exclude_text + 'Вилка ' + str(round((1 - L) * 100, 2)) + '% исключена т.к. идет ' \
-            + str(minute) + ' минута матча и это не перерыв \n'
+            + str(minute) + ' минута матча и это не перерыв и это не 2-й период \n'
 
     if float(minute) > 88.0:
         fork_exclude_text = \
@@ -394,6 +395,7 @@ if __name__ == '__main__':
                 v_time = val_json.get('time', 'v_time')
                 minute = val_json.get('minute', 0)
                 time_break_fonbet = val_json.get('time_break_fonbet')
+                is_2nd_half = val_json.get('is_2nd_half')
                 time_last_upd = val_json.get('time_last_upd', 1)
 
                 deff_olimp = round(float(time.time() - float(val_json.get('time_req_olimp', 0))))
@@ -421,7 +423,7 @@ if __name__ == '__main__':
                 if 0.0 <= l < l_temp and deff_max < 10 or DEBUG:
                     bet1, bet2 = get_sum_bets(k1, k2, bet)
                     if check_fork(
-                            key, l_temp, k1, k2, bk1_score, bk2_score, minute, time_break_fonbet,
+                            key, l_temp, k1, k2, bk1_score, bk2_score, minute, time_break_fonbet, is_2nd_half,
                             bk1_hist, bk2_hist, info
                     ) or DEBUG:
                         go_bet_key = key
