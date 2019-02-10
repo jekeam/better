@@ -111,10 +111,10 @@ def get_match_fonbet(match_id, proxi_list, proxy):
         proxi_list = del_proxy(proxy.get('http'), proxi_list)
         raise ValueError(err_str)
     except FonbetMatchСompleted as e:
-        raise FonbetMatchСompleted('2 Фонбет, матч ' + str(match_id) + ' завершен, поток выключен!')
+        raise FonbetMatchСompleted('2 ' + str(e))
     except Exception as e:
         if 'Event not found' in str(e):
-            raise FonbetMatchСompleted('3 Фонбет, матч ' + str(match_id) + ' завершен, поток выключен!')
+            raise FonbetMatchСompleted('3 Фонбет, матч ' + str(match_id) + ' завершен, поток выключен! ' + str(e))
         err_str = 'Фонбет ' + str(match_id) + ', код ошибки 2: ' + str(e)
         prnts(err_str)
         # proxi_list = del_proxy(proxy.get('http'), proxi_list)
