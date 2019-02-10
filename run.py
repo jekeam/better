@@ -345,7 +345,8 @@ def get_forks(all_bets, pair_mathes, bets_olimp, bets_fonbet):
                 v_fonbet = k_fonbet.get('value', 0.0)  # + 1
 
                 if DEBUG:
-                    v_fonbet = v_fonbet + 0.1
+                    v_olimp = v_olimp + 1
+                    v_fonbet = v_fonbet + 1
 
                 if v_olimp > 0.0 and v_fonbet > 0.0:
                     L = (1 / float(v_olimp)) + (1 / float(v_fonbet))
