@@ -352,7 +352,7 @@ def get_forks(all_bets, pair_mathes, bets_olimp, bets_fonbet):
                         time_break_fonbet = False
                         if '(' + math_json_fonbet.get('score', '') + ')' == \
                                 math_json_fonbet.get('score_1st', '') and \
-                                str(math_json_fonbet.get('time', '')) == '45:00' and \
+                                str(math_json_fonbet.get('time', '0:0')) == '45:00' and \
                                 str(round(math_json_fonbet.get('minute', ''), 2)) == '45.0':
                             time_break_fonbet = True
 
@@ -374,7 +374,7 @@ def get_forks(all_bets, pair_mathes, bets_olimp, bets_fonbet):
                                 'pair_math': pair_math,
                                 'bk1_score': math_json_olimp.get('score', ''),
                                 'bk2_score': math_json_fonbet.get('score', ''),
-                                'time': math_json_fonbet.get('time', ''),
+                                'time': math_json_fonbet.get('time', '0:0'),
                                 'minute': math_json_fonbet.get('minute', ''),
                                 'kof_olimp': k_olimp,
                                 'kof_fonbet': k_fonbet,
@@ -420,7 +420,7 @@ def get_forks(all_bets, pair_mathes, bets_olimp, bets_fonbet):
                                                 math_json_olimp.get('name', '') + ';' + str(L) + ';' +
                                                 math_json_olimp.get('score', '') + ';' +
                                                 math_json_fonbet.get('score', '') + ';' +
-                                                str(math_json_fonbet.get('time', '')) + ';' +
+                                                str(math_json_fonbet.get('time', '0:0')) + ';' +
                                                 str(math_json_fonbet.get('minute', '')) + ';' +
                                                 str(k_olimp.get('value')) + ';' +
                                                 str(k_olimp.get('hist', {}).get('avg_change', [])) + ';' +
@@ -451,7 +451,7 @@ def get_forks(all_bets, pair_mathes, bets_olimp, bets_fonbet):
                                 'pair_math': pair_math,
                                 'bk1_score': math_json_olimp.get('score', ''),
                                 'bk2_score': math_json_fonbet.get('score', ''),
-                                'time': math_json_fonbet.get('time', ''),
+                                'time': math_json_fonbet.get('time', '0:0'),
                                 'minute': math_json_fonbet.get('minute', ''),
                                 'kof_olimp': k_olimp,
                                 'kof_fonbet': k_fonbet,
