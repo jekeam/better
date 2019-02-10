@@ -351,11 +351,11 @@ def get_forks(all_bets, pair_mathes, bets_olimp, bets_fonbet):
                     if is_fork:  # or True
                         time_break_fonbet = False
                         is_2nd_half = False
-                        if math_json_fonbet.get('score_1st', 'score_1st') != 'score_1st' and \
-                                str(math_json_fonbet.get('time', '0:0')) == '45:00' and \
+                        if re.match('\([\d|\d\d]:[\d|\d\d]\)', math_json_fonbet.get('score_1st', '')) and \
+                                str(math_json_fonbet.get('time', '')) == '45:00' and \
                                 round(math_json_fonbet.get('minute', ''), 2) == 45.0:
                             time_break_fonbet = True
-                        elif math_json_fonbet.get('score_1st', 'score_1st') != 'score_1st' and \
+                        elif re.match('\([\d|\d\d]:[\d|\d\d]\)', math_json_fonbet.get('score_1st', '')) and \
                                 round(math_json_fonbet.get('minute', ''), 2) > 45.0:
                             is_2nd_half = True
 
