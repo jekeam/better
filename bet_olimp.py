@@ -167,9 +167,9 @@ class OlimpBot:
             if (err_code == 400) or \
                     (err_code == 417 and 'Невозможно принять ставку на указанный исход' in err_msg):
                 if self.cnt_bet_attempt > 37:
-                    prnt('BET_OLIMP.PY: error place bet in Olimp: ' + str(res))
-                    raise LoadException(
-                        "BET_OLIMP.PY: error while placing the bet, attempts>" + str(self.cnt_bet_attempt))
+                    err_str = 'BET_OLIMP.PY: error place bet in Olimp: ' + str(res)
+                    prnt(err_str)
+                    raise LoadException(err_str)
 
                 self.cnt_bet_attempt = self.cnt_bet_attempt + 1
 
@@ -184,8 +184,9 @@ class OlimpBot:
                 raise LoadException(err_str)
         elif "data" not in res or res.get("data") != "Ваша ставка успешно принята!":
             # res["data"] != "Your bet is successfully accepted!" :
-            prnt('BET_OLIMP.PY: error place bet in Olimp: ' + str(res))
-            raise LoadException("BET_OLIMP.PY: error while placing the bet")
+            err_str = 'BET_OLIMP.PY: error place bet in Olimp: ' + str(res)
+            prnt(err_str)
+            raise LoadException(err_str)
 
     def get_history_bet(self, event_id=None, filter="0100", offset="0"):
 
