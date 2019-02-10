@@ -6,7 +6,7 @@ from fork_recheck import get_kof_olimp, get_kof_fonbet
 from utils import prnt, get_account_info, DEBUG
 # from client import run_client
 import threading
-from multiprocessing import Manager, Process
+from multiprocessing import Manager, Process, Pipe
 from math import floor, ceil
 import time
 from random import randint
@@ -43,7 +43,7 @@ def bet_fonbet_cl(obj, amount_fonbet, wager_fonbet):
     try:
         fonbet = FonbetBot(FONBET_USER)
         fonbet.sign_in()
-        fonbet_reg_id = fonbet.place_bet(amount_fonbet, wager_fonbet)
+        fonbet_reg_id = fonbet.place_bet(amount_fonbet, wager_fonbet, obj)
         obj['fonbet_err'] = 'ok'
     except Exception as e:
         obj['fonbet'] = fonbet
@@ -57,7 +57,7 @@ def bet_olimp_cl(obj, amount_olimp, wager_olimp):
     try:
         olimp = OlimpBot(OLIMP_USER)
         olimp.sign_in()
-        olimp.place_bet(amount_olimp, wager_olimp)
+        olimp.place_bet(amount_olimp, wager_olimp, obj)
         obj['olimp_err'] = 'ok'
     except Exception as e:
         obj['olimp_err'] = str(e)
@@ -187,15 +187,15 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
                 # Проверяем, берем вилку только если она выросла в цене
                 # Если не изменилась, продолжаем мониторить, 
                 # Bначе выбразываем
-                if change_proc < 0:
-                    prnt('Fork exclude: change_proc = ' + str(change_proc) + '\n')
-                    return False
-                elif change_proc == 0:
-                    prnt('Check replay: change_proc = ' + str(change_proc) + '\n')
-                    return go_bets(wager_olimp, wager_fonbet, total_bet, key, 0)
-                elif check_l(L) != '':
-                    prnt('Check replay: fork be up, but new_proc = ' + str(new_proc) + '%)')
-                    return go_bets(wager_olimp, wager_fonbet, total_bet, key, 0)
+                # if change_proc < 0:
+                #     prnt('Fork exclude: change_proc = ' + str(change_proc) + '\n')
+                #     return False
+                # elif change_proc == 0:
+                #     prnt('Check replay: change_proc = ' + str(change_proc) + '\n')
+                #     return go_bets(wager_olimp, wager_fonbet, total_bet, key, 0)
+                # elif check_l(L) != '':
+                #     prnt('Check replay: fork be up, but new_proc = ' + str(new_proc) + '%)')
+                #     return go_bets(wager_olimp, wager_fonbet, total_bet, key, 0)
 
                 if check_l(L) == '' or DEBUG:
 
@@ -233,16 +233,16 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
         if DEBUG:
             amount_olimp = 30
             amount_fonbet = 30
-            return False
+            # return False
 
         with Manager() as manager:
             obj = manager.dict()
 
-            pid_fonbet = Process(target=bet_fonbet_cl, args=(obj, amount_fonbet, wager_fonbet))
-            pid_fonbet.start()
-
             pid_olimp = Process(target=bet_olimp_cl, args=(obj, amount_olimp, wager_olimp))
+            pid_fonbet = Process(target=bet_fonbet_cl, args=(obj, amount_fonbet, wager_fonbet))
+
             pid_olimp.start()
+            pid_fonbet.start()
 
             pid_fonbet.join()
             pid_olimp.join()

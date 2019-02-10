@@ -299,14 +299,16 @@ class FonbetBot:
         res = resp.json()
         prnt('BET_FONBET.PY: Fonbet, check in bound request:' + str(resp.status_code))
         if "min" not in res:
-            prnt('BET_FONBET.PY: error (min): ' + str(res))
-            raise LoadException("BET_FONBET.PY: key 'min' not found in response")
+            err_str = 'BET_FONBET.PY: error (min): ' + str(res)
+            prnt(err_str)
+            raise LoadException(err_str)
 
         min_amount, max_amount = res["min"] // 100, res["max"] // 100
         if not (min_amount <= amount <= self.balance) or not (min_amount <= amount <= max_amount):
             prnt('BET_FONBET.PY: balance:' + str(self.balance))
-            prnt('BET_FONBET.PY: error (min_amount <= amount <= max_amount|self.balance): ' + str(res))
-            raise LoadException("BET_FONBET.PY: amount is not in bounds")
+            err_str = 'BET_FONBET.PY: error (min_amount <= amount <= max_amount|' + str(self.balance) + '): ' + str(res)
+            prnt(err_str)
+            raise LoadException(err_str)
         prnt('BET_FONBET.PY: Min_amount=' + str(min_amount) + ' Max_amount=' + str(max_amount))
 
     def _get_request_id(self) -> int:
@@ -331,12 +333,20 @@ class FonbetBot:
         self.payload['requestId'] = res["requestId"]
         return res["requestId"]
 
-    def place_bet(self, amount: int = None, wager=None) -> None:
+    def check_stat_olimp(self, obj):
+        if obj.get('olimp_err', 'ok') != 'ok':
+            err_str = 'BET_FONBET.PY: Фонбет получил ошибку от Олимпа: ' + str(obj.get('olimp_err'))
+            prnt(err_str)
+            raise LoadException(err_str)
+
+    def place_bet(self, amount: int = None, wager=None, obj={}) -> None:
+
+        self.check_stat_olimp(obj)
         self._get_request_id()
 
-        if not self.wager:
+        if self.wager is None and wager:
             self.wager = wager
-        if not self.amount:
+        if self.amount is None and amount:
             self.amount = amount
 
         url = self.common_url.format("coupon/register")
@@ -374,6 +384,7 @@ class FonbetBot:
         prnt('BET_FONBET.PY: response fonbet: ' + str(resp.text), 'hide')
         check_status_with_resp(resp)
         res = resp.json()
+        prnt(res, 'hide')
         result = res.get('result')
 
         if result == "betDelay":
@@ -382,10 +393,13 @@ class FonbetBot:
             prnt('BET_FONBET.PY: bet_delay: ' + str(bet_delay_sec) + ' sec...')
             time.sleep(bet_delay_sec)
 
-        self._check_result(payload)
+        self._check_result(payload, obj)
 
-    def _check_result(self, payload: dict) -> None:
+    def _check_result(self, payload: dict, obj) -> None:
         """Check if bet is placed successfully"""
+
+        self.check_stat_olimp(obj)
+
         url = self.common_url.format("coupon/result")
         try:
             del payload["coupon"]
@@ -409,7 +423,7 @@ class FonbetBot:
         )
         check_status_with_resp(resp)
         res = resp.json()
-        print(res)
+        prnt(res, 'hide')
         err_res = res.get('result')
         if err_res == 'couponResult':
             err_code = res.get('coupon').get('resultCode')
@@ -434,7 +448,7 @@ class FonbetBot:
                      + str(res.get('coupon').get('bets')[0]['value']) + ', попытка #'
                      + str(self.cnt_bet_attempt) + ' через ' + str(n_sleep) + ' сек')
                 time.sleep(n_sleep)
-                return self.place_bet(self.amount, self.wager)
+                return self.place_bet(obj=obj)
 
             # Изменился ИД: {'result': 'couponResult', 'coupon': {'resultCode': 2, 'errorMessage': 'Изменена котировка на событие "LIVE 0:0 Грузия U17 - Словакия U17 < 0.5"', 'errorMessageRus': 'Изменена котировка на событие "LIVE 0:0 Грузия U17 - Словакия U17 < 0.5"', 'errorMessageEng': 'Odds changed "LIVE 0:0 Georgia U17 - Slovakia U17 < 0.5"', 'amountMin': 30, 'amountMax': 81100, 'amount': 100, 'bets': [{'event': 13013805, 'factor': 1697, 'value': 1.37, 'param': 150, 'paramText': '1.5', 'paramTextRus': '1.5', 'paramTextEng': '1.5', 'score': '0:0'}]}}
             # Вообще ушла: {"result":"couponResult","coupon":{"resultCode":2,"errorMessage":"Изменена котировка на событие \"LIVE 1:0 Берое - Ботев Галабово Поб 1\"","errorMessageRus":"Изменена котировка на событие \"LIVE 1:0 Берое - Ботев Галабово Поб 1\"","errorMessageEng":"Odds changed \"LIVE 1:0 Beroe - Botev Galabovo 1\"","amountMin":30,"amountMax":3000,"amount":30,"bets":[{"event":13197928,"factor":921,"value":0,"score":"0:0"}]}}
@@ -451,7 +465,7 @@ class FonbetBot:
                     if str(new_wager.get('param')) == str(self.wager.get('param')):
                         prnt('Изменилась ИД ставки: old: ' + str(self.wager) + ', new: ' + str(new_wager))
                         self.wager.update(new_wager)
-                        return self.place_bet()
+                        return self.place_bet(obj=obj)
                     else:
                         err_str = "BET_FONBET.PY: error Изменилась ИД ставки, но 'param' не совпадает: " + str(
                             err_str) + \
@@ -463,7 +477,7 @@ class FonbetBot:
             # {'result': 'error', 'errorCode': 200, 'errorMessage': 'temporary unknown result'}
             err_str = 'BET_FONBET.PY: Get temporary unknown result: ' + str(res)
             prnt(err_str)
-            return self._check_result(payload)
+            return self._check_result(payload, obj)
         else:
             err = 'BET_FONBET.PY: error bet place result: ' + str(res)
             prnt(err)

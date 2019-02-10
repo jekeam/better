@@ -47,6 +47,8 @@ class OlimpBot:
         self.cnt_bet_attempt = 1
         self.cnt_sale_attempt = 1
         self.reg_id = None
+        self.wager = None
+        self.amount = None
 
         with open(os.path.join(package_dir, "proxies.json")) as file:
             proxies = load(file)
@@ -106,18 +108,30 @@ class OlimpBot:
         else:
             return self.balance
 
-    def place_bet(self, amount: int, wager) -> None:
+    def place_bet(self, amount: int = None, wager=None, obj={}) -> None:
         """
         :param amount: amount of money to be placed (RUB)
         :param wager: defines on which wager bet is to be placed (could be either OlimpWager or OlimpCondWager)
         """
+
+        if self.wager is None and wager:
+            self.wager = wager
+        if self.amount is None and amount:
+            self.amount = amount
+
+        if obj.get('fonbet_err', 'ok') != 'ok':
+            err_str = 'BET_OLIMP.PY: Олимп получил ошибку от Фонбета: ' + str(obj.get('fonbet_err'))
+            prnt(err_str)
+            raise LoadException(err_str)
+
         url = olimp_url2.format("basket/fast")
 
         payload = self.session_payload.copy()
         payload.update({
-            "coefs_ids": '[["{apid}",{factor},1]]'.format(apid=wager.get('apid'), factor=wager.get('factor')),
-            "sport_id": wager.get('sport_id'),
-            "sum": amount,
+            "coefs_ids": '[["{apid}",{factor},1]]'.format(
+                apid=self.wager.get('apid'), factor=self.wager.get('factor')),
+            "sport_id": self.wager.get('sport_id'),
+            "sum": self.amount,
             "save_any": 3,
             "fast": 1,
             "any_handicap": 1
@@ -131,10 +145,10 @@ class OlimpBot:
         headers = base_headers.copy()
         headers.update(get_xtoken_bet(payload))
 
-        if not amount <= self.balance:
-            prnt('BET_OLIMP.PY: balance:' + str(self.balance))
-            prnt('BET_OLIMP.PY: error (amount > balance)')
-            raise LoadException("BET_OLIMP.PY: amount is not in bounds")
+        if not self.amount <= self.balance:
+            err_str = 'BET_OLIMP.PY: error amount > balance, balance:' + str(self.balance)
+            prnt(err_str)
+            raise LoadException(err_str)
 
         prnt('BET_OLIMP.PY: send bet to bk olimp, time: ' + str(datetime.datetime.now()))
         resp = requests_retry_session().post(
@@ -146,6 +160,7 @@ class OlimpBot:
         )
         prnt('BET_OLIMP.PY: response olimp: ' + str(resp.text), 'hide')
         res = resp.json()
+        prnt(res, 'hide')
         check_status_with_resp(resp, True)
         err_code = res.get("error").get('err_code')
         err_msg = res.get("error").get('err_desc')
@@ -160,7 +175,7 @@ class OlimpBot:
         if err_code == 0:
             #  {'isCache': 0, 'error': {'err_code': 0, 'err_desc': None}, 'data': 'Ваша ставка успешно принята!'}
             prnt('BET_OLIMP.PY: Olimp bet successful')
-            self.matchid = wager['event']
+            self.matchid = self.wager['event']
             coupon = self.get_history_bet(self.matchid)
             self.reg_id = coupon.get('bet_id')
         elif err_code in (400, 417):
@@ -177,7 +192,7 @@ class OlimpBot:
                 prnt('BET_OLIMP.PY: ' + str(res.get("error").get('err_desc')) + '. попытка #'
                      + str(self.cnt_bet_attempt) + ' через ' + str(n_sleep) + ' сек')
                 time.sleep(n_sleep)
-                return self.place_bet(amount, wager)
+                return self.place_bet(obj=obj)
             elif err_code == 417 and 'Такой исход не существует' in err_msg:
                 err_str = 'BET_OLIMP.PY: error place bet in Olimp: ' + str(res)
                 prnt(err_str)
@@ -300,8 +315,8 @@ class OlimpBot:
 if __name__ == '__main__':
     OLIMP_USER = {"login": "eva.yushkova.81@mail.ru", "passw": "qvF3BwrNcRcJtB6"}
     # X2
-    wager_olimp = {'apid': '1167979573:466112486:2:5:0.5:1:0:0:1', 'factor': '1.04', 'sport_id': 1,
-                   'event': '466114286'}
+    wager_olimp = {'apid': '1158162683:46306283:2:4:-3:1:0:0:1', 'factor': '1.04', 'sport_id': 1,
+                   'event': '46306283'}
 
     olimp = OlimpBot(OLIMP_USER)
     olimp.sign_in()
