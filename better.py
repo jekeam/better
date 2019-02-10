@@ -268,8 +268,8 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
                 bal2 = bal2 - amount_fonbet
                 prnt('bal2: ' + str(bal2))
 
-                # Добавим инфу о проставлении
-                success.append(key)
+            # Добавим инфу о проставлении
+            success.append(key)
 
             fork_info[fork_id]['olimp']['reg_id'] = obj['olimp'].get_reg_id()
             fork_info[fork_id]['fonbet']['reg_id'] = obj['fonbet'].get_reg_id()
