@@ -196,7 +196,7 @@ def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_p
                     pair_mathes.remove(pair_mathes[cnt])
                 cnt += 1
             prnts(e)
-            raise ValueError(e)
+            raise ValueError('start_seeker_bets_fonbet:' + str(e))
         except Exception as e:
             prnts('Exception: Фонбет, ошибка при запросе матча ' + str(match_id_fonbet) + ': ' + str(e) + ' ' + proxy)
             proxy = gen_proxi_fonbet.next()
