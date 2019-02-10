@@ -248,7 +248,7 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
             pid_olimp.join()
 
             prnt('obj: ' + str(obj))
-            sale_timeout = randint(1, 3)
+            sale_timeout = 0  # randint(1, 3)
             if obj.get('fonbet_err') != 'ok' and obj.get('olimp_err') == 'ok':
                 prnt('Ошибка при проставлении ставки в фонбет, делаю выкуп ставки в олимпе, через '
                      + str(sale_timeout) + ' сек.')
@@ -358,7 +358,7 @@ if __name__ == '__main__':
     start_see_fork.start()
 
     while True:
-        
+
         balance_line = (bal1 + bal2) / 2 / 100 * 30
 
         shutdown_minutes = 60 * (60 * 24)  # секунды * на кол-во (60*1) - это час
@@ -416,7 +416,7 @@ if __name__ == '__main__':
                            v_time + ' (' + str(minute) + ') ' + \
                            score + ' ' + str(pair_math) + ' max deff: ' + str(deff_max)
                 except Exception as e:
-                    prnts('error: '+str(e))
+                    prnts('error: ' + str(e))
                     info = ''
 
                 if 0.0 <= l < l_temp and deff_max < 10 or DEBUG:
