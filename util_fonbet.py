@@ -414,6 +414,8 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy):
         #     print('--------ф--------')
         #     time.sleep(5)
         return time_resp + (time.time() - time_start_proc)
+    except FonbetMatchСompleted as e:
+        raise FonbetMatchСompleted('4 ' + str(e))
     except Exception as e:
         prnts(e)
         if bets_fonbet.get(key_id):
