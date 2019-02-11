@@ -195,14 +195,11 @@ class OlimpBot:
             coupon = self.get_history_bet(self.matchid)
             self.reg_id = coupon.get('bet_id')
         elif err_code in (400, 417):
-            if (err_code == 400) or \
-                    (err_code == 417 and
-                     (
-                             'Невозможно принять ставку на указанный исход' in err_msg or
-                             'Сменился коэффициент на событие' in err_msg or
-                             'Прием ставок на это событие приостановлен' in err_msg
-                     )
-                    ):
+            if err_code == 417 and 'Такой исход не существует' in err_msg:
+                err_str = 'BET_OLIMP.PY: error place bet in Olimp: ' + str(res)
+                prnt(err_str)
+                raise LoadException(err_str)
+            else:
                 if self.cnt_bet_attempt > (60 * 2.5) / 10:
                     err_str = 'BET_OLIMP.PY: error place bet in Olimp: ' + str(res)
                     prnt(err_str)
@@ -213,10 +210,6 @@ class OlimpBot:
                      + str(self.cnt_bet_attempt) + ' через ' + str(self.sleep) + ' сек')
                 time.sleep(self.sleep)
                 return self.place_bet(obj=obj)
-            elif err_code == 417 and 'Такой исход не существует' in err_msg:
-                err_str = 'BET_OLIMP.PY: error place bet in Olimp: ' + str(res)
-                prnt(err_str)
-                raise LoadException(err_str)
         elif "data" not in res or res.get("data") != "Ваша ставка успешно принята!":
             # res["data"] != "Your bet is successfully accepted!" :
             err_str = 'BET_OLIMP.PY: error place bet in Olimp: ' + str(res)
