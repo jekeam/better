@@ -215,6 +215,10 @@ class OlimpBot:
             err_str = 'BET_OLIMP.PY: error place bet in Olimp: ' + str(res)
             prnt(err_str)
             raise LoadException(err_str)
+        else:
+            err_str = 'BET_OLIMP.PY: error place bet in Olimp: ' + str(res)
+            prnt(err_str)
+            raise LoadException(err_str)
 
     def get_history_bet(self, event_id=None, filter="0100", offset="0"):
 
@@ -329,10 +333,10 @@ class OlimpBot:
 if __name__ == '__main__':
     OLIMP_USER = {"login": "eva.yushkova.81@mail.ru", "passw": "qvF3BwrNcRcJtB6"}
     # X2
-    wager_olimp = {'apid': '1168681640:46623367:2:5:2.5:1:0:0:1', 'factor': '5', 'sport_id': 1,
-                   'event': '46623367'}
+    wager_olimp = {'apid': '1144454541:45879871:1:3:-9999:1:0:0:1', 'factor': '5', 'sport_id': 1,
+                   'event': '45879871'}
 
     olimp = OlimpBot(OLIMP_USER)
-    # olimp.sign_in()
+    olimp.sign_in()
     olimp.place_bet(30, wager_olimp)
     # olimp.sale_bet()
