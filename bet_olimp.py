@@ -203,18 +203,15 @@ class OlimpBot:
                     raise LoadException(err_str)
 
                 self.cnt_bet_attempt = self.cnt_bet_attempt + 1
-
-                n_sleep = self.sleep
                 prnt('BET_OLIMP.PY: ' + str(res.get("error").get('err_desc')) + '. попытка #'
-                     + str(self.cnt_bet_attempt) + ' через ' + str(n_sleep) + ' сек')
-                time.sleep(n_sleep)
+                     + str(self.cnt_bet_attempt) + ' через ' + str(self.sleep) + ' сек')
+                time.sleep(self.sleep)
                 return self.place_bet(obj=obj)
             elif err_code == 417 and 'Сменился коэффициент на событие' in err_msg:
                 self.cnt_bet_attempt = self.cnt_bet_attempt + 1
-                n_sleep = self.sleep
                 prnt('BET_OLIMP.PY: ' + str(res.get("error").get('err_desc')) + '. попытка #'
-                     + str(self.cnt_bet_attempt) + ' через ' + str(n_sleep) + ' сек')
-                time.sleep(n_sleep)
+                     + str(self.cnt_bet_attempt) + ' через ' + str(self.sleep) + ' сек')
+                time.sleep(self.sleep)
                 return self.place_bet(obj=obj)
             elif err_code == 417 and 'Такой исход не существует' in err_msg:
                 err_str = 'BET_OLIMP.PY: error place bet in Olimp: ' + str(res)
@@ -339,8 +336,8 @@ class OlimpBot:
 if __name__ == '__main__':
     OLIMP_USER = {"login": "eva.yushkova.81@mail.ru", "passw": "qvF3BwrNcRcJtB6"}
     # X2
-    wager_olimp = {'apid': '1168657988:46634207:3:30:-9999:1:0:0:1', 'factor': '5', 'sport_id': 1,
-                   'event': '46634207'}
+    wager_olimp = {'apid': '1168681640:46623367:2:5:2.5:1:0:0:1', 'factor': '5', 'sport_id': 1,
+                   'event': '46623367'}
 
     olimp = OlimpBot(OLIMP_USER)
     olimp.sign_in()
