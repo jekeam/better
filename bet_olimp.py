@@ -196,18 +196,18 @@ class OlimpBot:
             self.reg_id = coupon.get('bet_id')
         elif err_code in (400, 417):
             if (err_code == 400) or \
-                    (err_code == 417 and 'Невозможно принять ставку на указанный исход' in err_msg):
+                    (err_code == 417 and
+                     (
+                             'Невозможно принять ставку на указанный исход' in err_msg or
+                             'Сменился коэффициент на событие' in err_msg or
+                             'Прием ставок на это событие приостановлен' in err_msg
+                     )
+                    ):
                 if self.cnt_bet_attempt > (60 * 2.5) / 10:
                     err_str = 'BET_OLIMP.PY: error place bet in Olimp: ' + str(res)
                     prnt(err_str)
                     raise LoadException(err_str)
 
-                self.cnt_bet_attempt = self.cnt_bet_attempt + 1
-                prnt('BET_OLIMP.PY: ' + str(res.get("error").get('err_desc')) + '. попытка #'
-                     + str(self.cnt_bet_attempt) + ' через ' + str(self.sleep) + ' сек')
-                time.sleep(self.sleep)
-                return self.place_bet(obj=obj)
-            elif err_code == 417 and 'Сменился коэффициент на событие' in err_msg:
                 self.cnt_bet_attempt = self.cnt_bet_attempt + 1
                 prnt('BET_OLIMP.PY: ' + str(res.get("error").get('err_desc')) + '. попытка #'
                      + str(self.cnt_bet_attempt) + ' через ' + str(self.sleep) + ' сек')
@@ -340,6 +340,6 @@ if __name__ == '__main__':
                    'event': '46623367'}
 
     olimp = OlimpBot(OLIMP_USER)
-    olimp.sign_in()
+    # olimp.sign_in()
     olimp.place_bet(30, wager_olimp)
     # olimp.sale_bet()
