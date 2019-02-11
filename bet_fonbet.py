@@ -54,6 +54,7 @@ class FonbetBot:
         self.operations = None
         self.sell_sum = None
         self.cnt_sale_attempt = 0
+        self.sleep = 4
 
         with open(os.path.join(package_dir, "proxies.json")) as file:
             proxies = load(file)
@@ -392,6 +393,10 @@ class FonbetBot:
         check_status_with_resp(resp)
         res = resp.json()
         prnt(res, 'hide')
+
+        req_time = round(resp.elapsed.total_seconds(), 2)
+        self.sleep = max(0, (self.sleep - req_time))
+
         result = res.get('result')
 
         if result == "betDelay":
@@ -450,7 +455,7 @@ class FonbetBot:
                     raise LoadException(err_str)
 
                 self.cnt_bet_attempt = self.cnt_bet_attempt + 1
-                n_sleep = 4
+                n_sleep = self.sleep
                 prnt('BET_FONBET.PY: ' + str(res.get('coupon').get('errorMessageRus')) + ', новая котировка:'
                      + str(res.get('coupon').get('bets')[0]['value']) + ', попытка #'
                      + str(self.cnt_bet_attempt) + ' через ' + str(n_sleep) + ' сек')
@@ -477,7 +482,7 @@ class FonbetBot:
                         self.wager.update(new_wager)
                         return self.place_bet(obj=obj)
                     if float(new_wager.get('value', 0)) < float(self.wager.get('value', 0)):
-                        n_sleep = 4
+                        n_sleep = self.sleep
                         self.cnt_bet_attempt = self.cnt_bet_attempt + 1
                         prnt('Коф-меньше запрошенного: ' + str(self.wager)
                              + ', new: ' + str(new_wager) + ' ' + str(err_str) +
@@ -724,7 +729,7 @@ class FonbetBot:
 if __name__ == '__main__':
     FONBET_USER = {"login": 5699838, "password": "NTe2904H11"}
     amount_fonbet = 30
-    wager_fonbet = {'event': '13213581', 'factor': '1571', 'param': '', 'score': '0:1', 'value': '3'}
+    wager_fonbet = {'event': '13213901', 'factor': '1571', 'param': '', 'score': '0:1', 'value': '33'}
     fonbet = FonbetBot(FONBET_USER)
     fonbet.sign_in()
     fonbet.place_bet(amount_fonbet, wager_fonbet)

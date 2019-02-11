@@ -49,6 +49,7 @@ class OlimpBot:
         self.reg_id = None
         self.wager = None
         self.amount = None
+        self.sleep = 10
 
         with open(os.path.join(package_dir, "proxies.json")) as file:
             proxies = load(file)
@@ -128,7 +129,7 @@ class OlimpBot:
 
         payload = self.session_payload.copy()
 
-        if self.cnt_bet_attempt <= (60 * 2) / 4:
+        if self.cnt_bet_attempt <= (60 * 2) / 10:
             any_bet = 2  # пока пробуем только вверх
             prnt('BET_OLIMP.PY Принимаю ставки только на повышение')
         else:
@@ -171,6 +172,10 @@ class OlimpBot:
         check_status_with_resp(resp, True)
         res = resp.json()
         prnt(res, 'hide')
+
+        req_time = round(resp.elapsed.total_seconds(), 2)
+        self.sleep = max(0, (self.sleep - req_time))
+
         err_code = res.get("error").get('err_code')
         err_msg = res.get("error").get('err_desc')
 
@@ -192,21 +197,21 @@ class OlimpBot:
         elif err_code in (400, 417):
             if (err_code == 400) or \
                     (err_code == 417 and 'Невозможно принять ставку на указанный исход' in err_msg):
-                if self.cnt_bet_attempt > (60 * 2.5) / 4:
+                if self.cnt_bet_attempt > (60 * 2.5) / 10:
                     err_str = 'BET_OLIMP.PY: error place bet in Olimp: ' + str(res)
                     prnt(err_str)
                     raise LoadException(err_str)
 
                 self.cnt_bet_attempt = self.cnt_bet_attempt + 1
 
-                n_sleep = 4
+                n_sleep = self.sleep
                 prnt('BET_OLIMP.PY: ' + str(res.get("error").get('err_desc')) + '. попытка #'
                      + str(self.cnt_bet_attempt) + ' через ' + str(n_sleep) + ' сек')
                 time.sleep(n_sleep)
                 return self.place_bet(obj=obj)
             elif err_code == 417 and 'Сменился коэффициент на событие' in err_msg:
                 self.cnt_bet_attempt = self.cnt_bet_attempt + 1
-                n_sleep = 4
+                n_sleep = self.sleep
                 prnt('BET_OLIMP.PY: ' + str(res.get("error").get('err_desc')) + '. попытка #'
                      + str(self.cnt_bet_attempt) + ' через ' + str(n_sleep) + ' сек')
                 time.sleep(n_sleep)
@@ -298,6 +303,7 @@ class OlimpBot:
                     timeout=60,
                     proxies=self.proxies
                 )
+                req_time = round(resp.elapsed.total_seconds(), 2)
                 check_status_with_resp(resp, True)
                 res = resp.json()
 
@@ -305,7 +311,7 @@ class OlimpBot:
                     if self.cnt_sale_attempt < 5:
                         prnt('BET_OLIMP.PY: error sale bet olimp: ' +
                              str(res.get('error').get('err_desc')))
-                        timer_update = 5
+                        timer_update = 4
                         prnt('BET_FONBET.PY: wait ' + str(timer_update) + ' sec...')
                         time.sleep(timer_update)
                         self.cnt_sale_attempt = self.cnt_sale_attempt + 1
@@ -333,7 +339,7 @@ class OlimpBot:
 if __name__ == '__main__':
     OLIMP_USER = {"login": "eva.yushkova.81@mail.ru", "passw": "qvF3BwrNcRcJtB6"}
     # X2
-    wager_olimp = {'apid': '1168658030:46634207:1:3:-9999:2:0:0:1', 'factor': '5', 'sport_id': 1,
+    wager_olimp = {'apid': '1168657988:46634207:3:30:-9999:1:0:0:1', 'factor': '5', 'sport_id': 1,
                    'event': '46634207'}
 
     olimp = OlimpBot(OLIMP_USER)
