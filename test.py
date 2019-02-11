@@ -8,12 +8,10 @@ from exceptions import FonbetMatchСompleted
 
 # print(re.match('\([\d|\d\d]:[\d|\d\d]\)', '(0:0)'))
 def d():
-    raise FonbetMatchСompleted('aaaa')
+    return 'a', 1
 
 
-try:
-    d()
-except FonbetMatchСompleted as e:
-    raise ValueError('a ' + str(e))
-except Exception as e:
-    print('b ' + str(e))
+(a, b) = d()
+
+
+print(a, b)

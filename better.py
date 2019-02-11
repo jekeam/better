@@ -163,6 +163,8 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
             recheck_fb.join()
             recheck_o.join()
 
+            deff_max = max(obj['olimp_time_req'], obj['fonbet_time_req'])
+
             prnt('deff_max: ' + str(deff_max) + ', O ' + olimp_bet_type + ': ' + str(wager_olimp['factor']) + ' -> ' +
                  str(obj['olimp']) + '| F ' + fonbet_bet_type + ': ' + str(wager_fonbet['value']) + ' -> ' + str(
                 obj['fonbet']))
@@ -188,10 +190,10 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
                     return False
                 elif change_proc == 0:
                     prnt('Check replay: change_proc = ' + str(change_proc) + '\n')
-                    return go_bets(wager_olimp, wager_fonbet, total_bet, key, 0)
+                    return go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max)
                 elif check_l(L) != '':
                     prnt('Check replay: fork be up, but new_proc = ' + str(new_proc) + '%)')
-                    return go_bets(wager_olimp, wager_fonbet, total_bet, key, 0)
+                    return go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max)
 
                 if check_l(L) == '' or DEBUG:
 
@@ -229,7 +231,7 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
         if DEBUG:
             amount_olimp = 30
             amount_fonbet = 30
-            # return False
+            return False
 
         with Manager() as manager:
             obj = manager.dict()
@@ -298,7 +300,7 @@ def run_client():
     finally:
         server_forks = {}
         conn.close()
-        time.sleep(5)
+        time.sleep(10)
         return run_client()
 
 
