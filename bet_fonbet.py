@@ -77,7 +77,7 @@ class FonbetBot:
         self.payload_bet = {
             "coupon":
                 {
-                    "flexBet": "any",  # Изменения коэф-в, any - все, up - вверх
+                    "flexBet": "up",  # Изменения коэф-в, any - все, up - вверх
                     "flexParam": False,  # Изменения фор и тоталов, True - принимать, False - не принимать
                     "bets":
                         [
@@ -354,6 +354,13 @@ class FonbetBot:
         payload = self.payload_bet.copy()
         headers = self.fonbet_headers
 
+        if self.cnt_bet_attempt <= (60 * 2) / 4:
+            payload["coupon"]["flexBet"] = "up"  # пока пробуем только вверх
+            prnt('Принимаю ставки только на повышение')
+        else:
+            payload["coupon"]["flexBet"] = "any"  # Тперь берем даже если коф-упал
+            prnt('Начинаю принимать ставки на понижение')
+
         payload["client"] = {"id": self.base_payload["clientId"]}
 
         payload["requestId"] = self.payload['requestId']
@@ -436,7 +443,7 @@ class FonbetBot:
                 self.reg_id = regId
             elif err_code == 100:
 
-                if self.cnt_bet_attempt > 37:
+                if self.cnt_bet_attempt > (60 * 2.5) / 4:
                     err_str = 'BET_FONBET.PY: error place bet in Fonbet: ' + \
                               str(res.get('coupon').get('errorMessageRus'))
                     prnt(err_str)
@@ -462,14 +469,24 @@ class FonbetBot:
                 # Изменился ИД тотола(как правило)
                 else:
                     new_wager = res.get('coupon').get('bets')[0]
-                    if str(new_wager.get('param')) == str(self.wager.get('param')):
-                        prnt('Изменилась ИД ставки: old: ' + str(self.wager) + ', new: ' + str(new_wager))
+
+                    if str(new_wager.get('param', '')) == str(self.wager.get('param', '')) and \
+                            float(self.wager.get('value', 0)) <= float(new_wager.get('value', 0)):
+                        prnt('Изменилась ИД ставки: old: ' + str(self.wager)
+                             + ', new: ' + str(new_wager) + ' ' + str(err_str))
                         self.wager.update(new_wager)
                         return self.place_bet(obj=obj)
+                    if float(new_wager.get('value', 0)) < float(self.wager.get('value', 0)):
+                        n_sleep = 4
+                        self.cnt_bet_attempt = self.cnt_bet_attempt + 1
+                        prnt('Коф-меньше запрошенного: ' + str(self.wager)
+                             + ', new: ' + str(new_wager) + ' ' + str(err_str) +
+                             ', попытка #' + str(self.cnt_bet_attempt) + ' через ' + str(n_sleep) + ' сек')
+                        time.sleep(n_sleep)
+                        return self.place_bet(obj=obj)
                     else:
-                        err_str = "BET_FONBET.PY: error Изменилась ИД ставки, но 'param' не совпадает: " + str(
-                            err_str) + \
-                                  ', new_wager: ' + str(new_wager) + ', old_wager: ' + str(self.wager)
+                        err_str = "BET_FONBET.PY: error Изменилась ИД ставки, но 'param' не совпадает: " + \
+                                  str(err_str) + ', new_wager: ' + str(new_wager) + ', old_wager: ' + str(self.wager)
                         prnt(err_str)
                         raise LoadException(err_str)
         elif err_res == 'error' and "temporary unknown result" in resp.text:
@@ -707,7 +724,7 @@ class FonbetBot:
 if __name__ == '__main__':
     FONBET_USER = {"login": 5699838, "password": "NTe2904H11"}
     amount_fonbet = 30
-    wager_fonbet = {'event': '13213257', 'factor': '924', 'param': '', 'score': '2:0', 'value': '1.2'}
+    wager_fonbet = {'event': '13213581', 'factor': '1571', 'param': '', 'score': '0:1', 'value': '3'}
     fonbet = FonbetBot(FONBET_USER)
     fonbet.sign_in()
     fonbet.place_bet(amount_fonbet, wager_fonbet)
