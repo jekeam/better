@@ -1,17 +1,18 @@
-from subprocess import call
-import re
-from exceptions import FonbetMatchСompleted
+import os
 
 
-# script = "cat input | python 1.py > outfile"
-# call(script, shell=True)
-
-# print(re.match('\([\d|\d\d]:[\d|\d\d]\)', '(0:0)'))
-def d():
-    return 'a', 1
+def write_file(bk, s):
+    with open(os.path.join(os.path.dirname(__file__), "session_id." + bk), 'w') as file:
+        file.write(s)
 
 
-(a, b) = d()
+def read_file(bk, s):
+    try:
+        with open(os.path.join(os.path.dirname(__file__), "session_id." + bk), 'r') as file:
+            return file.read()
+    except:
+        pass
 
 
-print(a, b)
+# write_file('olimp', 'xxx')
+print(read_file('olimp', 'asdf'))
