@@ -356,10 +356,10 @@ class FonbetBot:
 
         if self.cnt_bet_attempt <= (60 * 2) / 4:
             payload["coupon"]["flexBet"] = "up"  # пока пробуем только вверх
-            prnt('Принимаю ставки только на повышение')
+            prnt('BET_FONBET.PY Принимаю ставки только на повышение')
         else:
-            payload["coupon"]["flexBet"] = "any"  # Тперь берем даже если коф-упал
-            prnt('Начинаю принимать ставки на понижение')
+            payload["coupon"]["flexBet"] = "any"  # Теперь берем даже если коф-упал
+            prnt('BET_FONBET.PY: Начинаю принимать ставки на понижение')
 
         payload["client"] = {"id": self.base_payload["clientId"]}
 
