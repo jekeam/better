@@ -404,7 +404,7 @@ def get_forks(all_bets, pair_mathes, bets_olimp, bets_fonbet):
                                             csv.write(
                                                 'create_fork;cut_time;ol_time;fb_time;live_fork;'
                                                 'match_ol;match_fb;kof_ol;kof_fb;name;l;bk1_score;bk2_score;time;'
-                                                'minute;kof_olimp;avg_change;kof_fonbet;avg_change;'
+                                                'minute;ol_kof;ol_avg_change;fb_kof;fb_avg_change;'
                                                 'time_break_fonbet;'
                                                 'is_2nd_half;'
                                                 'ol_avg_change_total;fb_avg_change_total;'
