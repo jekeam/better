@@ -234,7 +234,7 @@ class FonbetBot:
                 headers=self.fonbet_headers,
                 data=data,
                 verify=False,
-                timeout=30,
+                timeout=60,
                 proxies=self.proxies
             )
             check_status_with_resp(resp)
