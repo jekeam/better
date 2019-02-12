@@ -129,19 +129,12 @@ class OlimpBot:
 
         payload = self.session_payload.copy()
 
-        if self.cnt_bet_attempt <= (60 * 2) / 10:
-            any_bet = 2  # пока пробуем только вверх
-            prnt('BET_OLIMP.PY Принимаю ставки только на повышение')
-        else:
-            any_bet = 3  # Теперь берем даже если коф-упал
-            prnt('BET_OLIMP.PY Начинаю принимать ставки на понижение')
-
         payload.update({
             "coefs_ids": '[["{apid}",{factor},1]]'.format(
                 apid=self.wager.get('apid'), factor=self.wager.get('factor')),
             "sport_id": self.wager.get('sport_id'),
             "sum": self.amount,
-            "save_any": any_bet,
+            "save_any": 3,
             "fast": 1,
             "any_handicap": 1
         })
