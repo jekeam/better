@@ -442,7 +442,7 @@ class FonbetBot:
                 self.reg_id = regId
             elif err_code == 100:
 
-                if self.cnt_bet_attempt > (60 * 2.5) / 4:
+                if self.cnt_bet_attempt > (60 * 2.5) / self.sleep:
                     err_str = 'BET_FONBET.PY: error place bet in Fonbet: ' + \
                               str(res.get('coupon').get('errorMessageRus'))
                     prnt(err_str)
