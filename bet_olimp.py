@@ -167,7 +167,7 @@ class OlimpBot:
         prnt(res, 'hide')
 
         req_time = round(resp.elapsed.total_seconds(), 2)
-        self.sleep = max(0, (self.sleep - req_time))
+        n_sleep = max(0, (self.sleep - req_time))
 
         err_code = res.get("error").get('err_code')
         err_msg = res.get("error").get('err_desc')
@@ -200,8 +200,8 @@ class OlimpBot:
 
                 self.cnt_bet_attempt = self.cnt_bet_attempt + 1
                 prnt('BET_OLIMP.PY: ' + str(res.get("error").get('err_desc')) + '. попытка #'
-                     + str(self.cnt_bet_attempt) + ' через ' + str(self.sleep) + ' сек')
-                time.sleep(self.sleep)
+                     + str(self.cnt_bet_attempt) + ' через ' + str(n_sleep) + ' сек')
+                time.sleep(n_sleep)
                 return self.place_bet(obj=obj)
         elif "data" not in res or res.get("data") != "Ваша ставка успешно принята!":
             # res["data"] != "Your bet is successfully accepted!" :

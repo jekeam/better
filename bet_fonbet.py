@@ -388,7 +388,7 @@ class FonbetBot:
         prnt(res, 'hide')
 
         req_time = round(resp.elapsed.total_seconds(), 2)
-        self.sleep = max(0, (self.sleep - req_time))
+        n_sleep = max(0, (self.sleep - req_time))
 
         result = res.get('result')
 
@@ -426,6 +426,7 @@ class FonbetBot:
             verify=False,
             timeout=15
         )
+        req_time = round(resp.elapsed.total_seconds(), 2)
         check_status_with_resp(resp)
         res = resp.json()
         prnt(res, 'hide')
@@ -448,7 +449,7 @@ class FonbetBot:
                     raise LoadException(err_str)
 
                 self.cnt_bet_attempt = self.cnt_bet_attempt + 1
-                n_sleep = self.sleep
+                n_sleep = max(0, (self.sleep - req_time))
                 prnt('BET_FONBET.PY: ' + str(res.get('coupon').get('errorMessageRus')) + ', новая котировка:'
                      + str(res.get('coupon').get('bets')[0]['value']) + ', попытка #'
                      + str(self.cnt_bet_attempt) + ' через ' + str(n_sleep) + ' сек')
@@ -486,7 +487,7 @@ class FonbetBot:
                         self.wager.update(new_wager)
                         return self.place_bet(obj=obj)
                     if float(new_wager.get('value', 0)) < float(self.wager.get('value', 0)):
-                        n_sleep = self.sleep
+                        n_sleep = max(0, (self.sleep - req_time))
                         self.cnt_bet_attempt = self.cnt_bet_attempt + 1
                         prnt('Коф-меньше запрошенного: ' + str(self.wager)
                              + ', new: ' + str(new_wager) + ' ' + str(err_str) +
