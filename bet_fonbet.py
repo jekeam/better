@@ -78,7 +78,7 @@ class FonbetBot:
         self.payload_bet = {
             "coupon":
                 {
-                    "flexBet": "up",  # Изменения коэф-в, any - все, up - вверх
+                    "flexBet": "any",  # Изменения коэф-в, any - все, up - вверх
                     "flexParam": False,  # Изменения фор и тоталов, True - принимать, False - не принимать
                     "bets":
                         [
@@ -139,7 +139,7 @@ class FonbetBot:
         }
 
         self.payload_coupon_sell = {
-            "flexSum": "up",
+            "flexSum": "any",
             "regId": 0,
             "requestId": 0,
             "sellSum": 0.0,
@@ -354,13 +354,6 @@ class FonbetBot:
 
         payload = self.payload_bet.copy()
         headers = self.fonbet_headers
-
-        if self.cnt_bet_attempt <= (60 * 2) / 4:
-            payload["coupon"]["flexBet"] = "up"  # пока пробуем только вверх
-            prnt('BET_FONBET.PY Принимаю ставки только на повышение')
-        else:
-            payload["coupon"]["flexBet"] = "any"  # Теперь берем даже если коф-упал
-            prnt('BET_FONBET.PY: Начинаю принимать ставки на понижение')
 
         payload["client"] = {"id": self.base_payload["clientId"]}
 
