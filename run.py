@@ -242,14 +242,15 @@ def starter_bets(
 
 
 def compare_teams(team1_bk1, team2_bk1, team1_bk2, team2_bk2):
-    team1_bk1 = re.sub('[^A-z 0-9]', '', team1_bk1.lower()).replace(' ', '')
-    team2_bk1 = re.sub('[^A-z 0-9]', '', team2_bk1.lower()).replace(' ', '')
-    team1_bk2 = re.sub('[^A-z 0-9]', '', team1_bk2.lower()).replace(' ', '')
-    team2_bk2 = re.sub('[^A-z 0-9]', '', team2_bk2.lower()).replace(' ', '')
-    if 1.7 < \
-            SequenceMatcher(None, team1_bk1, team1_bk2).ratio() + \
-            SequenceMatcher(None, team2_bk1, team2_bk2).ratio():
-        return True
+    if team1_bk1 and team2_bk1 and team1_bk2 and team2_bk2:
+        team1_bk1 = re.sub('[^A-z 0-9]', '', team1_bk1.lower()).replace(' ', '')
+        team2_bk1 = re.sub('[^A-z 0-9]', '', team2_bk1.lower()).replace(' ', '')
+        team1_bk2 = re.sub('[^A-z 0-9]', '', team1_bk2.lower()).replace(' ', '')
+        team2_bk2 = re.sub('[^A-z 0-9]', '', team2_bk2.lower()).replace(' ', '')
+        if 1.7 < \
+                SequenceMatcher(None, team1_bk1, team1_bk2).ratio() + \
+                SequenceMatcher(None, team2_bk1, team2_bk2).ratio():
+            return True
     else:
         return False
 
