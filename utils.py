@@ -6,10 +6,27 @@ import cfscrape
 import requests
 import datetime
 
+# DEBUG = True
 DEBUG = False
+
+file_session_ol = 'olimp.session'
+file_session_fb = 'fonbet.session'
 
 package_dir = os.path.dirname(__file__)
 dtOld = datetime.datetime.now()
+
+
+def write_file(filename, s):
+    with open(os.path.join(os.path.dirname(__file__), filename), 'w') as file:
+        file.write(s)
+
+
+def read_file(filename):
+    try:
+        with open(os.path.join(os.path.dirname(__file__), filename), 'r') as file:
+            return file.read()
+    except:
+        pass
 
 
 def get_account_info(bk, param):

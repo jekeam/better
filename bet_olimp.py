@@ -333,7 +333,7 @@ class OlimpBot:
 if __name__ == '__main__':
     OLIMP_USER = {"login": "eva.yushkova.81@mail.ru", "passw": "qvF3BwrNcRcJtB6"}
     # X2
-    wager_olimp = {'apid': '1144454541:45879871:1:3:-9999:1:0:0:1', 'factor': '5', 'sport_id': 1,
+    wager_olimp = {'apid': '1144454537:45879871:1:1:-9999:1:0:0:1', 'factor': '1.06', 'sport_id': 1,
                    'event': '45879871'}
 
     olimp = OlimpBot(OLIMP_USER)
