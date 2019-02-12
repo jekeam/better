@@ -49,7 +49,7 @@ class OlimpBot:
         self.reg_id = None
         self.wager = None
         self.amount = None
-        self.sleep = 4
+        self.sleep = 11
 
         with open(os.path.join(package_dir, "proxies.json")) as file:
             proxies = load(file)
