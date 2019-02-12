@@ -474,9 +474,20 @@ class FonbetBot:
                 # Изменился ИД тотола(как правило)
                 else:
                     new_wager = res.get('coupon').get('bets')[0]
+                    # {'result': 'couponResult', 'coupon': 
+                        # {'resultCode': 2, 
+                                # 'errorMessage': 'Изменена котировка на событие "LIVE 0:0 1-й тайм Альбион Роверс (р) - Ливингстон (р) < 0.5"', 
+                                # 'errorMessageRus': 'Изменена котировка на событие "LIVE 0:0 1-й тайм Альбион Роверс (р) - Ливингстон (р) < 0.5"', 
+                                # 'errorMessageEng': 'Odds changed "LIVE 0:0 1st half Albion Rovers (r) - Livingston (r) < 0.5"', 
+                            # 'amountMin': 30, 
+                            # 'amountMax': 32300, 
+                            # 'amount': 180, 
+                            # 'bets': [{'event': 13223785, 
+                                        # 'factor': 931, 'value': 1.35, 'param': 150, 'paramText': '1.5',
+                                        # 'paramTextRus': '1.5', 'paramTextEng': '1.5', 'score': '0:1'}]}}
 
                     if str(new_wager.get('param', '')) == str(self.wager.get('param', '')) and \
-                            float(self.wager.get('value', 0)) <= float(new_wager.get('value', 0)):
+                            int(self.wager.get('factor', 0)) != int(new_wager.get('factor', 0)):
                         prnt('Изменилась ИД ставки: old: ' + str(self.wager)
                              + ', new: ' + str(new_wager) + ' ' + str(err_str))
                         self.wager.update(new_wager)
@@ -489,8 +500,14 @@ class FonbetBot:
                              ', попытка #' + str(self.cnt_bet_attempt) + ' через ' + str(n_sleep) + ' сек')
                         time.sleep(n_sleep)
                         return self.place_bet(obj=obj)
+                    elif str(new_wager.get('param', '')) != str(self.wager.get('param', '')) and \
+                            int(self.wager.get('factor', 0)) == int(new_wager.get('factor', 0)):
+                        err_str = "BET_FONBET.PY: error Изменилась тотал ставки, 'param' не совпадает: " + \
+                                  str(err_str) + ', new_wager: ' + str(new_wager) + ', old_wager: ' + str(self.wager)
+                        prnt(err_str)
+                        raise LoadException(err_str)
                     else:
-                        err_str = "BET_FONBET.PY: error Изменилась ИД ставки, но 'param' не совпадает: " + \
+                        err_str = "BET_FONBET.PY: error неизвестная ошибка: " + \
                                   str(err_str) + ', new_wager: ' + str(new_wager) + ', old_wager: ' + str(self.wager)
                         prnt(err_str)
                         raise LoadException(err_str)
