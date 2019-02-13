@@ -284,6 +284,7 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
 
 def run_client():
     global server_forks
+    global shutdown
     try:
         if 'Windows' == platform.system() or DEBUG:
             conn = http.client.HTTPConnection("localhost", 80, timeout=3.51)
@@ -292,7 +293,7 @@ def run_client():
 
         while True:
             if shutdown:
-                err_str = 'Прошло ' + str(shutdown_minutes / 60 / 60) + ' ч., я выключился...'
+                err_str = 'Основной поток завершен, я тоже офф'
                 prnt(err_str)
                 raise ValueError(err_str)
             conn.request("GET", "")
