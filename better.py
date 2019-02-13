@@ -295,7 +295,7 @@ def run_client():
             if shutdown:
                 err_str = 'Основной поток завершен, я тоже офф'
                 prnt(err_str)
-                raise ValueError(err_str)
+                return False
             conn.request("GET", "")
             rs = conn.getresponse()
             data = rs.read().decode('utf-8')
