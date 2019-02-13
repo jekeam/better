@@ -15,6 +15,8 @@ import platform
 import http.client
 import json
 
+shutdown = False
+
 
 def get_sum_bets(k1, k2, total_bet, print_hide=True):
     k1 = float(k1)
@@ -289,6 +291,10 @@ def run_client():
             conn = http.client.HTTPConnection("149.154.70.53", 80, timeout=60)
 
         while True:
+            if shutdown:
+                err_str = 'Прошло ' + str(shutdown_minutes / 60 / 60) + ' ч., я выключился...'
+                prnt(err_str)
+                raise ValueError(err_str)
             conn.request("GET", "")
             rs = conn.getresponse()
             data = rs.read().decode('utf-8')
@@ -361,8 +367,10 @@ if __name__ == '__main__':
 
         shutdown_minutes = 60 * (60 * 5)  # секунды * на кол-во (60*1) - это час
         if (datetime.datetime.now() - time_live).total_seconds() > (shutdown_minutes):
-            prnt('Прошло ' + str(shutdown_minutes / 60 / 60) + ' ч., я выключился...')
-            exit()
+            err_str = 'Прошло ' + str(shutdown_minutes / 60 / 60) + ' ч., я выключился...'
+            prnt(err_str)
+            shutdown = True
+            raise ValueError(err_str)
 
         # Обновление баланса каждые 35-45 минут
         ref_balace = randint(35, 45)
