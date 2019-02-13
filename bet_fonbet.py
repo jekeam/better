@@ -139,7 +139,7 @@ class FonbetBot:
         }
 
         self.payload_coupon_sell = {
-            "flexSum": "any",
+            "flexSum": "up",
             "regId": 0,
             "requestId": 0,
             "sellSum": 0.0,
@@ -533,7 +533,7 @@ class FonbetBot:
 
             payload['clientId'] = self.base_payload["clientId"]
             payload['fsid'] = self.payload['fsid']
-
+            prnt('BET_FONBET.PY - sale_bet rq 1: '+str(payload), 'hide')
             resp = requests_retry_session().post(
                 url,
                 headers=headers,
@@ -543,6 +543,7 @@ class FonbetBot:
             )
             check_status_with_resp(resp)
             res = resp.json()
+            prnt('BET_FONBET.PY - sale_bet rs 1: '+str(res), 'hide')
             # payload['version'] = res.get('version')
 
             timer_update = float(res.get('recommendedUpdateFrequency'))
@@ -586,7 +587,7 @@ class FonbetBot:
 
             payload['clientId'] = self.base_payload["clientId"]
             payload['fsid'] = self.payload['fsid']
-
+            prnt('BET_FONBET.PY - sale_bet rq 2: '+str(payload),'hide')
             resp = requests_retry_session().post(
                 url,
                 headers=headers,
@@ -597,6 +598,7 @@ class FonbetBot:
             )
             check_status_with_resp(resp)
             res = resp.json()
+            prnt('BET_FONBET.PY - sale_bet rs 2: '+str(res),'hide')
             if res.get('result') == 'requestId':
                 requestId = res.get('requestId')
 
@@ -612,7 +614,7 @@ class FonbetBot:
             payload['sellSum'] = self.sell_sum
             payload['clientId'] = self.base_payload["clientId"]
             payload['fsid'] = self.payload['fsid']
-
+            prnt('BET_FONBET.PY - sale_bet rq 3: '+str(payload), 'hide')
             resp = requests_retry_session().post(
                 url,
                 headers=headers,
@@ -623,7 +625,7 @@ class FonbetBot:
             )
             check_status_with_resp(resp)
             res = resp.json()
-
+            prnt('BET_FONBET.PY - sale_bet rs 3: '+str(res), 'hide')
             result = res.get('result')
 
             if result == "sellDelay":
@@ -740,10 +742,10 @@ class FonbetBot:
 if __name__ == '__main__':
     FONBET_USER = {"login": 5699838, "password": "NTe2904H11"}
     amount_fonbet = 30
-    wager_fonbet = {'event': '13213901', 'factor': '1571', 'param': '', 'score': '0:1', 'value': '33'}
+    wager_fonbet = {'event': '13238361', 'factor': '1571', 'param': '', 'score': '0:1', 'value': '33'}
     fonbet = FonbetBot(FONBET_USER)
     fonbet.sign_in()
     fonbet.place_bet(amount_fonbet, wager_fonbet)
-    # fonbet.sale_bet()
+    fonbet.sale_bet()
     # fonbet_reg_id = fonbet.place_bet(amount_fonbet, wager_fonbet)
     # {'e': 12264423, 'f': 931, 'v': 1.4, 'p': 250, 'pt': '2.5', 'isLive': True}
