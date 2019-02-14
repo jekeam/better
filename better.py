@@ -11,7 +11,8 @@ from math import floor, ceil
 import time
 from random import randint
 import platform
-
+from sys import exit
+from exceptions import Shutdown
 import http.client
 import json
 
@@ -294,17 +295,19 @@ def run_client():
         while True:
             if shutdown:
                 err_str = 'Основной поток завершен, я тоже офф'
-                prnt(err_str)
-                return False
+                conn.close()
+                raise Shutdown(err_str)
             conn.request("GET", "")
             rs = conn.getresponse()
             data = rs.read().decode('utf-8')
             data_json = json.loads(data)
             server_forks = data_json
             time.sleep(1)
+    except Shutdown as e:
+        prnt(e)
+        raise ValueError(e)
     except Exception as e:
         prnt(e)
-    finally:
         server_forks = {}
         conn.close()
         time.sleep(10)
@@ -347,8 +350,8 @@ if __name__ == '__main__':
         bal2 = 20000
         bet = round(0.10 * (bal1 + bal2))  # Общая масксимальная сумма ставки
     else:
-        bal1 = OlimpBot(OLIMP_USER).get_balance()  # Баланс в БК1
-        bal2 = FonbetBot(FONBET_USER).get_balance()  # Баланс в БК2
+        bal1 = 1  # OlimpBot(OLIMP_USER).get_balance()  # Баланс в БК1
+        bal2 = 1  # FonbetBot(FONBET_USER).get_balance()  # Баланс в БК2
         bet = 280  # round(0.10 * (bal1 + bal2))  # Общая масксимальная сумма ставки
     balance_line = (bal1 + bal2) / 2 / 100 * 30
 
@@ -454,4 +457,3 @@ if __name__ == '__main__':
             pass
             prnt('not data', True)
         time.sleep(2)
-    start_see_fork.join()
