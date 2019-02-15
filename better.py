@@ -83,8 +83,7 @@ def check_l(L):
         return ''
 
 
-def check_fork(key, L, k1, k2, bk1_score, bk2_score, minute, time_break_fonbet, is_2nd_half, bk1_hist, bk2_hist,
-               info=''):
+def check_fork(key, L, k1, k2, live_fork_total, bk1_score, bk2_score, minute, time_break_fonbet, is_2nd_half, info=''):
     fork_exclude_text = ''
     v = True
     global bal1, bal2, balance_line
@@ -111,20 +110,30 @@ def check_fork(key, L, k1, k2, bk1_score, bk2_score, minute, time_break_fonbet, 
         fork_exclude_text = fork_exclude_text + 'Вилка ' + str(round((1 - L) * 100, 2)) \
                             + '% исключена: баланс БК фонбет меньше 30%, а коэф-т >= 1.3 (' + str(k2) + ')\n'
 
+    # Проверяем совпадает ли счет
     if bk1_score != bk2_score:
         fork_exclude_text = fork_exclude_text + 'Вилка ' \
                             + str(round((1 - L) * 100, 2)) \
                             + '% исключена т.к. счет не совпадает: olimp(' + bk1_score + ') fonbet(' + bk2_score + ')\n'
 
-    if 43.0 < float(minute) < 50.0 and not time_break_fonbet and not is_2nd_half:  # Больше 43 минуты и не идет перерыв
+    # Больше 43 минуты и не идет перерыв
+    if 43.0 < float(minute) < 50.0 and not time_break_fonbet and not is_2nd_half:
         fork_exclude_text = \
             fork_exclude_text + 'Вилка ' + str(round((1 - L) * 100, 2)) + '% исключена т.к. идет ' \
             + str(minute) + ' минута матча и это не перерыв и это не 2-й период \n'
 
+    # Больше 88 минуты
     if float(minute) > 88.0:
         fork_exclude_text = \
             fork_exclude_text + 'Вилка ' + str(round((1 - L) * 100, 2)) + '% исключена т.к. идет ' \
             + str(minute) + ' минута матча \n'
+
+    # Вилка живет достаточно
+    long_livers = 90
+    if live_fork_total < long_livers:
+        fork_exclude_text = \
+            fork_exclude_text + 'Вилка ' + str(round((1 - L) * 100, 2)) + '% исключена т.к. живет меньше ' \
+            + str(long_livers) + ' сек. \n'
 
     if fork_exclude_text != '':
         prnt(info + '\n' + fork_exclude_text + '\n')
@@ -184,19 +193,6 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
                 new_proc = round((1 - L) * 100, 2)
                 change_proc = round(new_proc - cur_proc, 2)
                 prnt('new proc: ' + str(new_proc) + '%, change: ' + str(change_proc))
-
-                # Проверяем, берем вилку только если она выросла в цене
-                # Если не изменилась, продолжаем мониторить, 
-                # Bначе выбразываем
-                if change_proc < 0:
-                    prnt('Fork exclude: change_proc = ' + str(change_proc) + '\n')
-                    return False
-                elif change_proc == 0:
-                    prnt('Check replay: change_proc = ' + str(change_proc) + '\n')
-                    return go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max)
-                elif check_l(L) != '':
-                    prnt('Check replay: fork be up, but new_proc = ' + str(new_proc) + '%)')
-                    return go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max)
 
                 if check_l(L) == '' or DEBUG:
 
@@ -319,7 +315,7 @@ OLIMP_USER = {"login": get_account_info('olimp', 'login'), "password": get_accou
 
 bet1 = 0.  # Сумма ставки в БК1
 bet2 = 0.  # Сумма ставки в БК2
-bet = 0.  # Величина общей ставки;
+total_bet = 0.  # Величина общей ставки;
 betMax1 = 3000.  # Максимальная ставка в БК1 на данную позицию
 betMax2 = 3000.  # Максимальная ставка в БК2 на данную позицию
 betMin1 = 30.  # Минимальная ставка в БК1 на данную позицию
@@ -331,7 +327,6 @@ bal1 = 0
 bal2 = 0
 N = 0  # счетчик (количество, проставленных вилок)
 F = 0  # счетчик (количество, найденых вилок)
-bet = 0  # round(0.10 * (bal1 + bal2))  # Общая масксимальная сумма ставки
 balance_line = 0  # (bal1 + bal2) / 2 / 100 * 60
 time_get_balance = datetime.datetime.now()
 time_live = datetime.datetime.now()
@@ -348,16 +343,16 @@ if __name__ == '__main__':
     if DEBUG:
         bal1 = 20000
         bal2 = 20000
-        bet = round(0.10 * (bal1 + bal2))  # Общая масксимальная сумма ставки
+        total_bet = round(0.10 * (bal1 + bal2))  # Общая масксимальная сумма ставки
     else:
         bal1 = OlimpBot(OLIMP_USER).get_balance()  # Баланс в БК1
         bal2 = FonbetBot(FONBET_USER).get_balance()  # Баланс в БК2
-        bet = 280  # round(0.10 * (bal1 + bal2))  # Общая масксимальная сумма ставки
+        total_bet = 280  # round(0.10 * (bal1 + bal2))  # Общая масксимальная сумма ставки
     balance_line = (bal1 + bal2) / 2 / 100 * 30
 
     prnt('bal1: ' + str(bal1) + ' руб.')
     prnt('bal2: ' + str(bal2) + ' руб.')
-    prnt('total bet: ' + str(bet) + ' руб.')
+    prnt('total bet: ' + str(total_bet) + ' руб.')
     prnt('balance line: ' + str(balance_line))
 
     server_forks = dict()
@@ -407,6 +402,7 @@ if __name__ == '__main__':
                 time_break_fonbet = val_json.get('time_break_fonbet')
                 is_2nd_half = val_json.get('is_2nd_half')
                 time_last_upd = val_json.get('time_last_upd', 1)
+                live_fork_total = val_json.get('live_fork_total', 0)
 
                 deff_olimp = round(float(time.time() - float(val_json.get('time_req_olimp', 0))))
                 deff_fonbet = round(float(time.time() - float(val_json.get('time_req_fonbet', 0))))
@@ -422,19 +418,22 @@ if __name__ == '__main__':
                 k2 = bk2_bet_json.get('value', 0)
 
                 try:
-                    info = name + \
+                    info = key + ': ' + name + \
                            ' ' + k1_type + '=' + str(k1) + '/' + k2_type + '=' + str(k2) + ', ' + \
                            v_time + ' (' + str(minute) + ') ' + \
-                           score + ' ' + str(pair_math) + ' max deff: ' + str(deff_max)
+                           score + ' ' + str(pair_math) + \
+                           ', live_fork_total: ' + str(live_fork_total) + \
+                           ', max deff: ' + str(deff_max)
                 except Exception as e:
                     prnts('error: ' + str(e))
                     info = ''
 
                 if 0.0 <= l < l_temp and deff_max < 10 or DEBUG:
-                    bet1, bet2 = get_sum_bets(k1, k2, bet)
+                    bet1, bet2 = get_sum_bets(k1, k2, total_bet)
+                    # Проверим вилку на исключения
                     if check_fork(
-                            key, l_temp, k1, k2, bk1_score, bk2_score, minute, time_break_fonbet, is_2nd_half,
-                            bk1_hist, bk2_hist, info
+                            key, l_temp, k1, k2, live_fork_total, bk1_score, bk2_score,
+                            minute, time_break_fonbet, is_2nd_half, info
                     ) or DEBUG:
                         go_bet_key = key
                         l = l_temp
@@ -447,7 +446,7 @@ if __name__ == '__main__':
                 fork_success = go_bets(
                     go_bet_json.get('kof_olimp'),
                     go_bet_json.get('kof_fonbet'),
-                    bet,
+                    total_bet,
                     go_bet_key,
                     deff_max
                 )

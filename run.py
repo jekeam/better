@@ -289,7 +289,7 @@ def start_compare_matches(pair_mathes, json_bk1, json_bk2):
 
                                         if DEBUG and x > 0:
                                             return False
-                                        if DEBUG:
+                                        if DEBUG and bk2_match_id != '13235452':
                                             x = 1
 
                                         prnts(
@@ -309,23 +309,16 @@ def start_compare_matches(pair_mathes, json_bk1, json_bk2):
 
 
 def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
-    if DEBUG:
-        time_start = time.time()
-
     def forks_meta_upd(forks_meta, forks):
         # Перед удалением сохраним время жизни вылки
         live_fork_total = forks_meta.get(bet_key, dict()).get('live_fork_total', 0) + \
                           forks.get(bet_key, {}).get('live_fork')
         forks_meta[bet_key] = {'live_fork_total': live_fork_total}
-        print(forks_meta)
 
     while True:
         for key, val in forks.copy().items():
             if round(float(time.time() - float(val.get('time_req_olimp', 0)))) > 8 or \
                     round(float(time.time() - float(val.get('time_req_fonbet', 0)))) > 8:
-                # import json
-                # prnts('forks: ' + str(json.dumps(forks, ensure_ascii=False)))
-                # prnts('forks: ' + str(len(forks.keys())))
                 try:
                     forks_meta_upd(forks_meta, forks)
                     forks.pop(key)
@@ -364,14 +357,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
 
                 if DEBUG:
                     v_olimp = v_olimp + 1
-
-                    time_work = round(time.time() - time_start)
-
-                    if 30 < time_work < 45:
-                        print('cnt_test: ' + str(time_work))
-                        v_fonbet = v_fonbet
-                    else:
-                        v_fonbet = v_fonbet + 1
+                    v_fonbet = v_fonbet + 1
 
                 if v_olimp > 0.0 and v_fonbet > 0.0:
                     L = (1 / float(v_olimp)) + (1 / float(v_fonbet))
