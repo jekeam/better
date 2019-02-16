@@ -119,7 +119,7 @@ def check_proxies_olimp(proxies_list):
     mgr = mp.Manager()
     valid_proxies_list = mgr.list()
 
-    n_chunks = 25
+    n_chunks = 26
     chunks = [proxies_list[i::n_chunks] for i in range(n_chunks)]
 
     prcs = []
