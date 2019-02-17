@@ -162,6 +162,10 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
 
             deff_max = max(obj['olimp_time_req'], obj['fonbet_time_req'])
 
+            wager_fonbet['value'] = obj['fonbet']
+            wager_olimp['value'] = obj['olimp']
+            wager_olimp['factor'] = obj['olimp']
+
             prnt('deff_max: ' + str(deff_max) + ', O ' + olimp_bet_type + ': ' + str(wager_olimp['factor']) + ' -> ' +
                  str(obj['olimp']) + '| F ' + fonbet_bet_type + ': ' + str(wager_fonbet['value']) + ' -> ' + str(
                 obj['fonbet']))
@@ -170,7 +174,11 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
             if float(obj['olimp']) > 1 < float(obj['fonbet']):
 
                 # пересчетаем суммы ставок
-                amount_olimp, amount_fonbet = get_sum_bets(float(obj['olimp']), float(obj['fonbet']), total_bet, 'show')
+                amount_olimp, amount_fonbet = get_sum_bets(
+                    wager_olimp['factor'],
+                    wager_fonbet['value'],
+                    total_bet, 'show'
+                )
 
                 # Выведем текую доходность вилки
                 prnt('cur proc: ' + str(cur_proc) + '%')
