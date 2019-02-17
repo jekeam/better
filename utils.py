@@ -6,27 +6,10 @@ import cfscrape
 import requests
 import datetime
 
-# DEBUG = True
 DEBUG = False
-
-file_session_ol = 'olimp.session'
-file_session_fb = 'fonbet.session'
 
 package_dir = os.path.dirname(__file__)
 dtOld = datetime.datetime.now()
-
-
-def write_file(filename, s):
-    with open(os.path.join(os.path.dirname(__file__), filename), 'w') as file:
-        file.write(s)
-
-
-def read_file(filename):
-    try:
-        with open(os.path.join(os.path.dirname(__file__), filename), 'r') as file:
-            return file.read()
-    except:
-        pass
 
 
 def get_account_info(bk, param):
@@ -88,7 +71,7 @@ def check_status(status_code):
 
 def check_status_with_resp(resp, olimp=None):
     if (resp.status_code != 200 and olimp is None) \
-            or (olimp is not None and resp.status_code not in (200, 400, 417, 406, 403, 500)):
+            or (olimp is not None and resp.status_code not in (200, 400, 417, 406, 403)):
         prnt(resp.text)
         raise LoadException("Site is not responding, status code: {}".format(resp.status_code))
 

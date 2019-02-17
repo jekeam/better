@@ -54,8 +54,6 @@ class FonbetBot:
         self.operations = None
         self.sell_sum = None
         self.cnt_sale_attempt = 0
-        self.sleep = 4
-        self.cnt_test = 0
 
         with open(os.path.join(package_dir, "proxies.json")) as file:
             proxies = load(file)
@@ -235,7 +233,7 @@ class FonbetBot:
                 headers=self.fonbet_headers,
                 data=data,
                 verify=False,
-                timeout=60,
+                timeout=30,
                 proxies=self.proxies
             )
             check_status_with_resp(resp)
@@ -250,6 +248,13 @@ class FonbetBot:
 
             self.balance = float(res.get("saldo"))
             self.payload = payload
+
+            if False:
+                bal_minus = 2432
+                if bal_minus:
+                    prnt('Баланс уменьшен искуственно на -' + str(bal_minus))
+                    self.balance = self.balance - bal_minus
+
             prnt('BET_FONBET.PY: balance: ' + str(self.balance))
 
             # self._check_in_bounds(payload, 30)
@@ -301,16 +306,14 @@ class FonbetBot:
         res = resp.json()
         prnt('BET_FONBET.PY: Fonbet, check in bound request:' + str(resp.status_code))
         if "min" not in res:
-            err_str = 'BET_FONBET.PY: error (min): ' + str(res)
-            prnt(err_str)
-            raise LoadException(err_str)
+            prnt('BET_FONBET.PY: error (min): ' + str(res))
+            raise LoadException("BET_FONBET.PY: key 'min' not found in response")
 
         min_amount, max_amount = res["min"] // 100, res["max"] // 100
         if not (min_amount <= amount <= self.balance) or not (min_amount <= amount <= max_amount):
             prnt('BET_FONBET.PY: balance:' + str(self.balance))
-            err_str = 'BET_FONBET.PY: error (min_amount <= amount <= max_amount|' + str(self.balance) + '): ' + str(res)
-            prnt(err_str)
-            raise LoadException(err_str)
+            prnt('BET_FONBET.PY: error (min_amount <= amount <= max_amount|self.balance): ' + str(res))
+            raise LoadException("BET_FONBET.PY: amount is not in bounds")
         prnt('BET_FONBET.PY: Min_amount=' + str(min_amount) + ' Max_amount=' + str(max_amount))
 
     def _get_request_id(self) -> int:
@@ -335,20 +338,12 @@ class FonbetBot:
         self.payload['requestId'] = res["requestId"]
         return res["requestId"]
 
-    def check_stat_olimp(self, obj):
-        if obj.get('olimp_err', 'ok') != 'ok':
-            err_str = 'BET_FONBET.PY: Фонбет получил ошибку от Олимпа: ' + str(obj.get('olimp_err'))
-            prnt(err_str)
-            raise LoadException(err_str)
-
-    def place_bet(self, amount: int = None, wager=None, obj={}) -> None:
-
-        self.check_stat_olimp(obj)
+    def place_bet(self, amount: int, wager) -> None:
         self._get_request_id()
 
-        if self.wager is None and wager:
+        if not self.wager:
             self.wager = wager
-        if self.amount is None and amount:
+        if not self.amount:
             self.amount = amount
 
         url = self.common_url.format("coupon/register")
@@ -386,26 +381,23 @@ class FonbetBot:
         prnt('BET_FONBET.PY: response fonbet: ' + str(resp.text), 'hide')
         check_status_with_resp(resp)
         res = resp.json()
-        prnt(res, 'hide')
-
-        req_time = round(resp.elapsed.total_seconds(), 2)
-        n_sleep = max(0, (self.sleep - req_time))
-
+        # {"result":"betDelay","betDelay":3000}
         result = res.get('result')
 
         if result == "betDelay":
-            # {"result":"betDelay","betDelay":3000}
             bet_delay_sec = (float(res.get('betDelay')) / 1000)
             prnt('BET_FONBET.PY: bet_delay: ' + str(bet_delay_sec) + ' sec...')
             time.sleep(bet_delay_sec)
 
-        self._check_result(payload, obj)
+        try:
+            self._check_result(payload)
+        except LoadException:
+            prnt('BET_FONBET.PY: Get temporary unknown result, replay after 3 sec...')
+            time.sleep(3)
+            self._check_result(payload)
 
-    def _check_result(self, payload: dict, obj) -> None:
+    def _check_result(self, payload: dict) -> None:
         """Check if bet is placed successfully"""
-
-        self.check_stat_olimp(obj)
-
         url = self.common_url.format("coupon/result")
         try:
             del payload["coupon"]
@@ -427,96 +419,55 @@ class FonbetBot:
             verify=False,
             timeout=15
         )
-        req_time = round(resp.elapsed.total_seconds(), 2)
         check_status_with_resp(resp)
         res = resp.json()
-        prnt(res, 'hide')
-        err_res = res.get('result')
-        
-        if self.cnt_bet_attempt > (60 * 2.5) / self.sleep:
-            err_str = 'BET_FONBET.PY: error place bet in Fonbet: ' + \
-                    str(res.get('coupon').get('errorMessageRus'))
-            prnt(err_str)
-            raise LoadException(err_str)
-        
-        if err_res == 'couponResult':
-            err_code = res.get('coupon').get('resultCode')
 
-            # 100 - Блокировка по матчу: 'Ставки на событие XXX временно не принимаются'
-            # 2 - Коэффициента вообще нет или котировка поменялась: 'Изменена котировка на событие XXX' - делаем выкуп
-            if err_code == 0:
-                regId = res.get('coupon').get('regId')
-                prnt('BET_FONBET.PY: Fonbet bet successful, regId: ' + str(regId))
-                self.reg_id = regId
-            elif err_code == 100:
+        # 100 - Блокировка по матчу: 'Ставки на событие XXX временно не принимаются'
+        # 2 - Коэффициента вообще нет или котировка поменялась: 'Изменена котировка на событие XXX' - делаем выкуп
+        if res.get('result') == 'couponResult' and res.get('coupon').get('resultCode') == 100:
 
-                self.cnt_bet_attempt = self.cnt_bet_attempt + 1
-                n_sleep = max(0, (self.sleep - req_time))
-                prnt('BET_FONBET.PY: ' + str(res.get('coupon').get('errorMessageRus')) + ', новая котировка:'
-                     + str(res.get('coupon').get('bets')[0]['value']) + ', попытка #'
-                     + str(self.cnt_bet_attempt) + ' через ' + str(n_sleep) + ' сек')
-                time.sleep(n_sleep)
-                return self.place_bet(obj=obj)
+            # self.cnt_bet_attempt = self.cnt_bet_attempt + 1
+            #
+            # if self.cnt_bet_attempt > 20:
+            #     prnt('BET_FONBET.PY: error place bet in Fonbet: ' + str(res.get('coupon').get('errorMessageRus')))
+            #     raise LoadException(
+            #         "BET_FONBET.PY: error while placing the bet, attempts>" + str(self.cnt_bet_attempt))
 
-            # Изменился ИД: {'result': 'couponResult', 'coupon': {'resultCode': 2, 'errorMessage': 'Изменена котировка на событие "LIVE 0:0 Грузия U17 - Словакия U17 < 0.5"', 'errorMessageRus': 'Изменена котировка на событие "LIVE 0:0 Грузия U17 - Словакия U17 < 0.5"', 'errorMessageEng': 'Odds changed "LIVE 0:0 Georgia U17 - Slovakia U17 < 0.5"', 'amountMin': 30, 'amountMax': 81100, 'amount': 100, 'bets': [{'event': 13013805, 'factor': 1697, 'value': 1.37, 'param': 150, 'paramText': '1.5', 'paramTextRus': '1.5', 'paramTextEng': '1.5', 'score': '0:0'}]}}
-            # Вообще ушла: {"result":"couponResult","coupon":{"resultCode":2,"errorMessage":"Изменена котировка на событие \"LIVE 1:0 Берое - Ботев Галабово Поб 1\"","errorMessageRus":"Изменена котировка на событие \"LIVE 1:0 Берое - Ботев Галабово Поб 1\"","errorMessageEng":"Odds changed \"LIVE 1:0 Beroe - Botev Galabovo 1\"","amountMin":30,"amountMax":3000,"amount":30,"bets":[{"event":13197928,"factor":921,"value":0,"score":"0:0"}]}}
-            elif err_code == 2:
-                err_str = str(res.get('coupon').get('errorMessageRus'))
-                # Котировка вообще ушла
-                if res.get('coupon').get('bets')[0]['value'] == 0:
-                    err_str = "BET_FONBET.PY: error while placing the bet, current bet is hide: " + str(err_str)
-                    prnt(err_str)
-                    raise LoadException(err_str)
-                # Изменился ИД тотола(как правило)
-                else:
-                    new_wager = res.get('coupon').get('bets')[0]
-                    # {'result': 'couponResult', 'coupon': 
-                        # {'resultCode': 2, 
-                                # 'errorMessage': 'Изменена котировка на событие "LIVE 0:0 1-й тайм Альбион Роверс (р) - Ливингстон (р) < 0.5"', 
-                                # 'errorMessageRus': 'Изменена котировка на событие "LIVE 0:0 1-й тайм Альбион Роверс (р) - Ливингстон (р) < 0.5"', 
-                                # 'errorMessageEng': 'Odds changed "LIVE 0:0 1st half Albion Rovers (r) - Livingston (r) < 0.5"', 
-                            # 'amountMin': 30, 
-                            # 'amountMax': 32300, 
-                            # 'amount': 180, 
-                            # 'bets': [{'event': 13223785, 
-                                        # 'factor': 931, 'value': 1.35, 'param': 150, 'paramText': '1.5',
-                                        # 'paramTextRus': '1.5', 'paramTextEng': '1.5', 'score': '0:1'}]}}
+            # n_sleep = 10
+            if res.get('coupon').get('bets')[0]['value'] == 0:
+                prnt('BET_FONBET.PY: error place bet in Fonbet, value is zero: '
+                     + str(res.get('coupon').get('errorMessageRus')))
+                raise LoadException("BET_FONBET.PY: error while placing the bet, current bet is hide!")
 
-                    if str(new_wager.get('param', '')) == str(self.wager.get('param', '')) and \
-                            int(self.wager.get('factor', 0)) != int(new_wager.get('factor', 0)):
-                        prnt('Изменилась ИД ставки: old: ' + str(self.wager)
-                             + ', new: ' + str(new_wager) + ' ' + str(err_str))
-                        self.wager.update(new_wager)
-                        return self.place_bet(obj=obj)
-                    if float(new_wager.get('value', 0)) < float(self.wager.get('value', 0)):
-                        n_sleep = max(0, (self.sleep - req_time))
-                        self.cnt_bet_attempt = self.cnt_bet_attempt + 1
-                        prnt('Коф-меньше запрошенного: ' + str(self.wager)
-                             + ', new: ' + str(new_wager) + ' ' + str(err_str) +
-                             ', попытка #' + str(self.cnt_bet_attempt) + ' через ' + str(n_sleep) + ' сек')
-                        time.sleep(n_sleep)
-                        return self.place_bet(obj=obj)
-                    elif str(new_wager.get('param', '')) != str(self.wager.get('param', '')) and \
-                            int(self.wager.get('factor', 0)) == int(new_wager.get('factor', 0)):
-                        err_str = "BET_FONBET.PY: error Изменилась тотал ставки, 'param' не совпадает: " + \
-                                  str(err_str) + ', new_wager: ' + str(new_wager) + ', old_wager: ' + str(self.wager)
-                        prnt(err_str)
-                        raise LoadException(err_str)
-                    else:
-                        err_str = "BET_FONBET.PY: error неизвестная ошибка: " + \
-                                  str(err_str) + ', new_wager: ' + str(new_wager) + ', old_wager: ' + str(self.wager)
-                        prnt(err_str)
-                        raise LoadException(err_str)
-        elif err_res == 'error' and "temporary unknown result" in resp.text:
-            # there's situations where "temporary unknown result" means successful response
-            # {'result': 'error', 'errorCode': 200, 'errorMessage': 'temporary unknown result'}
-            err_str = 'BET_FONBET.PY: Get temporary unknown result: ' + str(res)
-            prnt(err_str)
-            return self._check_result(payload, obj)
+            # Убрал долбежку, кажется она себя не оправдывает, нужна более можщная логика.
+            # prnt('BET_FONBET.PY: ' + str(res.get('coupon').get('errorMessageRus')) + ', новая котировка:'
+            #      + str(res.get('coupon').get('bets')[0]['value']) + ', попытка #'
+            #      + str(self.cnt_bet_attempt) + ' через ' + str(n_sleep) + ' сек')
+            # time.sleep(n_sleep)
+            # self.place_bet(self.amount, self.wager)
+            str_err = 'BET_FONBET.PY: ' + str(res.get('coupon').get('errorMessageRus'))
+            prnt(str_err)
+            raise LoadException(str_err)
+
+        # {'result': 'couponResult', 'coupon': {'resultCode': 2, 'errorMessage': 'Изменена котировка на событие "LIVE 0:0 Грузия U17 - Словакия U17 < 0.5"', 'errorMessageRus': 'Изменена котировка на событие "LIVE 0:0 Грузия U17 - Словакия U17 < 0.5"', 'errorMessageEng': 'Odds changed "LIVE 0:0 Georgia U17 - Slovakia U17 < 0.5"', 'amountMin': 30, 'amountMax': 81100, 'amount': 100, 'bets': [{'event': 13013805, 'factor': 1697, 'value': 1.37, 'param': 150, 'paramText': '1.5', 'paramTextRus': '1.5', 'paramTextEng': '1.5', 'score': '0:0'}]}}
+        elif res.get('result') == 'couponResult' and str(res.get('coupon').get('resultCode')) in ('1', '2'):
+            prnt('BET_FONBET.PY: error bet place result: ' + str(res.get('coupon').get('errorMessageRus')))
+            raise LoadException("BET_FONBET.PY: error:" + str(res.get('coupon').get('errorMessageRus')))
+
+        elif res.get('result') == 'couponResult' and str(res.get('coupon').get('resultCode')) == '0':
+            regId = res.get('coupon').get('regId')
+            prnt('BET_FONBET.PY: Fonbet bet successful, regId: ' + str(regId))
+            self.reg_id = regId
+
         else:
-            err = 'BET_FONBET.PY: error bet place result: ' + str(res)
-            prnt(err)
-            raise LoadException("BET_FONBET.PY: response came with an error: " + str(err))
+            # if res.get("errorCode") != "0":
+            prnt('BET_FONBET.PY: error bet place result: ' + str(res))
+            raise LoadException("BET_FONBET.PY: response came with an error")
+
+        # there's situations where "temporary unknown result" means successful response
+        # if "temporary unknown result" in resp.text:
+        #     prnt('BET_FONBET.PY: error bet place result: ' + str(res))
+        #     raise LoadException("BET_FONBET.PY: response came with an error")
 
     def sale_bet(self, reg_id=None):
         """Bet return by requestID"""
@@ -535,7 +486,7 @@ class FonbetBot:
 
             payload['clientId'] = self.base_payload["clientId"]
             payload['fsid'] = self.payload['fsid']
-            prnt('BET_FONBET.PY - sale_bet rq 1: '+str(payload), 'hide')
+
             resp = requests_retry_session().post(
                 url,
                 headers=headers,
@@ -545,35 +496,38 @@ class FonbetBot:
             )
             check_status_with_resp(resp)
             res = resp.json()
-            
-            if self.cnt_sale_attempt > 40:
-                err_str = 'BET_FONBET.PY: error sale bet in Fonbet(coupon is lock): ' + \
-                            str(res.get('coupon').get('errorMessageRus'))
-                prnt(err_str)
-                raise LoadException(err_str)
-            
-            prnt('BET_FONBET.PY - sale_bet rs 1: '+str(res), 'hide')
             # payload['version'] = res.get('version')
 
             timer_update = float(res.get('recommendedUpdateFrequency'))
-            
+
             for coupon in res.get('conditions'):
                 if str(coupon.get('regId')) == str(self.reg_id):
                     if str(coupon.get('canSell')) == 'True':  # TODO: coupon.get('tempBlock')
                         self.sell_sum = float(coupon.get('completeSellSum'))
+                        prnt('BET_FONBET.PY: sell sum: ' + str(self.sell_sum))
                     else:
+                        if self.cnt_sale_attempt > 20:
+                            prnt('BET_FONBET.PY: error sale bet in Fonbet(coupon is lock): '
+                                 + str(res.get('coupon').get('errorMessageRus')))
+                            raise LoadException(
+                                "BET_FONBET.PY: error while placing the bet, attempts>" + str(self.cnt_bet_attempt))
                         # raise LoadException("BET_FONBET.PY: coupon is lock")
                         prnt('BET_FONBET.PY: coupon is lock, time sleep ' + str(timer_update) + ' sec...')
                         self.cnt_sale_attempt = self.cnt_sale_attempt + 1
                         time.sleep(timer_update)
-                        return self.sale_bet()
+                        self.sale_bet()
+                        return False
 
             if not self.sell_sum:
+                if self.cnt_sale_attempt > 20:
+                    prnt('BET_OLIMP.PY: error sale bet in Fonbet: ' + str(res))
+                    raise LoadException("BET_OLIMP.PY: error sale bet, attempts>" + str(self.cnt_sale_attempt))
                 prnt('BET_FONBET.PY: coupon is BAG (TODO), time sleep ' + str(timer_update) + ' sec...')
                 prnt('BET_FONBET.PY: ' + str(res.get('conditions')))
                 time.sleep(timer_update)
                 self.cnt_sale_attempt = self.cnt_sale_attempt + 1
-                return self.sale_bet()
+                self.sale_bet()
+                return False
                 # raise LoadException("BET_FONBET.PY: reg_id is not found")
 
             # step2 get rqid for sell coupn
@@ -585,7 +539,7 @@ class FonbetBot:
 
             payload['clientId'] = self.base_payload["clientId"]
             payload['fsid'] = self.payload['fsid']
-            prnt('BET_FONBET.PY - sale_bet rq 2: '+str(payload),'hide')
+
             resp = requests_retry_session().post(
                 url,
                 headers=headers,
@@ -596,7 +550,6 @@ class FonbetBot:
             )
             check_status_with_resp(resp)
             res = resp.json()
-            prnt('BET_FONBET.PY - sale_bet rs 2: '+str(res),'hide')
             if res.get('result') == 'requestId':
                 requestId = res.get('requestId')
 
@@ -612,7 +565,7 @@ class FonbetBot:
             payload['sellSum'] = self.sell_sum
             payload['clientId'] = self.base_payload["clientId"]
             payload['fsid'] = self.payload['fsid']
-            prnt('BET_FONBET.PY - sale_bet rq 3: '+str(payload), 'hide')
+
             resp = requests_retry_session().post(
                 url,
                 headers=headers,
@@ -623,7 +576,7 @@ class FonbetBot:
             )
             check_status_with_resp(resp)
             res = resp.json()
-            prnt('BET_FONBET.PY - sale_bet rs 3: '+str(res), 'hide')
+
             result = res.get('result')
 
             if result == "sellDelay":
@@ -633,10 +586,9 @@ class FonbetBot:
 
             try:
                 self._check_sell_result(requestId)
-            except Exception as e:
-                prnt('BET_FONBET.PY: error _check_sell_result: ' + str(res)+ ' '+ str(e))
-                self.cnt_sale_attempt = self.cnt_sale_attempt + 1
-                return self.sale_bet()
+            except:
+                prnt('BET_FONBET.PY: error _check_sell_result: ' + str(res))
+                pass
 
     def _check_sell_result(self, requestId: int) -> None:
         """Check if bet is placed successfully"""
@@ -650,7 +602,7 @@ class FonbetBot:
         payload['requestId'] = requestId
         payload['clientId'] = self.base_payload["clientId"]
         payload['fsid'] = self.payload['fsid']
-        prnt('BET_FONBET.PY - _check_sell_result rq: '+str(payload), 'hide')
+
         resp = requests_retry_session().post(
             url,
             headers=headers,
@@ -661,38 +613,21 @@ class FonbetBot:
         )
         check_status_with_resp(resp)
         res = resp.json()
-        prnt('BET_FONBET.PY _check_sell_result rs: '+str(res), 'hide')
-        
-        if self.cnt_sale_attempt > 40:
-            err_str = 'BET_FONBET.PY: error sale bet in Fonbet(coupon is lock): ' + \
-                      str(res.get('coupon').get('errorMessageRus'))
-            prnt(err_str)
-            raise LoadException(err_str)
-        
-        # {'result': 'unableToSellCoupon', 'requestId': 19920670, 'regId': 14273664108, 'reason': 4, 'actualSellSum': 4900}
-        
-        print("res.get('result'): "+str(res.get('result')))
         
         if res.get('result') == "sellDelay":
             sell_delay_sec = (float(res.get('sellDelay')) / 1000)
             prnt('BET_FONBET.PY: sell_delay: ' + str(sell_delay_sec) + ' sec...')
             time.sleep(sell_delay_sec)
             return self._check_sell_result(res.get('requestId'))
-            
-        elif res.get('result') == 'unableToSellCoupon':
-            err_str = 'BET_FONBET.PY, err sale bet, new actualSellSum: '+str(res.get('actualSellSum')/10)
-            print(err_str)
-            return self.sale_bet()
 
-        elif res.get('result') == 'couponCompletelySold':
+        if res.get('result') == 'couponCompletelySold':
             sold_sum = res.get('soldSum')
             prnt('BET_FONBET.PY: Fonbet sell successful, sold_sum: ' + str(sold_sum / 100))
             return True
         else:
             # if res.get("errorCode") != "0":
-            err_str = 'BET_FONBET.PY: error sell result: ' + str(res)
-            prnt(err_str)
-            raise LoadException(err_str)
+            prnt('BET_FONBET.PY: error sell result: ' + str(res))
+            raise LoadException("BET_FONBET.PY: response came with an error")
 
     def get_operations(self, count: 45):
 
@@ -758,10 +693,10 @@ class FonbetBot:
 if __name__ == '__main__':
     FONBET_USER = {"login": 5699838, "password": "NTe2904H11"}
     amount_fonbet = 30
-    wager_fonbet = {'event': '13268594', 'factor': '1571', 'param': '', 'score': '0:1', 'value': '33'}
+    wager_fonbet = {'event': '12276286', 'factor': '921', 'param': '', 'score': '1:0', 'value': '1.2'}
     fonbet = FonbetBot(FONBET_USER)
     fonbet.sign_in()
-    #fonbet.place_bet(amount_fonbet, wager_fonbet)
-    fonbet.sale_bet(14286002998)
+    # fonbet.place_bet(amount_fonbet, wager_fonbet)
+    # fonbet.sale_bet()
     # fonbet_reg_id = fonbet.place_bet(amount_fonbet, wager_fonbet)
     # {'e': 12264423, 'f': 931, 'v': 1.4, 'p': 250, 'pt': '2.5', 'isLive': True}
