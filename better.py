@@ -23,20 +23,26 @@ def get_sum_bets(k1, k2, total_bet, print_hide=True):
     k1 = float(k1)
     k2 = float(k2)
     l = (1 / k1) + (1 / k2)
+
     bet_1 = 0
     bet_2 = 0
-    if k1 < 1.3:
-        bet_1 = ceil(total_bet / (k1 * l) / 10) * 10  # Округление проставления в БК1 происходит в большую сторону
 
+    if k1 < 1.3:
+        # Округление проставления в БК1 происходит в большую сторону
+        bet_1 = ceil(total_bet / (k1 * l) / 10) * 10
     if 1.3 <= k1 <= 4.5:
-        bet_1 = round(total_bet / (k1 * l), -1)  # Округление проставления в БК1 происходит по правилам математики
+        # Округление проставления в БК1 происходит по правилам математики
+        bet_1 = round(total_bet / (k1 * l), -1)
     if k1 > 4.5:
-        bet_1 = floor(total_bet / (k1 * l) / 10) * 10  # Округление проставления в БК1 происходит в меньшую сторону
+        # Округление проставления в БК1 происходит в меньшую сторону
+        bet_1 = floor(total_bet / (k1 * l) / 10) * 10
 
     bet_2 = total_bet - bet_1
     prnt('L: ' + str(round((1 - l) * 100, 2)) + '% (' + str(l) + ') ', print_hide)
-    prnt('bet1: ' + str(bet_1) + ' руб, bet2: ' + str(bet_2) + ' руб.|'
-         + ' bet_sum: ' + str(bet_1 + bet_2) + ' руб.', print_hide)
+    prnt(
+        'bet1: ' + str(bet_1) + ' руб, bet2: ' + str(bet_2) + ' руб.|' +
+        ' bet_sum: ' + str(bet_1 + bet_2) + ' руб.', print_hide
+    )
 
     return bet_1, bet_2
 
@@ -206,14 +212,14 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
                         fork_id: {
                             "olimp": {
                                 "id": wager_olimp["event"],
-                                "kof": wager_olimp["factor"],
+                                "kof": obj['olimp'],
                                 "amount": amount_olimp,
                                 "reg_id": 0,
                                 "bet_type": olimp_bet_type,
                             },
                             "fonbet": {
                                 "id": wager_fonbet["event"],
-                                "kof": wager_fonbet["value"],
+                                "kof": obj['fonbet'],
                                 "amount": amount_fonbet,
                                 "reg_id": 0,
                                 "bet_type": fonbet_bet_type,
