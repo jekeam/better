@@ -23,20 +23,12 @@ def get_sum_bets(k1, k2, total_bet, print_hide=True):
     k1 = float(k1)
     k2 = float(k2)
     l = (1 / k1) + (1 / k2)
-    bet_1 = 0
-    bet_2 = 0
-    if k1 < 1.3:
-        bet_1 = ceil(total_bet / (k1 * l) / 10) * 10  # Округление проставления в БК1 происходит в большую сторону
-
-    if 1.3 <= k1 <= 4.5:
-        bet_1 = round(total_bet / (k1 * l), -1)  # Округление проставления в БК1 происходит по правилам математики
-    if k1 > 4.5:
-        bet_1 = floor(total_bet / (k1 * l) / 10) * 10  # Округление проставления в БК1 происходит в меньшую сторону
-
+    # Округление проставления в БК1 происходит по правилам математики
+    bet_1 = round(total_bet / (k1 * l), -1)
     bet_2 = total_bet - bet_1
     prnt('L: ' + str(round((1 - l) * 100, 2)) + '% (' + str(l) + ') ', print_hide)
-    prnt('bet1: ' + str(bet_1) + ' руб, bet2: ' + str(bet_2) + ' руб.|'
-         + ' bet_sum: ' + str(bet_1 + bet_2) + ' руб.', print_hide)
+    prnt('bet1: ' + str(bet_1) + ' руб, bet2: ' + str(bet_2) + ' руб.|' +
+         ' bet_sum: ' + str(bet_1 + bet_2) + ' руб.', print_hide)
 
     return bet_1, bet_2
 
@@ -134,7 +126,7 @@ def check_fork(key, L, k1, k2, live_fork_total, bk1_score, bk2_score, minute, ti
         fork_exclude_text = \
             fork_exclude_text + 'Вилка ' + str(round((1 - L) * 100, 2)) + '% исключена т.к. живет меньше ' \
             + str(long_livers) + ' сек. \n'
-            
+
     fork_exclude_text = fork_exclude_text + check_l(L)
 
     if fork_exclude_text != '':
