@@ -254,10 +254,8 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
 
             if obj.get('olimp_err') == 'ok' and obj.get('fonbet_err') == 'ok':
                 prnt('Ставки проставлены успешно!')
-                global bal1
                 bal1 = bal1 - amount_olimp
                 prnt('bal1: ' + str(bal1))
-                global bal2
                 bal2 = bal2 - amount_fonbet
                 prnt('bal2: ' + str(bal2))
 
