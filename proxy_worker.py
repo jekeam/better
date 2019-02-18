@@ -17,6 +17,8 @@ from utils import DEBUG
 # disable warning
 urllib3.disable_warnings()
 
+TIME_OUT = 0.5
+
 UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3163.100 Safari/537.36'
 
 
@@ -69,6 +71,7 @@ def get_random_proxy(proxi_list):
 
 def check_proxy_olimp(proxies_for_check, valid_proxies):
     from util_olimp import olimp_head, olimp_data, olimp_get_xtoken, olimp_url, olimp_secret_key
+    global TIME_OUT
 
     def olimp_get_xtoken(payload, secret_key):
         sorted_values = [str(payload[key]) for key in sorted(payload.keys())]
@@ -84,7 +87,7 @@ def check_proxy_olimp(proxies_for_check, valid_proxies):
         try:
             x = 0
             resp = requests.post(olimp_url + '/api/slice/', headers=olimp_head_ll, data=olimp_data_ll,
-                                 proxies={'http': prx}, timeout=1.51)
+                                 proxies={'http': prx}, timeout=TIME_OUT)
             print(
                 'o valid: ' + str(prx), str(resp.status_code),
                 str(resp.json().get('error', '').get('err_desc', ''))
@@ -99,6 +102,8 @@ def check_proxy_olimp(proxies_for_check, valid_proxies):
 
 def check_proxy_fonbet(proxies_for_check, valid_proxies):
     from util_fonbet import url_fonbet_matchs as url_fonbet
+    global TIME_OUT
+
     for prx in proxies_for_check:
         try:
             global url_fonbet
@@ -106,7 +111,7 @@ def check_proxy_fonbet(proxies_for_check, valid_proxies):
             resp = requests.get(
                 url_fonbet,
                 headers={'User-Agent': UA},
-                timeout=1.51,
+                timeout=TIME_OUT,
                 verify=False
             )
             print('f valid: ' + str(prx), str(resp.status_code))
@@ -177,9 +182,9 @@ def save_list(proxies, filename=None):
 
 
 def get_proxies(n):
-    global proxy_list
+    global proxy_list, TIME_OUT
     proxies = asyncio.Queue()
-    broker = Broker(proxies, timeout=1.51)
+    broker = Broker(proxies, timeout=TIME_OUT)
     tasks = asyncio.gather(
         broker.find(types=['HTTP'], limit=n),  # , countries=['RU','UA','US','DE']
         save(proxies, proxy_list)
@@ -261,8 +266,17 @@ def start_proxy_saver(proxies_olimp, proxies_fonbet, proxy_filename_olimp, proxy
 proxy_file_name = os.path.join(os.getcwd(), 'proxieslist.txt')
 
 
-def get_proxys(ol_fl, fb_fl):
+def proxy_push(ol_fl, fb_fl):
+    copyfile(ol_fl, 'olimp.proxy')
+    copyfile(fb_fl, 'fonbet.proxy')
+
+
+if __name__ == '__main__':
+    ol_fl = 'proxy_by_olimp.txt'
+    fb_fl = 'proxy_by_fonbet.txt'
+
     print('start proxy worker')
+
     proxy_list = []
     proxy_list_olimp = []
     proxy_list_fonbet = []
@@ -272,14 +286,4 @@ def get_proxys(ol_fl, fb_fl):
     save_list(proxy_list_olimp, ol_fl)
     save_list(proxy_list_fonbet, fb_fl)
 
-
-def proxy_push(ol_fl, fb_fl):
-    copyfile(ol_fl, 'olimp.proxy')
-    copyfile(fb_fl, 'fonbet.proxy')
-
-
-if __name__ == '__main__':
-    ol_fl = 'proxy_by_olimp.txt'
-    fb_fl = 'proxy_by_fonbet.txt'
-    get_proxys(ol_fl, fb_fl)
     # proxy_push(ol_fl, fb_fl)
