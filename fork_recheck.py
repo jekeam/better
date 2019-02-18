@@ -100,7 +100,7 @@ opposition = {
 }
 
 
-def get_olimp_info(id_matche):
+def get_olimp_info(id_matche, olimp_k):
     olimp_secret_key = 'b2c59ba4-7702-4b12-bef5-0908391851d9'
     olimp_new_url = 'http://176.223.130.230:10600'
     bet_into = {}
@@ -144,7 +144,7 @@ def get_olimp_info(id_matche):
 
         # minuts
         bet_into['SCORE'] = stake.get('sc', '0:0')
-        prnt('olimp score: '+ stake.get('data').get('sc'))
+        prnt('olimp score: ' + stake.get('data').get('sc'))
         for c in stake.get('data', {}).get('it', []):
             # if c.get('n','') in ['Main Bets', 'Goals', 'Corners', 'Individual total', 'Additional total']:
             if c.get('n', '') in ['Основные', 'Голы', 'Угловые', 'Инд.тотал', 'Доп.тотал', 'Исходы по таймам']:
@@ -167,7 +167,7 @@ def get_olimp_info(id_matche):
                             in d.get('n', '') \
                             or 'Ничья' \
                             in d.get('n', ''):
-                        #print(key_r)
+                        # print(key_r)
                         key_r = d.get('n', '').replace(stake.get('data').get('c1', ''), 'Т1') \
                             .replace(stake.get('data').get('c2', ''), 'Т2')
                         olimp_factor_short = str([
@@ -182,7 +182,7 @@ def get_olimp_info(id_matche):
     else:
         raise ValueError(stake)
     prnt('FORK_RECHECK.PY: get_olimp_info end work', 'hide')
-    return bet_into
+    return bet_into[olimp_k], round(res.elapsed.total_seconds(), 2)
 
 
 def get_fonbet_info(match_id, factor_id, param):
@@ -207,7 +207,7 @@ def get_fonbet_info(match_id, factor_id, param):
 
     for event in resp.get("events"):
         if event.get('id') == match_id:
-            prnt('fonbet score: '+ event.get('score'))
+            prnt('fonbet score: ' + event.get('score'))
             for cat in event.get('subcategories'):
                 for kof in cat.get('quotes'):
                     if kof.get('factorId') == factor_id:
@@ -221,17 +221,20 @@ def get_fonbet_info(match_id, factor_id, param):
 
                         k = kof.get('value')
                         prnt('FORK_RECHECK.PY: get_olimp_info end work', 'hide')
-                        return k
+                        return k, round(res.elapsed.total_seconds(), 2)
 
 
 def get_kof_fonbet(obj, match_id, factor_id, param):
     match_id = int(match_id)
     factor_id = int(factor_id)
+    obj['fonbet'] = 0
+    obj['fonbet_time_req'] = 0
     if param:
         param = int(param)
 
     try:
-        obj['fonbet'] = get_fonbet_info(match_id, factor_id, param)
+        obj['fonbet'], rime_req = get_fonbet_info(match_id, factor_id, param)
+        obj['fonbet_time_req'] = rime_req
     except Exception as e:
         prnt('FORK_RECHECK.PY: fonbet-error: ошибка при повторной проверке коэф-та: ' + str(e))
         obj['fonbet'] = 0
@@ -243,8 +246,10 @@ def get_kof_fonbet(obj, match_id, factor_id, param):
 
 def get_kof_olimp(obj, olimp_match, olimp_k):
     obj['olimp'] = 0
+    obj['olimp_time_req'] = 0
     try:
-        r_olimp_coef1 = get_olimp_info(olimp_match)[olimp_k]
+        (r_olimp_coef1, rime_req) = get_olimp_info(olimp_match, olimp_k)
+        obj['olimp_time_req'] = rime_req
         obj['olimp'] = r_olimp_coef1
     except Exception as e:
         prnt('FORK_RECHECK.PY: olimp-error: ошибка при повторной проверке коэф-та: ' + str(e))
@@ -254,6 +259,6 @@ def get_kof_olimp(obj, olimp_match, olimp_k):
 
 
 if __name__ == "__main__":
-    #print(get_fonbet_info(12264412))
-    #print(get_kof_fonbet({}, '12359234', '921', ''))
+    # print(get_fonbet_info(12264412))
+    # print(get_kof_fonbet({}, '12359234', '921', ''))
     print(get_olimp_info(45146516))

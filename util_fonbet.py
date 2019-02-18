@@ -95,7 +95,7 @@ def get_match_fonbet(match_id, proxi_list, proxy):
             return res, resp.elapsed.total_seconds()
         else:
             if 'Event not found' in res.get("errorMessage"):
-                raise FonbetMatchСompleted('Фонбет, матч ' + str(match_id) + ' завершен, поток выключен!')
+                raise FonbetMatchСompleted('1 Фонбет, матч ' + str(match_id) + ' завершен, поток выключен!')
             err = res.get("errorMessage")
             prnts(str(err))
             raise ValueError(str(err))
@@ -111,10 +111,10 @@ def get_match_fonbet(match_id, proxi_list, proxy):
         proxi_list = del_proxy(proxy.get('http'), proxi_list)
         raise ValueError(err_str)
     except FonbetMatchСompleted as e:
-        raise FonbetMatchСompleted('Фонбет, матч ' + str(match_id) + ' завершен, поток выключен!')
+        raise FonbetMatchСompleted('2 ' + str(e))
     except Exception as e:
         if 'Event not found' in str(e):
-            raise FonbetMatchСompleted('Фонбет, матч ' + str(match_id) + ' завершен, поток выключен!')
+            raise FonbetMatchСompleted('3 Фонбет, матч ' + str(match_id) + ' завершен, поток выключен! ' + str(e))
         err_str = 'Фонбет ' + str(match_id) + ', код ошибки 2: ' + str(e)
         prnts(err_str)
         # proxi_list = del_proxy(proxy.get('http'), proxi_list)
@@ -414,6 +414,8 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy):
         #     print('--------ф--------')
         #     time.sleep(5)
         return time_resp + (time.time() - time_start_proc)
+    except FonbetMatchСompleted as e:
+        raise FonbetMatchСompleted('4 ' + str(e))
     except Exception as e:
         prnts(e)
         if bets_fonbet.get(key_id):

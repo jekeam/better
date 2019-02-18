@@ -6,3 +6,5 @@ venv
 *.csv
 *.proxy
 *.csv#
+*.json
+*.session

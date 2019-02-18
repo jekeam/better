@@ -7,3 +7,6 @@ class OlimpMatchСompleted(Exception):
 
 class TimeOut(Exception):
     pass
+
+class Shutdown(Exception):
+    pass

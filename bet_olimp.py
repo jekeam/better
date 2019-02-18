@@ -47,6 +47,9 @@ class OlimpBot:
         self.cnt_bet_attempt = 1
         self.cnt_sale_attempt = 1
         self.reg_id = None
+        self.wager = None
+        self.amount = None
+        self.sleep = 11
 
         with open(os.path.join(package_dir, "proxies.json")) as file:
             proxies = load(file)
@@ -106,18 +109,31 @@ class OlimpBot:
         else:
             return self.balance
 
-    def place_bet(self, amount: int, wager) -> None:
+    def place_bet(self, amount: int = None, wager=None, obj={}) -> None:
         """
         :param amount: amount of money to be placed (RUB)
         :param wager: defines on which wager bet is to be placed (could be either OlimpWager or OlimpCondWager)
         """
+
+        if self.wager is None and wager:
+            self.wager = wager
+        if self.amount is None and amount:
+            self.amount = amount
+
+        if obj.get('fonbet_err', 'ok') != 'ok':
+            err_str = 'BET_OLIMP.PY: Олимп получил ошибку от Фонбета: ' + str(obj.get('fonbet_err'))
+            prnt(err_str)
+            raise LoadException(err_str)
+
         url = olimp_url2.format("basket/fast")
 
         payload = self.session_payload.copy()
+
         payload.update({
-            "coefs_ids": '[["{apid}",{factor},1]]'.format(apid=wager.get('apid'), factor=wager.get('factor')),
-            "sport_id": wager.get('sport_id'),
-            "sum": amount,
+            "coefs_ids": '[["{apid}",{factor},1]]'.format(
+                apid=self.wager.get('apid'), factor=self.wager.get('factor')),
+            "sport_id": self.wager.get('sport_id'),
+            "sum": self.amount,
             "save_any": 3,
             "fast": 1,
             "any_handicap": 1
@@ -131,10 +147,10 @@ class OlimpBot:
         headers = base_headers.copy()
         headers.update(get_xtoken_bet(payload))
 
-        if not amount <= self.balance:
-            prnt('BET_OLIMP.PY: balance:' + str(self.balance))
-            prnt('BET_OLIMP.PY: error (amount > balance)')
-            raise LoadException("BET_OLIMP.PY: amount is not in bounds")
+        if not self.amount <= self.balance:
+            err_str = 'BET_OLIMP.PY: error amount > balance, balance:' + str(self.balance)
+            prnt(err_str)
+            raise LoadException(err_str)
 
         prnt('BET_OLIMP.PY: send bet to bk olimp, time: ' + str(datetime.datetime.now()))
         resp = requests_retry_session().post(
@@ -142,38 +158,60 @@ class OlimpBot:
             headers=headers,
             data=payload,
             verify=False,
+            timeout=15,
             proxies=self.proxies
         )
         prnt('BET_OLIMP.PY: response olimp: ' + str(resp.text), 'hide')
-        res = resp.json()
         check_status_with_resp(resp, True)
-        # {"error": {"err_code": 400, "err_desc": "Выбранный Вами исход недоступен"}, "data": null} #Прием ставок приостановлен
-        # {"error": {"err_code": 417, "err_desc": "Невозможно принять ставку на указанный исход!"}, "data": null}
-        if res.get("error").get('err_code') in (400, 417):
-            # if self.cnt_bet_attempt > 4:
-            #     prnt('BET_OLIMP.PY: error place bet in Olimp: ' + str(res))
-            #     raise LoadException("BET_OLIMP.PY: error while placing the bet, attempts>" + str(self.cnt_bet_attempt))
-            #
-            # self.cnt_bet_attempt = self.cnt_bet_attempt + 1
-            #
-            # n_sleep = 5
-            # prnt('BET_OLIMP.PY: ' + str(res.get("error").get('err_desc')) + '. попытка #'
-            #      + str(self.cnt_bet_attempt) + ' через ' + str(n_sleep) + ' сек')
-            # time.sleep(n_sleep)
-            # self.place_bet(amount, wager)
+        res = resp.json()
+        prnt(res, 'hide')
+
+        req_time = round(resp.elapsed.total_seconds(), 2)
+        n_sleep = max(0, (self.sleep - req_time))
+
+        err_code = res.get("error").get('err_code')
+        err_msg = res.get("error").get('err_desc')
+
+        # {"error": {"err_code": 400, "err_desc": "Выбранный Вами исход недоступен"}, "data": null}
+        # {"error": {"err_code": 417, "err_desc": "Невозможно принять ставку на указанный исход!"}, "ata": null}
+        # Прием ставок приостановлен
+
+        # {'error': {'err_code': 417, 'err_desc': 'Такой исход не существует'}, 'data': None}
+        # тут ничего сделать не сможем
+
+        # {"error": {"err_code": 417, "err_desc": "Сменился коэффициент на событие (5=>1.24)"}, "data": null}
+
+        if err_code == 0:
+            #  {'isCache': 0, 'error': {'err_code': 0, 'err_desc': None}, 'data': 'Ваша ставка успешно принята!'}
+            prnt('BET_OLIMP.PY: Olimp bet successful')
+            self.matchid = self.wager['event']
+            coupon = self.get_history_bet(self.matchid)
+            self.reg_id = coupon.get('bet_id')
+        elif err_code in (400, 417):
+            if err_code == 417 and 'Такой исход не существует' in err_msg:
+                err_str = 'BET_OLIMP.PY: error place bet in Olimp: ' + str(res)
+                prnt(err_str)
+                raise LoadException(err_str)
+            else:
+                if self.cnt_bet_attempt > (60 * 2.5) / self.sleep:
+                    err_str = 'BET_OLIMP.PY: error place bet in Olimp: ' + str(res)
+                    prnt(err_str)
+                    raise LoadException(err_str)
+
+                self.cnt_bet_attempt = self.cnt_bet_attempt + 1
+                prnt('BET_OLIMP.PY: ' + str(res.get("error").get('err_desc')) + '. попытка #'
+                     + str(self.cnt_bet_attempt) + ' через ' + str(n_sleep) + ' сек')
+                time.sleep(n_sleep)
+                return self.place_bet(obj=obj)
+        elif "data" not in res or res.get("data") != "Ваша ставка успешно принята!":
+            # res["data"] != "Your bet is successfully accepted!" :
             err_str = 'BET_OLIMP.PY: error place bet in Olimp: ' + str(res)
             prnt(err_str)
             raise LoadException(err_str)
-        elif "data" not in res or res.get("data") != "Ваша ставка успешно принята!":
-            # res["data"] != "Your bet is successfully accepted!" :
-            prnt('BET_OLIMP.PY: error place bet in Olimp: ' + str(res))
-            raise LoadException("BET_OLIMP.PY: error while placing the bet")
         else:
-            prnt('BET_OLIMP.PY: Olimp bet successful')
-            self.matchid = wager['event']
-            coupon = self.get_history_bet(self.matchid)
-            self.reg_id = coupon.get('bet_id')
-        # TODO: 'Сменился коэффициент на событие (2=>1.95)'}, 'data': None} - Но вилка может сохраниться, повтор
+            err_str = 'BET_OLIMP.PY: error place bet in Olimp: ' + str(res)
+            prnt(err_str)
+            raise LoadException(err_str)
 
     def get_history_bet(self, event_id=None, filter="0100", offset="0"):
 
@@ -252,14 +290,15 @@ class OlimpBot:
                     timeout=60,
                     proxies=self.proxies
                 )
-                check_status_with_resp(resp)
+                req_time = round(resp.elapsed.total_seconds(), 2)
+                check_status_with_resp(resp, True)
                 res = resp.json()
 
                 if str(res.get('error').get('err_code')) in ('406', '403'):
                     if self.cnt_sale_attempt < 5:
                         prnt('BET_OLIMP.PY: error sale bet olimp: ' +
                              str(res.get('error').get('err_desc')))
-                        timer_update = 5
+                        timer_update = 4
                         prnt('BET_FONBET.PY: wait ' + str(timer_update) + ' sec...')
                         time.sleep(timer_update)
                         self.cnt_sale_attempt = self.cnt_sale_attempt + 1
@@ -286,9 +325,11 @@ class OlimpBot:
 
 if __name__ == '__main__':
     OLIMP_USER = {"login": "eva.yushkova.81@mail.ru", "passw": "qvF3BwrNcRcJtB6"}
-    wager_olimp = {'apid': '1156697718:46260036:1:3:-9999:2:0:0:1', 'factor': '1.18', 'sport_id': 1,
-                   'event': '46260036'}
+    # X2
+    wager_olimp = {'apid': '1144454537:45879871:1:1:-9999:1:0:0:1', 'factor': '1.06', 'sport_id': 1,
+                   'event': '45879871'}
+
     olimp = OlimpBot(OLIMP_USER)
     olimp.sign_in()
     olimp.place_bet(30, wager_olimp)
-    olimp.sale_bet()
+    # olimp.sale_bet()
