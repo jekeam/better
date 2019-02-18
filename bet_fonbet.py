@@ -434,8 +434,7 @@ class FonbetBot:
         err_res = res.get('result')
 
         if self.cnt_bet_attempt > (60 * 2.5) / self.sleep:
-            err_str = 'BET_FONBET.PY: error place bet in Fonbet: ' + \
-                      str(res.get('coupon').get('errorMessageRus'))
+            err_str = 'BET_FONBET.PY: error place bet in Fonbet: ' + str(res)
             prnt(err_str)
             raise LoadException(err_str)
 
@@ -559,12 +558,11 @@ class FonbetBot:
 
             for coupon in res.get('conditions'):
                 if str(coupon.get('regId')) == str(self.reg_id):
-                    if str(coupon.get('canSell')) == 'True':  # TODO: coupon.get('tempBlock')
+                    self.cnt_sale_attempt = self.cnt_sale_attempt + 1
+                    if coupon.get('canSell', 'False') == 'True' and coupon.get('tempBlock', 'False') != 'True':
                         self.sell_sum = float(coupon.get('completeSellSum'))
                     else:
-                        # raise LoadException("BET_FONBET.PY: coupon is lock")
                         prnt('BET_FONBET.PY: coupon is lock, time sleep ' + str(timer_update) + ' sec...')
-                        self.cnt_sale_attempt = self.cnt_sale_attempt + 1
                         time.sleep(timer_update)
                         return self.sale_bet()
 
@@ -671,8 +669,6 @@ class FonbetBot:
 
         # {'result': 'unableToSellCoupon', 'requestId': 19920670, 'regId': 14273664108, 'reason': 4, 'actualSellSum': 4900}
 
-        print("res.get('result'): " + str(res.get('result')))
-
         if res.get('result') == "sellDelay":
             sell_delay_sec = (float(res.get('sellDelay')) / 1000)
             prnt('BET_FONBET.PY: sell_delay: ' + str(sell_delay_sec) + ' sec...')
@@ -680,9 +676,17 @@ class FonbetBot:
             return self._check_sell_result(res.get('requestId'))
 
         elif res.get('result') == 'unableToSellCoupon':
-            err_str = 'BET_FONBET.PY, err sale bet, new actualSellSum: ' + str(res.get('actualSellSum') / 10)
-            print(err_str)
-            return self.sale_bet()
+            if res.get('reason') == 3:
+                sleep_tempblock = 3
+                err_str = 'BET_FONBET.PY, err sale bet, coupon tempBlock = True: ' + str(res) + ' ' + \
+                          'sell_delay: ' + str(sleep_tempblock) + ' sec...'
+                time.sleep(sleep_tempblock)
+                print(err_str)
+                return self.sale_bet()
+            else:
+                err_str = 'BET_FONBET.PY, err sale bet, new actualSellSum: ' + str(res.get('actualSellSum') / 10)
+                print(err_str)
+                return self.sale_bet()
 
         elif res.get('result') == 'couponCompletelySold':
             sold_sum = res.get('soldSum')
@@ -762,6 +766,6 @@ if __name__ == '__main__':
     fonbet = FonbetBot(FONBET_USER)
     fonbet.sign_in()
     # fonbet.place_bet(amount_fonbet, wager_fonbet)
-    fonbet.sale_bet(14286002998)
+    # fonbet.sale_bet(14286002998)
     # fonbet_reg_id = fonbet.place_bet(amount_fonbet, wager_fonbet)
     # {'e': 12264423, 'f': 931, 'v': 1.4, 'p': 250, 'pt': '2.5', 'isLive': True}
