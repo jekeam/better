@@ -209,14 +209,14 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
                         fork_id: {
                             "olimp": {
                                 "id": wager_olimp["event"],
-                                "kof": obj['olimp'],
+                                "kof": wager_olimp["factor"],
                                 "amount": amount_olimp,
                                 "reg_id": 0,
                                 "bet_type": olimp_bet_type,
                             },
                             "fonbet": {
                                 "id": wager_fonbet["event"],
-                                "kof": obj['fonbet'],
+                                "kof": wager_fonbet["value"],
                                 "amount": amount_fonbet,
                                 "reg_id": 0,
                                 "bet_type": fonbet_bet_type,
