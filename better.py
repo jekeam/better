@@ -78,8 +78,7 @@ def check_l(L):
         return ''
 
 
-def check_fork(key, L, k1, k2, bk1_score, bk2_score, minute, time_break_fonbet, is_2nd_half, bk1_hist, bk2_hist,
-               info=''):
+def check_fork(key, L, k1, k2, bk1_score, bk2_score, minute, time_break_fonbet, is_2nd_half, info=''):
     fork_exclude_text = ''
     v = True
     global bal1, bal2, balance_line
