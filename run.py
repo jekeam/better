@@ -130,7 +130,7 @@ def start_seeker_matchs_olimp(proxies, gen_proxi_olimp, arr_matchs):
 
         if DEBUG:
             prnts('Олимп, поиск матчей, время ответа: ' + str(time_resp) + ', запрос через ' +
-                  str(time_sleep) + ' ' + proxy, 'hide')
+                  str(time_sleep) + ' ' + proxy)
 
         time.sleep(time_sleep)
 
@@ -151,7 +151,7 @@ def start_seeker_matchs_fonbet(proxies, gen_proxi_fonbet, arr_matchs):
 
         if DEBUG:
             prnts('Фонбет, поиск матчей, время ответа: ' + str(time_resp) + ', запрос через ' +
-                  str(time_sleep) + ' ' + proxy, 'hide')
+                  str(time_sleep) + ' ' + proxy)
 
         time.sleep(time_sleep)
 
@@ -186,7 +186,7 @@ def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi
 
         if DEBUG:
             prnts('Олимп, матч ' + str(match_id_olimp) + '. Время ответа: ' + str(time_resp) +
-                  ', запрос через ' + str(time_sleep) + ' ' + proxy, 'hide')
+                  ', запрос через ' + str(time_sleep) + ' ' + proxy)
 
         time.sleep(time_sleep)
 
@@ -215,7 +215,7 @@ def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_p
 
         if DEBUG:
             prnts(str('Фонбет, матч ' + str(match_id_fonbet) + '. Время ответа: ' + str(time_resp) +
-                      ', запрос через ' + str(time_sleep)) + ' ' + proxy, 'hide')
+                      ', запрос через ' + str(time_sleep)) + ' ' + proxy)
 
         time.sleep(time_sleep)
 
