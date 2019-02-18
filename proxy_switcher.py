@@ -1,3 +1,5 @@
+from utils import DEBUG
+
 class ProxySwitcher:
     def __init__(self, size: int, proxies: list) -> None:
         self.size = size
