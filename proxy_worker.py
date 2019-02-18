@@ -82,7 +82,7 @@ def check_proxy_olimp(proxies_for_check, valid_proxies):
         try:
             x = 0
             resp = requests.post(olimp_url + '/api/slice/', headers=olimp_head_ll, data=olimp_data_ll,
-                                 proxies={'http': prx}, timeout=3.51)
+                                 proxies={'http': prx}, timeout=1.51)
             print(
                 'o valid: ' + str(prx), str(resp.status_code),
                 str(resp.json().get('error', '').get('err_desc', ''))
@@ -104,7 +104,7 @@ def check_proxy_fonbet(proxies_for_check, valid_proxies):
             resp = requests.get(
                 url_fonbet,
                 headers={'User-Agent': UA},
-                timeout=3.51,
+                timeout=1.51,
                 verify=False
             )
             print('f valid: ' + str(prx), str(resp.status_code))
@@ -177,7 +177,7 @@ def save_list(proxies, filename=None):
 def get_proxies(n):
     global proxy_list
     proxies = asyncio.Queue()
-    broker = Broker(proxies, timeout=3.51)
+    broker = Broker(proxies, timeout=1.51)
     tasks = asyncio.gather(
         broker.find(types=['HTTP'], limit=n),  # , countries=['RU','UA','US','DE']
         save(proxies, proxy_list)
