@@ -18,7 +18,7 @@ from sys import exit
 from datetime import datetime
 
 TIMEOUT_MATCHS = 10
-TIMEOUT_MATCH = 2.51
+TIMEOUT_MATCH = 1
 
 opposition = {
     '1ТБ': '1ТМ',
@@ -165,7 +165,7 @@ def start_seeker_matchs_fonbet(proxies, gen_proxi_fonbet, arr_matchs):
 def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi_olimp, pair_mathes):
     global TIMEOUT_MATCH
 
-    proxy_size = 5
+    proxy_size = 10
     proxy = []
     i = 0
     while i < proxy_size:
@@ -209,7 +209,7 @@ def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi
 def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_proxi_fonbet, pair_mathes):
     global TIMEOUT_MATCH
 
-    proxy_size = 3
+    proxy_size = 5
     proxy = []
     i = 0
     while i < proxy_size:
@@ -534,7 +534,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
                         forks.pop(bet_key)
                     except:
                         pass
-        time.sleep(0.95)
+        time.sleep(0.1)
 
 
 if __name__ == '__main__':
