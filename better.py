@@ -290,7 +290,8 @@ def run_client():
             conn.request("GET", "")
             rs = conn.getresponse()
             data = rs.read().decode('utf-8')
-            prnt(data)
+            if data:
+                prnt(data)
             data_json = json.loads(data)
             server_forks = data_json
             time.sleep(0.5)
@@ -449,4 +450,3 @@ if __name__ == '__main__':
                 prnt('not fork: ' + str(val_json), 'hide')
         else:
             pass
-            prnt('not data', True)
