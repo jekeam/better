@@ -10,6 +10,7 @@ import re
 from exceptions import *
 from server import run_server
 from utils import prnts, DEBUG
+from proxy_switcher import ProxySwitcher
 import json
 import os.path
 import os
@@ -161,13 +162,20 @@ def start_seeker_matchs_fonbet(proxies, gen_proxi_fonbet, arr_matchs):
 
 def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi_olimp, pair_mathes):
     global TIMEOUT_MATCH
-    proxy = gen_proxi_olimp.next()
+
+    proxy_size = 3
+    proxy = []
+    i = 0
+    while i < proxy_size:
+        proxy.append(gen_proxi_olimp.next())
+        i = i + 1
+    ps = ProxySwitcher(proxy_size, proxy)
 
     while True:
         try:
-            time_resp = get_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, proxy, TIMEOUT_MATCH)
+            time_resp = get_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, ps.get_next_proxy(), TIMEOUT_MATCH)
         except TimeOut as e:
-            proxy = gen_proxi_olimp.next()
+            ps.rep_cur_proxy(gen_proxi_olimp.next())
             err_str = 'Timeout: Олимп, ошибка при запросе матча ' + str(match_id_olimp)
             prnts(err_str)
             time_resp = TIMEOUT_MATCH
@@ -181,15 +189,16 @@ def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi
             prnts(e)
             raise ValueError(e)
         except Exception as e:
-            prnts('Exception: Олимп, ошибка при запросе матча ' + str(match_id_olimp) + ': ' + str(e) + ' ' + proxy)
-            proxy = gen_proxi_olimp.next()
+            prnts('Exception: Олимп, ошибка при запросе матча ' + str(match_id_olimp) + ': ' +
+                  str(e) + ' ' + ps.get_cur_proxy())
+            ps.rep_cur_proxy(gen_proxi_olimp.next())
             time_resp = TIMEOUT_MATCH
 
         time_sleep = max(0, (TIMEOUT_MATCH - time_resp))
 
         if DEBUG:
             prnts('Олимп, матч ' + str(match_id_olimp) + '. Время ответа: ' + str(time_resp) +
-                  ', запрос через ' + str(time_sleep) + ' ' + proxy)
+                  ', запрос через ' + str(time_sleep) + ' ' + ps.get_cur_proxy())
 
         time.sleep(time_sleep)
 
@@ -239,11 +248,11 @@ def starter_bets(
 
             if match_id_olimp not in mathes_id_is_work:
                 mathes_id_is_work.append(match_id_olimp)
-                start_seeker_olimp_bets_by_id = threading.Thread(
-                    target=start_seeker_bets_olimp,
-                    args=(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi_olimp, pair_mathes)
-                )
-                start_seeker_olimp_bets_by_id.start()
+                # start_seeker_olimp_bets_by_id = threading.Thread(
+                #     target=start_seeker_bets_olimp,
+                #     args=(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi_olimp, pair_mathes)
+                # )
+                # start_seeker_olimp_bets_by_id.start()
 
             if match_id_fonbet not in mathes_id_is_work:
                 mathes_id_is_work.append(match_id_fonbet)
