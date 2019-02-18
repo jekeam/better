@@ -8,26 +8,33 @@ class ProxySwitcher:
         if not isinstance(proxies, (list,)):
             raise ValueError('__init__: wrong type')
 
+    def get_cur_proxy(self) -> str:
+        return str(self.proxies[self.cur_num])
+
     def get_next_proxy(self) -> str:
-        proxy = str(self.proxies[self.cur_num])
         # flick
         self.cur_num = self.cur_num + 1
         if self.cur_num >= self.size:
             self.cur_num = 0
+        proxy = str(self.proxies[self.cur_num])
         return proxy
 
     def rep_cur_proxy(self, proxy: str) -> None:
         if not isinstance(proxy, (str,)):
             raise ValueError('rep_cur_proxy: wrong type')
-        self.proxies[self.cur_num - 1] = proxy
+        self.proxies[self.cur_num] = proxy
 
 
 if __name__ == "__main__":
     PS = ProxySwitcher(3, ['1', '2', '3'])
-    print(PS.get_next_proxy())
-    print(PS.get_next_proxy())
-    print(PS.get_next_proxy())
-    PS.rep_cur_proxy('4')
-    print(PS.get_next_proxy())
-    print(PS.get_next_proxy())
-    print(PS.get_next_proxy())
+    print('c: ' + PS.get_cur_proxy())
+    print('n: ' + PS.get_next_proxy())
+    print('n: ' + PS.get_next_proxy())
+
+    print('n: ' + PS.get_next_proxy())
+    print('n: ' + PS.get_next_proxy())
+    print('n: ' + PS.get_next_proxy())
+    PS.rep_cur_proxy('xxx')
+    print('n: ' + PS.get_next_proxy())
+    print('n: ' + PS.get_next_proxy())
+    print('n: ' + PS.get_next_proxy())
