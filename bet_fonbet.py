@@ -434,8 +434,7 @@ class FonbetBot:
         err_res = res.get('result')
 
         if self.cnt_bet_attempt > (60 * 2.5) / self.sleep:
-            err_str = 'BET_FONBET.PY: error place bet in Fonbet: ' + \
-                      str(res.get('coupon').get('errorMessageRus'))
+            err_str = 'BET_FONBET.PY: error place bet in Fonbet: ' + str(res)
             prnt(err_str)
             raise LoadException(err_str)
 
