@@ -281,9 +281,11 @@ if __name__ == '__main__':
     proxy_list_olimp = []
     proxy_list_fonbet = []
     proxy_list = join_proxies_to_file(1000)
+
     proxy_list_olimp = check_proxies_olimp(proxy_list)
-    proxy_list_fonbet = check_proxies_fonbet(proxy_list)
     save_list(proxy_list_olimp, ol_fl)
-    save_list(proxy_list_fonbet, fb_fl)
+
+    # proxy_list_fonbet = check_proxies_fonbet(proxy_list)
+    # save_list(proxy_list_fonbet, fb_fl)
 
     # proxy_push(ol_fl, fb_fl)
