@@ -290,9 +290,9 @@ def run_client():
             conn.request("GET", "")
             rs = conn.getresponse()
             data = rs.read().decode('utf-8')
-            if data:
-                prnt(data, 'hide')
             data_json = json.loads(data)
+            if data_json:
+                prnt(data_json, 'hide')
             server_forks = data_json
             time.sleep(0.5)
     except Shutdown as e:
