@@ -78,8 +78,7 @@ def check_l(L):
         return ''
 
 
-def check_fork(key, L, k1, k2, bk1_score, bk2_score, minute, time_break_fonbet, is_2nd_half, bk1_hist, bk2_hist,
-               info=''):
+def check_fork(key, L, k1, k2, bk1_score, bk2_score, minute, time_break_fonbet, is_2nd_half, info=''):
     fork_exclude_text = ''
     v = True
     global bal1, bal2, balance_line
@@ -179,7 +178,11 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
             if float(obj['olimp']) > 1 < float(obj['fonbet']):
 
                 # пересчетаем суммы ставок
-                amount_olimp, amount_fonbet = get_sum_bets(float(obj['olimp']), float(obj['fonbet']), total_bet, 'show')
+                amount_olimp, amount_fonbet = get_sum_bets(
+                    wager_olimp['factor'],
+                    wager_fonbet['value'],
+                    total_bet, 'show'
+                )
 
                 # Выведем текую доходность вилки
                 prnt('cur proc: ' + str(cur_proc) + '%')
@@ -187,6 +190,19 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
                 new_proc = round((1 - L) * 100, 2)
                 change_proc = round(new_proc - cur_proc, 2)
                 prnt('new proc: ' + str(new_proc) + '%, change: ' + str(change_proc))
+
+                # Проверяем, берем вилку только если она выросла в цене
+                # Если не изменилась, продолжаем мониторить,
+                # Bначе выбразываем
+                if change_proc < 0:
+                    prnt('Fork exclude: change_proc = ' + str(change_proc) + '\n')
+                    return False
+                elif change_proc == 0:
+                    prnt('Check replay: change_proc = ' + str(change_proc) + '\n')
+                    return go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max)
+                elif check_l(L) != '':
+                    prnt('Check replay: fork be up, but new_proc = ' + str(new_proc) + '%)')
+                    return go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max)
 
                 if check_l(L) == '' or DEBUG:
 
@@ -396,7 +412,6 @@ if __name__ == '__main__':
                 time_break_fonbet = val_json.get('time_break_fonbet')
                 is_2nd_half = val_json.get('is_2nd_half')
                 time_last_upd = val_json.get('time_last_upd', 1)
-                live_fork_total = val_json.get('live_fork_total', 0)
 
                 deff_olimp = round(float(time.time() - float(val_json.get('time_req_olimp', 0))))
                 deff_fonbet = round(float(time.time() - float(val_json.get('time_req_fonbet', 0))))
@@ -416,7 +431,6 @@ if __name__ == '__main__':
                            ' ' + k1_type + '=' + str(k1) + '/' + k2_type + '=' + str(k2) + ', ' + \
                            v_time + ' (' + str(minute) + ') ' + \
                            score + ' ' + str(pair_math) + \
-                           ', live_fork_total: ' + str(live_fork_total) + \
                            ', max deff: ' + str(deff_max)
                 except Exception as e:
                     prnts('error: ' + str(e))
@@ -426,7 +440,7 @@ if __name__ == '__main__':
                     bet1, bet2 = get_sum_bets(k1, k2, total_bet)
                     # Проверим вилку на исключения
                     if check_fork(
-                            key, l_temp, k1, k2, live_fork_total, bk1_score, bk2_score,
+                            key, l_temp, k1, k2, bk1_score, bk2_score,
                             minute, time_break_fonbet, is_2nd_half, info
                     ) or DEBUG:
                         go_bet_key = key
