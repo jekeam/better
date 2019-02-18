@@ -164,7 +164,7 @@ def start_seeker_matchs_fonbet(proxies, gen_proxi_fonbet, arr_matchs):
         time.sleep(time_sleep)
 
 
-def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi_olimp, pair_mathes):
+def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi_olimp, pair_mathes, stat_req_ol):
     global TIMEOUT_MATCH, TIMEOUT_MATCH_MINUS
 
     avg_req = []
@@ -181,7 +181,7 @@ def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi
         try:
             time_resp = get_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp,
                                        ps.get_next_proxy(), TIMEOUT_MATCH)
-            avg_req.append(round(time_resp, 2))
+            stat_req_ol.append(round(time_resp, 2))
         except TimeOut as e:
             ps.rep_cur_proxy(gen_proxi_olimp.next())
             err_str = 'Timeout: Олимп, ошибка при запросе матча ' + str(match_id_olimp)
@@ -207,14 +207,11 @@ def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi
         if DEBUG:
             prnts('Олимп, матч ' + str(match_id_olimp) + '. Время ответа: ' + str(time_resp) +
                   ', запрос через ' + str(time_sleep) + ' ' + ps.get_cur_proxy())
-        prnts('ol avg ' + str(match_id_olimp) + ': ' + str(round(sum(avg_req) / len(avg_req), 2)) +
-              ' max: ' + str(max(avg_req)) +
-              ' mode: ' + str(find_max_mode(avg_req)) +
-              ' median: ' + str(median(avg_req)))
+
         time.sleep(time_sleep)
 
 
-def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_proxi_fonbet, pair_mathes):
+def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_proxi_fonbet, pair_mathes, stat_req_fb):
     global TIMEOUT_MATCH, TIMEOUT_MATCH_MINUS
 
     avg_req = []
@@ -231,7 +228,7 @@ def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_p
         try:
             time_resp = get_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet,
                                         ps.get_next_proxy(), TIMEOUT_MATCH)
-            avg_req.append(round(time_resp, 2))
+            stat_req_fb.append(round(time_resp, 2))
         except FonbetMatchСompleted as e:
             cnt = 0
             for pair_match in pair_mathes:
@@ -252,10 +249,6 @@ def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_p
             prnts(str('Фонбет, матч ' + str(match_id_fonbet) + '. Время ответа: ' + str(time_resp) +
                       ', запрос через ' + str(time_sleep)) + ' ' + ps.get_cur_proxy())
 
-        prnts('fb avg ' + str(match_id_fonbet) + ': ' + str(round(sum(avg_req) / len(avg_req), 2)) +
-              ' max: ' + str(max(avg_req)) +
-              ' mode: ' + str(find_max_mode(avg_req)) +
-              ' median: ' + str(median(avg_req)))
         time.sleep(time_sleep)
 
 
@@ -268,6 +261,8 @@ def starter_bets(
         gen_proxi_olimp,
         proxies_fonbet,
         gen_proxi_fonbet,
+        stat_req_olimp,
+        stat_req_fonbet
 ):
     while True:
         for pair_match in pair_mathes:
@@ -278,7 +273,7 @@ def starter_bets(
 
                 start_seeker_olimp_bets_by_id = threading.Thread(
                     target=start_seeker_bets_olimp,
-                    args=(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi_olimp, pair_mathes)
+                    args=(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi_olimp, pair_mathes, stat_req_olimp)
                 )
                 start_seeker_olimp_bets_by_id.start()
 
@@ -287,7 +282,7 @@ def starter_bets(
 
                 start_seeker_fonbet_bets_by_id = threading.Thread(
                     target=start_seeker_bets_fonbet,
-                    args=(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_proxi_fonbet, pair_mathes)
+                    args=(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_proxi_fonbet, pair_mathes, stat_req_fonbet)
                 )
                 start_seeker_fonbet_bets_by_id.start()
 
@@ -552,6 +547,21 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
         time.sleep(0.1)
 
 
+def stat_req(stat_req_olimp, stat_req_fonbet):
+    while True:
+        if stat_req_olimp and stat_req_fonbet:
+            prnts('fb avg : ' + str(round(sum(stat_req_fonbet) / len(stat_req_fonbet), 2)) +
+                  ' max: ' + str(max(stat_req_fonbet)) +
+                  ' mode: ' + str(round(find_max_mode(stat_req_fonbet), 2)) +
+                  ' median: ' + str(round(median(stat_req_fonbet)), 2))
+
+            prnts('fb avg : ' + str(round(sum(stat_req_olimp) / len(stat_req_olimp), 2)) +
+                  ' max: ' + str(max(stat_req_olimp)) +
+                  ' mode: ' + str(round(find_max_mode(stat_req_olimp), 2)) +
+                  ' median: ' + str(round(median(stat_req_olimp)), 2))
+        time.sleep(15)
+
+
 if __name__ == '__main__':
     prnts('DEBUG: ' + str(DEBUG))
     proxy_filename_olimp = 'olimp.proxy'
@@ -579,6 +589,9 @@ if __name__ == '__main__':
 
     forks = dict()
     forks_meta = dict()
+
+    stat_req_olimp = []
+    stat_req_fonbet = []
 
     olimp_seeker_matchs = threading.Thread(
         target=start_seeker_matchs_olimp,
@@ -611,6 +624,8 @@ if __name__ == '__main__':
             gen_proxi_olimp,
             proxies_fonbet,
             gen_proxi_fonbet,
+            stat_req_olimp,
+            stat_req_fonbet
         )
     )
     starter_bets.start()
@@ -620,6 +635,9 @@ if __name__ == '__main__':
     starter_forks = threading.Thread(target=get_forks, args=(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet))
     starter_forks.start()
 
+    started_stat_req = threading.Thread(target=stat_req, args=(stat_req_olimp, stat_req_fonbet))
+    started_stat_req.start()
+
     server = threading.Thread(target=run_server, args=(forks,))
     server.start()
 
@@ -628,4 +646,5 @@ if __name__ == '__main__':
     fonbet_seeker_matchs.join()
     compare_matches.join()
     starter_forks.join()
+    started_stat_req.join()
     server.join()
