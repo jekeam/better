@@ -7,8 +7,8 @@ import requests
 import datetime
 import statistics
 
-DEBUG = True
-# DEBUG = False
+# DEBUG = True
+DEBUG = False
 
 file_session_ol = 'olimp.session'
 file_session_fb = 'fonbet.session'
