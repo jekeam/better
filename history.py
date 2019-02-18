@@ -111,11 +111,10 @@ def export_hist(OLIMP_USER, FONBET_USER):
     fb_list = fonbet_get_hist(FONBET_USER)
     ol_list = olimp_get_hist(OLIMP_USER)
 
-    #fb_list = {12859167801: {'time': '2018-12-11 05:44:33', 'kof': '2.40', 'sum_bet': '110.0', 'profit': 'None', 'result': 'none', 'name': 'Арсенал Саранди - Нуэва Чикаго: Нуэва Чикаго забьет', 'status': 'register'}, 12858195847: {'time': '2018-12-11 03:15:40', 'kof': '1.72', 'sum_bet': '160.0', 'profit': '0.0', 'result': 'lose', 'name': 'Патронато Парана - Велес Сарсфилд', 'status': 'calculated'}, 12858182027: {'time': '2018-12-11 03:13:59', 'kof': '1.80', 'sum_bet': '160.0', 'profit': '0.0', 'result': 'lose', 'name': 'Патронато Парана - Велес Сарсфилд', 'status': 'calculated'}, 12858046688: {'time': '2018-12-11 03:02:16', 'kof': '2.60', 'sum_bet': '110.0', 'profit': '0.0', 'result': 'lose', 'name': 'Бельграно (р) - Тигре (р)', 'status': 'calculated'}, 12857932120: {'time': '2018-12-11 02:52:38', 'kof': '1.25', 'sum_bet': '220.0', 'profit': '275.0', 'result': 'win', 'name': 'Депортиво Рока - Сансинена СиД', 'status': 'calculated'}, 12857890418: {'time': '2018-12-11 02:48:28', 'kof': '1.20', 'sum_bet': '240.0', 'profit': '288.0', 'result': 'win', 'name': 'Депортиво Рока - Сансинена СиД', 'status': 'calculated'}, 12856857931: {'time': '2018-12-11 01:33:05', 'kof': '1.82', 'sum_bet': '150.0', 'profit': '273.0', 'result': 'win', 'name': 'Эвертон - Уотфорд: Уотфорд забьет', 'status': 'calculated'}, 12855343857: {'time': '2018-12-11 00:16:53', 'kof': '2.05', 'sum_bet': '130.0', 'profit': '0.0', 'result': 'lose', 'name': 'Ньюкасл Юн U23 - Норвич С U23: Обе забьют', 'status': 'calculated'}, 12855423062: {'time': '2018-12-11 00:20:35', 'kof': '5.70', 'sum_bet': '50.0', 'profit': '0.0', 'result': 'lose', 'name': 'Виллем II (р) - Дордрехт (р)', 'status': 'calculated'}}
-    #ol_list = {257: {'time': '2018-12-11 03:15:40', 'kof': '2.45', 'sum_bet': '120', 'profit': '294', 'result': 'Выиграло', 'name': 'Патронато Парана - Велес Сарсфилд', 'status': 'None'}, 256: {'time': '2018-12-11 03:13:59', 'kof': '2.3', 'sum_bet': '120', 'profit': '276', 'result': 'Выиграло', 'name': 'Патронато Парана - Велес Сарсфилд', 'status': 'None'}, 255: {'time': '2018-12-11 03:02:21', 'kof': '1.65', 'sum_bet': '170', 'profit': '281', 'result': 'Выиграло', 'name': 'КА Белграно Кордоба (рез) - КА Тигре (рез)', 'status': 'None'}, 254: {'time': '2018-12-11 02:52:02', 'kof': '4.75', 'sum_bet': '60', 'profit': '0', 'result': 'Проиграло', 'name': 'Депортиво Рока - Сансинена', 'status': 'None'}, 253: {'time': '2018-12-11 02:48:34', 'kof': '6', 'sum_bet': '40', 'profit': '0', 'result': 'Проиграло', 'name': 'Депортиво Рока - Сансинена', 'status': 'None'}, 252: {'time': '2018-12-11 01:33:06', 'kof': '2.25', 'sum_bet': '130', 'profit': '0', 'result': 'Проиграло', 'name': 'Эвертон - Уотфорд', 'status': 'None'}, 251: {'time': '2018-12-11 00:16:57', 'kof': '1.9', 'sum_bet': '150', 'profit': '285', 'result': 'Выиграло', 'name': 'Ньюкасл (до 23)  - Норвич Сити (до 23)', 'status': 'None'}}
-    #print('fb_list=' + str(fb_list))
-    #print('ol_list=' + str(ol_list))
-
+    # fb_list = {12859167801: {'time': '2018-12-11 05:44:33', 'kof': '2.40', 'sum_bet': '110.0', 'profit': 'None', 'result': 'none', 'name': 'Арсенал Саранди - Нуэва Чикаго: Нуэва Чикаго забьет', 'status': 'register'}, 12858195847: {'time': '2018-12-11 03:15:40', 'kof': '1.72', 'sum_bet': '160.0', 'profit': '0.0', 'result': 'lose', 'name': 'Патронато Парана - Велес Сарсфилд', 'status': 'calculated'}, 12858182027: {'time': '2018-12-11 03:13:59', 'kof': '1.80', 'sum_bet': '160.0', 'profit': '0.0', 'result': 'lose', 'name': 'Патронато Парана - Велес Сарсфилд', 'status': 'calculated'}, 12858046688: {'time': '2018-12-11 03:02:16', 'kof': '2.60', 'sum_bet': '110.0', 'profit': '0.0', 'result': 'lose', 'name': 'Бельграно (р) - Тигре (р)', 'status': 'calculated'}, 12857932120: {'time': '2018-12-11 02:52:38', 'kof': '1.25', 'sum_bet': '220.0', 'profit': '275.0', 'result': 'win', 'name': 'Депортиво Рока - Сансинена СиД', 'status': 'calculated'}, 12857890418: {'time': '2018-12-11 02:48:28', 'kof': '1.20', 'sum_bet': '240.0', 'profit': '288.0', 'result': 'win', 'name': 'Депортиво Рока - Сансинена СиД', 'status': 'calculated'}, 12856857931: {'time': '2018-12-11 01:33:05', 'kof': '1.82', 'sum_bet': '150.0', 'profit': '273.0', 'result': 'win', 'name': 'Эвертон - Уотфорд: Уотфорд забьет', 'status': 'calculated'}, 12855343857: {'time': '2018-12-11 00:16:53', 'kof': '2.05', 'sum_bet': '130.0', 'profit': '0.0', 'result': 'lose', 'name': 'Ньюкасл Юн U23 - Норвич С U23: Обе забьют', 'status': 'calculated'}, 12855423062: {'time': '2018-12-11 00:20:35', 'kof': '5.70', 'sum_bet': '50.0', 'profit': '0.0', 'result': 'lose', 'name': 'Виллем II (р) - Дордрехт (р)', 'status': 'calculated'}}
+    # ol_list = {257: {'time': '2018-12-11 03:15:40', 'kof': '2.45', 'sum_bet': '120', 'profit': '294', 'result': 'Выиграло', 'name': 'Патронато Парана - Велес Сарсфилд', 'status': 'None'}, 256: {'time': '2018-12-11 03:13:59', 'kof': '2.3', 'sum_bet': '120', 'profit': '276', 'result': 'Выиграло', 'name': 'Патронато Парана - Велес Сарсфилд', 'status': 'None'}, 255: {'time': '2018-12-11 03:02:21', 'kof': '1.65', 'sum_bet': '170', 'profit': '281', 'result': 'Выиграло', 'name': 'КА Белграно Кордоба (рез) - КА Тигре (рез)', 'status': 'None'}, 254: {'time': '2018-12-11 02:52:02', 'kof': '4.75', 'sum_bet': '60', 'profit': '0', 'result': 'Проиграло', 'name': 'Депортиво Рока - Сансинена', 'status': 'None'}, 253: {'time': '2018-12-11 02:48:34', 'kof': '6', 'sum_bet': '40', 'profit': '0', 'result': 'Проиграло', 'name': 'Депортиво Рока - Сансинена', 'status': 'None'}, 252: {'time': '2018-12-11 01:33:06', 'kof': '2.25', 'sum_bet': '130', 'profit': '0', 'result': 'Проиграло', 'name': 'Эвертон - Уотфорд', 'status': 'None'}, 251: {'time': '2018-12-11 00:16:57', 'kof': '1.9', 'sum_bet': '150', 'profit': '285', 'result': 'Выиграло', 'name': 'Ньюкасл (до 23)  - Норвич Сити (до 23)', 'status': 'None'}}
+    # print('fb_list=' + str(fb_list))
+    # print('ol_list=' + str(ol_list))
 
     # READ FORKS INFO
     f = open(file_name, encoding='utf-8')
@@ -127,16 +126,16 @@ def export_hist(OLIMP_USER, FONBET_USER):
             time = val.strftime('%Y-%m-%d %H:%M:%S')
 
             fb_reg_id = info['fonbet'].get('reg_id', '')
-            fb_info = fb_list.get(fb_reg_id, {'':''})
+            fb_info = fb_list.get(fb_reg_id, {'': ''})
 
             o_reg_id = info['olimp'].get('reg_id', '')
-            o_info = ol_list.get(o_reg_id, {'':''})
-            
+            o_info = ol_list.get(o_reg_id, {'': ''})
+
             if fb_info.get('profit', 0.0) == 'None':
                 fb_info_profit = 0.0
             else:
                 fb_info_profit = fb_info.get('profit', 0.0)
-            
+
             out = out + \
                   str(id) + ';' + \
                   str(time) + ';' + \
@@ -155,7 +154,7 @@ def export_hist(OLIMP_USER, FONBET_USER):
                   str(fb_info.get('kof', '')).replace('.', ',') + ';' + \
                   str(o_info.get('kof', '')).replace('.', ',') + ';' + \
  \
-                  str(round(float(fb_info.get('sum_bet', 0.0)))) + ';'+ \
+                  str(round(float(fb_info.get('sum_bet', 0.0)))) + ';' + \
                   str(o_info.get('sum_bet', '')) + ';' + \
  \
                   str(round(float(fb_info_profit))) + ';' + \
@@ -171,11 +170,16 @@ def export_hist(OLIMP_USER, FONBET_USER):
                   str(o_info.get('status', '')) + ';' + \
  \
                   str(info['fonbet'].get('bet_type', '')) + ';' + \
-                  str(info['olimp'].get('bet_type', '')) + ';\n'
+                  str(info['olimp'].get('bet_type', '')) + ';' + \
+ \
+                  str(info['fonbet'].get('balance', '')) + ';' + \
+                  str(info['olimp'].get('balance', '')) + ';' + \
+ \
+                  ';\n'
 
         header = 'ID;time;pre_fb_kof;pre_o_kof;pre_fb_sum;pre_o_sum;' + \
                  'fb_id;o_id;fb_time;o_time;fb_kof;o_kof;fb_sum_bet;o_sum_bet;' + \
-                 'fb_profit;o_profit;fb_result;o_result;fb_name;o_name;fb_status;o_status;f_kof_type;o_kof_type;\n'
+                 'fb_profit;o_profit;fb_result;o_result;fb_name;o_name;fb_status;o_status;f_kof_type;o_kof_type;fb_bal;ol_bal\n'
 
         with open('statistics.csv', 'w', encoding='utf-8') as f:
             f.write(header + out)

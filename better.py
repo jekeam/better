@@ -130,6 +130,8 @@ def check_fork(key, L, k1, k2, bk1_score, bk2_score, minute, time_break_fonbet, 
 
 
 def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
+    global bal1
+    global bal2
     olimp_bet_type = str(go_bet_key.split('@')[-2])
     fonbet_bet_type = str(go_bet_key.split('@')[-1])
     # Проверяем ставили ли мы на этот матч, пока в ручную
@@ -140,7 +142,7 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
     amount_olimp, amount_fonbet = get_sum_bets(wager_olimp['factor'], wager_fonbet['value'], total_bet, 'show')
 
     if __name__ == '__main__':
-        wait_sec = 3.51 # max(0, (3.5 - deff_max))
+        wait_sec = 3.51  # max(0, (3.5 - deff_max))
         prnt('Wait sec: ' + str(wait_sec))
         time.sleep(wait_sec)
         with Manager() as manager:
@@ -198,6 +200,7 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
                                 "amount": amount_olimp,
                                 "reg_id": 0,
                                 "bet_type": olimp_bet_type,
+                                "balance": bal1,
                             },
                             "fonbet": {
                                 "id": wager_fonbet["event"],
@@ -205,6 +208,7 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
                                 "amount": amount_fonbet,
                                 "reg_id": 0,
                                 "bet_type": fonbet_bet_type,
+                                "balance": bal2
                             },
                         }
                     }
