@@ -289,7 +289,7 @@ def start_compare_matches(pair_mathes, json_bk1, json_bk2):
 
                                         if DEBUG and x > 0:
                                             return False
-                                        if DEBUG and bk2_match_id != '13235452':
+                                        if DEBUG:
                                             x = 1
 
                                         prnts(
@@ -373,11 +373,6 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
                         elif re.match('\([\d|\d\d]:[\d|\d\d]\)', math_json_fonbet.get('score_1st', '')) and \
                                 round(math_json_fonbet.get('minute', ''), 2) > 45.0:
                             is_2nd_half = True
-
-                        # if str(pair_math[1]) == '12801247':
-                        #     print('')
-                        #     print(str(time.time()) + str(k_fonbet))
-                        #     print('')
 
                         if forks.get(bet_key, '') != '':
 
