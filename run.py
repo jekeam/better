@@ -16,6 +16,9 @@ import os
 from sys import exit
 from datetime import datetime
 
+TIMEOUT_MATCHS = 10
+TIMEOUT_MATCH = 2.51
+
 opposition = {
     '1ТБ': '1ТМ',
     '1ТМ': '1ТБ',
@@ -110,11 +113,11 @@ def get_fonbet(resp, arr_matchs):
 
 
 def start_seeker_matchs_olimp(proxies, gen_proxi_olimp, arr_matchs):
+    global TIMEOUT_MATCHS
     proxy = gen_proxi_olimp.next()
-    time_out = 10
     while True:
         try:
-            resp, time_resp = get_matches_olimp(proxies, proxy, time_out)
+            resp, time_resp = get_matches_olimp(proxies, proxy, TIMEOUT_MATCHS)
             get_olimp(resp, arr_matchs)
         except TimeOut as e:
             proxy = gen_proxi_olimp.next()
@@ -136,11 +139,11 @@ def start_seeker_matchs_olimp(proxies, gen_proxi_olimp, arr_matchs):
 
 
 def start_seeker_matchs_fonbet(proxies, gen_proxi_fonbet, arr_matchs):
-    time_out = 10
+    global TIMEOUT_MATCHS
     proxy = gen_proxi_fonbet.next()
     while True:
         try:
-            resp, time_resp = get_matches_fonbet(proxies, proxy, time_out)
+            resp, time_resp = get_matches_fonbet(proxies, proxy, TIMEOUT_MATCHS)
             get_fonbet(resp, arr_matchs)
         except Exception as e:
             prnts('Фонбет, ошибка при запросе списка матчей: ' + str(e) + ' ' + proxy)
@@ -157,12 +160,12 @@ def start_seeker_matchs_fonbet(proxies, gen_proxi_fonbet, arr_matchs):
 
 
 def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi_olimp, pair_mathes):
-    time_out = 2.51
+    global TIMEOUT_MATCH
     proxy = gen_proxi_olimp.next()
 
     while True:
         try:
-            time_resp = get_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, proxy, time_out)
+            time_resp = get_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, proxy, TIMEOUT_MATCH)
         except TimeOut as e:
             proxy = gen_proxi_olimp.next()
             err_str = 'Timeout: Олимп, ошибка при запросе матча ' + str(match_id_olimp)
@@ -192,12 +195,12 @@ def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi
 
 
 def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_proxi_fonbet, pair_mathes):
-    time_out = 2.51
+    global TIMEOUT_MATCH
     proxy = gen_proxi_fonbet.next()
 
     while True:
         try:
-            time_resp = get_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, proxy, time_out)
+            time_resp = get_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, proxy, TIMEOUT_MATCH)
         except FonbetMatchСompleted as e:
             cnt = 0
             for pair_match in pair_mathes:
