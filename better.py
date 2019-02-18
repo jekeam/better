@@ -169,6 +169,10 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
             recheck_fb.join()
             recheck_o.join()
 
+            wager_fonbet['value'] = obj['fonbet']
+            wager_olimp['value'] = obj['olimp']
+            wager_olimp['factor'] = obj['olimp']
+
             deff_max = max(obj['olimp_time_req'], obj['fonbet_time_req'])
 
             prnt('deff_max: ' + str(deff_max) + ', O ' + olimp_bet_type + ': ' + str(wager_olimp['factor']) + ' -> ' +
