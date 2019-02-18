@@ -553,12 +553,12 @@ def stat_req(stat_req_olimp, stat_req_fonbet):
             prnts('fb avg : ' + str(round(sum(stat_req_fonbet) / len(stat_req_fonbet), 2)) +
                   ' max: ' + str(max(stat_req_fonbet)) +
                   ' mode: ' + str(round(find_max_mode(stat_req_fonbet), 2)) +
-                  ' median: ' + str(round(median(stat_req_fonbet)), 2))
+                  ' median: ' + str(round(median(stat_req_fonbet), 2)))
 
             prnts('fb avg : ' + str(round(sum(stat_req_olimp) / len(stat_req_olimp), 2)) +
                   ' max: ' + str(max(stat_req_olimp)) +
                   ' mode: ' + str(round(find_max_mode(stat_req_olimp), 2)) +
-                  ' median: ' + str(round(median(stat_req_olimp)), 2))
+                  ' median: ' + str(round(median(stat_req_olimp), 2)))
         time.sleep(15)
 
 
