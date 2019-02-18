@@ -15,7 +15,7 @@ fonbet_header = {
 }
 
 
-def get_matches_fonbet(proxies, proxy):
+def get_matches_fonbet(proxies, proxy, time_out):
     global url_fonbet
     global UA
 
@@ -31,7 +31,7 @@ def get_matches_fonbet(proxies, proxy):
         resp = requests.get(
             url_fonbet_matchs,
             headers={'User-Agent': UA},
-            timeout=5.51,
+            timeout=time_out,
             verify=False,
             proxies=proxy,
         )
@@ -64,7 +64,7 @@ def get_matches_fonbet(proxies, proxy):
         raise ValueError(err_str)
 
 
-def get_match_fonbet(match_id, proxi_list, proxy):
+def get_match_fonbet(match_id, proxi_list, proxy, time_out):
     global url_fonbet_match
     global fonbet_header
 
@@ -80,7 +80,7 @@ def get_match_fonbet(match_id, proxi_list, proxy):
         resp = requests.get(
             url_fonbet_match + str(match_id) + "&lang=en",
             headers=fonbet_header,
-            timeout=3.51,
+            timeout=time_out,
             verify=False,
             proxies=proxy,
         )
@@ -121,10 +121,10 @@ def get_match_fonbet(match_id, proxi_list, proxy):
         raise ValueError(err_str)
 
 
-def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy):
+def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out):
     key_id = str(match_id)
     try:
-        resp, time_resp = get_match_fonbet(match_id, proxies_fonbet, proxy)
+        resp, time_resp = get_match_fonbet(match_id, proxies_fonbet, proxy, time_out)
         # Очистим дстарые данные
         # if bets_fonbet.get(key_id):
         # bets_fonbet[key_id] = dict()

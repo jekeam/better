@@ -66,7 +66,7 @@ def olimp_get_xtoken(payload, secret_key):
     return {"X-TOKEN": md5(to_encode.encode()).hexdigest()}
 
 
-def get_matches_olimp(proxies, proxy):
+def get_matches_olimp(proxies, proxy, time_out):
     global olimp_data
     global olimp_head
 
@@ -89,7 +89,7 @@ def get_matches_olimp(proxies, proxy):
             olimp_url + '/api/slice/',
             data=olimp_data_ll,
             headers=olimp_head_ll,
-            timeout=5.51,
+            timeout=time_out,
             verify=False,
             proxies=proxy,
         )
@@ -151,7 +151,7 @@ def to_abb(sbet):
     return abr
 
 
-def get_match_olimp(match_id, proxi_list, proxy):
+def get_match_olimp(match_id, proxi_list, proxy, time_out):
     global olimp_url
     global olimp_data
     olimp_data_m = olimp_data.copy()
@@ -180,7 +180,7 @@ def get_match_olimp(match_id, proxi_list, proxy):
             olimp_url + '/api/stakes/',
             data=olimp_data_m,
             headers=olimp_stake_head,
-            timeout=6.51,
+            timeout=time_out,
             verify=False,
             proxies=proxy
         )
@@ -223,10 +223,10 @@ def get_match_olimp(match_id, proxi_list, proxy):
         raise ValueError(err_str)
 
 
-def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy):
+def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out):
     key_id = str(match_id)
     try:
-        resp, time_resp = get_match_olimp(match_id, proxies_olimp, proxy)
+        resp, time_resp = get_match_olimp(match_id, proxies_olimp, proxy, time_out)
         # Очистим дстарые данные
         # if bets_olimp.get(key_id):
         # bets_olimp[key_id] = dict()

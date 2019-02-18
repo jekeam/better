@@ -111,10 +111,10 @@ def get_fonbet(resp, arr_matchs):
 
 def start_seeker_matchs_olimp(proxies, gen_proxi_olimp, arr_matchs):
     proxy = gen_proxi_olimp.next()
-    time_out = 5.51
+    time_out = 10
     while True:
         try:
-            resp, time_resp = get_matches_olimp(proxies, proxy)
+            resp, time_resp = get_matches_olimp(proxies, proxy, time_out)
             get_olimp(resp, arr_matchs)
         except TimeOut as e:
             proxy = gen_proxi_olimp.next()
@@ -136,11 +136,11 @@ def start_seeker_matchs_olimp(proxies, gen_proxi_olimp, arr_matchs):
 
 
 def start_seeker_matchs_fonbet(proxies, gen_proxi_fonbet, arr_matchs):
-    time_out = 5.51
+    time_out = 10
     proxy = gen_proxi_fonbet.next()
     while True:
         try:
-            resp, time_resp = get_matches_fonbet(proxies, proxy)
+            resp, time_resp = get_matches_fonbet(proxies, proxy, time_out)
             get_fonbet(resp, arr_matchs)
         except Exception as e:
             prnts('Фонбет, ошибка при запросе списка матчей: ' + str(e) + ' ' + proxy)
@@ -157,12 +157,12 @@ def start_seeker_matchs_fonbet(proxies, gen_proxi_fonbet, arr_matchs):
 
 
 def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi_olimp, pair_mathes):
-    time_out = 3.51
+    time_out = 2.51
     proxy = gen_proxi_olimp.next()
 
     while True:
         try:
-            time_resp = get_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, proxy)
+            time_resp = get_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, proxy, time_out)
         except TimeOut as e:
             proxy = gen_proxi_olimp.next()
             err_str = 'Timeout: Олимп, ошибка при запросе матча ' + str(match_id_olimp)
@@ -192,12 +192,12 @@ def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi
 
 
 def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_proxi_fonbet, pair_mathes):
-    time_out = 3.51
+    time_out = 2.51
     proxy = gen_proxi_fonbet.next()
 
     while True:
         try:
-            time_resp = get_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, proxy)
+            time_resp = get_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, proxy, time_out)
         except FonbetMatchСompleted as e:
             cnt = 0
             for pair_match in pair_mathes:
