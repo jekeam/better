@@ -184,7 +184,7 @@ def save_list(proxies, filename=None):
 def get_proxies(n):
     global proxy_list, TIME_OUT
     proxies = asyncio.Queue()
-    broker = Broker(proxies, timeout=TIME_OUT)
+    broker = Broker(proxies, timeout=TIME_OUT + 2)
     tasks = asyncio.gather(
         broker.find(types=['HTTP'], limit=n),  # , countries=['RU','UA','US','DE']
         save(proxies, proxy_list)
