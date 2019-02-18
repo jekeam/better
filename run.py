@@ -128,7 +128,10 @@ def start_seeker_matchs_olimp(proxies, gen_proxi_olimp, arr_matchs):
 
         time_sleep = max(0, (time_out - time_resp))
 
-        # prnts('Олимп, поиск матчей, время ответа: ' + str(time_resp) + ', запрос через ' + str(time_sleep) + ' ' + proxy, 'hide')
+        if DEBUG:
+            prnts('Олимп, поиск матчей, время ответа: ' + str(time_resp) + ', запрос через ' +
+                  str(time_sleep) + ' ' + proxy, 'hide')
+
         time.sleep(time_sleep)
 
 
@@ -146,7 +149,10 @@ def start_seeker_matchs_fonbet(proxies, gen_proxi_fonbet, arr_matchs):
 
         time_sleep = max(0, (time_out - time_resp))
 
-        # prnts('Фонбет, поиск матчей, время ответа: ' + str(time_resp) + ', запрос через ' + str(time_sleep) + ' ' + proxy, 'hide')
+        if DEBUG:
+            prnts('Фонбет, поиск матчей, время ответа: ' + str(time_resp) + ', запрос через ' +
+                  str(time_sleep) + ' ' + proxy, 'hide')
+
         time.sleep(time_sleep)
 
 
@@ -178,7 +184,10 @@ def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi
 
         time_sleep = max(0, (time_out - time_resp))
 
-        # prnts('Олимп, матч ' + str(match_id_olimp) + '. Время ответа: ' + str(time_resp) + ', запрос через ' + str(time_sleep) + ' ' + proxy, 'hide')
+        if DEBUG:
+            prnts('Олимп, матч ' + str(match_id_olimp) + '. Время ответа: ' + str(time_resp) +
+                  ', запрос через ' + str(time_sleep) + ' ' + proxy, 'hide')
+
         time.sleep(time_sleep)
 
 
@@ -204,7 +213,10 @@ def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_p
 
         time_sleep = max(0, (time_out - time_resp))
 
-        # prnts(str('Фонбет, матч ' + str(match_id_fonbet) + '. Время ответа: ' + str(time_resp) + ', повторный запрос через ' + str(time_sleep)) + ' ' + proxy, 'hide')
+        if DEBUG:
+            prnts(str('Фонбет, матч ' + str(match_id_fonbet) + '. Время ответа: ' + str(time_resp) +
+                      ', запрос через ' + str(time_sleep)) + ' ' + proxy, 'hide')
+
         time.sleep(time_sleep)
 
 
@@ -356,8 +368,8 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
                 v_fonbet = k_fonbet.get('value', 0.0)
 
                 if DEBUG:
-                    v_olimp = v_olimp + 1
-                    v_fonbet = v_fonbet + 1
+                    v_olimp = v_olimp - 1
+                    v_fonbet = v_fonbet - 1
 
                 if v_olimp > 0.0 and v_fonbet > 0.0:
                     L = (1 / float(v_olimp)) + (1 / float(v_fonbet))
