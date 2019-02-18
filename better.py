@@ -296,7 +296,7 @@ def run_client():
             data = rs.read().decode('utf-8')
             data_json = json.loads(data)
             server_forks = data_json
-            time.sleep(1)
+            time.sleep(0.5)
     except Shutdown as e:
         prnt(e)
         raise ValueError(e)
