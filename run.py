@@ -18,7 +18,8 @@ from sys import exit
 from datetime import datetime
 
 TIMEOUT_MATCHS = 10
-TIMEOUT_MATCH = 1.5
+TIMEOUT_MATCH = 2
+TIMEOUT_MATCH_MINUS = 1
 
 opposition = {
     '1ТБ': '1ТМ',
@@ -163,7 +164,7 @@ def start_seeker_matchs_fonbet(proxies, gen_proxi_fonbet, arr_matchs):
 
 
 def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi_olimp, pair_mathes):
-    global TIMEOUT_MATCH
+    global TIMEOUT_MATCH, TIMEOUT_MATCH_MINUS
 
     proxy_size = 10
     proxy = []
@@ -197,7 +198,7 @@ def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi
             ps.rep_cur_proxy(gen_proxi_olimp.next())
             time_resp = TIMEOUT_MATCH
 
-        time_sleep = max(0, (TIMEOUT_MATCH - time_resp))
+        time_sleep = max(0, (TIMEOUT_MATCH - time_resp - TIMEOUT_MATCH_MINUS))
 
         if DEBUG:
             prnts('Олимп, матч ' + str(match_id_olimp) + '. Время ответа: ' + str(time_resp) +
@@ -207,7 +208,7 @@ def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi
 
 
 def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_proxi_fonbet, pair_mathes):
-    global TIMEOUT_MATCH
+    global TIMEOUT_MATCH, TIMEOUT_MATCH_MINUS
 
     proxy_size = 5
     proxy = []
@@ -235,7 +236,7 @@ def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_p
             ps.rep_cur_proxy(gen_proxi_fonbet.next())
             time_resp = TIMEOUT_MATCH
 
-        time_sleep = max(0, (TIMEOUT_MATCH - time_resp))
+        time_sleep = max(0, (TIMEOUT_MATCH - time_resp - TIMEOUT_MATCH_MINUS))
 
         if DEBUG:
             prnts(str('Фонбет, матч ' + str(match_id_fonbet) + '. Время ответа: ' + str(time_resp) +
