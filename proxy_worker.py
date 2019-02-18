@@ -11,6 +11,7 @@ from utils import prnts, DEBUG
 from hashlib import md5
 import threading
 import platform
+from shutil import copyfile
 
 # disable warning
 urllib3.disable_warnings()
@@ -255,7 +256,7 @@ def start_proxy_saver(proxies_olimp, proxies_fonbet, proxy_filename_olimp, proxy
 
 proxy_file_name = os.path.join(os.getcwd(), 'proxieslist.txt')
 
-if __name__ == '__main__':
+def get_proxys(ol_fl, fb_fl):
     print('start proxy worker')
     proxy_list = []
     proxy_list_olimp = []
@@ -263,5 +264,17 @@ if __name__ == '__main__':
     proxy_list = join_proxies_to_file(1000)
     proxy_list_olimp = check_proxies_olimp(proxy_list)
     proxy_list_fonbet = check_proxies_fonbet(proxy_list)
-    save_list(proxy_list_olimp, 'proxy_by_olimp.txt')
-    save_list(proxy_list_fonbet, 'proxy_by_fonbet.txt')
+    save_list(proxy_list_olimp, ol_fl)
+    save_list(proxy_list_fonbet, fb_fl)
+
+def proxy_push(ol_fl, fb_fl):
+    copyfile(ol_fl, 'olimp.proxy')
+    copyfile(fb_fl, 'fonbet.proxy')
+
+
+if __name__ == '__main__':
+    ol_fl = 'proxy_by_olimp.txt'
+    fb_fl = 'proxy_by_fonbet.txt'
+    get_proxys(ol_fl, fb_fl)
+    #proxy_push(ol_fl, fb_fl)
+
