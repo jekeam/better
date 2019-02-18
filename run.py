@@ -18,7 +18,7 @@ from sys import exit
 from datetime import datetime
 
 TIMEOUT_MATCHS = 10
-TIMEOUT_MATCH = 1
+TIMEOUT_MATCH = 1.5
 
 opposition = {
     '1ТБ': '1ТМ',
