@@ -252,7 +252,7 @@ def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_p
             prnts(str('Фонбет, матч ' + str(match_id_fonbet) + '. Время ответа: ' + str(time_resp) +
                       ', запрос через ' + str(time_sleep)) + ' ' + ps.get_cur_proxy())
 
-        prnts('fbl avg ' + str(match_id_fonbet) + ': ' + str(round(sum(avg_req) / len(avg_req), 2)) +
+        prnts('fb avg ' + str(match_id_fonbet) + ': ' + str(round(sum(avg_req) / len(avg_req), 2)) +
               ' max: ' + str(max(avg_req)) +
               ' mode: ' + str(find_max_mode(avg_req)) +
               ' median: ' + str(median(avg_req)))
