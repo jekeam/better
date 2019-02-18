@@ -23,12 +23,15 @@ def get_sum_bets(k1, k2, total_bet, print_hide=True):
     k1 = float(k1)
     k2 = float(k2)
     l = (1 / k1) + (1 / k2)
+
     # Округление проставления в БК1 происходит по правилам математики
     bet_1 = round(total_bet / (k1 * l) / 5) * 5
     bet_2 = total_bet - bet_1
     prnt('L: ' + str(round((1 - l) * 100, 2)) + '% (' + str(l) + ') ', print_hide)
-    prnt('bet1: ' + str(bet_1) + ' руб, bet2: ' + str(bet_2) + ' руб.|' +
-         ' bet_sum: ' + str(bet_1 + bet_2) + ' руб.', print_hide)
+    prnt(
+        'bet1: ' + str(bet_1) + ' руб, bet2: ' + str(bet_2) + ' руб.|' +
+        ' bet_sum: ' + str(bet_1 + bet_2) + ' руб.', print_hide
+    )
 
     return bet_1, bet_2
 
@@ -75,7 +78,8 @@ def check_l(L):
         return ''
 
 
-def check_fork(key, L, k1, k2, live_fork_total, bk1_score, bk2_score, minute, time_break_fonbet, is_2nd_half, info=''):
+def check_fork(key, L, k1, k2, bk1_score, bk2_score, minute, time_break_fonbet, is_2nd_half, bk1_hist, bk2_hist,
+               info=''):
     fork_exclude_text = ''
     v = True
     global bal1, bal2, balance_line
@@ -102,30 +106,20 @@ def check_fork(key, L, k1, k2, live_fork_total, bk1_score, bk2_score, minute, ti
         fork_exclude_text = fork_exclude_text + 'Вилка ' + str(round((1 - L) * 100, 2)) \
                             + '% исключена: баланс БК фонбет меньше 30%, а коэф-т >= 1.3 (' + str(k2) + ')\n'
 
-    # Проверяем совпадает ли счет
     if bk1_score != bk2_score:
         fork_exclude_text = fork_exclude_text + 'Вилка ' \
                             + str(round((1 - L) * 100, 2)) \
                             + '% исключена т.к. счет не совпадает: olimp(' + bk1_score + ') fonbet(' + bk2_score + ')\n'
 
-    # Больше 43 минуты и не идет перерыв
-    if 43.0 < float(minute) < 50.0 and not time_break_fonbet and not is_2nd_half:
+    if 43.0 < float(minute) < 50.0 and not time_break_fonbet and not is_2nd_half:  # Больше 43 минуты и не идет перерыв
         fork_exclude_text = \
             fork_exclude_text + 'Вилка ' + str(round((1 - L) * 100, 2)) + '% исключена т.к. идет ' \
             + str(minute) + ' минута матча и это не перерыв и это не 2-й период \n'
 
-    # Больше 88 минуты
     if float(minute) > 88.0:
         fork_exclude_text = \
             fork_exclude_text + 'Вилка ' + str(round((1 - L) * 100, 2)) + '% исключена т.к. идет ' \
             + str(minute) + ' минута матча \n'
-
-    # Вилка живет достаточно
-    long_livers = 90
-    if live_fork_total < long_livers:
-        fork_exclude_text = \
-            fork_exclude_text + 'Вилка ' + str(round((1 - L) * 100, 2)) + '% исключена т.к. живет меньше ' \
-            + str(long_livers) + ' сек. \n'
 
     fork_exclude_text = fork_exclude_text + check_l(L)
 
@@ -174,7 +168,7 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
             prnt('deff_max: ' + str(deff_max) + ', O ' + olimp_bet_type + ': ' + str(wager_olimp['factor']) + ' -> ' +
                  str(obj['olimp']) + '| F ' + fonbet_bet_type + ': ' + str(wager_fonbet['value']) + ' -> ' + str(
                 obj['fonbet']))
-                
+
             wager_fonbet['value'] = obj['fonbet']
             wager_olimp['value'] = obj['olimp']
             wager_olimp['factor'] = obj['olimp']

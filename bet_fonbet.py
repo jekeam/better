@@ -435,7 +435,7 @@ class FonbetBot:
 
         if self.cnt_bet_attempt > (60 * 2.5) / self.sleep:
             err_str = 'BET_FONBET.PY: error place bet in Fonbet: ' + \
-                    str(res.get('coupon').get('errorMessageRus'))
+                      str(res.get('coupon').get('errorMessageRus'))
             prnt(err_str)
             raise LoadException(err_str)
 
@@ -471,16 +471,16 @@ class FonbetBot:
                 else:
                     new_wager = res.get('coupon').get('bets')[0]
                     # {'result': 'couponResult', 'coupon':
-                        # {'resultCode': 2,
-                                # 'errorMessage': 'Изменена котировка на событие "LIVE 0:0 1-й тайм Альбион Роверс (р) - Ливингстон (р) < 0.5"',
-                                # 'errorMessageRus': 'Изменена котировка на событие "LIVE 0:0 1-й тайм Альбион Роверс (р) - Ливингстон (р) < 0.5"',
-                                # 'errorMessageEng': 'Odds changed "LIVE 0:0 1st half Albion Rovers (r) - Livingston (r) < 0.5"',
-                            # 'amountMin': 30,
-                            # 'amountMax': 32300,
-                            # 'amount': 180,
-                            # 'bets': [{'event': 13223785,
-                                        # 'factor': 931, 'value': 1.35, 'param': 150, 'paramText': '1.5',
-                                        # 'paramTextRus': '1.5', 'paramTextEng': '1.5', 'score': '0:1'}]}}
+                    # {'resultCode': 2,
+                    # 'errorMessage': 'Изменена котировка на событие "LIVE 0:0 1-й тайм Альбион Роверс (р) - Ливингстон (р) < 0.5"',
+                    # 'errorMessageRus': 'Изменена котировка на событие "LIVE 0:0 1-й тайм Альбион Роверс (р) - Ливингстон (р) < 0.5"',
+                    # 'errorMessageEng': 'Odds changed "LIVE 0:0 1st half Albion Rovers (r) - Livingston (r) < 0.5"',
+                    # 'amountMin': 30,
+                    # 'amountMax': 32300,
+                    # 'amount': 180,
+                    # 'bets': [{'event': 13223785,
+                    # 'factor': 931, 'value': 1.35, 'param': 150, 'paramText': '1.5',
+                    # 'paramTextRus': '1.5', 'paramTextEng': '1.5', 'score': '0:1'}]}}
 
                     if str(new_wager.get('param', '')) == str(self.wager.get('param', '')) and \
                             int(self.wager.get('factor', 0)) != int(new_wager.get('factor', 0)):
@@ -535,7 +535,7 @@ class FonbetBot:
 
             payload['clientId'] = self.base_payload["clientId"]
             payload['fsid'] = self.payload['fsid']
-            prnt('BET_FONBET.PY - sale_bet rq 1: '+str(payload), 'hide')
+            prnt('BET_FONBET.PY - sale_bet rq 1: ' + str(payload), 'hide')
             resp = requests_retry_session().post(
                 url,
                 headers=headers,
@@ -548,11 +548,11 @@ class FonbetBot:
 
             if self.cnt_sale_attempt > 40:
                 err_str = 'BET_FONBET.PY: error sale bet in Fonbet(coupon is lock): ' + \
-                            str(res.get('coupon').get('errorMessageRus'))
+                          str(res.get('coupon').get('errorMessageRus'))
                 prnt(err_str)
                 raise LoadException(err_str)
 
-            prnt('BET_FONBET.PY - sale_bet rs 1: '+str(res), 'hide')
+            prnt('BET_FONBET.PY - sale_bet rs 1: ' + str(res), 'hide')
             # payload['version'] = res.get('version')
 
             timer_update = float(res.get('recommendedUpdateFrequency'))
@@ -585,7 +585,7 @@ class FonbetBot:
 
             payload['clientId'] = self.base_payload["clientId"]
             payload['fsid'] = self.payload['fsid']
-            prnt('BET_FONBET.PY - sale_bet rq 2: '+str(payload),'hide')
+            prnt('BET_FONBET.PY - sale_bet rq 2: ' + str(payload), 'hide')
             resp = requests_retry_session().post(
                 url,
                 headers=headers,
@@ -596,7 +596,7 @@ class FonbetBot:
             )
             check_status_with_resp(resp)
             res = resp.json()
-            prnt('BET_FONBET.PY - sale_bet rs 2: '+str(res),'hide')
+            prnt('BET_FONBET.PY - sale_bet rs 2: ' + str(res), 'hide')
             if res.get('result') == 'requestId':
                 requestId = res.get('requestId')
 
@@ -612,7 +612,7 @@ class FonbetBot:
             payload['sellSum'] = self.sell_sum
             payload['clientId'] = self.base_payload["clientId"]
             payload['fsid'] = self.payload['fsid']
-            prnt('BET_FONBET.PY - sale_bet rq 3: '+str(payload), 'hide')
+            prnt('BET_FONBET.PY - sale_bet rq 3: ' + str(payload), 'hide')
             resp = requests_retry_session().post(
                 url,
                 headers=headers,
@@ -623,7 +623,7 @@ class FonbetBot:
             )
             check_status_with_resp(resp)
             res = resp.json()
-            prnt('BET_FONBET.PY - sale_bet rs 3: '+str(res), 'hide')
+            prnt('BET_FONBET.PY - sale_bet rs 3: ' + str(res), 'hide')
             result = res.get('result')
 
             if result == "sellDelay":
@@ -634,7 +634,7 @@ class FonbetBot:
             try:
                 self._check_sell_result(requestId)
             except Exception as e:
-                prnt('BET_FONBET.PY: error _check_sell_result: ' + str(res)+ ' '+ str(e))
+                prnt('BET_FONBET.PY: error _check_sell_result: ' + str(res) + ' ' + str(e))
                 self.cnt_sale_attempt = self.cnt_sale_attempt + 1
                 return self.sale_bet()
 
@@ -650,7 +650,7 @@ class FonbetBot:
         payload['requestId'] = requestId
         payload['clientId'] = self.base_payload["clientId"]
         payload['fsid'] = self.payload['fsid']
-        prnt('BET_FONBET.PY - _check_sell_result rq: '+str(payload), 'hide')
+        prnt('BET_FONBET.PY - _check_sell_result rq: ' + str(payload), 'hide')
         resp = requests_retry_session().post(
             url,
             headers=headers,
@@ -661,7 +661,7 @@ class FonbetBot:
         )
         check_status_with_resp(resp)
         res = resp.json()
-        prnt('BET_FONBET.PY _check_sell_result rs: '+str(res), 'hide')
+        prnt('BET_FONBET.PY _check_sell_result rs: ' + str(res), 'hide')
 
         if self.cnt_sale_attempt > 40:
             err_str = 'BET_FONBET.PY: error sale bet in Fonbet(coupon is lock): ' + \
@@ -671,7 +671,7 @@ class FonbetBot:
 
         # {'result': 'unableToSellCoupon', 'requestId': 19920670, 'regId': 14273664108, 'reason': 4, 'actualSellSum': 4900}
 
-        print("res.get('result'): "+str(res.get('result')))
+        print("res.get('result'): " + str(res.get('result')))
 
         if res.get('result') == "sellDelay":
             sell_delay_sec = (float(res.get('sellDelay')) / 1000)
@@ -680,7 +680,7 @@ class FonbetBot:
             return self._check_sell_result(res.get('requestId'))
 
         elif res.get('result') == 'unableToSellCoupon':
-            err_str = 'BET_FONBET.PY, err sale bet, new actualSellSum: '+str(res.get('actualSellSum')/10)
+            err_str = 'BET_FONBET.PY, err sale bet, new actualSellSum: ' + str(res.get('actualSellSum') / 10)
             print(err_str)
             return self.sale_bet()
 
@@ -761,7 +761,7 @@ if __name__ == '__main__':
     wager_fonbet = {'event': '13268594', 'factor': '1571', 'param': '', 'score': '0:1', 'value': '33'}
     fonbet = FonbetBot(FONBET_USER)
     fonbet.sign_in()
-    #fonbet.place_bet(amount_fonbet, wager_fonbet)
+    # fonbet.place_bet(amount_fonbet, wager_fonbet)
     fonbet.sale_bet(14286002998)
     # fonbet_reg_id = fonbet.place_bet(amount_fonbet, wager_fonbet)
     # {'e': 12264423, 'f': 931, 'v': 1.4, 'p': 250, 'pt': '2.5', 'isLive': True}
