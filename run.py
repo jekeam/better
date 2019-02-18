@@ -18,8 +18,8 @@ from sys import exit
 from datetime import datetime
 
 TIMEOUT_MATCHS = 10
-TIMEOUT_MATCH = 2
-TIMEOUT_MATCH_MINUS = 1
+TIMEOUT_MATCH = 10
+TIMEOUT_MATCH_MINUS = 9
 
 opposition = {
     '1ТБ': '1ТМ',
@@ -166,6 +166,8 @@ def start_seeker_matchs_fonbet(proxies, gen_proxi_fonbet, arr_matchs):
 def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi_olimp, pair_mathes):
     global TIMEOUT_MATCH, TIMEOUT_MATCH_MINUS
 
+    avg_req = []
+
     proxy_size = 10
     proxy = []
     i = 0
@@ -178,6 +180,7 @@ def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi
         try:
             time_resp = get_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp,
                                        ps.get_next_proxy(), TIMEOUT_MATCH)
+            avg_req.append(time_resp)
         except TimeOut as e:
             ps.rep_cur_proxy(gen_proxi_olimp.next())
             err_str = 'Timeout: Олимп, ошибка при запросе матча ' + str(match_id_olimp)
@@ -203,12 +206,14 @@ def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi
         if DEBUG:
             prnts('Олимп, матч ' + str(match_id_olimp) + '. Время ответа: ' + str(time_resp) +
                   ', запрос через ' + str(time_sleep) + ' ' + ps.get_cur_proxy())
-
+        prnts('ol avg: ' + str(sum(avg_req) / len(avg_req)) + ' max: ' + str(max(avg_req)))
         time.sleep(time_sleep)
 
 
 def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_proxi_fonbet, pair_mathes):
     global TIMEOUT_MATCH, TIMEOUT_MATCH_MINUS
+
+    avg_req = []
 
     proxy_size = 5
     proxy = []
@@ -222,6 +227,7 @@ def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_p
         try:
             time_resp = get_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet,
                                         ps.get_next_proxy(), TIMEOUT_MATCH)
+            avg_req.append(time_resp)
         except FonbetMatchСompleted as e:
             cnt = 0
             for pair_match in pair_mathes:
@@ -242,6 +248,7 @@ def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_p
             prnts(str('Фонбет, матч ' + str(match_id_fonbet) + '. Время ответа: ' + str(time_resp) +
                       ', запрос через ' + str(time_sleep)) + ' ' + ps.get_cur_proxy())
 
+        prnts('fb avg: ' + str(sum(avg_req) / len(avg_req)) + ' max: ' + str(max(avg_req)))
         time.sleep(time_sleep)
 
 
