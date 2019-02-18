@@ -291,7 +291,7 @@ def run_client():
             rs = conn.getresponse()
             data = rs.read().decode('utf-8')
             if data:
-                prnt(data)
+                prnt(data, 'hide')
             data_json = json.loads(data)
             server_forks = data_json
             time.sleep(0.5)
