@@ -5,15 +5,30 @@ import os
 import cfscrape
 import requests
 import datetime
+import statistics
 
-# DEBUG = True
-DEBUG = False
+DEBUG = True
+# DEBUG = False
 
 file_session_ol = 'olimp.session'
 file_session_fb = 'fonbet.session'
 
 package_dir = os.path.dirname(__file__)
 dtOld = datetime.datetime.now()
+
+
+def find_max_mode(list1):
+    list_table = statistics._counts(list1)
+    len_table = len(list_table)
+
+    if len_table == 1:
+        max_mode = statistics.mode(list1)
+    else:
+        new_list = []
+        for i in range(len_table):
+            new_list.append(list_table[i][0])
+        max_mode = max(new_list)
+    return max_mode
 
 
 def write_file(filename, s):

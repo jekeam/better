@@ -9,11 +9,12 @@ from difflib import SequenceMatcher
 import re
 from exceptions import *
 from server import run_server
-from utils import prnts, DEBUG
+from utils import prnts, DEBUG, find_max_mode
 from proxy_switcher import ProxySwitcher
 import json
 import os.path
 import os
+from statistics import median
 from sys import exit
 from datetime import datetime
 
@@ -180,7 +181,7 @@ def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi
         try:
             time_resp = get_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp,
                                        ps.get_next_proxy(), TIMEOUT_MATCH)
-            avg_req.append(time_resp)
+            avg_req.append(round(time_resp, 2))
         except TimeOut as e:
             ps.rep_cur_proxy(gen_proxi_olimp.next())
             err_str = 'Timeout: Олимп, ошибка при запросе матча ' + str(match_id_olimp)
@@ -206,7 +207,10 @@ def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi
         if DEBUG:
             prnts('Олимп, матч ' + str(match_id_olimp) + '. Время ответа: ' + str(time_resp) +
                   ', запрос через ' + str(time_sleep) + ' ' + ps.get_cur_proxy())
-        prnts('ol avg: ' + str(sum(avg_req) / len(avg_req)) + ' max: ' + str(max(avg_req)))
+        prnts('ol avg ' + str(match_id_olimp) + ': ' + str(round(sum(avg_req) / len(avg_req), 2)) +
+              ' max: ' + str(max(avg_req)) +
+              ' mode: ' + str(find_max_mode(avg_req)) +
+              ' median: ' + str(median(avg_req)))
         time.sleep(time_sleep)
 
 
@@ -227,7 +231,7 @@ def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_p
         try:
             time_resp = get_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet,
                                         ps.get_next_proxy(), TIMEOUT_MATCH)
-            avg_req.append(time_resp)
+            avg_req.append(round(time_resp, 2))
         except FonbetMatchСompleted as e:
             cnt = 0
             for pair_match in pair_mathes:
@@ -248,7 +252,10 @@ def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_p
             prnts(str('Фонбет, матч ' + str(match_id_fonbet) + '. Время ответа: ' + str(time_resp) +
                       ', запрос через ' + str(time_sleep)) + ' ' + ps.get_cur_proxy())
 
-        prnts('fb avg: ' + str(sum(avg_req) / len(avg_req)) + ' max: ' + str(max(avg_req)))
+        prnts('fbl avg ' + str(match_id_fonbet) + ': ' + str(round(sum(avg_req) / len(avg_req), 2)) +
+              ' max: ' + str(max(avg_req)) +
+              ' mode: ' + str(find_max_mode(avg_req)) +
+              ' median: ' + str(median(avg_req)))
         time.sleep(time_sleep)
 
 
