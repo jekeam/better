@@ -290,6 +290,7 @@ def run_client():
             conn.request("GET", "")
             rs = conn.getresponse()
             data = rs.read().decode('utf-8')
+            prnt(data)
             data_json = json.loads(data)
             server_forks = data_json
             time.sleep(0.5)
@@ -387,8 +388,8 @@ if __name__ == '__main__':
                 name = val_json.get('name', 'name')
                 pair_math = val_json.get('pair_math', 'pair_math')
 
-                bk1_score = val_json.get('bk1_score', 'bk1_score')
-                bk2_score = val_json.get('bk1_score', 'bk2_score')
+                bk1_score = str(val_json.get('bk1_score', 'bk1_score'))
+                bk2_score = str(val_json.get('bk2_score', 'bk2_score'))
 
                 score = '[' + bk1_score + '|' + bk2_score + ']'
                 v_time = val_json.get('time', 'v_time')
@@ -449,4 +450,3 @@ if __name__ == '__main__':
         else:
             pass
             prnt('not data', True)
-        time.sleep(2)
