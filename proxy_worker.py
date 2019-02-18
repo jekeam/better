@@ -12,6 +12,7 @@ from hashlib import md5
 import threading
 import platform
 from shutil import copyfile
+from utils import DEBUG
 
 # disable warning
 urllib3.disable_warnings()
@@ -226,7 +227,10 @@ def proxy_add_uniq(n, filename):
 def del_proxy(proxy, shared_proxies):
     if proxy in shared_proxies:
         shared_proxies.remove(proxy)
-        prnts('del_proxy, proxy deleted: ' + str(proxy), 'hide')
+        if DEBUG:
+            prnts('del_proxy, proxy deleted: ' + str(proxy))
+        else:
+            prnts('del_proxy, proxy deleted: ' + str(proxy), 'hide')
         return shared_proxies
     else:
         pass
@@ -256,6 +260,7 @@ def start_proxy_saver(proxies_olimp, proxies_fonbet, proxy_filename_olimp, proxy
 
 proxy_file_name = os.path.join(os.getcwd(), 'proxieslist.txt')
 
+
 def get_proxys(ol_fl, fb_fl):
     print('start proxy worker')
     proxy_list = []
@@ -267,6 +272,7 @@ def get_proxys(ol_fl, fb_fl):
     save_list(proxy_list_olimp, ol_fl)
     save_list(proxy_list_fonbet, fb_fl)
 
+
 def proxy_push(ol_fl, fb_fl):
     copyfile(ol_fl, 'olimp.proxy')
     copyfile(fb_fl, 'fonbet.proxy')
@@ -276,5 +282,4 @@ if __name__ == '__main__':
     ol_fl = 'proxy_by_olimp.txt'
     fb_fl = 'proxy_by_fonbet.txt'
     get_proxys(ol_fl, fb_fl)
-    #proxy_push(ol_fl, fb_fl)
-
+    # proxy_push(ol_fl, fb_fl)

@@ -165,7 +165,7 @@ def start_seeker_matchs_fonbet(proxies, gen_proxi_fonbet, arr_matchs):
 def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi_olimp, pair_mathes):
     global TIMEOUT_MATCH
 
-    proxy_size = 3
+    proxy_size = 5
     proxy = []
     i = 0
     while i < proxy_size:
@@ -260,11 +260,12 @@ def starter_bets(
 
             if match_id_olimp not in mathes_id_is_work:
                 mathes_id_is_work.append(match_id_olimp)
-                # start_seeker_olimp_bets_by_id = threading.Thread(
-                #     target=start_seeker_bets_olimp,
-                #     args=(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi_olimp, pair_mathes)
-                # )
-                # start_seeker_olimp_bets_by_id.start()
+
+                start_seeker_olimp_bets_by_id = threading.Thread(
+                    target=start_seeker_bets_olimp,
+                    args=(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi_olimp, pair_mathes)
+                )
+                start_seeker_olimp_bets_by_id.start()
 
             if match_id_fonbet not in mathes_id_is_work:
                 mathes_id_is_work.append(match_id_fonbet)
@@ -274,6 +275,7 @@ def starter_bets(
                     args=(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_proxi_fonbet, pair_mathes)
                 )
                 start_seeker_fonbet_bets_by_id.start()
+
         time.sleep(5)
 
 
