@@ -133,8 +133,9 @@ def start_seeker_matchs_olimp(proxies, gen_proxi_olimp, arr_matchs):
         time_sleep = max(0, (TIMEOUT_MATCHS - time_resp))
 
         if DEBUG:
-            prnts('Олимп, поиск матчей, время ответа: ' + str(time_resp) + ', запрос через ' +
-                  str(time_sleep) + ' ' + proxy)
+            pass
+            # prnts('Олимп, поиск матчей, время ответа: ' + str(time_resp) + ', запрос через ' +
+            #       str(time_sleep) + ' ' + proxy)
 
         time.sleep(time_sleep)
 
@@ -154,8 +155,9 @@ def start_seeker_matchs_fonbet(proxies, gen_proxi_fonbet, arr_matchs):
         time_sleep = max(0, (TIMEOUT_MATCHS - time_resp))
 
         if DEBUG:
-            prnts('Фонбет, поиск матчей, время ответа: ' + str(time_resp) + ', запрос через ' +
-                  str(time_sleep) + ' ' + proxy)
+            pass
+            # prnts('Фонбет, поиск матчей, время ответа: ' + str(time_resp) + ', запрос через ' +
+            #       str(time_sleep) + ' ' + proxy)
 
         time.sleep(time_sleep)
 
@@ -173,7 +175,8 @@ def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi
 
     while True:
         try:
-            time_resp = get_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, ps.get_next_proxy(), TIMEOUT_MATCH)
+            time_resp = get_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp,
+                                       ps.get_next_proxy(), TIMEOUT_MATCH)
         except TimeOut as e:
             ps.rep_cur_proxy(gen_proxi_olimp.next())
             err_str = 'Timeout: Олимп, ошибка при запросе матча ' + str(match_id_olimp)
@@ -205,11 +208,19 @@ def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi
 
 def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_proxi_fonbet, pair_mathes):
     global TIMEOUT_MATCH
-    proxy = gen_proxi_fonbet.next()
+
+    proxy_size = 3
+    proxy = []
+    i = 0
+    while i < proxy_size:
+        proxy.append(gen_proxi_fonbet.next())
+        i = i + 1
+    ps = ProxySwitcher(proxy_size, proxy)
 
     while True:
         try:
-            time_resp = get_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, proxy, TIMEOUT_MATCH)
+            time_resp = get_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet,
+                                        ps.get_next_proxy(), TIMEOUT_MATCH)
         except FonbetMatchСompleted as e:
             cnt = 0
             for pair_match in pair_mathes:
@@ -219,15 +230,16 @@ def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_p
             prnts(e)
             raise ValueError('start_seeker_bets_fonbet:' + str(e))
         except Exception as e:
-            prnts('Exception: Фонбет, ошибка при запросе матча ' + str(match_id_fonbet) + ': ' + str(e) + ' ' + proxy)
-            proxy = gen_proxi_fonbet.next()
+            prnts('Exception: Фонбет, ошибка при запросе матча ' + str(match_id_fonbet) + ': ' +
+                  str(e) + ' ' + ps.get_cur_proxy())
+            ps.rep_cur_proxy(gen_proxi_fonbet.next())
             time_resp = TIMEOUT_MATCH
 
         time_sleep = max(0, (TIMEOUT_MATCH - time_resp))
 
         if DEBUG:
             prnts(str('Фонбет, матч ' + str(match_id_fonbet) + '. Время ответа: ' + str(time_resp) +
-                      ', запрос через ' + str(time_sleep)) + ' ' + proxy)
+                      ', запрос через ' + str(time_sleep)) + ' ' + ps.get_cur_proxy())
 
         time.sleep(time_sleep)
 
