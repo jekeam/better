@@ -246,10 +246,10 @@ def del_proxy(proxy, shared_proxies):
 def join_proxies_to_file(n=50):
     global proxy_file_name
     proxy_from_file = get_proxy_from_file(proxy_file_name)
-    # print('Current number of proxies: ' + str(len(proxy_from_file)))
+    print('Current number of proxies ' + proxy_file_name + ': ' + str(len(proxy_from_file)))
     proxy_add_uniq(n, proxy_file_name)
     proxy_from_file = get_proxy_from_file(proxy_file_name)
-    # print('Total number of proxies: ' + str(len(proxy_from_file)))
+    print('Total number of proxies: ' + proxy_file_name + ': ' + str(len(proxy_from_file)))
     return proxy_from_file
 
 
