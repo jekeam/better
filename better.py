@@ -442,6 +442,6 @@ if __name__ == '__main__':
                     deff_max
                 )
             else:
-                prnt('not fork: ' + str(val_json), 'hide')
+                pass
         else:
             pass
