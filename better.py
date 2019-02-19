@@ -446,7 +446,7 @@ if __name__ == '__main__':
                         l = l_temp
                         go_bet_json = val_json
                 elif deff_max >= 10:
-                    prnt('deff_max=' + str(deff_max) + ': ' + str(key) + str(val_json), 'hide')
+                    pass
             if go_bet_key:
                 prnt('')
                 prnt('Go bets: ' + info)
