@@ -546,8 +546,7 @@ class FonbetBot:
             res = resp.json()
 
             if self.cnt_sale_attempt > 40:
-                err_str = 'BET_FONBET.PY: error sale bet in Fonbet(coupon is lock): ' + \
-                          str(res.get('coupon').get('errorMessageRus'))
+                err_str = 'BET_FONBET.PY: error sale bet in Fonbet(coupon is lock): ' + str(res)
                 prnt(err_str)
                 raise LoadException(err_str)
 
@@ -662,8 +661,7 @@ class FonbetBot:
         prnt('BET_FONBET.PY _check_sell_result rs: ' + str(res), 'hide')
 
         if self.cnt_sale_attempt > 40:
-            err_str = 'BET_FONBET.PY: error sale bet in Fonbet(coupon is lock): ' + \
-                      str(res.get('coupon').get('errorMessageRus'))
+            err_str = 'BET_FONBET.PY: error sale bet in Fonbet(coupon is lock): ' + str(res)
             prnt(err_str)
             raise LoadException(err_str)
 
