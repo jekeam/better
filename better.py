@@ -395,7 +395,6 @@ if __name__ == '__main__':
                 time_break_fonbet = val_json.get('time_break_fonbet')
                 is_2nd_half = val_json.get('is_2nd_half')
                 time_last_upd = val_json.get('time_last_upd', 1)
-                live_fork_total = val_json.get('live_fork_total', 0)
 
                 deff_olimp = round(float(time.time() - float(val_json.get('time_req_olimp', 0))))
                 deff_fonbet = round(float(time.time() - float(val_json.get('time_req_fonbet', 0))))
@@ -415,7 +414,6 @@ if __name__ == '__main__':
                            ' ' + k1_type + '=' + str(k1) + '/' + k2_type + '=' + str(k2) + ', ' + \
                            v_time + ' (' + str(minute) + ') ' + \
                            score + ' ' + str(pair_math) + \
-                           ', live_fork_total: ' + str(live_fork_total) + \
                            ', max deff: ' + str(deff_max)
                 except Exception as e:
                     prnts('error: ' + str(e))
@@ -425,7 +423,7 @@ if __name__ == '__main__':
                     bet1, bet2 = get_sum_bets(k1, k2, total_bet)
                     # Проверим вилку на исключения
                     if check_fork(
-                            key, l_temp, k1, k2, live_fork_total, bk1_score, bk2_score,
+                            key, l_temp, k1, k2, bk1_score, bk2_score,
                             minute, time_break_fonbet, is_2nd_half, info
                     ) or DEBUG:
                         go_bet_key = key
@@ -444,6 +442,6 @@ if __name__ == '__main__':
                     deff_max
                 )
             else:
-                prnt('not fork: ' + str(val_json), 'hide')
+                pass
         else:
             pass
