@@ -179,13 +179,26 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
 
                 # пересчетаем суммы ставок
                 amount_olimp, amount_fonbet = get_sum_bets(float(obj['olimp']), float(obj['fonbet']), total_bet, False)
-
+  
                 # Выведем текую доходность вилки
                 prnt('cur proc: ' + str(cur_proc) + '%')
                 L = (1 / float(obj['olimp'])) + (1 / float(obj['fonbet']))
                 new_proc = round((1 - L) * 100, 2)
                 change_proc = round(new_proc - cur_proc, 2)
                 prnt('new proc: ' + str(new_proc) + '%, change: ' + str(change_proc))
+
+                # Проверяем, берем вилку только если она выросла в цене
+                # Если не изменилась, продолжаем мониторить,
+                # Bначе выбразываем
+                if change_proc < 0:
+                    prnt('Fork exclude: change_proc = ' + str(change_proc) + '\n')
+                    return False
+                elif change_proc == 0:
+                    prnt('Check replay: change_proc = ' + str(change_proc) + '\n')
+                    return go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max)
+                elif check_l(L) != '':
+                    prnt('Check replay: fork be up, but new_proc = ' + str(new_proc) + '%)')
+                    return go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max)
 
                 if check_l(L) == '' or DEBUG:
 
@@ -388,7 +401,6 @@ if __name__ == '__main__':
 
                 bk1_score = str(val_json.get('bk1_score', 'bk1_score'))
                 bk2_score = str(val_json.get('bk2_score', 'bk2_score'))
-
                 score = '[' + bk1_score + '|' + bk2_score + ']'
                 v_time = val_json.get('time', 'v_time')
                 minute = val_json.get('minute', 0)
@@ -430,7 +442,7 @@ if __name__ == '__main__':
                         l = l_temp
                         go_bet_json = val_json
                 elif deff_max >= 10:
-                    prnt('deff_max=' + str(deff_max) + ': ' + str(key) + str(val_json), 'hide')
+                    pass
             if go_bet_key:
                 prnt('')
                 prnt('Go bets: ' + info)
