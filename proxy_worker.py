@@ -17,7 +17,7 @@ from utils import DEBUG
 # disable warning
 urllib3.disable_warnings()
 
-TIME_OUT = 1.5
+TIME_OUT = 3.51
 
 UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3163.100 Safari/537.36'
 
@@ -40,24 +40,6 @@ class createBatchGenerator:
     def next(self):
         with self.lock:
             return next(self.it)
-
-
-''' 
-class createBatchGenerator:
-
-    def __init__(self, proxi_list):
-        self.proxi_list = proxi_list
-        self.lock = threading.Lock()
-
-    def __iter__(self):
-        return self
-
-    def __next__(self):
-        with self.lock:
-            for i in self.proxi_list:
-                prnts('Get next proxy: ' + i)  # , 'hide'
-                yield i.strip()
-'''
 
 
 def get_random_proxy(proxi_list):
@@ -280,7 +262,7 @@ if __name__ == '__main__':
     proxy_list = []
     proxy_list_olimp = []
     proxy_list_fonbet = []
-    proxy_list = join_proxies_to_file(10)
+    proxy_list = join_proxies_to_file(2500)
 
     proxy_list_olimp = check_proxies_olimp(proxy_list)
     save_list(proxy_list_olimp, ol_fl)
