@@ -158,6 +158,8 @@ def save_list(proxies, filename=None):
         global proxy_file_name
         filename = proxy_file_name
 
+    cd()
+
     with open(filename, 'w') as f:
         for p in proxies:
             f.write(p + '\n')
@@ -180,6 +182,7 @@ def get_proxies(n):
 def get_proxy_from_file(filename=None):
     proxys = []
     proxy_uniq = []
+    cd()
 
     if not filename:
         global proxy_file_name
@@ -201,9 +204,6 @@ def get_proxy_from_file(filename=None):
 
 
 def proxy_add_uniq(n, filename):
-    if platform.system() != 'Windows' and not DEBUG:
-        os.chdir('/home/autobro/')
-
     pl = get_proxies(n)
     with open(filename, 'a') as f:
         for p in pl:
@@ -251,6 +251,11 @@ proxy_file_name = 'proxieslist.txt'
 def proxy_push(ol_fl, fb_fl):
     copyfile(ol_fl, 'olimp.proxy')
     copyfile(fb_fl, 'fonbet.proxy')
+
+
+def cd():
+    if platform.system() != 'Windows' and not DEBUG:
+        os.chdir('/home/autobro/')
 
 
 if __name__ == '__main__':
