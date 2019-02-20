@@ -448,7 +448,7 @@ if __name__ == '__main__':
                 elif deff_max >= 10:
                     pass
             if go_bet_key:
-                prnt('')
+                prnt(' ')
                 prnt('Go bets: ' + info)
                 fork_success = go_bets(
                     go_bet_json.get('kof_olimp'),
