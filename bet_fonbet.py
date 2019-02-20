@@ -242,8 +242,9 @@ class FonbetBot:
             res = resp.json()
             prnt('BET_FONBET.PY: Fonbet, sign_in request: ' + str(resp.status_code))
             if "fsid" not in res:
-                prnt('BET_FONBET.PY: error (fsid): ' + str(res))
-                raise LoadException("BET_FONBET.PY: key 'fsid' not found in response")
+                err_str = 'BET_FONBET.PY: key "fsid" not found in response: ' + str(res)
+                prnt(err_str)
+                raise LoadException("BET_FONBET.PY: " + err_str)
 
             payload["fsid"] = res["fsid"]
             self.fsid = res["fsid"]
@@ -553,17 +554,25 @@ class FonbetBot:
             prnt('BET_FONBET.PY - sale_bet rs 1: ' + str(res), 'hide')
             # payload['version'] = res.get('version')
 
-            timer_update = float(res.get('recommendedUpdateFrequency'))
+            timer_update = float(res.get('recommendedUpdateFrequency', 3))
 
+            coupon_found = False
             for coupon in res.get('conditions'):
                 if str(coupon.get('regId')) == str(self.reg_id):
+                    coupon_found = True
                     self.cnt_sale_attempt = self.cnt_sale_attempt + 1
-                    if coupon.get('canSell', 'False') == 'True' and coupon.get('tempBlock', 'False') != 'True':
+                    prnt('BET_FONBET.PY: canSell: ' + str(coupon.get('canSell', True)))
+                    prnt('BET_FONBET.PY: tempBlock: ' + str(coupon.get('tempBlock', False)))
+                    if coupon.get('canSell', True) is True and coupon.get('tempBlock', False) is False:
                         self.sell_sum = float(coupon.get('completeSellSum'))
                     else:
                         prnt('BET_FONBET.PY: coupon is lock, time sleep ' + str(timer_update) + ' sec...')
                         time.sleep(timer_update)
                         return self.sale_bet()
+            if not coupon_found:
+                err_str = 'BET_FONBET.PY: coupon regId ' + str(self.reg_id) + ' not found: ' + str(res)
+                prnt(err_str)
+                raise LoadException(err_str)
 
             if not self.sell_sum:
                 prnt('BET_FONBET.PY: coupon is BAG (TODO), time sleep ' + str(timer_update) + ' sec...')
@@ -760,10 +769,10 @@ class FonbetBot:
 if __name__ == '__main__':
     FONBET_USER = {"login": 5699838, "password": "NTe2904H11"}
     amount_fonbet = 30
-    wager_fonbet = {'event': '13268594', 'factor': '1571', 'param': '', 'score': '0:1', 'value': '33'}
+    wager_fonbet = {'event': '13366483', 'factor': '1571', 'param': '', 'score': '0:1', 'value': '33'}
     fonbet = FonbetBot(FONBET_USER)
     fonbet.sign_in()
     # fonbet.place_bet(amount_fonbet, wager_fonbet)
-    # fonbet.sale_bet(14286002998)
+    fonbet.sale_bet(14421421233344)
     # fonbet_reg_id = fonbet.place_bet(amount_fonbet, wager_fonbet)
     # {'e': 12264423, 'f': 931, 'v': 1.4, 'p': 250, 'pt': '2.5', 'isLive': True}
