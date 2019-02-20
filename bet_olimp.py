@@ -153,6 +153,7 @@ class OlimpBot:
             raise LoadException(err_str)
 
         prnt('BET_OLIMP.PY: send bet to bk olimp, time: ' + str(datetime.datetime.now()))
+        prnt('BET_OLIMP.PY: rq olimp: ' + str(payload), 'hide')
         resp = requests_retry_session().post(
             url,
             headers=headers,
@@ -161,10 +162,10 @@ class OlimpBot:
             timeout=15,
             proxies=self.proxies
         )
-        prnt('BET_OLIMP.PY: response olimp: ' + str(resp.text), 'hide')
+        prnt('BET_OLIMP.PY: rs olimp: ' + str(resp.text), 'hide')
         check_status_with_resp(resp, True)
         res = resp.json()
-        prnt(res, 'hide')
+        prnt('BET_OLIMP.PY: rs js olimp: ' + str(res), 'hide')
 
         req_time = round(resp.elapsed.total_seconds(), 2)
         n_sleep = max(0, (self.sleep - req_time))
