@@ -178,7 +178,7 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
             if float(obj['olimp']) > 1 < float(obj['fonbet']):
 
                 # пересчетаем суммы ставок
-                amount_olimp, amount_fonbet = get_sum_bets(float(obj['olimp']), float(obj['fonbet']), total_bet, Falsesvninfo)
+                amount_olimp, amount_fonbet = get_sum_bets(float(obj['olimp']), float(obj['fonbet']), total_bet, False)
   
                 # Выведем текую доходность вилки
                 prnt('cur proc: ' + str(cur_proc) + '%')
