@@ -204,7 +204,7 @@ def get_proxy_from_file(filename=None):
         filename = proxy_file_name
 
     try:
-        with open(os.path.join(os.getcwd(), filename), 'r') as f:
+        with open(filename, 'r') as f:
             proxys = list(f)
             proxys = list(map(str.strip, proxys))
     except:
@@ -219,6 +219,9 @@ def get_proxy_from_file(filename=None):
 
 
 def proxy_add_uniq(n, filename):
+    if platform.system() != 'Windows' and not DEBUG:
+        os.chdir('/home/autobro/')
+
     pl = get_proxies(n)
     with open(filename, 'a') as f:
         for p in pl:
@@ -260,7 +263,7 @@ def start_proxy_saver(proxies_olimp, proxies_fonbet, proxy_filename_olimp, proxy
         time.sleep(15)
 
 
-proxy_file_name = os.path.join(os.getcwd(), 'proxieslist.txt')
+proxy_file_name = 'proxieslist.txt'
 
 
 def proxy_push(ol_fl, fb_fl):
@@ -269,10 +272,6 @@ def proxy_push(ol_fl, fb_fl):
 
 
 if __name__ == '__main__':
-    
-    if platform.system() != 'Windows' and not DEBUG:
-        os.chdir('/home/autobro/')
-    
     ol_fl = 'proxy_by_olimp.txt'
     fb_fl = 'proxy_by_fonbet.txt'
 
@@ -281,12 +280,12 @@ if __name__ == '__main__':
     proxy_list = []
     proxy_list_olimp = []
     proxy_list_fonbet = []
-    proxy_list = join_proxies_to_file(1000)
+    proxy_list = join_proxies_to_file(10)
 
     proxy_list_olimp = check_proxies_olimp(proxy_list)
     save_list(proxy_list_olimp, ol_fl)
 
-    # proxy_list_fonbet = check_proxies_fonbet(proxy_list)
-    # save_list(proxy_list_fonbet, fb_fl)
+    proxy_list_fonbet = check_proxies_fonbet(proxy_list)
+    save_list(proxy_list_fonbet, fb_fl)
 
     # proxy_push(ol_fl, fb_fl)
