@@ -175,9 +175,10 @@ def export_hist(OLIMP_USER, FONBET_USER):
                   str(info['fonbet'].get('balance', '')) + ';' + \
                   str(info['olimp'].get('balance', '')) + ';' + '\n'
 
-        header = 'ID;time;pre_fb_kof;pre_o_kof;pre_fb_sum;pre_o_sum;' + \
-                 'fb_id;o_id;fb_time;o_time;fb_kof;o_kof;fb_sum_bet;o_sum_bet;' + \
-                 'fb_profit;o_profit;fb_result;o_result;fb_name;o_name;fb_status;o_status;f_kof_type;o_kof_type;fb_bal;ol_bal;\n'
+        header = 'ID;time;pre_fb_kof;pre_o_kof;pre_fb_sum;pre_o_sum;' \
+                 'fb_id;o_id;fb_time;o_time;fb_kof;o_kof;fb_sum_bet;o_sum_bet;' \
+                 'fb_profit;o_profit;fb_result;o_result;fb_name;o_name;fb_status;' \
+                 'o_status;f_kof_type;o_kof_type;fb_bal;ol_bal;\n'
 
         with open('statistics.csv', 'w', encoding='utf-8') as f:
             f.write(header + out)
