@@ -359,8 +359,8 @@ def start_compare_matches(pair_mathes, json_bk1, json_bk2):
 def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
     def forks_meta_upd(forks_meta, forks):
         # Перед удалением сохраним время жизни вылки
-        live_fork_total = forks_meta.get(bet_key, dict()).get('live_fork_total', 0) + \
-                          forks.get(bet_key, {}).get('live_fork')
+        live_fork_total = forks_meta.get(bet_key, []).get('live_fork_total', 0) + \
+                          forks.get(bet_key, {}).get('live_fork', 0)
         forks_meta[bet_key] = {'live_fork_total': live_fork_total}
 
     while True:
