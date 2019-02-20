@@ -251,12 +251,20 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
             if obj.get('fonbet_err') != 'ok' and obj.get('olimp_err') == 'ok':
                 prnt('Ошибка при проставлении ставки в фонбет, делаю выкуп ставки в олимпе, через '
                      + str(sale_timeout) + ' сек.')
-                obj['olimp'].sale_bet()
+                try:
+                    obj['olimp'].sale_bet()
+                except Exception as e:
+                    prnts('Error sale_bet olimp: ' + str(e))
+                    obj['olimp_err'] = str(e)
 
             if obj.get('olimp_err') != 'ok' and obj.get('fonbet_err') == 'ok':
                 prnt('Ошибка при проставлении ставки в олимпе, делаю выкуп ставки в фонбет, через '
                      + str(sale_timeout) + ' сек.')
-                obj['fonbet'].sale_bet()
+                try:
+                    obj['fonbet'].sale_bet()
+                except Exception as e:
+                    prnts('Error sale_bet fonbet: ' + str(e))
+                    obj['fonbet_err'] = str(e)
 
             if obj.get('olimp_err') == 'ok' and obj.get('fonbet_err') == 'ok':
                 prnt('Ставки проставлены успешно!')
@@ -395,7 +403,6 @@ if __name__ == '__main__':
 
                 bk1_score = str(val_json.get('bk1_score', 'bk1_score'))
                 bk2_score = str(val_json.get('bk2_score', 'bk2_score'))
-
                 score = '[' + bk1_score + '|' + bk2_score + ']'
                 v_time = val_json.get('time', 'v_time')
                 minute = val_json.get('minute', 0)

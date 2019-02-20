@@ -17,7 +17,7 @@ from utils import DEBUG
 # disable warning
 urllib3.disable_warnings()
 
-TIME_OUT = 1.5
+TIME_OUT = 3.51
 
 UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3163.100 Safari/537.36'
 
@@ -40,24 +40,6 @@ class createBatchGenerator:
     def next(self):
         with self.lock:
             return next(self.it)
-
-
-''' 
-class createBatchGenerator:
-
-    def __init__(self, proxi_list):
-        self.proxi_list = proxi_list
-        self.lock = threading.Lock()
-
-    def __iter__(self):
-        return self
-
-    def __next__(self):
-        with self.lock:
-            for i in self.proxi_list:
-                prnts('Get next proxy: ' + i)  # , 'hide'
-                yield i.strip()
-'''
 
 
 def get_random_proxy(proxi_list):
@@ -161,6 +143,7 @@ def check_proxies_fonbet(proxies_list):
 
 
 async def save(proxies, proxy_list):
+    x = 0
     while True:
         proxy = await proxies.get()
         if proxy is None:
@@ -168,6 +151,8 @@ async def save(proxies, proxy_list):
         proto = 'https' if 'HTTPS' in proxy.types else 'http'
         row = '%s://%s:%d' % (proto, proxy.host, proxy.port)
         proxy_list.append(row)
+        x = x + 1
+        prnts(x)
 
 
 def save_list(proxies, filename=None):
@@ -175,6 +160,8 @@ def save_list(proxies, filename=None):
     if not filename:
         global proxy_file_name
         filename = proxy_file_name
+
+    cd()
 
     with open(filename, 'w') as f:
         for p in proxies:
@@ -198,13 +185,14 @@ def get_proxies(n):
 def get_proxy_from_file(filename=None):
     proxys = []
     proxy_uniq = []
+    cd()
 
     if not filename:
         global proxy_file_name
         filename = proxy_file_name
 
     try:
-        with open(os.path.join(os.getcwd(), filename), 'r') as f:
+        with open(filename, 'r') as f:
             proxys = list(f)
             proxys = list(map(str.strip, proxys))
     except:
@@ -260,7 +248,7 @@ def start_proxy_saver(proxies_olimp, proxies_fonbet, proxy_filename_olimp, proxy
         time.sleep(15)
 
 
-proxy_file_name = os.path.join(os.getcwd(), 'proxieslist.txt')
+proxy_file_name = 'proxieslist.txt'
 
 
 def proxy_push(ol_fl, fb_fl):
@@ -268,11 +256,12 @@ def proxy_push(ol_fl, fb_fl):
     copyfile(fb_fl, 'fonbet.proxy')
 
 
-if __name__ == '__main__':
-    
+def cd():
     if platform.system() != 'Windows' and not DEBUG:
         os.chdir('/home/autobro/')
-    
+
+
+if __name__ == '__main__':
     ol_fl = 'proxy_by_olimp.txt'
     fb_fl = 'proxy_by_fonbet.txt'
 
@@ -281,12 +270,12 @@ if __name__ == '__main__':
     proxy_list = []
     proxy_list_olimp = []
     proxy_list_fonbet = []
-    proxy_list = join_proxies_to_file(1000)
+    proxy_list = join_proxies_to_file(5000)
 
     proxy_list_olimp = check_proxies_olimp(proxy_list)
     save_list(proxy_list_olimp, ol_fl)
 
-    # proxy_list_fonbet = check_proxies_fonbet(proxy_list)
-    # save_list(proxy_list_fonbet, fb_fl)
+    proxy_list_fonbet = check_proxies_fonbet(proxy_list)
+    save_list(proxy_list_fonbet, fb_fl)
 
     # proxy_push(ol_fl, fb_fl)
