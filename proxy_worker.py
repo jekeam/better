@@ -152,7 +152,7 @@ async def save(proxies, proxy_list):
         row = '%s://%s:%d' % (proto, proxy.host, proxy.port)
         proxy_list.append(row)
         x = x + 1
-        print(x)
+        prnts(x)
 
 
 def save_list(proxies, filename=None):
