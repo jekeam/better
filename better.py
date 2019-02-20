@@ -187,6 +187,19 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
                 change_proc = round(new_proc - cur_proc, 2)
                 prnt('new proc: ' + str(new_proc) + '%, change: ' + str(change_proc))
 
+                # Проверяем, берем вилку только если она выросла в цене
+                # Если не изменилась, продолжаем мониторить,
+                # Bначе выбразываем
+                if change_proc < 0:
+                    prnt('Fork exclude: change_proc = ' + str(change_proc) + '\n')
+                    return False
+                elif change_proc == 0:
+                    prnt('Check replay: change_proc = ' + str(change_proc) + '\n')
+                    return go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max)
+                elif check_l(L) != '':
+                    prnt('Check replay: fork be up, but new_proc = ' + str(new_proc) + '%)')
+                    return go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max)
+
                 if check_l(L) == '' or DEBUG:
 
                     is_recheck = True
