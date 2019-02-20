@@ -143,6 +143,7 @@ def check_proxies_fonbet(proxies_list):
 
 
 async def save(proxies, proxy_list):
+    x = 0
     while True:
         proxy = await proxies.get()
         if proxy is None:
@@ -150,6 +151,8 @@ async def save(proxies, proxy_list):
         proto = 'https' if 'HTTPS' in proxy.types else 'http'
         row = '%s://%s:%d' % (proto, proxy.host, proxy.port)
         proxy_list.append(row)
+        x = x + 1
+        print(x)
 
 
 def save_list(proxies, filename=None):
@@ -267,7 +270,7 @@ if __name__ == '__main__':
     proxy_list = []
     proxy_list_olimp = []
     proxy_list_fonbet = []
-    proxy_list = join_proxies_to_file(5000)
+    proxy_list = join_proxies_to_file(5)
 
     proxy_list_olimp = check_proxies_olimp(proxy_list)
     save_list(proxy_list_olimp, ol_fl)
