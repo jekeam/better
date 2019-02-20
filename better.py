@@ -145,7 +145,7 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
     L = ((1 / float(wager_olimp['factor'])) + (1 / float(wager_fonbet['value'])))
     cur_proc = round((1 - L) * 100, 2)
 
-    amount_olimp, amount_fonbet = get_sum_bets(wager_olimp['factor'], wager_fonbet['value'], total_bet, 'show')
+    amount_olimp, amount_fonbet = get_sum_bets(wager_olimp['factor'], wager_fonbet['value'], total_bet, False)
 
     if __name__ == '__main__':
         wait_sec = 3.51  # max(0, (3.5 - deff_max))
@@ -185,7 +185,7 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
             if float(obj['olimp']) > 1 < float(obj['fonbet']):
 
                 # пересчетаем суммы ставок
-                amount_olimp, amount_fonbet = get_sum_bets(float(obj['olimp']), float(obj['fonbet']), total_bet, 'show')
+                amount_olimp, amount_fonbet = get_sum_bets(float(obj['olimp']), float(obj['fonbet']), total_bet, False)
 
                 # Выведем текую доходность вилки
                 prnt('cur proc: ' + str(cur_proc) + '%')
