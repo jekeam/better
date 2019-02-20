@@ -126,7 +126,7 @@ def check_proxies_olimp(proxies_list):
     mgr = mp.Manager()
     valid_proxies_list = mgr.list()
 
-    n_chunks = 26
+    n_chunks = 20
     chunks = [proxies_list[i::n_chunks] for i in range(n_chunks)]
 
     prcs = []
@@ -203,9 +203,6 @@ def get_proxy_from_file(filename=None):
         global proxy_file_name
         filename = proxy_file_name
 
-    if platform.system() != 'Windows' and not DEBUG:
-        os.chdir('/home/autobro/')
-
     try:
         with open(os.path.join(os.getcwd(), filename), 'r') as f:
             proxys = list(f)
@@ -272,6 +269,10 @@ def proxy_push(ol_fl, fb_fl):
 
 
 if __name__ == '__main__':
+    
+    if platform.system() != 'Windows' and not DEBUG:
+        os.chdir('/home/autobro/')
+    
     ol_fl = 'proxy_by_olimp.txt'
     fb_fl = 'proxy_by_fonbet.txt'
 
