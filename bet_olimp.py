@@ -170,8 +170,8 @@ class OlimpBot:
         req_time = round(resp.elapsed.total_seconds(), 2)
         n_sleep = max(0, (self.sleep - req_time))
 
-        err_code = res.get("error").get('err_code')
-        err_msg = res.get("error").get('err_desc')
+        err_code = res.get("error", {}).get('err_code')
+        err_msg = res.get("error", {}).get('err_desc')
 
         # {"error": {"err_code": 400, "err_desc": "Выбранный Вами исход недоступен"}, "data": null}
         # {"error": {"err_code": 417, "err_desc": "Невозможно принять ставку на указанный исход!"}, "ata": null}
@@ -184,33 +184,42 @@ class OlimpBot:
 
         if err_code == 0:
             #  {'isCache': 0, 'error': {'err_code': 0, 'err_desc': None}, 'data': 'Ваша ставка успешно принята!'}
-            prnt('BET_OLIMP.PY: Olimp bet successful')
+            prnt('BET_OLIMP.PY: bet successful')
             self.matchid = self.wager['event']
             coupon = self.get_history_bet(self.matchid)
             self.reg_id = coupon.get('bet_id')
         elif err_code in (400, 417):
             if err_code == 417 and 'Такой исход не существует' in err_msg:
-                err_str = 'BET_OLIMP.PY: error place bet in Olimp: ' + str(res)
+                err_str = 'BET_OLIMP.PY: error place bet: ' +  \
+                           str(res.get("error", {}).get('err_desc'))
+                prnt(err_str)
+                raise LoadException(err_str)
+            # MaxBet
+            elif err_code == 417 and  \
+                 'Превышена суммарная максимальная ставка' in err_msg:
+                err_str = 'BET_OLIMP.PY: error max bet: ' +  \
+                str(res.get("error", {}).get('err_desc'))
                 prnt(err_str)
                 raise LoadException(err_str)
             else:
                 if self.cnt_bet_attempt > (60 * 2.5) / self.sleep:
-                    err_str = 'BET_OLIMP.PY: error place bet in Olimp: ' + str(res)
+                    err_str = 'BET_OLIMP.PY: error place bet: ' + \
+                               str(res.get("error", {}).get('err_desc'))
                     prnt(err_str)
                     raise LoadException(err_str)
 
                 self.cnt_bet_attempt = self.cnt_bet_attempt + 1
-                prnt('BET_OLIMP.PY: ' + str(res.get("error").get('err_desc')) + '. попытка #'
+                prnt('BET_OLIMP.PY: ' + str(res.get("error", {}).get('err_desc')) + '. попытка #'
                      + str(self.cnt_bet_attempt) + ' через ' + str(n_sleep) + ' сек')
                 time.sleep(n_sleep)
                 return self.place_bet(obj=obj)
         elif "data" not in res or res.get("data") != "Ваша ставка успешно принята!":
             # res["data"] != "Your bet is successfully accepted!" :
-            err_str = 'BET_OLIMP.PY: error place bet in Olimp: ' + str(res)
+            err_str = 'BET_OLIMP.PY: error place bet: ' + str(res)
             prnt(err_str)
             raise LoadException(err_str)
         else:
-            err_str = 'BET_OLIMP.PY: error place bet in Olimp: ' + str(res)
+            err_str = 'BET_OLIMP.PY: error place bet: ' + str(res)
             prnt(err_str)
             raise LoadException(err_str)
 
