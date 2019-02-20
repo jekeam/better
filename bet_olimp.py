@@ -184,27 +184,26 @@ class OlimpBot:
 
         if err_code == 0:
             #  {'isCache': 0, 'error': {'err_code': 0, 'err_desc': None}, 'data': 'Ваша ставка успешно принята!'}
-            prnt('BET_OLIMP.PY: bet successful')
             self.matchid = self.wager['event']
-            coupon = self.get_history_bet(self.matchid)
-            self.reg_id = coupon.get('bet_id')
+            self.get_cur_max_bet_id(self.matchid)
+            prnt('BET_OLIMP.PY: bet successful, reg_id: ' + str(self.reg_id))
         elif err_code in (400, 417):
             if err_code == 417 and 'Такой исход не существует' in err_msg:
-                err_str = 'BET_OLIMP.PY: error place bet: ' +  \
-                           str(res.get("error", {}).get('err_desc'))
+                err_str = 'BET_OLIMP.PY: error place bet: ' + \
+                          str(res.get("error", {}).get('err_desc'))
                 prnt(err_str)
                 raise LoadException(err_str)
             # MaxBet
-            elif err_code == 417 and  \
-                 'Превышена суммарная максимальная ставка' in err_msg:
-                err_str = 'BET_OLIMP.PY: error max bet: ' +  \
-                str(res.get("error", {}).get('err_desc'))
+            elif err_code == 417 and \
+                    'Превышена суммарная максимальная ставка' in err_msg:
+                err_str = 'BET_OLIMP.PY: error max bet: ' + \
+                          str(res.get("error", {}).get('err_desc'))
                 prnt(err_str)
                 raise LoadException(err_str)
             else:
                 if self.cnt_bet_attempt > (60 * 2.5) / self.sleep:
                     err_str = 'BET_OLIMP.PY: error place bet: ' + \
-                               str(res.get("error", {}).get('err_desc'))
+                              str(res.get("error", {}).get('err_desc'))
                     prnt(err_str)
                     raise LoadException(err_str)
 
@@ -222,6 +221,80 @@ class OlimpBot:
             err_str = 'BET_OLIMP.PY: error place bet: ' + str(res)
             prnt(err_str)
             raise LoadException(err_str)
+
+    def get_cur_max_bet_id(self, event_id=None, filter="0100", offset="0"):
+
+        if not self.session_payload.get("session"):
+            self.sign_in()
+
+        req_url = olimp_url2.format("user/history")
+
+        payload = {}
+
+        payload["filter"] = filter  # только не расчитанные
+        payload["offset"] = offset
+        payload["session"] = self.session_payload["session"]
+        payload["lang_id"] = "0"
+        payload["platforma"] = "ANDROID1"
+        payload["time_shift"] = "0"
+
+        headers = base_headers.copy()
+        headers.update(get_xtoken_bet(payload))
+        headers.update({'X-XERPC': '1'})
+        prnt('BET_OLIMP.PY - get_cur_bet_id rq: ' + str(payload), 'hide')
+        resp = requests_retry_session().post(
+            req_url,
+            headers=headers,
+            data=payload,
+            verify=False,
+            timeout=30,
+            proxies=self.proxies
+        )
+        prnt('BET_OLIMP.PY - get_cur_bet_id rs: ' + str(resp.text), 'hide')
+        check_status_with_resp(resp)
+        res = resp.json()
+        prnt('BET_OLIMP.PY - get_cur_bet_id rs js: ' + str(res), 'hide')
+
+        if res.get('error').get('err_code') != 0:
+            err_str = 'BET_OLIMP.PY: error get_cur_bet_id: ' + str(res)
+            prnt(err_str)
+            raise LoadException(err_str)
+
+        max_bet_id = 0
+        coupon_data = {}
+        # reg_id - мы знаем заранее - только при ручном выкупе как правило
+        if self.reg_id:
+            coupon_found = False
+            for bet_list in res.get('data').get('bet_list', []):
+                cur_bet_id = bet_list.get('bet_id')
+                if cur_bet_id == self.reg_id:
+                    coupon_found = True
+                    max_bet_id = cur_bet_id
+                    coupon_data = bet_list
+            if not coupon_found:
+                err_str = 'BET_OLIMP.PY: coupon reg_id ' + str(self.reg_id) + ' not found: ' + str(res)
+                prnt(err_str)
+                raise LoadException(err_str)
+
+        # Мы не знаем reg_id и берем последний по матчу
+        elif event_id:
+            for bet_list in res.get('data').get('bet_list', []):
+                if str(bet_list.get('events')[0].get('matchid')) == str(event_id):
+                    cur_bet_id = bet_list.get('bet_id')
+                    if cur_bet_id > max_bet_id:
+                        max_bet_id = cur_bet_id
+                        coupon_data = bet_list
+        # Мы не знаем мата и берем просто последний
+        else:
+            for bet_list in res.get('data').get('bet_list', []):
+                cur_bet_id = bet_list.get('bet_id')
+                if cur_bet_id > max_bet_id:
+                    max_bet_id = cur_bet_id
+                    coupon_data = bet_list
+
+        if max_bet_id:
+            self.reg_id = max_bet_id
+            return coupon_data
 
     def get_history_bet(self, event_id=None, filter="0100", offset="0"):
 
@@ -245,7 +318,7 @@ class OlimpBot:
         headers = base_headers.copy()
         headers.update(get_xtoken_bet(payload))
         headers.update({'X-XERPC': '1'})
-
+        prnt('BET_OLIMP.PY - sale_bet rq hist: ' + str(payload), 'hide')
         resp = requests_retry_session().post(
             req_url,
             headers=headers,
@@ -254,8 +327,10 @@ class OlimpBot:
             timeout=30,
             proxies=self.proxies
         )
+        prnt('BET_OLIMP.PY - sale_bet rs hist: ' + str(resp.text), 'hide')
         check_status_with_resp(resp)
         res = resp.json()
+        prnt('BET_OLIMP.PY - sale_bet rs js hist: ' + str(res), 'hide')
         if res.get('error').get('err_code') != 0:
             prnt('BET_OLIMP.PY: error get history: ' + str(res))
             raise LoadException("BET_OLIMP.PY: " + str(res.get('error').get('err_desc')))
@@ -272,74 +347,82 @@ class OlimpBot:
         else:
             return res.get('data')
 
-    def sale_bet(self):
-        if self.matchid:
-            coupon = self.get_history_bet(self.matchid)
-            self.reg_id = coupon.get('bet_id')
+    def sale_bet(self, reg_id=None):
+        # Перезапишем ИД если он указан явно
+        if not self.reg_id:
+            self.reg_id = reg_id
 
-            if str(coupon.get('cashout_allowed')) == 'True' and str(coupon.get('amount')) != '0':
+        coupon = self.get_cur_max_bet_id(self.matchid)
+        cashout_allowed = coupon.get('cashout_allowed', False)
+        cashout_amount = coupon.get('cashout_amount', 0)
+        prnt('BET_OLIMP: get coupon: ' + str(coupon), 'hide')
+        prnt('BET_OLIMP: get coupon cashout_allowed: ' + str(cashout_allowed))
+        prnt('BET_OLIMP: get coupon amount: ' + str(cashout_amount))
 
-                req_url = olimp_url2.format("user/cashout")
+        if cashout_allowed is True and cashout_amount != 0:
 
-                payload = {}
-                payload["bet_id"] = coupon.get('bet_id')
-                payload["amount"] = coupon.get('amount')
-                payload["session"] = self.session_payload["session"]
-                payload["lang_id"] = "0"
-                payload["platforma"] = "ANDROID1"
+            req_url = olimp_url2.format("user/cashout")
 
-                headers = base_headers.copy()
-                headers.update(get_xtoken_bet(payload))
-                headers.update({'X-XERPC': '1'})
+            payload = {}
+            payload["bet_id"] = self.reg_id
+            payload["amount"] = cashout_amount
+            payload["session"] = self.session_payload["session"]
+            payload["lang_id"] = "0"
+            payload["platforma"] = "ANDROID1"
 
-                resp = requests_retry_session().post(
-                    req_url,
-                    headers=headers,
-                    data=payload,
-                    verify=False,
-                    timeout=60,
-                    proxies=self.proxies
-                )
-                req_time = round(resp.elapsed.total_seconds(), 2)
-                check_status_with_resp(resp, True)
-                res = resp.json()
+            headers = base_headers.copy()
+            headers.update(get_xtoken_bet(payload))
+            headers.update({'X-XERPC': '1'})
+            prnt('BET_OLIMP: sale_bet rq: ' + str(payload), 'hide')
+            resp = requests_retry_session().post(
+                req_url,
+                headers=headers,
+                data=payload,
+                verify=False,
+                timeout=60,
+                proxies=self.proxies
+            )
+            prnt('BET_OLIMP: sale_bet rs: ' + str(resp.text), 'hide')
+            req_time = round(resp.elapsed.total_seconds(), 2)
+            check_status_with_resp(resp, True)
+            res = resp.json()
+            prnt('BET_OLIMP: sale_bet rs js: ' + str(res), 'hide')
 
-                if str(res.get('error').get('err_code')) in ('406', '403'):
-                    if self.cnt_sale_attempt < 5:
-                        prnt('BET_OLIMP.PY: error sale bet olimp: ' +
-                             str(res.get('error').get('err_desc')))
-                        timer_update = 4
-                        prnt('BET_FONBET.PY: wait ' + str(timer_update) + ' sec...')
-                        time.sleep(timer_update)
-                        self.cnt_sale_attempt = self.cnt_sale_attempt + 1
-                        return self.sale_bet()
-                    else:
-                        str_err = 'BET_OLIMP.PY: error olimp sell result: ' + str(res.get('error').get('err_desc'))
-                        prnt(str_err)
-                        raise LoadException(str_err)
+            if str(res.get('error').get('err_code')) in ('406', '403'):
+                if self.cnt_sale_attempt < 5:
+                    prnt('BET_OLIMP.PY: error sale bet olimp: ' +
+                         str(res.get('error').get('err_desc')))
+                    timer_update = 4
+                    prnt('BET_OLIMP.PY: wait ' + str(timer_update) + ' sec...')
+                    time.sleep(timer_update)
+                    self.cnt_sale_attempt = self.cnt_sale_attempt + 1
+                    return self.sale_bet(self.reg_id)
+                else:
+                    str_err = 'BET_OLIMP.PY: error sell result: ' + str(res.get('error').get('err_desc'))
+                    prnt(str_err)
+                    raise LoadException(str_err)
 
-                if str(res.get('error').get('err_code')) != str('0'):
-                    prnt('BET_OLIMP.PY: error olimp sell result: ' + str(res))
-                    raise LoadException("BET_OLIMP.PY: response came with an error")
+            if str(res.get('error').get('err_code')) != str('0'):
+                prnt('BET_OLIMP.PY: error sell result: ' + str(res))
+                raise LoadException("BET_OLIMP.PY: response came with an error")
 
-                if res.get('data').get('status') == 'ok':
-                    prnt(res.get('data').get('msg'))
-            else:
-                prnt('BET_OLIMP.PY: error sale bet olimp, cashout_allowed: false')
-                timer_update = 5
-                prnt('BET_FONBET.PY: coupon is lock, time sleep ' + str(timer_update) + ' sec...')
-                time.sleep(timer_update)
-                return self.sale_bet()
-                # raise LoadException("BET_OLIMP.PY: error sale bet olimp, cashout_allowed: false")
+            if res.get('data').get('status') == 'ok':
+                prnt(res.get('data').get('msg'))
+        else:
+            prnt('BET_OLIMP.PY: error sale bet_id ' + str(self.reg_id))
+            timer_update = 5
+            prnt('BET_OLIMP.PY: coupon ' + str(self.reg_id) + ' is lock, time sleep ' + str(timer_update) + ' sec...')
+            time.sleep(timer_update)
+            return self.sale_bet(self.reg_id)
 
 
 if __name__ == '__main__':
     OLIMP_USER = {"login": "eva.yushkova.81@mail.ru", "passw": "qvF3BwrNcRcJtB6"}
     # X2
-    wager_olimp = {'apid': '1144454537:45879871:1:1:-9999:1:0:0:1', 'factor': '1.06', 'sport_id': 1,
-                   'event': '45879871'}
+    wager_olimp = {'apid': '1175274641:46837034:1:10:-9999:3:0:0:1', 'factor': '1.06', 'sport_id': 1,
+                   'event': '46837034'}
 
     olimp = OlimpBot(OLIMP_USER)
     olimp.sign_in()
-    olimp.place_bet(30, wager_olimp)
-    # olimp.sale_bet()
+    # olimp.place_bet(30, wager_olimp)
+    olimp.sale_bet()
