@@ -201,7 +201,7 @@ class OlimpBot:
                 prnt(err_str)
                 raise LoadException(err_str)
             else:
-                if self.cnt_bet_attempt > (60 * 2.5) / self.sleep:
+                if self.cnt_bet_attempt > (60 * 0.4) / self.sleep:
                     err_str = 'BET_OLIMP.PY: error place bet: ' + \
                               str(res.get("error", {}).get('err_desc'))
                     prnt(err_str)
