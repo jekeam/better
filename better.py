@@ -143,6 +143,7 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
     if __name__ == '__main__':
         wait_sec = 3.51  # max(0, (3.5 - deff_max))
         prnt('Wait sec: ' + str(wait_sec))
+        prnt('Real wait sec: ' + str(wait_sec+deff_max))
         time.sleep(wait_sec)
         with Manager() as manager:
             obj = manager.dict()
