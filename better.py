@@ -143,6 +143,7 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
     if __name__ == '__main__':
         wait_sec = 3.51  # max(0, (3.5 - deff_max))
         prnt('Wait sec: ' + str(wait_sec))
+        prnt('Real wait sec: ' + str(wait_sec+deff_max))
         time.sleep(wait_sec)
         with Manager() as manager:
             obj = manager.dict()
@@ -213,6 +214,7 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
                                 "reg_id": 0,
                                 "bet_type": olimp_bet_type,
                                 "balance": bal1,
+                                "err" : 'ok'
                             },
                             "fonbet": {
                                 "id": wager_fonbet["event"],
@@ -220,7 +222,8 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
                                 "amount": amount_fonbet,
                                 "reg_id": 0,
                                 "bet_type": fonbet_bet_type,
-                                "balance": bal2
+                                "balance": bal2,
+                                "err" : 'ok'
                             },
                         }
                     }
@@ -284,6 +287,10 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
 
             fork_info[fork_id]['olimp']['reg_id'] = obj['olimp'].get_reg_id()
             fork_info[fork_id]['fonbet']['reg_id'] = obj['fonbet'].get_reg_id()
+            
+            fork_info[fork_id]['olimp']['err'] = str(obj['olimp_err'])
+            fork_info[fork_id]['fonbet']['err'] = str(obj['fonbet_err'])
+            
             save_fork(fork_info)
             prnt('Matchs exclude: ' + str(success))
             sleep_post_work = 30
