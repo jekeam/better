@@ -110,7 +110,8 @@ def check_fork(key, L, k1, k2, live_fork, bk1_score, bk2_score, minute, time_bre
                             + str(round((1 - L) * 100, 2)) \
                             + '% исключена т.к. счет не совпадает: olimp(' + bk1_score + ') fonbet(' + bk2_score + ')\n'
 
-    if 43.0 < float(minute) and not time_break_fonbet and period == 1:  # Больше 43 минуты и не идет перерыв и это 1 период 
+    # Больше 43 минуты и не идет перерыв и это 1 период
+    if 43.0 < float(minute) and not time_break_fonbet and period == 1:
         fork_exclude_text = \
             fork_exclude_text + 'Вилка ' + str(round((1 - L) * 100, 2)) + '% исключена т.к. идет ' \
             + str(minute) + ' минута матча и это не перерыв и это не 2-й период \n'
