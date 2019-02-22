@@ -436,6 +436,7 @@ if __name__ == '__main__':
                            ' ' + k1_type + '=' + str(k1) + '/' + k2_type + '=' + str(k2) + ', ' + \
                            v_time + ' (' + str(minute) + ') ' + \
                            score + ' ' + str(pair_math) + \
+                           ', live_fork_total: ' + str(live_fork_total) + \
                            ', max deff: ' + str(deff_max)
                 except Exception as e:
                     prnts('error: ' + str(e))
