@@ -1,18 +1,10 @@
-import os
+from run import opposition, get_vector
+import re
 
+o = opposition
 
-def write_file(bk, s):
-    with open(os.path.join(os.path.dirname(__file__), "session_id." + bk), 'w') as file:
-        file.write(s)
-
-
-def read_file(bk, s):
+for x in o:
     try:
-        with open(os.path.join(os.path.dirname(__file__), "session_id." + bk), 'r') as file:
-            return file.read()
-    except:
-        pass
-
-
-# write_file('olimp', 'xxx')
-print(read_file('olimp', 'asdf'))
+        print(x+';'+ get_vector(x,1,0))
+    except Exception as e:
+        print(x+';'+str(e))

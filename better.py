@@ -78,7 +78,7 @@ def check_l(L):
         return ''
 
 
-def check_fork(key, L, k1, k2, bk1_score, bk2_score, minute, time_break_fonbet, is_2nd_half, info=''):
+def check_fork(key, L, k1, k2, bk1_score, bk2_score, minute, time_break_fonbet, period, info=''):
     fork_exclude_text = ''
     v = True
     global bal1, bal2, balance_line
@@ -110,7 +110,7 @@ def check_fork(key, L, k1, k2, bk1_score, bk2_score, minute, time_break_fonbet, 
                             + str(round((1 - L) * 100, 2)) \
                             + '% исключена т.к. счет не совпадает: olimp(' + bk1_score + ') fonbet(' + bk2_score + ')\n'
 
-    if 43.0 < float(minute) < 50.0 and not time_break_fonbet and not is_2nd_half:  # Больше 43 минуты и не идет перерыв
+    if 43.0 < float(minute) and not time_break_fonbet and period == 1:  # Больше 43 минуты и не идет перерыв и это 1 период 
         fork_exclude_text = \
             fork_exclude_text + 'Вилка ' + str(round((1 - L) * 100, 2)) + '% исключена т.к. идет ' \
             + str(minute) + ' минута матча и это не перерыв и это не 2-й период \n'
@@ -420,7 +420,7 @@ if __name__ == '__main__':
                 v_time = val_json.get('time', 'v_time')
                 minute = val_json.get('minute', 0)
                 time_break_fonbet = val_json.get('time_break_fonbet')
-                is_2nd_half = val_json.get('is_2nd_half')
+                period = val_json.get('period')
                 time_last_upd = val_json.get('time_last_upd', 1)
 
                 deff_olimp = round(float(time.time() - float(val_json.get('time_req_olimp', 0))))
@@ -451,7 +451,7 @@ if __name__ == '__main__':
                     # Проверим вилку на исключения
                     if check_fork(
                             key, l_temp, k1, k2, bk1_score, bk2_score,
-                            minute, time_break_fonbet, is_2nd_half, info
+                            minute, time_break_fonbet, period, info
                     ) or DEBUG:
                         go_bet_key = key
                         l = l_temp
