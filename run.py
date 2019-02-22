@@ -103,13 +103,22 @@ def get_vector(bet_type, sc1=None, sc2=None):
             VECT=D
         else:
             VECT=U
+    # Важно что П1 должны быть выше чем П1Н - т.к. иначе портится результат
+    # Или добавлять ретурн в каждую из веток но тогда п1н должна быть выше
+    elif 'П1' in bet_type:
+        raise_err(sc1, sc2)
+        if sc1>sc2:
+            VECT=D
+        else:
+            VECT=U        
             
     elif 'П2' in bet_type:
         raise_err(sc1, sc2)
         if sc1<sc2: 
             VECT=D
         else:
-            return U
+            return U            
+            
     elif 'П1Н' in bet_type:
         raise_err(sc1, sc2)
         if sc1>=sc2:
@@ -123,12 +132,6 @@ def get_vector(bet_type, sc1=None, sc2=None):
             VECT=D
         else:
             return U
-    elif 'П1' in bet_type:
-        raise_err(sc1, sc2)
-        if sc1>sc2:
-            VECT=D
-        else:
-            VECT=U        
             
     else:
         raise ValueError('Error: vector not defined!')
