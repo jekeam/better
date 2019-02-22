@@ -78,7 +78,7 @@ def check_l(L):
         return ''
 
 
-def check_fork(key, L, k1, k2, bk1_score, bk2_score, minute, time_break_fonbet, period, info=''):
+def check_fork(key, L, k1, k2, live_fork_total, bk1_score, bk2_score, minute, time_break_fonbet, period, info=''):
     fork_exclude_text = ''
     v = True
     global bal1, bal2, balance_line
@@ -119,6 +119,13 @@ def check_fork(key, L, k1, k2, bk1_score, bk2_score, minute, time_break_fonbet, 
         fork_exclude_text = \
             fork_exclude_text + 'Вилка ' + str(round((1 - L) * 100, 2)) + '% исключена т.к. идет ' \
             + str(minute) + ' минута матча \n'
+
+    # Вилка живет достаточно
+    long_livers = 10
+    if live_fork_total < long_livers:
+        fork_exclude_text = \
+            fork_exclude_text + 'Вилка ' + str(round((1 - L) * 100, 2)) + '% исключена т.к. живет меньше ' \
+            + str(long_livers) + ' сек. \n'
 
     fork_exclude_text = fork_exclude_text + check_l(L)
 
@@ -422,6 +429,7 @@ if __name__ == '__main__':
                 time_break_fonbet = val_json.get('time_break_fonbet')
                 period = val_json.get('period')
                 time_last_upd = val_json.get('time_last_upd', 1)
+                live_fork_total = val_json.get('live_fork_total', 0)
 
                 deff_olimp = round(float(time.time() - float(val_json.get('time_req_olimp', 0))))
                 deff_fonbet = round(float(time.time() - float(val_json.get('time_req_fonbet', 0))))
@@ -441,6 +449,7 @@ if __name__ == '__main__':
                            ' ' + k1_type + '=' + str(k1) + '/' + k2_type + '=' + str(k2) + ', ' + \
                            v_time + ' (' + str(minute) + ') ' + \
                            score + ' ' + str(pair_math) + \
+                           ', live_fork_total: ' + str(live_fork_total) + \
                            ', max deff: ' + str(deff_max)
                 except Exception as e:
                     prnts('error: ' + str(e))
@@ -450,7 +459,7 @@ if __name__ == '__main__':
                     bet1, bet2 = get_sum_bets(k1, k2, total_bet)
                     # Проверим вилку на исключения
                     if check_fork(
-                            key, l_temp, k1, k2, bk1_score, bk2_score,
+                            key, l_temp, k1, k2, live_fork_total, bk1_score, bk2_score,
                             minute, time_break_fonbet, period, info
                     ) or DEBUG:
                         go_bet_key = key
