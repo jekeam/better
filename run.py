@@ -413,14 +413,14 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
 
                     if is_fork:  # or True
                         time_break_fonbet = False
-                        is_2nd_half = False
+                        period = 1
                         if re.match('\([\d|\d\d]:[\d|\d\d]\)', math_json_fonbet.get('score_1st', '')) and \
                                 str(math_json_fonbet.get('time', '')) == '45:00' and \
                                 round(math_json_fonbet.get('minute', ''), 2) == 45.0:
                             time_break_fonbet = True
                         elif re.match('\([\d|\d\d]:[\d|\d\d]\)', math_json_fonbet.get('score_1st', '')) and \
                                 round(math_json_fonbet.get('minute', ''), 2) > 45.0:
-                            is_2nd_half = True
+                            period = 2
 
                         if forks.get(bet_key, '') != '':
 
@@ -440,7 +440,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
                                 'kof_olimp': k_olimp,
                                 'kof_fonbet': k_fonbet,
                                 'time_break_fonbet': time_break_fonbet,
-                                'is_2nd_half': is_2nd_half,
+                                'period': period,
                                 'ol_time_change_total': math_json_olimp.get('time_change_total', 0),
                                 'ol_avg_change_total': math_json_olimp.get('avg_change_total', []),
                                 'fb_time_change_total': math_json_fonbet.get('time_change_total', 0),
@@ -465,7 +465,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
                                                 'match_ol;match_fb;kof_ol;kof_fb;name;l;bk1_score;bk2_score;time;'
                                                 'minute;ol_kof;ol_avg_change;fb_kof;fb_avg_change;'
                                                 'time_break_fonbet;'
-                                                'is_2nd_half;'
+                                                'period;'
                                                 'ol_avg_change_total;fb_avg_change_total;'
                                                 'ol_hist1;ol_hist2;ol_hist3;ol_hist4;ol_hist5;'
                                                 'fb_hist1;fb_hist2;fbl_hist3;fb_hist4;fb_hist5'
@@ -493,7 +493,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
                                                 str(k_fonbet.get('value')) + ';' +
                                                 str(k_fonbet.get('hist', {}).get('avg_change', [])) + ';' +
                                                 str(time_break_fonbet) + ';' +
-                                                str(is_2nd_half) + ';' +
+                                                str(period) + ';' +
                                                 str(math_json_olimp.get('avg_change_total', [])) + ';' +
                                                 str(math_json_fonbet.get('avg_change_total', [])) + ';' +
                                                 str(k_olimp.get('hist', {}).get('1', [])) + ';' +
@@ -527,7 +527,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
                                 'kof_olimp': k_olimp,
                                 'kof_fonbet': k_fonbet,
                                 'time_break_fonbet': time_break_fonbet,
-                                'is_2nd_half': is_2nd_half,
+                                'period': period,
                                 'live_fork': 0,
                                 'live_fork_total': forks_meta.get(bet_key, dict()).get('live_fork_total', 0),
                                 'create_fork': round(max(ol_time_req, fb_time_req))
