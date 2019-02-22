@@ -71,6 +71,69 @@ opposition = {
     'ННН': 'ННД'
 }
 
+def get_vector(bet_type, sc1=None, sc2=None):
+    
+    def raise_err(sc1, sc2):
+        if sc1 is None or sc2 is None:
+            raise ValueError('ERROR: sc1 or sc2 not defined!')
+    
+    D = 'DOWN'
+    U = 'UP'
+    VECT = ''
+    
+    if sc1:
+        sc1 = int(sc1)
+    if sc2:
+        sc2 = int(sc2)
+    
+    if [t for t in ['ТБ', 'КЗ', 'ОЗН', 'ННД'] if t in bet_type]:
+        VECT=U
+    elif [t for t in ['ТМ', 'КНЗ', 'ОЗД', 'ННН'] if t in bet_type]:
+        VECT=D
+    
+    elif '12' in bet_type:
+        raise_err(sc1, sc2)
+        if sc1!=sc2: 
+            VECT=D
+        else:
+            return U
+    elif 'Н' in bet_type:
+        raise_err(sc1, sc2)
+        if sc1==sc2:
+            VECT=D
+        else:
+            VECT=U
+            
+    elif 'П2' in bet_type:
+        raise_err(sc1, sc2)
+        if sc1<sc2: 
+            VECT=D
+        else:
+            return U
+    elif 'П1Н' in bet_type:
+        raise_err(sc1, sc2)
+        if sc1>=sc2:
+            VECT=D
+        else:
+            VECT=U
+            
+    elif 'П2Н' in bet_type:
+        raise_err(sc1, sc2)
+        if sc1<=sc2: 
+            VECT=D
+        else:
+            return U
+    elif 'П1' in bet_type:
+        raise_err(sc1, sc2)
+        if sc1>sc2:
+            VECT=D
+        else:
+            VECT=U        
+            
+    else:
+        raise ValueError('Error: vector not defined!')
+    return VECT
+
 
 def get_olimp(resp, arr_matchs):
     # Очистим дстарые данные
