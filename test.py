@@ -5,6 +5,6 @@ o = opposition
 
 for x in o:
     try:
-        print(x+';'+ get_vector(x, 1, 0))
+        print(x+';'+ get_vector(x,1,0))
     except Exception as e:
         print(x+';'+str(e))
