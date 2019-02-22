@@ -8,3 +8,4 @@ venv
 *.csv#
 *.json
 *.session
+test.py
