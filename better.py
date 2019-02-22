@@ -78,7 +78,7 @@ def check_l(L):
         return ''
 
 
-def check_fork(key, L, k1, k2, live_fork_total, bk1_score, bk2_score, minute, time_break_fonbet, period, info=''):
+def check_fork(key, L, k1, k2, live_fork, bk1_score, bk2_score, minute, time_break_fonbet, period, info=''):
     fork_exclude_text = ''
     v = True
     global bal1, bal2, balance_line
@@ -110,7 +110,8 @@ def check_fork(key, L, k1, k2, live_fork_total, bk1_score, bk2_score, minute, ti
                             + str(round((1 - L) * 100, 2)) \
                             + '% исключена т.к. счет не совпадает: olimp(' + bk1_score + ') fonbet(' + bk2_score + ')\n'
 
-    if 43.0 < float(minute) and not time_break_fonbet and period == 1:  # Больше 43 минуты и не идет перерыв и это 1 период 
+    if 43.0 < float(
+            minute) and not time_break_fonbet and period == 1:  # Больше 43 минуты и не идет перерыв и это 1 период
         fork_exclude_text = \
             fork_exclude_text + 'Вилка ' + str(round((1 - L) * 100, 2)) + '% исключена т.к. идет ' \
             + str(minute) + ' минута матча и это не перерыв и это не 2-й период \n'
@@ -122,7 +123,7 @@ def check_fork(key, L, k1, k2, live_fork_total, bk1_score, bk2_score, minute, ti
 
     # Вилка живет достаточно
     long_livers = 10
-    if live_fork_total < long_livers:
+    if live_fork < long_livers:
         fork_exclude_text = \
             fork_exclude_text + 'Вилка ' + str(round((1 - L) * 100, 2)) + '% исключена т.к. живет меньше ' \
             + str(long_livers) + ' сек. \n'
@@ -148,9 +149,9 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
     amount_olimp, amount_fonbet = get_sum_bets(wager_olimp['factor'], wager_fonbet['value'], total_bet, False)
 
     if __name__ == '__main__':
-        wait_sec = 3.51  # max(0, (3.5 - deff_max))
+        wait_sec = 3.5  # max(0, (3.5 - deff_max))
         prnt('Wait sec: ' + str(wait_sec))
-        prnt('Real wait sec: ' + str(wait_sec+deff_max))
+        prnt('Real wait sec: ' + str(wait_sec + deff_max))
         time.sleep(wait_sec)
         with Manager() as manager:
             obj = manager.dict()
@@ -195,6 +196,19 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
                 change_proc = round(new_proc - cur_proc, 2)
                 prnt('new proc: ' + str(new_proc) + '%, change: ' + str(change_proc))
 
+                # Проверяем, берем вилку только если она выросла в цене
+                # Если не изменилась, продолжаем мониторить,
+                # Bначе выбразываем
+                if change_proc < 0:
+                    prnt('Fork exclude: change_proc = ' + str(change_proc) + '\n')
+                    return False
+                elif change_proc == 0:
+                    prnt('Check replay: change_proc = ' + str(change_proc) + '\n')
+                    return go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max)
+                elif check_l(L) != '':
+                    prnt('Check replay: fork be up, but new_proc = ' + str(new_proc) + '%)')
+                    return go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max)
+
                 if check_l(L) == '' or DEBUG:
 
                     is_recheck = True
@@ -208,7 +222,7 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
                                 "reg_id": 0,
                                 "bet_type": olimp_bet_type,
                                 "balance": bal1,
-                                "err" : 'ok'
+                                "err": 'ok'
                             },
                             "fonbet": {
                                 "id": wager_fonbet["event"],
@@ -217,7 +231,7 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
                                 "reg_id": 0,
                                 "bet_type": fonbet_bet_type,
                                 "balance": bal2,
-                                "err" : 'ok'
+                                "err": 'ok'
                             },
                         }
                     }
@@ -281,10 +295,10 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
 
             fork_info[fork_id]['olimp']['reg_id'] = obj['olimp'].get_reg_id()
             fork_info[fork_id]['fonbet']['reg_id'] = obj['fonbet'].get_reg_id()
-            
+
             fork_info[fork_id]['olimp']['err'] = str(obj['olimp_err'])
             fork_info[fork_id]['fonbet']['err'] = str(obj['fonbet_err'])
-            
+
             save_fork(fork_info)
             prnt('Matchs exclude: ' + str(success))
             sleep_post_work = 30
@@ -417,6 +431,7 @@ if __name__ == '__main__':
                 period = val_json.get('period')
                 time_last_upd = val_json.get('time_last_upd', 1)
                 live_fork_total = val_json.get('live_fork_total', 0)
+                live_fork = val_json.get('live_fork', 0)
 
                 deff_olimp = round(float(time.time() - float(val_json.get('time_req_olimp', 0))))
                 deff_fonbet = round(float(time.time() - float(val_json.get('time_req_fonbet', 0))))
@@ -436,6 +451,7 @@ if __name__ == '__main__':
                            ' ' + k1_type + '=' + str(k1) + '/' + k2_type + '=' + str(k2) + ', ' + \
                            v_time + ' (' + str(minute) + ') ' + \
                            score + ' ' + str(pair_math) + \
+                           ', live_fork: ' + str(live_fork) + \
                            ', live_fork_total: ' + str(live_fork_total) + \
                            ', max deff: ' + str(deff_max)
                 except Exception as e:
@@ -446,7 +462,7 @@ if __name__ == '__main__':
                     bet1, bet2 = get_sum_bets(k1, k2, total_bet)
                     # Проверим вилку на исключения
                     if check_fork(
-                            key, l_temp, k1, k2, live_fork_total, bk1_score, bk2_score,
+                            key, l_temp, k1, k2, live_fork, bk1_score, bk2_score,
                             minute, time_break_fonbet, period, info
                     ) or DEBUG:
                         go_bet_key = key
