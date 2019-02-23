@@ -194,8 +194,7 @@ class OlimpBot:
                 prnt(err_str)
                 raise LoadException(err_str)
             # MaxBet
-            elif err_code == 417 and \
-                    'максимальная ставка' in err_msg:
+            elif 'максимальная ставка' in err_msg:
                 err_str = 'BET_OLIMP.PY: error max bet: ' + \
                           str(res.get("error", {}).get('err_desc'))
                 prnt(err_str)
