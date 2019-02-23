@@ -94,13 +94,14 @@ def check_proxy_fonbet(proxies_for_check, valid_proxies):
     global TIME_OUT
 
     for prx in proxies_for_check:
+        http_type = 'https' if 'https' in prx else 'http'
         try:
             global url_fonbet
             global UA
             resp = requests.get(
                 url_fonbet,
                 headers={'User-Agent': UA},
-                proxies={'http': prx},
+                proxies={http_type: prx},
                 timeout=TIME_OUT,
                 verify=False
             )
@@ -181,7 +182,7 @@ def get_proxies(n):
     proxies = asyncio.Queue()
     broker = Broker(proxies, timeout=TIME_OUT + 5)
     tasks = asyncio.gather(
-        broker.find(types=['HTTP'], limit=n),  # , countries=['RU','UA','US','DE']
+        broker.find(types=['HTTPS'], limit=n),  # , countries=['RU','UA','US','DE']
         save(proxies, proxy_list)
     )
     loop = asyncio.get_event_loop()
@@ -278,7 +279,7 @@ if __name__ == '__main__':
     proxy_list = []
     proxy_list_olimp = []
     proxy_list_fonbet = []
-    proxy_list = join_proxies_to_file(500)
+    proxy_list = join_proxies_to_file(2000)
 
     proxy_list_olimp = check_proxies_olimp(proxy_list)
     save_list(proxy_list_olimp, ol_fl)
