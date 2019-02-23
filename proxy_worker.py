@@ -68,8 +68,14 @@ def check_proxy_olimp(proxies_for_check, valid_proxies):
     for prx in proxies_for_check:
         try:
             x = 0
-            resp = requests.post(olimp_url + '/api/slice/', headers=olimp_head_ll, data=olimp_data_ll,
-                                 proxies={'http': prx}, timeout=TIME_OUT)
+            resp = requests.post(
+                olimp_url + '/api/slice/',
+                headers=olimp_head_ll,
+                data=olimp_data_ll,
+                proxies={'http': prx},
+                timeout=TIME_OUT,
+                verify=False
+            )
             print(
                 'o valid: ' + str(prx), str(resp.status_code),
                 str(resp.json().get('error', '').get('err_desc', ''))
@@ -93,6 +99,7 @@ def check_proxy_fonbet(proxies_for_check, valid_proxies):
             resp = requests.get(
                 url_fonbet,
                 headers={'User-Agent': UA},
+                proxies={'http': prx},
                 timeout=TIME_OUT,
                 verify=False
             )
@@ -108,7 +115,7 @@ def check_proxies_olimp(proxies_list):
     mgr = mp.Manager()
     valid_proxies_list = mgr.list()
 
-    n_chunks = 20
+    n_chunks = 10
     chunks = [proxies_list[i::n_chunks] for i in range(n_chunks)]
 
     prcs = []
@@ -171,7 +178,7 @@ def save_list(proxies, filename=None):
 def get_proxies(n):
     global proxy_list, TIME_OUT
     proxies = asyncio.Queue()
-    broker = Broker(proxies, timeout=TIME_OUT + 2)
+    broker = Broker(proxies, timeout=TIME_OUT + 5)
     tasks = asyncio.gather(
         broker.find(types=['HTTP'], limit=n),  # , countries=['RU','UA','US','DE']
         save(proxies, proxy_list)
@@ -270,7 +277,7 @@ if __name__ == '__main__':
     proxy_list = []
     proxy_list_olimp = []
     proxy_list_fonbet = []
-    proxy_list = join_proxies_to_file(2000)
+    proxy_list = join_proxies_to_file(500)
 
     proxy_list_olimp = check_proxies_olimp(proxy_list)
     save_list(proxy_list_olimp, ol_fl)
@@ -278,4 +285,4 @@ if __name__ == '__main__':
     proxy_list_fonbet = check_proxies_fonbet(proxy_list)
     save_list(proxy_list_fonbet, fb_fl)
 
-    # proxy_push(ol_fl, fb_fl)
+    proxy_push(ol_fl, fb_fl)
