@@ -20,20 +20,21 @@ shutdown = False
 
 
 def get_sum_bets(k1, k2, total_bet, print_hide=True):
-    k1 = float(k1)
-    k2 = float(k2)
-    l = (1 / k1) + (1 / k2)
+    if k1 > 0 and k2 > 0:
+        k1 = float(k1)
+        k2 = float(k2)
+        l = (1 / k1) + (1 / k2)
 
-    # Округление проставления в БК1 происходит по правилам математики
-    bet_1 = round(total_bet / (k1 * l) / 5) * 5
-    bet_2 = total_bet - bet_1
-    prnt('L: ' + str(round((1 - l) * 100, 2)) + '% (' + str(l) + ') ', print_hide)
-    prnt(
-        'bet1: ' + str(bet_1) + ' руб, bet2: ' + str(bet_2) + ' руб.|' +
-        ' bet_sum: ' + str(bet_1 + bet_2) + ' руб.', print_hide
-    )
+        # Округление проставления в БК1 происходит по правилам математики
+        bet_1 = round(total_bet / (k1 * l) / 5) * 5
+        bet_2 = total_bet - bet_1
+        prnt('L: ' + str(round((1 - l) * 100, 2)) + '% (' + str(l) + ') ', print_hide)
+        prnt(
+            'bet1: ' + str(bet_1) + ' руб, bet2: ' + str(bet_2) + ' руб.|' +
+            ' bet_sum: ' + str(bet_1 + bet_2) + ' руб.', print_hide
+        )
 
-    return bet_1, bet_2
+        return bet_1, bet_2
 
 
 def bet_fonbet_cl(obj, amount_fonbet, wager_fonbet):
@@ -110,7 +111,8 @@ def check_fork(key, L, k1, k2, live_fork_total, bk1_score, bk2_score, minute, ti
                             + str(round((1 - L) * 100, 2)) \
                             + '% исключена т.к. счет не совпадает: olimp(' + bk1_score + ') fonbet(' + bk2_score + ')\n'
 
-    if 43.0 < float(minute) and not time_break_fonbet and period == 1:  # Больше 43 минуты и не идет перерыв и это 1 период 
+    # Больше 43 минуты и не идет перерыв и это 1 период
+    if 43.0 < float(minute) and not time_break_fonbet and period == 1:
         fork_exclude_text = \
             fork_exclude_text + 'Вилка ' + str(round((1 - L) * 100, 2)) + '% исключена т.к. идет ' \
             + str(minute) + ' минута матча и это не перерыв и это не 2-й период \n'
