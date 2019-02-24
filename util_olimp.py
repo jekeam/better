@@ -73,6 +73,7 @@ def get_matches_olimp(proxies, proxy, time_out):
 
     try:
         http_type = 'https' if 'https' in proxy else 'http'
+        url = olimp_url_https if 'https' in proxy else olimp_url
         proxies = {http_type: proxy}
         # prnts('Olimp set proxy: ' + proxy, 'hide')
     except Exception as e:
@@ -88,8 +89,7 @@ def get_matches_olimp(proxies, proxy, time_out):
     olimp_head_ll.pop('Accept-Language', None)
     try:
         resp = requests.post(
-            # olimp_url + '/api/slice/',
-            olimp_url_https + '/api/slice/',
+            url + '/api/slice/',
             data=olimp_data_ll,
             headers=olimp_head_ll,
             timeout=time_out,
@@ -173,6 +173,7 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out):
 
     try:
         http_type = 'https' if 'https' in proxy else 'http'
+        url = olimp_url_https if 'https' in proxy else olimp_url
         proxies = {http_type: proxy}
         # prnts('Olimp: set proxy by ' + str(match_id) + ': ' + str(proxy), 'hide')
     except Exception as e:
@@ -182,8 +183,7 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out):
 
     try:
         resp = requests.post(
-            # olimp_url + '/api/stakes/',
-            olimp_url_https + '/api/stakes/',
+            url + '/api/stakes/',
             data=olimp_data_m,
             headers=olimp_stake_head,
             timeout=time_out,
