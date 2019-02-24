@@ -159,7 +159,7 @@ class OlimpBot:
             headers=headers,
             data=payload,
             verify=False,
-            timeout=15,
+            timeout=30,
             proxies=self.proxies
         )
         prnt('BET_OLIMP.PY: rs olimp: ' + str(resp.text), 'hide')
@@ -378,7 +378,7 @@ class OlimpBot:
                 headers=headers,
                 data=payload,
                 verify=False,
-                timeout=60,
+                timeout=40,
                 proxies=self.proxies
             )
             prnt('BET_OLIMP: sale_bet rs: ' + str(resp.text), 'hide')
