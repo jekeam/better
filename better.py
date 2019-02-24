@@ -37,12 +37,12 @@ def get_sum_bets(k1, k2, total_bet, print_hide=True):
         return bet_1, bet_2
 
 
-def bet_fonbet_cl(obj, amount_fonbet, wager_fonbet):
+def bet_fonbet_cl(obj, amount_fonbet, wager_fonbet, fonbet_bet_type):
     global FONBET_USER
     try:
         fonbet = FonbetBot(FONBET_USER)
         fonbet.sign_in()
-        fonbet_reg_id = fonbet.place_bet(amount_fonbet, wager_fonbet, obj)
+        fonbet_reg_id = fonbet.place_bet(amount_fonbet, wager_fonbet, obj, fonbet_bet_type)
         obj['fonbet_err'] = 'ok'
     except OlimpBetError:
         obj['fonbet_err'] = 'ok'
@@ -249,7 +249,7 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
             obj = manager.dict()
 
             pid_olimp = Process(target=bet_olimp_cl, args=(obj, amount_olimp, wager_olimp))
-            pid_fonbet = Process(target=bet_fonbet_cl, args=(obj, amount_fonbet, wager_fonbet))
+            pid_fonbet = Process(target=bet_fonbet_cl, args=(obj, amount_fonbet, wager_fonbet, fonbet_bet_type))
 
             pid_olimp.start()
             pid_fonbet.start()
