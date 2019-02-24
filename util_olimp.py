@@ -127,6 +127,16 @@ def get_matches_olimp(proxies, proxy, time_out):
         prnts(err_str)
         proxies = del_proxy(proxy, proxies)
         raise ValueError(err_str)
+    except ValueError as e:
+        if str(e) == '404':
+            raise OlimpMatchСompleted('Олимп, матч завершен, поток выключен!')
+
+        if resp.text:
+            text = resp.text
+        err_str = 'Олимп, код ошибки ValueError: ' + str(e) + str(text)
+        prnts(err_str)
+        proxi_list = del_proxy(proxy, proxies)
+        raise ValueError(err_str)
     except Exception as e:
         err_str = 'Олимп, код ошибки Exception: ' + str(e)
         prnts(err_str)
@@ -218,6 +228,16 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out):
         raise ValueError(err_str)
     except requests.exceptions.RequestException as e:
         err_str = 'Олимп ' + str(match_id) + ', код ошибки RequestException: ' + str(e)
+        prnts(err_str)
+        proxi_list = del_proxy(proxy, proxi_list)
+        raise ValueError(err_str)
+    except ValueError as e:
+        if str(e) == '404':
+            raise OlimpMatchСompleted('Олимп, матч ' + str(match_id) + ' завершен, поток выключен!')
+
+        if resp.text:
+            text = resp.text
+        err_str = 'Олимп ' + str(match_id) + ', код ошибки ValueError: ' + str(e) + str(text)
         prnts(err_str)
         proxi_list = del_proxy(proxy, proxi_list)
         raise ValueError(err_str)
