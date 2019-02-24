@@ -325,7 +325,7 @@ class FonbetBot:
         payload_req['clientId'] = self.base_payload["clientId"]
         payload_req['client']['id'] = self.base_payload["clientId"]
 
-        resp = requests_retry_session().post(url, headers=headers, json=payload_req, verify=False, timeout=10)
+        resp = requests_retry_session().post(url, headers=headers, json=payload_req, verify=False, timeout=20)
         check_status_with_resp(resp)
         res = resp.json()
         if "requestId" not in res:
@@ -541,7 +541,7 @@ class FonbetBot:
                 headers=headers,
                 json=payload,
                 verify=False,
-                timeout=20
+                timeout=30
             )
             check_status_with_resp(resp)
             res = resp.json()
