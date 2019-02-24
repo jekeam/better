@@ -769,7 +769,7 @@ class FonbetBot:
 if __name__ == '__main__':
     FONBET_USER = {"login": 5699838, "password": "NTe2904H11"}
     amount_fonbet = 30
-    wager_fonbet = {'event': '13366483', 'factor': '1571', 'param': '', 'score': '0:1', 'value': '33'}
+    wager_fonbet = {'event': '13331625', 'factor': '1571', 'param': '', 'score': '0:1', 'value': '33'}
     fonbet = FonbetBot(FONBET_USER)
     fonbet.sign_in()
     fonbet.place_bet(amount_fonbet, wager_fonbet)
