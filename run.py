@@ -234,8 +234,6 @@ def start_seeker_matchs_fonbet(proxies, gen_proxi_fonbet, arr_matchs):
 def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi_olimp, pair_mathes, stat_req_ol):
     global TIMEOUT_MATCH, TIMEOUT_MATCH_MINUS
 
-    avg_req = []
-
     proxy_size = 10
     proxy = []
     i = 0
@@ -280,8 +278,6 @@ def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi
 
 def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_proxi_fonbet, pair_mathes, stat_req_fb):
     global TIMEOUT_MATCH, TIMEOUT_MATCH_MINUS
-
-    avg_req = []
 
     proxy_size = 5
     proxy = []
