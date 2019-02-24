@@ -73,8 +73,8 @@ def get_matches_olimp(proxies, proxy, time_out):
 
     try:
         http_type = 'https' if 'https' in proxy else 'http'
-        proxy = {http_type: proxy}
-        # prnts('Olimp set proxy: ' + proxy.get('http'), 'hide')
+        proxies = {http_type: proxy}
+        # prnts('Olimp set proxy: ' + proxy, 'hide')
     except Exception as e:
         err_str = 'Olimp error set proxy: ' + str(e)
         prnts(err_str)
@@ -94,7 +94,7 @@ def get_matches_olimp(proxies, proxy, time_out):
             headers=olimp_head_ll,
             timeout=time_out,
             verify=False,
-            proxies=proxy,
+            proxies=proxies,
         )
         try:
             res = resp.json()
@@ -114,22 +114,22 @@ def get_matches_olimp(proxies, proxy, time_out):
     except requests.exceptions.Timeout as e:
         err_str = 'Олимп, код ошибки Timeout: ' + str(e)
         prnts(err_str)
-        proxies = del_proxy(proxy.get('http'), proxies)
+        proxies = del_proxy(proxy, proxies)
         raise TimeOut(err_str)
     except requests.exceptions.ConnectionError as e:
         err_str = 'Олимп, код ошибки ConnectionError: ' + str(e)
         prnts(err_str)
-        proxies = del_proxy(proxy.get('http'), proxies)
+        proxies = del_proxy(proxy, proxies)
         raise ValueError(err_str)
     except requests.exceptions.RequestException as e:
         err_str = 'Олимп, код ошибки RequestException: ' + str(e)
         prnts(err_str)
-        proxies = del_proxy(proxy.get('http'), proxies)
+        proxies = del_proxy(proxy, proxies)
         raise ValueError(err_str)
     except Exception as e:
         err_str = 'Олимп, код ошибки Exception: ' + str(e)
         prnts(err_str)
-        proxies = del_proxy(proxy.get('http'), proxies)
+        proxies = del_proxy(proxy, proxies)
         raise ValueError(err_str)
 
 
@@ -173,8 +173,8 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out):
 
     try:
         http_type = 'https' if 'https' in proxy else 'http'
-        proxy = {http_type: proxy}
-        # prnts('Olimp: set proxy by ' + str(match_id) + ': ' + str(proxy.get('http')), 'hide')
+        proxies = {http_type: proxy}
+        # prnts('Olimp: set proxy by ' + str(match_id) + ': ' + str(proxy), 'hide')
     except Exception as e:
         err_str = 'Olimp error set proxy by ' + str(match_id) + ': ' + str(e)
         prnts(err_str)
@@ -188,7 +188,7 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out):
             headers=olimp_stake_head,
             timeout=time_out,
             verify=False,
-            proxies=proxy
+            proxies=proxies
         )
         try:
             res = resp.json()
@@ -207,25 +207,25 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out):
     except requests.exceptions.Timeout as e:
         err_str = 'Олимп, код ошибки Timeout: ' + str(e)
         prnts(err_str)
-        proxi_list = del_proxy(proxy.get('http'), proxi_list)
+        proxi_list = del_proxy(proxy, proxi_list)
         raise TimeOut(err_str)
 
     except requests.exceptions.ConnectionError as e:
         err_str = 'Олимп ' + str(match_id) + ', код ошибки ConnectionError: ' + str(e)
         prnts(err_str)
-        proxi_list = del_proxy(proxy.get('http'), proxi_list)
+        proxi_list = del_proxy(proxy, proxi_list)
         raise ValueError(err_str)
     except requests.exceptions.RequestException as e:
         err_str = 'Олимп ' + str(match_id) + ', код ошибки RequestException: ' + str(e)
         prnts(err_str)
-        proxi_list = del_proxy(proxy.get('http'), proxi_list)
+        proxi_list = del_proxy(proxy, proxi_list)
         raise ValueError(err_str)
     except Exception as e:
         if str(e) == '404':
             raise OlimpMatchСompleted('Олимп, матч ' + str(match_id) + ' завершен, поток выключен!')
         err_str = 'Олимп ' + str(match_id) + ', код ошибки Exception: ' + str(e)
         prnts(err_str)
-        proxi_list = del_proxy(proxy.get('http'), proxi_list)
+        proxi_list = del_proxy(proxy, proxi_list)
         raise ValueError(err_str)
 
 
