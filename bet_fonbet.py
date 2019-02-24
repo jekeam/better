@@ -8,6 +8,7 @@ from math import floor
 import time
 from retry_requests import requests_retry_session
 from exceptions import OlimpBetError
+from util_fonbet import get_new_bets_fonbet
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -59,6 +60,7 @@ class FonbetBot:
         self.cnt_test = 0
         self.add_sleep = 0
         self.timeout = 50
+        self.fonbet_bet_type = None
 
         with open(os.path.join(package_dir, "proxies.json")) as file:
             proxies = load(file)
@@ -347,7 +349,7 @@ class FonbetBot:
             prnt(err_str)
             raise OlimpBetError(err_str)
 
-    def place_bet(self, amount: int = None, wager=None, obj={}) -> None:
+    def place_bet(self, amount: int = None, wager=None, obj={}, fonbet_bet_type=None) -> None:
 
         self.check_stat_olimp(obj)
         self._get_request_id()
@@ -356,6 +358,8 @@ class FonbetBot:
             self.wager = wager
         if self.amount is None and amount:
             self.amount = amount
+        if self.fonbet_bet_type is None:
+            self.fonbet_bet_type = fonbet_bet_type
 
         url = self.common_url.format("coupon/register")
 
@@ -497,20 +501,37 @@ class FonbetBot:
                              + ', new: ' + str(new_wager) + ' ' + str(err_str))
                         self.wager.update(new_wager)
                         return self.place_bet(obj=obj)
-                    if float(new_wager.get('value', 0)) < float(self.wager.get('value', 0)):
-                        n_sleep = max(0, (self.sleep - req_time))
-                        self.cnt_bet_attempt = self.cnt_bet_attempt + 1
-                        prnt('Коф-меньше запрошенного: ' + str(self.wager)
-                             + ', new: ' + str(new_wager) + ' ' + str(err_str) +
-                             ', попытка #' + str(self.cnt_bet_attempt) + ' через ' + str(n_sleep) + ' сек')
-                        time.sleep(n_sleep)
-                        return self.place_bet(obj=obj)
+                    # В данном случае мы не проверяем кофы на изменение, если добавм надо подумать нужно ли это
+                    # if float(new_wager.get('value', 0)) < float(self.wager.get('value', 0)):
+                    #     n_sleep = max(0, (self.sleep - req_time))
+                    #     self.cnt_bet_attempt = self.cnt_bet_attempt + 1
+                    #     prnt('Коф-меньше запрошенного: ' + str(self.wager)
+                    #          + ', new: ' + str(new_wager) + ' ' + str(err_str) +
+                    #          ', попытка #' + str(self.cnt_bet_attempt) + ' через ' + str(n_sleep) + ' сек')
+                    #     time.sleep(n_sleep)
+                    #     return self.place_bet(obj=obj)
                     elif str(new_wager.get('param', '')) != str(self.wager.get('param', '')) and \
                             int(self.wager.get('factor', 0)) == int(new_wager.get('factor', 0)):
                         err_str = "BET_FONBET.PY: error Изменилась тотал ставки, 'param' не совпадает: " + \
                                   str(err_str) + ', new_wager: ' + str(new_wager) + ', old_wager: ' + str(self.wager)
                         prnt(err_str)
-                        raise LoadException(err_str)
+                        if self.fonbet_bet_type:
+                            prnts('BET_FONBET.PY: поиск нового ИД тотала: ' + str(self.fonbet_bet_type))
+                            match_id = self.wager.get('event')
+                            new_wager = get_new_bets_fonbet(match_id, self.proxies, self.timeout)
+                            new_wager = new_wager.get(str(match_id), {}).get('kofs', {}).get(self.fonbet_bet_type)
+                            if new_wager:
+                                prnts('BET_FONBET.PY: Тотал найден: ' + str(new_wager))
+                                self.wager.update(new_wager)
+                                return self.place_bet(obj=obj)
+                            else:
+                                err_str = 'BET_FONBET.PY: Тотал не найден'
+                                prnts(err_str)
+                                raise LoadException(err_str)
+                        else:
+                            err_str = 'BET_FONBET.PY: Тип ставки, например 1ТМ(2.5) - не задан, выдаю ошибку.'
+                            prnts(err_str)
+                            raise LoadException(err_str)
                     else:
                         err_str = "BET_FONBET.PY: error неизвестная ошибка: " + \
                                   str(err_str) + ', new_wager: ' + str(new_wager) + ', old_wager: ' + str(self.wager)
@@ -779,10 +800,10 @@ class FonbetBot:
 if __name__ == '__main__':
     FONBET_USER = {"login": 5699838, "password": "NTe2904H11"}
     amount_fonbet = 30
-    wager_fonbet = {'event': '13315737', 'factor': '1571', 'param': '', 'score': '0:1', 'value': '33'}
+    wager_fonbet = {'event': '13395343', 'factor': '1809', 'param': '250', 'score': '0:0', 'value': '1.42'}
     fonbet = FonbetBot(FONBET_USER)
     fonbet.sign_in()
-    fonbet.place_bet(amount_fonbet, wager_fonbet)
+    fonbet.place_bet(amount_fonbet, wager_fonbet, fonbet_bet_type='ТМ(2.5)')
     time.sleep(3)
     fonbet.sale_bet()
     # fonbet_reg_id = fonbet.place_bet(amount_fonbet, wager_fonbet)
