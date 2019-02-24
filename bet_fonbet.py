@@ -193,7 +193,7 @@ class FonbetBot:
             url,
             headers=browser_headers,
             verify=False,
-            timeout=15,
+            timeout=20,
             proxies=self.proxies
         )
         check_status_with_resp(resp)
@@ -235,7 +235,7 @@ class FonbetBot:
                 headers=self.fonbet_headers,
                 data=data,
                 verify=False,
-                timeout=60,
+                timeout=20,
                 proxies=self.proxies
             )
             check_status_with_resp(resp)
@@ -295,7 +295,7 @@ class FonbetBot:
             headers=headers,
             json=payload,
             verify=False,
-            timeout=15,
+            timeout=20,
             proxies=self.proxies
         )
         check_status_with_resp(resp)
@@ -381,7 +381,7 @@ class FonbetBot:
             headers=headers,
             json=payload,
             verify=False,
-            timeout=15,
+            timeout=20,
             proxies=self.proxies
         )
         prnt('BET_FONBET.PY: response fonbet: ' + str(resp.text), 'hide')
@@ -426,7 +426,7 @@ class FonbetBot:
             headers=headers,
             json=payload,
             verify=False,
-            timeout=15
+            timeout=20
         )
         req_time = round(resp.elapsed.total_seconds(), 2)
         check_status_with_resp(resp)
@@ -541,7 +541,7 @@ class FonbetBot:
                 headers=headers,
                 json=payload,
                 verify=False,
-                timeout=15
+                timeout=20
             )
             check_status_with_resp(resp)
             res = resp.json()
@@ -597,7 +597,7 @@ class FonbetBot:
                 headers=headers,
                 json=payload,
                 verify=False,
-                timeout=15,
+                timeout=20,
                 proxies=self.proxies
             )
             check_status_with_resp(resp)
@@ -624,7 +624,7 @@ class FonbetBot:
                 headers=headers,
                 json=payload,
                 verify=False,
-                timeout=15,
+                timeout=20,
                 proxies=self.proxies
             )
             check_status_with_resp(resp)
@@ -662,7 +662,7 @@ class FonbetBot:
             headers=headers,
             json=payload,
             verify=False,
-            timeout=15,
+            timeout=20,
             proxies=self.proxies
         )
         check_status_with_resp(resp)
@@ -721,7 +721,7 @@ class FonbetBot:
             headers=headers,
             json=payload,
             verify=False,
-            timeout=15,
+            timeout=20,
             proxies=self.proxies
         )
         check_status_with_resp(resp)
@@ -753,7 +753,7 @@ class FonbetBot:
             headers=self.fonbet_headers,
             data=data,
             verify=False,
-            timeout=10,
+            timeout=20,
             proxies=self.proxies
         )
         check_status_with_resp(resp)
