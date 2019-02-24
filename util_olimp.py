@@ -9,6 +9,7 @@ from exceptions import OlimpMatchСompleted, TimeOut
 from utils import prnts
 
 olimp_url = 'http://176.223.130.230:10600'  # http://olimp.com
+olimp_url_https = 'https://176.223.130.230:443'  # http://olimp.com
 
 olimp_secret_key = 'b2c59ba4-7702-4b12-bef5-0908391851d9'
 
@@ -71,8 +72,9 @@ def get_matches_olimp(proxies, proxy, time_out):
     global olimp_head
 
     try:
-        proxy = {'http': proxy}
-        # prnts('Olimp set proxy: ' + proxy.get('http'), 'hide')
+        http_type = 'https' if 'https' in proxy else 'http'
+        proxies = {http_type: proxy}
+        # prnts('Olimp set proxy: ' + proxy, 'hide')
     except Exception as e:
         err_str = 'Olimp error set proxy: ' + str(e)
         prnts(err_str)
@@ -86,12 +88,13 @@ def get_matches_olimp(proxies, proxy, time_out):
     olimp_head_ll.pop('Accept-Language', None)
     try:
         resp = requests.post(
-            olimp_url + '/api/slice/',
+            # olimp_url + '/api/slice/',
+            olimp_url_https + '/api/slice/',
             data=olimp_data_ll,
             headers=olimp_head_ll,
             timeout=time_out,
             verify=False,
-            proxies=proxy,
+            proxies=proxies,
         )
         try:
             res = resp.json()
@@ -111,22 +114,22 @@ def get_matches_olimp(proxies, proxy, time_out):
     except requests.exceptions.Timeout as e:
         err_str = 'Олимп, код ошибки Timeout: ' + str(e)
         prnts(err_str)
-        proxies = del_proxy(proxy.get('http'), proxies)
+        proxies = del_proxy(proxy, proxies)
         raise TimeOut(err_str)
     except requests.exceptions.ConnectionError as e:
         err_str = 'Олимп, код ошибки ConnectionError: ' + str(e)
         prnts(err_str)
-        proxies = del_proxy(proxy.get('http'), proxies)
+        proxies = del_proxy(proxy, proxies)
         raise ValueError(err_str)
     except requests.exceptions.RequestException as e:
         err_str = 'Олимп, код ошибки RequestException: ' + str(e)
         prnts(err_str)
-        proxies = del_proxy(proxy.get('http'), proxies)
+        proxies = del_proxy(proxy, proxies)
         raise ValueError(err_str)
     except Exception as e:
         err_str = 'Олимп, код ошибки Exception: ' + str(e)
         prnts(err_str)
-        proxies = del_proxy(proxy.get('http'), proxies)
+        proxies = del_proxy(proxy, proxies)
         raise ValueError(err_str)
 
 
@@ -153,6 +156,7 @@ def to_abb(sbet):
 
 def get_match_olimp(match_id, proxi_list, proxy, time_out):
     global olimp_url
+    global olimp_url_https
     global olimp_data
     olimp_data_m = olimp_data.copy()
 
@@ -168,8 +172,9 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out):
     olimp_stake_head.pop('Accept-Language', None)
 
     try:
-        proxy = {'http': proxy}
-        # prnts('Olimp: set proxy by ' + str(match_id) + ': ' + str(proxy.get('http')), 'hide')
+        http_type = 'https' if 'https' in proxy else 'http'
+        proxies = {http_type: proxy}
+        # prnts('Olimp: set proxy by ' + str(match_id) + ': ' + str(proxy), 'hide')
     except Exception as e:
         err_str = 'Olimp error set proxy by ' + str(match_id) + ': ' + str(e)
         prnts(err_str)
@@ -177,12 +182,13 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out):
 
     try:
         resp = requests.post(
-            olimp_url + '/api/stakes/',
+            # olimp_url + '/api/stakes/',
+            olimp_url_https + '/api/stakes/',
             data=olimp_data_m,
             headers=olimp_stake_head,
             timeout=time_out,
             verify=False,
-            proxies=proxy
+            proxies=proxies
         )
         try:
             res = resp.json()
@@ -201,25 +207,25 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out):
     except requests.exceptions.Timeout as e:
         err_str = 'Олимп, код ошибки Timeout: ' + str(e)
         prnts(err_str)
-        proxi_list = del_proxy(proxy.get('http'), proxi_list)
+        proxi_list = del_proxy(proxy, proxi_list)
         raise TimeOut(err_str)
 
     except requests.exceptions.ConnectionError as e:
         err_str = 'Олимп ' + str(match_id) + ', код ошибки ConnectionError: ' + str(e)
         prnts(err_str)
-        proxi_list = del_proxy(proxy.get('http'), proxi_list)
+        proxi_list = del_proxy(proxy, proxi_list)
         raise ValueError(err_str)
     except requests.exceptions.RequestException as e:
         err_str = 'Олимп ' + str(match_id) + ', код ошибки RequestException: ' + str(e)
         prnts(err_str)
-        proxi_list = del_proxy(proxy.get('http'), proxi_list)
+        proxi_list = del_proxy(proxy, proxi_list)
         raise ValueError(err_str)
     except Exception as e:
         if str(e) == '404':
             raise OlimpMatchСompleted('Олимп, матч ' + str(match_id) + ' завершен, поток выключен!')
         err_str = 'Олимп ' + str(match_id) + ', код ошибки Exception: ' + str(e)
         prnts(err_str)
-        proxi_list = del_proxy(proxy.get('http'), proxi_list)
+        proxi_list = del_proxy(proxy, proxi_list)
         raise ValueError(err_str)
 
 
