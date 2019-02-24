@@ -252,7 +252,7 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
             pid_olimp.join()
 
             prnt('obj: ' + str(obj))
-            sale_timeout = 0  # randint(1, 3)
+            sale_timeout = randint(1, 3)
             if obj.get('fonbet_err') != 'ok' and obj.get('olimp_err') == 'ok':
                 prnt('Ошибка при проставлении ставки в фонбет, делаю выкуп ставки в олимпе, через '
                      + str(sale_timeout) + ' сек.')

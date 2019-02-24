@@ -10,3 +10,6 @@ class TimeOut(Exception):
 
 class Shutdown(Exception):
     pass
+
+class TimeOutFonbet(Exception):
+    pass

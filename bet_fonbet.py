@@ -56,6 +56,8 @@ class FonbetBot:
         self.cnt_sale_attempt = 0
         self.sleep = 4
         self.cnt_test = 0
+        self.add_sleep = 0
+        self.timeout = 50
 
         with open(os.path.join(package_dir, "proxies.json")) as file:
             proxies = load(file)
@@ -189,11 +191,11 @@ class FonbetBot:
         if url == '':
             url = 'www.fonbet.com'
         url = "https://" + url + "/urls.json?{}".format(random())
-        resp = requests_retry_session().get(
+        resp = requests.get(
             url,
             headers=browser_headers,
             verify=False,
-            timeout=20,
+            timeout=self.timeout,
             proxies=self.proxies
         )
         check_status_with_resp(resp)
@@ -202,6 +204,8 @@ class FonbetBot:
     def get_common_url(self):
         urls = self.get_urls()
         client_url = urls["clients-api"][0]
+        self.timeout = urls["timeout"] / 100
+        prnt('BET_FONBET.PY: set timeout: ' + str(self.timeout))
 
         return "https:{url}/session/".format(url=client_url) + "{}"
 
@@ -230,12 +234,12 @@ class FonbetBot:
             sign = hmac.new(key=self.account['password'].encode(), msg=msg.encode(), digestmod=sha512).hexdigest()
             payload["sign"] = sign
             data = get_dumped_payload(payload)
-            resp = requests_retry_session().post(
+            resp = requests.post(
                 self.common_url.format("login"),
                 headers=self.fonbet_headers,
                 data=data,
                 verify=False,
-                timeout=20,
+                timeout=self.timeout,
                 proxies=self.proxies
             )
             check_status_with_resp(resp)
@@ -290,12 +294,12 @@ class FonbetBot:
         payload['clientId'] = self.base_payload["clientId"]
 
         prnt('BET_FONBET.PY: check bet to bk fonbet, time: ' + str(datetime.datetime.now()))
-        resp = requests_retry_session().post(
+        resp = requests.post(
             url,
             headers=headers,
             json=payload,
             verify=False,
-            timeout=20,
+            timeout=self.timeout,
             proxies=self.proxies
         )
         check_status_with_resp(resp)
@@ -325,7 +329,7 @@ class FonbetBot:
         payload_req['clientId'] = self.base_payload["clientId"]
         payload_req['client']['id'] = self.base_payload["clientId"]
 
-        resp = requests_retry_session().post(url, headers=headers, json=payload_req, verify=False, timeout=20)
+        resp = requests.post(url, headers=headers, json=payload_req, verify=False, timeout=self.timeout)
         check_status_with_resp(resp)
         res = resp.json()
         if "requestId" not in res:
@@ -376,12 +380,12 @@ class FonbetBot:
         payload["coupon"]["amount"] = self.amount
 
         prnt('BET_FONBET.PY: send bet to bk fonbet, time: ' + str(datetime.datetime.now()))
-        resp = requests_retry_session().post(
+        resp = requests.post(
             url,
             headers=headers,
             json=payload,
             verify=False,
-            timeout=20,
+            timeout=self.timeout,
             proxies=self.proxies
         )
         prnt('BET_FONBET.PY: response fonbet: ' + str(resp.text), 'hide')
@@ -396,7 +400,7 @@ class FonbetBot:
 
         if result == "betDelay":
             # {"result":"betDelay","betDelay":3000}
-            bet_delay_sec = (float(res.get('betDelay')) / 1000)
+            bet_delay_sec = (float(res.get('betDelay')) / 1000) + self.add_sleep
             prnt('BET_FONBET.PY: bet_delay: ' + str(bet_delay_sec) + ' sec...')
             time.sleep(bet_delay_sec)
 
@@ -421,12 +425,12 @@ class FonbetBot:
         '''
 
         headers = self.fonbet_headers
-        resp = requests_retry_session().post(
+        resp = requests.post(
             url,
             headers=headers,
             json=payload,
             verify=False,
-            timeout=20
+            timeout=self.timeout
         )
         req_time = round(resp.elapsed.total_seconds(), 2)
         check_status_with_resp(resp)
@@ -449,6 +453,10 @@ class FonbetBot:
                 prnt('BET_FONBET.PY: Fonbet bet successful, regId: ' + str(regId))
                 self.reg_id = regId
             elif err_code == 100:
+                if 'Слишком частые ставки на событие' in res.get('coupon').get('errorMessageRus'):
+                    err_str = "BET_FONBET.PY error:" + str(res)
+                    prnt(err_str)
+                    raise LoadException(err_str)
 
                 self.cnt_bet_attempt = self.cnt_bet_attempt + 1
                 n_sleep = max(0, (self.sleep - req_time))
@@ -512,6 +520,7 @@ class FonbetBot:
             # {'result': 'error', 'errorCode': 200, 'errorMessage': 'temporary unknown result'}
             err_str = 'BET_FONBET.PY: Get temporary unknown result: ' + str(res)
             prnt(err_str)
+            time.sleep(3)
             return self._check_result(payload, obj)
         else:
             err = 'BET_FONBET.PY: error bet place result: ' + str(res)
@@ -536,12 +545,12 @@ class FonbetBot:
             payload['clientId'] = self.base_payload["clientId"]
             payload['fsid'] = self.payload['fsid']
             prnt('BET_FONBET.PY - sale_bet rq 1: ' + str(payload), 'hide')
-            resp = requests_retry_session().post(
+            resp = requests.post(
                 url,
                 headers=headers,
                 json=payload,
                 verify=False,
-                timeout=30
+                timeout=self.timeout
             )
             check_status_with_resp(resp)
             res = resp.json()
@@ -592,12 +601,12 @@ class FonbetBot:
             payload['clientId'] = self.base_payload["clientId"]
             payload['fsid'] = self.payload['fsid']
             prnt('BET_FONBET.PY - sale_bet rq 2: ' + str(payload), 'hide')
-            resp = requests_retry_session().post(
+            resp = requests.post(
                 url,
                 headers=headers,
                 json=payload,
                 verify=False,
-                timeout=20,
+                timeout=self.timeout,
                 proxies=self.proxies
             )
             check_status_with_resp(resp)
@@ -619,12 +628,12 @@ class FonbetBot:
             payload['clientId'] = self.base_payload["clientId"]
             payload['fsid'] = self.payload['fsid']
             prnt('BET_FONBET.PY - sale_bet rq 3: ' + str(payload), 'hide')
-            resp = requests_retry_session().post(
+            resp = requests.post(
                 url,
                 headers=headers,
                 json=payload,
                 verify=False,
-                timeout=20,
+                timeout=self.timeout,
                 proxies=self.proxies
             )
             check_status_with_resp(resp)
@@ -633,7 +642,7 @@ class FonbetBot:
             result = res.get('result')
 
             if result == "sellDelay":
-                sell_delay_sec = (float(res.get('sellDelay')) / 1000)
+                sell_delay_sec = (float(res.get('sellDelay')) / 1000) + self.add_sleep
                 prnt('BET_FONBET.PY: sell_delay: ' + str(sell_delay_sec) + ' sec...')
                 time.sleep(sell_delay_sec)
 
@@ -657,12 +666,12 @@ class FonbetBot:
         payload['clientId'] = self.base_payload["clientId"]
         payload['fsid'] = self.payload['fsid']
         prnt('BET_FONBET.PY - _check_sell_result rq: ' + str(payload), 'hide')
-        resp = requests_retry_session().post(
+        resp = requests.post(
             url,
             headers=headers,
             json=payload,
             verify=False,
-            timeout=20,
+            timeout=self.timeout,
             proxies=self.proxies
         )
         check_status_with_resp(resp)
@@ -677,14 +686,14 @@ class FonbetBot:
         # {'result': 'unableToSellCoupon', 'requestId': 19920670, 'regId': 14273664108, 'reason': 4, 'actualSellSum': 4900}
 
         if res.get('result') == "sellDelay":
-            sell_delay_sec = (float(res.get('sellDelay')) / 1000)
+            sell_delay_sec = (float(res.get('sellDelay')) / 1000) + self.add_sleep
             prnt('BET_FONBET.PY: sell_delay: ' + str(sell_delay_sec) + ' sec...')
             time.sleep(sell_delay_sec)
             return self._check_sell_result(res.get('requestId'))
 
         elif res.get('result') == 'unableToSellCoupon':
-            if res.get('reason') == 3:
-                sleep_tempblock = 3
+            if res.get('reason') in (3, 2):
+                sleep_tempblock = 3 + self.add_sleep
                 err_str = 'BET_FONBET.PY, err sale bet, coupon tempBlock = True: ' + str(res) + ' ' + \
                           'sell_delay: ' + str(sleep_tempblock) + ' sec...'
                 time.sleep(sleep_tempblock)
@@ -716,12 +725,12 @@ class FonbetBot:
         payload['clientId'] = self.base_payload["clientId"]
         payload['fsid'] = self.payload['fsid']
 
-        resp = requests_retry_session().post(
+        resp = requests.post(
             url,
             headers=headers,
             json=payload,
             verify=False,
-            timeout=20,
+            timeout=self.timeout,
             proxies=self.proxies
         )
         check_status_with_resp(resp)
@@ -748,12 +757,12 @@ class FonbetBot:
         sign = hmac.new(key=self.account['password'].encode(), msg=msg.encode(), digestmod=sha512).hexdigest()
         payload["sign"] = sign
         data = get_dumped_payload(payload)
-        resp = requests_retry_session().post(
+        resp = requests.post(
             url,
             headers=self.fonbet_headers,
             data=data,
             verify=False,
-            timeout=20,
+            timeout=self.timeout,
             proxies=self.proxies
         )
         check_status_with_resp(resp)
@@ -769,10 +778,11 @@ class FonbetBot:
 if __name__ == '__main__':
     FONBET_USER = {"login": 5699838, "password": "NTe2904H11"}
     amount_fonbet = 30
-    wager_fonbet = {'event': '13331625', 'factor': '1571', 'param': '', 'score': '0:1', 'value': '33'}
+    wager_fonbet = {'event': '13315737', 'factor': '1571', 'param': '', 'score': '0:1', 'value': '33'}
     fonbet = FonbetBot(FONBET_USER)
     fonbet.sign_in()
     fonbet.place_bet(amount_fonbet, wager_fonbet)
+    time.sleep(3)
     fonbet.sale_bet()
     # fonbet_reg_id = fonbet.place_bet(amount_fonbet, wager_fonbet)
     # {'e': 12264423, 'f': 931, 'v': 1.4, 'p': 250, 'pt': '2.5', 'isLive': True}
