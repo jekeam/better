@@ -3,7 +3,7 @@ from bet_fonbet import *
 from bet_olimp import *
 import datetime
 from fork_recheck import get_kof_olimp, get_kof_fonbet
-from utils import prnt, get_account_info, DEBUG
+from utils import prnt, get_account_info, DEBUG, get_account_summ
 # from client import run_client
 import threading
 from multiprocessing import Manager, Process, Pipe
@@ -150,7 +150,7 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
     amount_olimp, amount_fonbet = get_sum_bets(wager_olimp['factor'], wager_fonbet['value'], total_bet, False)
 
     if __name__ == '__main__':
-        wait_sec = 0  # max(0, (3.5 - deff_max))
+        wait_sec = 3  # max(0, (3.5 - deff_max))
         prnt('Wait sec: ' + str(wait_sec))
         prnt('Real wait sec: ' + str(wait_sec + deff_max))
         time.sleep(wait_sec)
@@ -196,19 +196,6 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
                 new_proc = round((1 - L) * 100, 2)
                 change_proc = round(new_proc - cur_proc, 2)
                 prnt('new proc: ' + str(new_proc) + '%, change: ' + str(change_proc))
-
-                # Проверяем, берем вилку только если она выросла в цене
-                # Если не изменилась, продолжаем мониторить,
-                # Bначе выбразываем
-                if change_proc < 0:
-                    prnt('Fork exclude: change_proc = ' + str(change_proc) + '\n')
-                    return False
-                elif change_proc == 0:
-                    prnt('Check replay: change_proc = ' + str(change_proc) + '\n')
-                    return go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max)
-                elif check_l(L) != '':
-                    prnt('Check replay: fork be up, but new_proc = ' + str(new_proc) + '%)')
-                    return go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max)
 
                 if check_l(L) == '' or DEBUG:
 
@@ -377,7 +364,7 @@ if __name__ == '__main__':
     else:
         bal1 = OlimpBot(OLIMP_USER).get_balance()  # Баланс в БК1
         bal2 = FonbetBot(FONBET_USER).get_balance()  # Баланс в БК2
-        total_bet = 280  # round(0.10 * (bal1 + bal2))  # Общая масксимальная сумма ставки
+        total_bet = get_account_summ()  # round(0.10 * (bal1 + bal2))  # Общая масксимальная сумма ставки
     balance_line = (bal1 + bal2) / 2 / 100 * 30
 
     prnt('bal1: ' + str(bal1) + ' руб.')

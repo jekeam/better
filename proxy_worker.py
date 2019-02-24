@@ -96,14 +96,14 @@ def check_proxy_fonbet(proxies_for_check, valid_proxies):
     global TIME_OUT
 
     for prx in proxies_for_check:
-        http_type = 'https' if 'https' in prx else 'http'
+        # http_type = 'https' if 'https' in prx else 'http'
         try:
             global url_fonbet
             global UA
             resp = requests.get(
                 url_fonbet,
                 headers={'User-Agent': UA},
-                proxies={http_type: prx},
+                proxies={'http': prx},
                 timeout=TIME_OUT,
                 verify=False
             )
@@ -274,10 +274,10 @@ def cd():
     if platform.system() != 'Windows' and not DEBUG:
         os.chdir('/home/autobro/')
 
+
 ol_fl = 'proxy_by_olimp.txt'
 fb_fl = 'proxy_by_fonbet.txt'
 if __name__ == '__main__':
-
     print('start proxy worker')
 
     proxy_list = []
