@@ -50,6 +50,12 @@ def get_account_info(bk, param):
     return json[bk].get(param, None)
 
 
+def get_account_summ():
+    with open(os.path.join(package_dir, "account.json")) as file:
+        json = load(file)
+    return json.get('summ', None)
+
+
 def rq_log(vstr: str):
     Outfile = open('rq_log/log.txt', "a+", encoding='utf-8')
     Outfile.write(vstr + '\n')
