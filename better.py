@@ -395,7 +395,7 @@ if __name__ == '__main__':
 
         balance_line = (bal1 + bal2) / 2 / 100 * 30
 
-        shutdown_minutes = 60 * (60 * 5)  # секунды * на кол-во (60*1) - это час
+        shutdown_minutes = 60 * (60 * 8)  # секунды * на кол-во (60*1) - это час
         if (datetime.datetime.now() - time_live).total_seconds() > (shutdown_minutes):
             err_str = 'Прошло ' + str(shutdown_minutes / 60 / 60) + ' ч., я выключился...'
             prnt(err_str)
