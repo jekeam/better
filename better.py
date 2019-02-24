@@ -15,6 +15,7 @@ from sys import exit
 from exceptions import Shutdown
 import http.client
 import json
+from exceptions import FonbetBetError, OlimpBetError
 
 shutdown = False
 
@@ -44,6 +45,8 @@ def bet_fonbet_cl(obj, amount_fonbet, wager_fonbet):
         fonbet.sign_in()
         fonbet_reg_id = fonbet.place_bet(amount_fonbet, wager_fonbet, obj)
         obj['fonbet_err'] = 'ok'
+    except OlimpBetError:
+        obj['fonbet_err'] = 'ok'
     except Exception as e:
         obj['fonbet'] = fonbet
         obj['fonbet_err'] = str(e)
@@ -57,6 +60,8 @@ def bet_olimp_cl(obj, amount_olimp, wager_olimp):
         olimp = OlimpBot(OLIMP_USER)
         olimp.sign_in()
         olimp.place_bet(amount_olimp, wager_olimp, obj)
+        obj['olimp_err'] = 'ok'
+    except FonbetBetError:
         obj['olimp_err'] = 'ok'
     except Exception as e:
         obj['olimp_err'] = str(e)
@@ -140,6 +145,8 @@ def check_fork(key, L, k1, k2, live_fork, bk1_score, bk2_score, minute, time_bre
 def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
     global bal1
     global bal2
+    global cnt_fail
+
     olimp_bet_type = str(go_bet_key.split('@')[-2])
     fonbet_bet_type = str(go_bet_key.split('@')[-1])
     # Проверяем ставили ли мы на этот матч, пока в ручную
@@ -254,6 +261,7 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
             prnt('obj: ' + str(obj))
             sale_timeout = randint(1, 3)
             if obj.get('fonbet_err') != 'ok' and obj.get('olimp_err') == 'ok':
+                cnt_fail = cnt_fail + 1
                 prnt('Ошибка при проставлении ставки в фонбет, делаю выкуп ставки в олимпе, через '
                      + str(sale_timeout) + ' сек.')
                 try:
@@ -263,6 +271,7 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
                     obj['olimp_err'] = str(e)
 
             if obj.get('olimp_err') != 'ok' and obj.get('fonbet_err') == 'ok':
+                cnt_fail = cnt_fail + 1
                 prnt('Ошибка при проставлении ставки в олимпе, делаю выкуп ставки в фонбет, через '
                      + str(sale_timeout) + ' сек.')
                 try:
@@ -347,6 +356,7 @@ F = 0  # счетчик (количество, найденых вилок)
 balance_line = 0  # (bal1 + bal2) / 2 / 100 * 60
 time_get_balance = datetime.datetime.now()
 time_live = datetime.datetime.now()
+cnt_fail = 0
 
 # wager_fonbet:{'event': '12797479', 'factor': '921', 'param': '', 'score': '0:0', 'value': '2.35'}
 # wager_fonbet:{'apid': '1144260386:45874030:1:3:-9999:3:NULL:NULL:1', 'factor': '1.66', 'sport_id': 1, 'event': '45874030'}

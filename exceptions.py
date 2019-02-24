@@ -13,3 +13,9 @@ class Shutdown(Exception):
 
 class TimeOutFonbet(Exception):
     pass
+
+class FonbetBetError(Exception):
+    pass
+
+class OlimpBetError(Exception):
+    pass
