@@ -57,6 +57,7 @@ class FonbetBot:
         self.sleep = 4
         self.cnt_test = 0
         self.add_sleep = 1
+        self.timeout = 20
 
         with open(os.path.join(package_dir, "proxies.json")) as file:
             proxies = load(file)
@@ -203,6 +204,8 @@ class FonbetBot:
     def get_common_url(self):
         urls = self.get_urls()
         client_url = urls["clients-api"][0]
+        self.timeout = urls["timeout"] / 10
+        prnt('FONBET.PY set timeout: ' + str(self.timeout))
 
         return "https:{url}/session/".format(url=client_url) + "{}"
 
@@ -236,7 +239,7 @@ class FonbetBot:
                 headers=self.fonbet_headers,
                 data=data,
                 verify=False,
-                timeout=20,
+                timeout=self.timeout,
                 proxies=self.proxies
             )
             check_status_with_resp(resp)
@@ -296,7 +299,7 @@ class FonbetBot:
             headers=headers,
             json=payload,
             verify=False,
-            timeout=20,
+            timeout=self.timeout,
             proxies=self.proxies
         )
         check_status_with_resp(resp)
@@ -326,7 +329,7 @@ class FonbetBot:
         payload_req['clientId'] = self.base_payload["clientId"]
         payload_req['client']['id'] = self.base_payload["clientId"]
 
-        resp = requests_retry_session().post(url, headers=headers, json=payload_req, verify=False, timeout=20)
+        resp = requests_retry_session().post(url, headers=headers, json=payload_req, verify=False, timeout=self.timeout)
         check_status_with_resp(resp)
         res = resp.json()
         if "requestId" not in res:
@@ -382,7 +385,7 @@ class FonbetBot:
             headers=headers,
             json=payload,
             verify=False,
-            timeout=20,
+            timeout=self.timeout,
             proxies=self.proxies
         )
         prnt('BET_FONBET.PY: response fonbet: ' + str(resp.text), 'hide')
@@ -427,7 +430,7 @@ class FonbetBot:
             headers=headers,
             json=payload,
             verify=False,
-            timeout=20
+            timeout=self.timeout
         )
         req_time = round(resp.elapsed.total_seconds(), 2)
         check_status_with_resp(resp)
@@ -546,7 +549,7 @@ class FonbetBot:
                 headers=headers,
                 json=payload,
                 verify=False,
-                timeout=30
+                timeout=self.timeout
             )
             check_status_with_resp(resp)
             res = resp.json()
@@ -602,7 +605,7 @@ class FonbetBot:
                 headers=headers,
                 json=payload,
                 verify=False,
-                timeout=20,
+                timeout=self.timeout,
                 proxies=self.proxies
             )
             check_status_with_resp(resp)
@@ -629,7 +632,7 @@ class FonbetBot:
                 headers=headers,
                 json=payload,
                 verify=False,
-                timeout=20,
+                timeout=self.timeout,
                 proxies=self.proxies
             )
             check_status_with_resp(resp)
@@ -667,7 +670,7 @@ class FonbetBot:
             headers=headers,
             json=payload,
             verify=False,
-            timeout=20,
+            timeout=self.timeout,
             proxies=self.proxies
         )
         check_status_with_resp(resp)
@@ -682,7 +685,7 @@ class FonbetBot:
         # {'result': 'unableToSellCoupon', 'requestId': 19920670, 'regId': 14273664108, 'reason': 4, 'actualSellSum': 4900}
 
         if res.get('result') == "sellDelay":
-            sell_delay_sec = (float(res.get('sellDelay')) / 1000)  + self.add_sleep
+            sell_delay_sec = (float(res.get('sellDelay')) / 1000) + self.add_sleep
             prnt('BET_FONBET.PY: sell_delay: ' + str(sell_delay_sec) + ' sec...')
             time.sleep(sell_delay_sec)
             return self._check_sell_result(res.get('requestId'))
@@ -726,7 +729,7 @@ class FonbetBot:
             headers=headers,
             json=payload,
             verify=False,
-            timeout=20,
+            timeout=self.timeout,
             proxies=self.proxies
         )
         check_status_with_resp(resp)
@@ -758,7 +761,7 @@ class FonbetBot:
             headers=self.fonbet_headers,
             data=data,
             verify=False,
-            timeout=20,
+            timeout=self.timeout,
             proxies=self.proxies
         )
         check_status_with_resp(resp)
