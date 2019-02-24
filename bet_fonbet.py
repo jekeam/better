@@ -201,6 +201,8 @@ class FonbetBot:
 
     def get_common_url(self):
         urls = self.get_urls()
+        import json
+        prnt(json.dumps(urls, indent=2, ensure_ascii=False))
         client_url = urls["clients-api"][0]
 
         return "https:{url}/session/".format(url=client_url) + "{}"
@@ -687,7 +689,7 @@ class FonbetBot:
             return self._check_sell_result(res.get('requestId'))
 
         elif res.get('result') == 'unableToSellCoupon':
-            if res.get('reason') == 3:
+            if res.get('reason') in (3, 2):
                 sleep_tempblock = 3
                 err_str = 'BET_FONBET.PY, err sale bet, coupon tempBlock = True: ' + str(res) + ' ' + \
                           'sell_delay: ' + str(sleep_tempblock) + ' sec...'
