@@ -303,7 +303,7 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
 
             max_fail = 5
             if cnt_fail > max_fail:
-                err_str = 'Max fail > ' + str(max_fail)
+                err_str = 'Max fail > ' + str(max_fail) + ', script off'
                 raise MaxFail(err_str)
 
             return True
