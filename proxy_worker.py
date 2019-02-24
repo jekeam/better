@@ -290,4 +290,4 @@ if __name__ == '__main__':
     proxy_list_fonbet = check_proxies_fonbet(proxy_list)
     save_list(proxy_list_fonbet, fb_fl)
 
-    proxy_push(ol_fl, fb_fl)
+    # proxy_push(ol_fl, fb_fl)
