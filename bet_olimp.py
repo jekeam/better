@@ -5,6 +5,7 @@ import urllib3
 from math import floor
 import time
 from retry_requests import requests_retry_session
+from exceptions import FonbetBetError
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -124,7 +125,7 @@ class OlimpBot:
         if obj.get('fonbet_err', 'ok') != 'ok':
             err_str = 'BET_OLIMP.PY: Олимп получил ошибку от Фонбета: ' + str(obj.get('fonbet_err'))
             prnt(err_str)
-            raise LoadException(err_str)
+            raise FonbetBetError(err_str)
 
         url = olimp_url2.format("basket/fast")
 
