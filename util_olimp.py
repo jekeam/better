@@ -10,6 +10,7 @@ from utils import prnts
 
 olimp_url = 'http://10.olimp-proxy.ru:10600'
 olimp_url_https = 'https://10.olimp-proxy.ru'
+olimp_url_random = 'https://{}.olimp-proxy.ru'  # c 10 по 18й
 
 olimp_secret_key = 'b2c59ba4-7702-4b12-bef5-0908391851d9'
 
@@ -72,7 +73,7 @@ def get_matches_olimp(proxies, proxy, time_out):
     global olimp_head
 
     try:
-        http_type = 'https' if 'https' in proxy else 'http'
+        http_type = 'http' if 'https' in proxy else 'http'
         url = olimp_url_https if 'https' in proxy else olimp_url
         proxies = {http_type: proxy}
         # prnts('Olimp set proxy: ' + proxy, 'hide')
@@ -172,7 +173,7 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out):
     olimp_stake_head.pop('Accept-Language', None)
 
     try:
-        http_type = 'https' if 'https' in proxy else 'http'
+        http_type = 'http' if 'https' in proxy else 'http'
         url = olimp_url_https if 'https' in proxy else olimp_url
         proxies = {http_type: proxy}
         # prnts('Olimp: set proxy by ' + str(match_id) + ': ' + str(proxy), 'hide')

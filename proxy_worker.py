@@ -96,7 +96,7 @@ def check_proxy_fonbet(proxies_for_check, valid_proxies):
     global TIME_OUT
 
     for prx in proxies_for_check:
-        # http_type = 'https' if 'https' in prx else 'http'
+        # http_type = 'http' if 'https' in prx else 'http'
         try:
             global url_fonbet
             global UA
