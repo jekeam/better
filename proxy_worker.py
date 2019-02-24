@@ -72,7 +72,7 @@ def check_proxy_olimp(proxies_for_check, valid_proxies):
             url = olimp_url_https if 'https' in prx else olimp_url
             proxies = {http_type: prx}
             resp = requests.post(
-                url + '/api/slice/',
+                url + '/ap1i/slice/',
                 headers=olimp_head_ll,
                 data=olimp_data_ll,
                 proxies=proxies,
@@ -86,6 +86,8 @@ def check_proxy_olimp(proxies_for_check, valid_proxies):
             x = x + 1
             if prx not in valid_proxies:
                 valid_proxies.append(prx)
+        except ValueError as e:
+            print('o invalid: ' + str(prx), str(e), str(resp.text))
         except Exception as e:
             pass
             print('o invalid: ' + str(prx), str(e))
@@ -283,7 +285,7 @@ if __name__ == '__main__':
     proxy_list = []
     proxy_list_olimp = []
     proxy_list_fonbet = []
-    proxy_list = join_proxies_to_file(5000)
+    proxy_list = join_proxies_to_file(500)
 
     proxy_list_olimp = check_proxies_olimp(proxy_list)
     save_list(proxy_list_olimp, ol_fl)
