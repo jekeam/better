@@ -17,7 +17,7 @@ from utils import DEBUG
 # disable warning
 urllib3.disable_warnings()
 
-TIME_OUT = 3.51
+TIME_OUT = 2
 
 UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3163.100 Safari/537.36'
 
@@ -68,18 +68,20 @@ def check_proxy_olimp(proxies_for_check, valid_proxies):
     for prx in proxies_for_check:
         try:
             x = 0
+            http_type = 'http' if 'https' in prx else 'http'
+            url = olimp_url_https if 'https' in prx else olimp_url
+            proxies = {http_type: prx}
             resp = requests.post(
-                # olimp_url + '/api/slice/',
-                olimp_url_https + '/api/slice/',
+                url + '/api/slice/',
                 headers=olimp_head_ll,
                 data=olimp_data_ll,
-                proxies={'https': prx},
+                proxies=proxies,
                 timeout=TIME_OUT,
                 verify=False
             )
+            resp.json()
             print(
-                'o valid: ' + str(prx), str(resp.status_code),
-                str(resp.json().get('error', '').get('err_desc', ''))
+                'o valid: ' + str(prx), str(resp.status_code)
             )
             x = x + 1
             if prx not in valid_proxies:
@@ -272,10 +274,9 @@ def cd():
     if platform.system() != 'Windows' and not DEBUG:
         os.chdir('/home/autobro/')
 
-
+ol_fl = 'proxy_by_olimp.txt'
+fb_fl = 'proxy_by_fonbet.txt'
 if __name__ == '__main__':
-    ol_fl = 'proxy_by_olimp.txt'
-    fb_fl = 'proxy_by_fonbet.txt'
 
     print('start proxy worker')
 
@@ -289,5 +290,3 @@ if __name__ == '__main__':
 
     proxy_list_fonbet = check_proxies_fonbet(proxy_list)
     save_list(proxy_list_fonbet, fb_fl)
-
-    # proxy_push(ol_fl, fb_fl)
