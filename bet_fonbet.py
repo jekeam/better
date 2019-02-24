@@ -772,7 +772,7 @@ if __name__ == '__main__':
     wager_fonbet = {'event': '13366483', 'factor': '1571', 'param': '', 'score': '0:1', 'value': '33'}
     fonbet = FonbetBot(FONBET_USER)
     fonbet.sign_in()
-    # fonbet.place_bet(amount_fonbet, wager_fonbet)
-    fonbet.sale_bet(14421421233344)
+    fonbet.place_bet(amount_fonbet, wager_fonbet)
+    fonbet.sale_bet()
     # fonbet_reg_id = fonbet.place_bet(amount_fonbet, wager_fonbet)
     # {'e': 12264423, 'f': 931, 'v': 1.4, 'p': 250, 'pt': '2.5', 'isLive': True}
