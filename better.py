@@ -12,10 +12,9 @@ import time
 from random import randint
 import platform
 from sys import exit
-from exceptions import Shutdown
+from exceptions import Shutdown, FonbetBetError, OlimpBetError, MaxFail
 import http.client
 import json
-from exceptions import FonbetBetError, OlimpBetError
 
 shutdown = False
 
@@ -301,6 +300,11 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
             sleep_post_work = 30
             prnt('Ожидание ' + str(sleep_post_work) + ' сек.')
             time.sleep(sleep_post_work)
+
+            max_fail = 5
+            if cnt_fail > max_fail:
+                err_str = 'Max fail > ' + str(max_fail)
+                raise MaxFail(err_str)
 
             return True
 
