@@ -449,6 +449,10 @@ class FonbetBot:
                 prnt('BET_FONBET.PY: Fonbet bet successful, regId: ' + str(regId))
                 self.reg_id = regId
             elif err_code == 100:
+                if 'Слишком частые ставки на событие' in res.get('coupon').get('errorMessageRus'):
+                    err_str = "BET_FONBET.PY error:" + str(res)
+                    prnt(err_str)
+                    raise LoadException(err_str)
 
                 self.cnt_bet_attempt = self.cnt_bet_attempt + 1
                 n_sleep = max(0, (self.sleep - req_time))
