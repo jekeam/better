@@ -71,73 +71,72 @@ opposition = {
     'ННН': 'ННД'
 }
 
+
 def get_vector(bet_type, sc1=None, sc2=None):
-    
     def raise_err(VECT, sc1, sc2):
         if sc1 is None or sc2 is None and VECT != '':
             raise ValueError('ERROR: sc1 or sc2 not defined!')
-    
+
     D = 'DOWN'
     U = 'UP'
     VECT = ''
-    
+
     if sc1:
         sc1 = int(sc1)
     if sc2:
         sc2 = int(sc2)
-    
+
     if [t for t in ['ТБ', 'КЗ', 'ОЗН', 'ННД'] if t in bet_type]:
         return U
     if [t for t in ['ТМ', 'КНЗ', 'ОЗД', 'ННН'] if t in bet_type]:
         return D
-        
+
     # Или добавлять ретурн в каждую из веток,
     # но те типы что по длинне написания больше,  должны быть выше
-        
+
     if 'П1Н' in bet_type:
         raise_err(VECT, sc1, sc2)
-        if sc1>=sc2:
+        if sc1 >= sc2:
             return D
         else:
             return U
-            
+
     if 'П2Н' in bet_type:
         raise_err(VECT, sc1, sc2)
-        if sc1<=sc2: 
+        if sc1 <= sc2:
             return D
         else:
-            return U        
-    
+            return U
+
     if '12' in bet_type:
         raise_err(VECT, sc1, sc2)
-        if sc1!=sc2: 
+        if sc1 != sc2:
             return D
         else:
             return U
 
     if 'П1' in bet_type:
         raise_err(VECT, sc1, sc2)
-        if sc1>sc2:
+        if sc1 > sc2:
             return D
         else:
-            return U        
-            
+            return U
+
     if 'П2' in bet_type:
         raise_err(VECT, sc1, sc2)
-        if sc1<sc2: 
+        if sc1 < sc2:
             return D
         else:
             return U
-            
+
     if 'Н' in bet_type:
-        raise_err(VECT,sc1, sc2)
-        if sc1==sc2:
+        raise_err(VECT, sc1, sc2)
+        if sc1 == sc2:
             return D
         else:
             return U
-    
+
     raise ValueError('Error: vector not defined!')
-    
 
 
 def get_olimp(resp, arr_matchs):
@@ -235,8 +234,6 @@ def start_seeker_matchs_fonbet(proxies, gen_proxi_fonbet, arr_matchs):
 def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi_olimp, pair_mathes, stat_req_ol):
     global TIMEOUT_MATCH, TIMEOUT_MATCH_MINUS
 
-    avg_req = []
-
     proxy_size = 10
     proxy = []
     i = 0
@@ -281,8 +278,6 @@ def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi
 
 def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_proxi_fonbet, pair_mathes, stat_req_fb):
     global TIMEOUT_MATCH, TIMEOUT_MATCH_MINUS
-
-    avg_req = []
 
     proxy_size = 5
     proxy = []
@@ -618,7 +613,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
 def stat_req(stat_req_olimp, stat_req_fonbet):
     while True:
         if stat_req_olimp and stat_req_fonbet:
-            prnts('fb cnt:'+ str(len(stat_req_fonbet)) +
+            prnts('fb cnt:' + str(len(stat_req_fonbet)) +
                   ' avg:' + str(round(sum(stat_req_fonbet) / len(stat_req_fonbet), 2)) +
                   ' max:' + str(max(stat_req_fonbet)) +
                   ' mode:' + str(round(find_max_mode(stat_req_fonbet), 2)) +
