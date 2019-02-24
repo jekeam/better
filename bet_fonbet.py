@@ -202,8 +202,6 @@ class FonbetBot:
 
     def get_common_url(self):
         urls = self.get_urls()
-        import json
-        prnt(json.dumps(urls, indent=2, ensure_ascii=False))
         client_url = urls["clients-api"][0]
 
         return "https:{url}/session/".format(url=client_url) + "{}"
