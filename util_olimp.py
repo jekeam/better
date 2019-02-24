@@ -8,8 +8,8 @@ import time
 from exceptions import OlimpMatchСompleted, TimeOut
 from utils import prnts
 
-olimp_url = 'http://176.223.130.230:10600'  # http://olimp.com
-olimp_url_https = 'https://176.223.130.230:443'  # http://olimp.com
+olimp_url = 'http://10.olimp-proxy.ru:10600'
+olimp_url_https = 'https://10.olimp-proxy.ru'
 
 olimp_secret_key = 'b2c59ba4-7702-4b12-bef5-0908391851d9'
 

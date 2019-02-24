@@ -68,20 +68,20 @@ def check_proxy_olimp(proxies_for_check, valid_proxies):
     for prx in proxies_for_check:
         try:
             x = 0
-            http_type = 'https' if 'https' in prx else 'http'
+            http_type = 'http' if 'https' in prx else 'http'
             url = olimp_url_https if 'https' in prx else olimp_url
             proxies = {http_type: prx}
             resp = requests.post(
-                url,
+                url + '/api/slice/',
                 headers=olimp_head_ll,
                 data=olimp_data_ll,
                 proxies=proxies,
                 timeout=TIME_OUT,
                 verify=False
             )
+            resp.json()
             print(
-                'o valid: ' + str(prx), str(resp.status_code),
-                str(resp.json().get('error', '').get('err_desc', ''))
+                'o valid: ' + str(prx), str(resp.status_code)
             )
             x = x + 1
             if prx not in valid_proxies:
@@ -274,22 +274,19 @@ def cd():
     if platform.system() != 'Windows' and not DEBUG:
         os.chdir('/home/autobro/')
 
-
+ol_fl = 'proxy_by_olimp.txt'
+fb_fl = 'proxy_by_fonbet.txt'
 if __name__ == '__main__':
-    ol_fl = 'proxy_by_olimp.txt'
-    fb_fl = 'proxy_by_fonbet.txt'
 
     print('start proxy worker')
 
     proxy_list = []
     proxy_list_olimp = []
     proxy_list_fonbet = []
-    proxy_list = join_proxies_to_file(5000)
+    proxy_list = join_proxies_to_file(5)
 
     proxy_list_olimp = check_proxies_olimp(proxy_list)
     save_list(proxy_list_olimp, ol_fl)
 
     proxy_list_fonbet = check_proxies_fonbet(proxy_list)
     save_list(proxy_list_fonbet, fb_fl)
-
-    # proxy_push(ol_fl, fb_fl)
