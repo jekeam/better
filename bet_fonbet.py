@@ -56,6 +56,7 @@ class FonbetBot:
         self.cnt_sale_attempt = 0
         self.sleep = 4
         self.cnt_test = 0
+        self.add_sleep = 1
 
         with open(os.path.join(package_dir, "proxies.json")) as file:
             proxies = load(file)
@@ -398,7 +399,7 @@ class FonbetBot:
 
         if result == "betDelay":
             # {"result":"betDelay","betDelay":3000}
-            bet_delay_sec = (float(res.get('betDelay')) / 1000)
+            bet_delay_sec = (float(res.get('betDelay')) / 1000) + self.add_sleep
             prnt('BET_FONBET.PY: bet_delay: ' + str(bet_delay_sec) + ' sec...')
             time.sleep(bet_delay_sec)
 
@@ -639,7 +640,7 @@ class FonbetBot:
             result = res.get('result')
 
             if result == "sellDelay":
-                sell_delay_sec = (float(res.get('sellDelay')) / 1000)
+                sell_delay_sec = (float(res.get('sellDelay')) / 1000) + self.add_sleep
                 prnt('BET_FONBET.PY: sell_delay: ' + str(sell_delay_sec) + ' sec...')
                 time.sleep(sell_delay_sec)
 
@@ -683,14 +684,14 @@ class FonbetBot:
         # {'result': 'unableToSellCoupon', 'requestId': 19920670, 'regId': 14273664108, 'reason': 4, 'actualSellSum': 4900}
 
         if res.get('result') == "sellDelay":
-            sell_delay_sec = (float(res.get('sellDelay')) / 1000)
+            sell_delay_sec = (float(res.get('sellDelay')) / 1000)  + self.add_sleep
             prnt('BET_FONBET.PY: sell_delay: ' + str(sell_delay_sec) + ' sec...')
             time.sleep(sell_delay_sec)
             return self._check_sell_result(res.get('requestId'))
 
         elif res.get('result') == 'unableToSellCoupon':
             if res.get('reason') in (3, 2):
-                sleep_tempblock = 3
+                sleep_tempblock = 3 + self.add_sleep
                 err_str = 'BET_FONBET.PY, err sale bet, coupon tempBlock = True: ' + str(res) + ' ' + \
                           'sell_delay: ' + str(sleep_tempblock) + ' sec...'
                 time.sleep(sleep_tempblock)
