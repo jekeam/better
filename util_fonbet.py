@@ -20,8 +20,8 @@ def get_matches_fonbet(proxies, proxy, time_out):
     global UA
 
     try:
-        proxy = {'http': proxy}
-        # prnts('Fonbet set proxy: ' + proxy.get('http'), 'hide')
+        proxies = {'http': proxy}
+        # prnts('Fonbet set proxy: ' + proxy, 'hide')
     except Exception as e:
         err_str = 'Fonbet error set proxy: ' + str(e)
         prnts(err_str)
@@ -33,7 +33,7 @@ def get_matches_fonbet(proxies, proxy, time_out):
             headers={'User-Agent': UA},
             timeout=time_out,
             verify=False,
-            proxies=proxy,
+            proxies=proxies,
         )
         try:
             res = resp.json()
@@ -50,17 +50,17 @@ def get_matches_fonbet(proxies, proxy, time_out):
     except requests.exceptions.ConnectionError as e:
         err_str = 'Фонбет, код ошибки 0: ' + str(e)
         prnts(err_str)
-        proxies = del_proxy(proxy.get('http'), proxies)
+        proxies = del_proxy(proxy, proxies)
         raise ValueError(err_str)
     except requests.exceptions.RequestException as e:
         err_str = 'Фонбет, код ошибки 1: ' + str(e)
         prnts(err_str)
-        proxies = del_proxy(proxy.get('http'), proxies)
+        proxies = del_proxy(proxy, proxies)
         raise ValueError(err_str)
     except Exception as e:
         err_str = 'Фонбет, код ошибки 2: ' + str(e)
         prnts(err_str)
-        # proxi_list = del_proxy(proxy.get('http'), proxies)
+        # proxi_list = del_proxy(proxy, proxies)
         raise ValueError(err_str)
 
 
@@ -69,8 +69,8 @@ def get_match_fonbet(match_id, proxi_list, proxy, time_out):
     global fonbet_header
 
     try:
-        proxy = {'http': proxy}
-        # prnts('Fonbet: set proxy by ' + str(match_id) + ': ' + str(proxy.get('http')), 'hide')
+        proxies = {'http': proxy}
+        # prnts('Fonbet: set proxy by ' + str(match_id) + ': ' + str(proxy), 'hide')
     except Exception as e:
         err_str = 'Fonbet error set proxy by ' + str(match_id) + ': ' + str(e)
         prnts(err_str)
@@ -82,7 +82,7 @@ def get_match_fonbet(match_id, proxi_list, proxy, time_out):
             headers=fonbet_header,
             timeout=time_out,
             verify=False,
-            proxies=proxy,
+            proxies=proxies,
         )
         try:
             res = resp.json()
@@ -103,12 +103,12 @@ def get_match_fonbet(match_id, proxi_list, proxy, time_out):
     except requests.exceptions.ConnectionError as e:
         err_str = 'Фонбет ' + str(match_id) + ', код ошибки 0: ' + str(e)
         prnts(err_str)
-        proxi_list = del_proxy(proxy.get('http'), proxi_list)
+        proxi_list = del_proxy(proxy, proxi_list)
         raise ValueError(err_str)
     except requests.exceptions.RequestException as e:
         err_str = 'Фонбет ' + str(match_id) + ', код ошибки 1: ' + str(e)
         prnts(err_str)
-        proxi_list = del_proxy(proxy.get('http'), proxi_list)
+        proxi_list = del_proxy(proxy, proxi_list)
         raise ValueError(err_str)
     except FonbetMatchСompleted as e:
         raise FonbetMatchСompleted('2 ' + str(e))
@@ -117,7 +117,7 @@ def get_match_fonbet(match_id, proxi_list, proxy, time_out):
             raise FonbetMatchСompleted('3 Фонбет, матч ' + str(match_id) + ' завершен, поток выключен! ' + str(e))
         err_str = 'Фонбет ' + str(match_id) + ', код ошибки 2: ' + str(e)
         prnts(err_str)
-        # proxi_list = del_proxy(proxy.get('http'), proxi_list)
+        # proxi_list = del_proxy(proxy, proxi_list)
         raise ValueError(err_str)
 
 

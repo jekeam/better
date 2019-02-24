@@ -159,7 +159,7 @@ class OlimpBot:
             headers=headers,
             data=payload,
             verify=False,
-            timeout=15,
+            timeout=30,
             proxies=self.proxies
         )
         prnt('BET_OLIMP.PY: rs olimp: ' + str(resp.text), 'hide')
@@ -194,8 +194,7 @@ class OlimpBot:
                 prnt(err_str)
                 raise LoadException(err_str)
             # MaxBet
-            elif err_code == 417 and \
-                    'максимальная ставка' in err_msg:
+            elif 'максимальная ставка' in err_msg:
                 err_str = 'BET_OLIMP.PY: error max bet: ' + \
                           str(res.get("error", {}).get('err_desc'))
                 prnt(err_str)
@@ -379,7 +378,7 @@ class OlimpBot:
                 headers=headers,
                 data=payload,
                 verify=False,
-                timeout=60,
+                timeout=40,
                 proxies=self.proxies
             )
             prnt('BET_OLIMP: sale_bet rs: ' + str(resp.text), 'hide')

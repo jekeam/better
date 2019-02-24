@@ -193,7 +193,7 @@ class FonbetBot:
             url,
             headers=browser_headers,
             verify=False,
-            timeout=15,
+            timeout=20,
             proxies=self.proxies
         )
         check_status_with_resp(resp)
@@ -235,7 +235,7 @@ class FonbetBot:
                 headers=self.fonbet_headers,
                 data=data,
                 verify=False,
-                timeout=60,
+                timeout=20,
                 proxies=self.proxies
             )
             check_status_with_resp(resp)
@@ -295,7 +295,7 @@ class FonbetBot:
             headers=headers,
             json=payload,
             verify=False,
-            timeout=15,
+            timeout=20,
             proxies=self.proxies
         )
         check_status_with_resp(resp)
@@ -325,7 +325,7 @@ class FonbetBot:
         payload_req['clientId'] = self.base_payload["clientId"]
         payload_req['client']['id'] = self.base_payload["clientId"]
 
-        resp = requests_retry_session().post(url, headers=headers, json=payload_req, verify=False, timeout=10)
+        resp = requests_retry_session().post(url, headers=headers, json=payload_req, verify=False, timeout=20)
         check_status_with_resp(resp)
         res = resp.json()
         if "requestId" not in res:
@@ -381,7 +381,7 @@ class FonbetBot:
             headers=headers,
             json=payload,
             verify=False,
-            timeout=15,
+            timeout=20,
             proxies=self.proxies
         )
         prnt('BET_FONBET.PY: response fonbet: ' + str(resp.text), 'hide')
@@ -426,7 +426,7 @@ class FonbetBot:
             headers=headers,
             json=payload,
             verify=False,
-            timeout=15
+            timeout=20
         )
         req_time = round(resp.elapsed.total_seconds(), 2)
         check_status_with_resp(resp)
@@ -541,7 +541,7 @@ class FonbetBot:
                 headers=headers,
                 json=payload,
                 verify=False,
-                timeout=15
+                timeout=30
             )
             check_status_with_resp(resp)
             res = resp.json()
@@ -597,7 +597,7 @@ class FonbetBot:
                 headers=headers,
                 json=payload,
                 verify=False,
-                timeout=15,
+                timeout=20,
                 proxies=self.proxies
             )
             check_status_with_resp(resp)
@@ -624,7 +624,7 @@ class FonbetBot:
                 headers=headers,
                 json=payload,
                 verify=False,
-                timeout=15,
+                timeout=20,
                 proxies=self.proxies
             )
             check_status_with_resp(resp)
@@ -662,7 +662,7 @@ class FonbetBot:
             headers=headers,
             json=payload,
             verify=False,
-            timeout=15,
+            timeout=20,
             proxies=self.proxies
         )
         check_status_with_resp(resp)
@@ -721,7 +721,7 @@ class FonbetBot:
             headers=headers,
             json=payload,
             verify=False,
-            timeout=15,
+            timeout=20,
             proxies=self.proxies
         )
         check_status_with_resp(resp)
@@ -753,7 +753,7 @@ class FonbetBot:
             headers=self.fonbet_headers,
             data=data,
             verify=False,
-            timeout=10,
+            timeout=20,
             proxies=self.proxies
         )
         check_status_with_resp(resp)
@@ -769,10 +769,10 @@ class FonbetBot:
 if __name__ == '__main__':
     FONBET_USER = {"login": 5699838, "password": "NTe2904H11"}
     amount_fonbet = 30
-    wager_fonbet = {'event': '13366483', 'factor': '1571', 'param': '', 'score': '0:1', 'value': '33'}
+    wager_fonbet = {'event': '13331625', 'factor': '1571', 'param': '', 'score': '0:1', 'value': '33'}
     fonbet = FonbetBot(FONBET_USER)
     fonbet.sign_in()
-    # fonbet.place_bet(amount_fonbet, wager_fonbet)
-    fonbet.sale_bet(14421421233344)
+    fonbet.place_bet(amount_fonbet, wager_fonbet)
+    fonbet.sale_bet()
     # fonbet_reg_id = fonbet.place_bet(amount_fonbet, wager_fonbet)
     # {'e': 12264423, 'f': 931, 'v': 1.4, 'p': 250, 'pt': '2.5', 'isLive': True}
