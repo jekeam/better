@@ -204,8 +204,8 @@ class FonbetBot:
     def get_common_url(self):
         urls = self.get_urls()
         client_url = urls["clients-api"][0]
-        self.timeout = urls["timeout"] / 10
-        prnt('FONBET.PY set timeout: ' + str(self.timeout))
+        self.timeout = urls["timeout"] / 100
+        prnt('BET_FONBET.PY: set timeout: ' + str(self.timeout))
 
         return "https:{url}/session/".format(url=client_url) + "{}"
 
