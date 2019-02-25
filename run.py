@@ -412,7 +412,8 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
                                         with open(file_forks, 'w', encoding='utf-8') as csv:
                                             csv.write(
                                                 'create_fork;cut_time;ol_time;fb_time;live_fork;live_fork_total;'
-                                                'match_ol;match_fb;kof_ol;kof_fb;name;l;bk1_score;bk2_score;time;'
+                                                'match_ol;match_fb;kof_ol;kof_fb;name;l;bk1_score;bk2_score;'
+                                                'vect_ol;vect_fb;time;'
                                                 'minute;ol_kof;ol_avg_change;fb_kof;fb_avg_change;'
                                                 'time_break_fonbet;'
                                                 'period;'
@@ -436,6 +437,8 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
                                                 math_json_olimp.get('name', '') + ';' + str(L) + ';' +
                                                 math_json_olimp.get('score', '') + ';' +
                                                 math_json_fonbet.get('score', '') + ';' +
+                                                str(k_olimp.get('vector')) + ';' +
+                                                str(k_fonbet.get('vector')) + ';' +
                                                 str(math_json_fonbet.get('time', '0:0')) + ';' +
                                                 str(math_json_fonbet.get('minute', 0)) + ';' +
                                                 str(k_olimp.get('value')) + ';' +
