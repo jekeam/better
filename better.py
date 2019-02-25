@@ -46,6 +46,7 @@ def bet_fonbet_cl(obj, amount_fonbet, wager_fonbet, fonbet_bet_type):
         obj['fonbet_err'] = 'ok'
     except OlimpBetError:
         obj['fonbet_err'] = 'ok'
+        obj['olimp_err'] = 'ok'
     except Exception as e:
         obj['fonbet'] = fonbet
         obj['fonbet_err'] = str(e)
@@ -62,6 +63,7 @@ def bet_olimp_cl(obj, amount_olimp, wager_olimp):
         obj['olimp_err'] = 'ok'
     except FonbetBetError:
         obj['olimp_err'] = 'ok'
+        obj['fonbet_err'] = 'ok'
     except Exception as e:
         obj['olimp_err'] = str(e)
     finally:
@@ -115,8 +117,8 @@ def check_fork(key, L, k1, k2, live_fork, bk1_score, bk2_score, minute, time_bre
                             + str(round((1 - L) * 100, 2)) \
                             + '% исключена т.к. счет не совпадает: olimp(' + bk1_score + ') fonbet(' + bk2_score + ')\n'
 
-    # Больше 43 минуты и не идет перерыв и это 1 период
-    if 43.0 < float(minute) and not time_break_fonbet and period == 1:
+    if 43.0 < float(
+            minute) and not time_break_fonbet and period == 1:  # Больше 43 минуты и не идет перерыв и это 1 период
         fork_exclude_text = \
             fork_exclude_text + 'Вилка ' + str(round((1 - L) * 100, 2)) + '% исключена т.к. идет ' \
             + str(minute) + ' минута матча и это не перерыв и это не 2-й период \n'
@@ -156,7 +158,7 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
     amount_olimp, amount_fonbet = get_sum_bets(wager_olimp['factor'], wager_fonbet['value'], total_bet, False)
 
     if __name__ == '__main__':
-        wait_sec = 3  # max(0, (3.5 - deff_max))
+        wait_sec = 6  # max(0, (3.5 - deff_max))
         prnt('Wait sec: ' + str(wait_sec))
         prnt('Real wait sec: ' + str(wait_sec + deff_max))
         time.sleep(wait_sec)
