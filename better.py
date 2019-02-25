@@ -246,6 +246,7 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
             amount_olimp = 30
             amount_fonbet = 30
             return False
+            time.sleep(5)
 
         with Manager() as manager:
             obj = manager.dict()
@@ -450,6 +451,11 @@ if __name__ == '__main__':
                 k1 = bk1_bet_json.get('factor', 0)
                 k2 = bk2_bet_json.get('value', 0)
 
+                vect1 = bk1_bet_json.get('vector')
+                vect2 = bk2_bet_json.get('vector')
+
+                print('v1, v2=' + str(vect1) + ', ' + str(vect2))
+
                 try:
                     info = key + ': ' + name + \
                            ' ' + k1_type + '=' + str(k1) + '/' + k2_type + '=' + str(k2) + ', ' + \
@@ -462,18 +468,21 @@ if __name__ == '__main__':
                     prnts('error: ' + str(e))
                     info = ''
 
-                if 0.0 <= l < l_temp and deff_max < 10 or DEBUG:
-                    bet1, bet2 = get_sum_bets(k1, k2, total_bet)
-                    # Проверим вилку на исключения
-                    if check_fork(
-                            key, l_temp, k1, k2, live_fork, bk1_score, bk2_score,
-                            minute, time_break_fonbet, period, info
-                    ) or DEBUG:
-                        go_bet_key = key
-                        l = l_temp
-                        go_bet_json = val_json
-                elif deff_max >= 10:
-                    pass
+                if vect1 and vect2:
+                    if 0.0 <= l < l_temp and deff_max < 10 or DEBUG:
+                        bet1, bet2 = get_sum_bets(k1, k2, total_bet)
+                        # Проверим вилку на исключения
+                        if check_fork(
+                                key, l_temp, k1, k2, live_fork, bk1_score, bk2_score,
+                                minute, time_break_fonbet, period, info
+                        ) or DEBUG:
+                            go_bet_key = key
+                            l = l_temp
+                            go_bet_json = val_json
+                    elif deff_max >= 10:
+                        pass
+                else:
+                    prnt('Вектор направления коф-та не определен: vect1=' + str(vect1) + ', vect2=' + str(vect2))
             if go_bet_key:
                 prnt(' ')
                 prnt('Go bets: ' + info)
