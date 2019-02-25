@@ -72,7 +72,7 @@ def check_proxy_olimp(proxies_for_check, valid_proxies):
             url = olimp_url_https if 'https' in prx else olimp_url
             proxies = {http_type: prx}
             resp = requests.post(
-                url + '/ap1i/slice/',
+                url + '/api/slice/',
                 headers=olimp_head_ll,
                 data=olimp_data_ll,
                 proxies=proxies,
