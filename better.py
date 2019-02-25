@@ -46,6 +46,7 @@ def bet_fonbet_cl(obj, amount_fonbet, wager_fonbet, fonbet_bet_type):
         obj['fonbet_err'] = 'ok'
     except OlimpBetError:
         obj['fonbet_err'] = 'ok'
+        obj['olimp_err'] = 'ok'
     except Exception as e:
         obj['fonbet'] = fonbet
         obj['fonbet_err'] = str(e)
@@ -62,6 +63,7 @@ def bet_olimp_cl(obj, amount_olimp, wager_olimp):
         obj['olimp_err'] = 'ok'
     except FonbetBetError:
         obj['olimp_err'] = 'ok'
+        obj['fonbet_err'] = 'ok'
     except Exception as e:
         obj['olimp_err'] = str(e)
     finally:
