@@ -9,7 +9,7 @@ from difflib import SequenceMatcher
 import re
 from exceptions import *
 from server import run_server
-from utils import prnts, DEBUG, find_max_mode
+from utils import prnts, DEBUG, find_max_mode, opposition
 from proxy_switcher import ProxySwitcher
 import json
 import os.path
@@ -21,122 +21,6 @@ from datetime import datetime
 TIMEOUT_MATCHS = 10
 TIMEOUT_MATCH = 10
 TIMEOUT_MATCH_MINUS = 9
-
-opposition = {
-    '1ТБ': '1ТМ',
-    '1ТМ': '1ТБ',
-    '2ТБ': '2ТМ',
-    '2ТМ': '2ТБ',
-    'ТБ': 'ТМ',
-    'ТМ': 'ТБ',
-    '1ТБ1': '1ТМ1',
-    '1ТМ1': '1ТБ1',
-    '1ТБ2': '1ТМ2',
-    '1ТМ2': '1ТБ2',
-    '2ТБ1': '2ТМ1',
-    '2ТМ1': '2ТБ1',
-    '2ТБ2': '2ТМ2',
-    '2ТМ2': '2ТБ2',
-    'ТБ1': 'ТМ1',
-    'ТМ1': 'ТБ1',
-    'ТБ2': 'ТМ2',
-    'ТМ2': 'ТБ2',
-    # '1УГЛТБ': '1УГЛТМ',
-    # '1УГЛТМ': '1УГЛТБ',
-    # '2УГЛТБ': '2УГЛТМ',
-    # '2УГЛТМ': '2УГЛТБ',
-    # 'УГЛТБ': 'УГЛТМ',
-    # 'УГЛТМ': 'УГЛТБ',
-    'П1': 'П2Н',
-    'П2': 'П1Н',
-    'П1Н': 'П2',
-    'П2Н': 'П1',
-    'Н': '12',
-    '12': 'Н',
-    '1КЗ1': '1КНЗ1',
-    '1КНЗ1': '1КЗ1',
-    '1КЗ2': '1КНЗ2',
-    '1КНЗ2': '1КЗ2',
-    '2КЗ1': '2КНЗ1',
-    '2КНЗ1': '2КЗ1',
-    '2КЗ2': '2КНЗ2',
-    '2КНЗ2': '2КЗ2',
-    'КЗ1': 'КНЗ1',
-    'КНЗ1': 'КЗ1',
-    'КЗ2': 'КНЗ2',
-    'КНЗ2': 'КЗ2',
-    'ОЗД': 'ОЗН',
-    'ОЗН': 'ОЗД',
-    'ННД': 'ННН',
-    'ННН': 'ННД'
-}
-
-
-def get_vector(bet_type, sc1=None, sc2=None):
-    def raise_err(VECT, sc1, sc2):
-        if sc1 is None or sc2 is None and VECT != '':
-            raise ValueError('ERROR: sc1 or sc2 not defined!')
-
-    D = 'DOWN'
-    U = 'UP'
-    VECT = ''
-
-    if sc1:
-        sc1 = int(sc1)
-    if sc2:
-        sc2 = int(sc2)
-
-    if [t for t in ['ТБ', 'КЗ', 'ОЗН', 'ННД'] if t in bet_type]:
-        return U
-    if [t for t in ['ТМ', 'КНЗ', 'ОЗД', 'ННН'] if t in bet_type]:
-        return D
-
-    # Или добавлять ретурн в каждую из веток,
-    # но те типы что по длинне написания больше,  должны быть выше
-
-    if 'П1Н' in bet_type:
-        raise_err(VECT, sc1, sc2)
-        if sc1 >= sc2:
-            return D
-        else:
-            return U
-
-    if 'П2Н' in bet_type:
-        raise_err(VECT, sc1, sc2)
-        if sc1 <= sc2:
-            return D
-        else:
-            return U
-
-    if '12' in bet_type:
-        raise_err(VECT, sc1, sc2)
-        if sc1 != sc2:
-            return D
-        else:
-            return U
-
-    if 'П1' in bet_type:
-        raise_err(VECT, sc1, sc2)
-        if sc1 > sc2:
-            return D
-        else:
-            return U
-
-    if 'П2' in bet_type:
-        raise_err(VECT, sc1, sc2)
-        if sc1 < sc2:
-            return D
-        else:
-            return U
-
-    if 'Н' in bet_type:
-        raise_err(VECT, sc1, sc2)
-        if sc1 == sc2:
-            return D
-        else:
-            return U
-
-    raise ValueError('Error: vector not defined!')
 
 
 def get_olimp(resp, arr_matchs):
@@ -420,6 +304,7 @@ def start_compare_matches(pair_mathes, json_bk1, json_bk2):
 
 
 def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
+    global opposition
     def forks_meta_upd(forks_meta, forks):
         # Перед удалением сохраним время жизни вылки
         live_fork_total = forks_meta.get(bet_key, {}).get('live_fork_total', 0) + \
@@ -467,8 +352,8 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
                 v_fonbet = k_fonbet.get('value', 0.0)
 
                 if DEBUG:
-                    v_olimp = v_olimp - 1
-                    v_fonbet = v_fonbet - 1
+                    v_olimp = v_olimp + 1
+                    v_fonbet = v_fonbet + 1
 
                 if v_olimp > 0.0 and v_fonbet > 0.0:
                     L = (1 / float(v_olimp)) + (1 / float(v_fonbet))
@@ -510,6 +395,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
                                 'fb_avg_change_total': math_json_fonbet.get('avg_change_total', []),
                                 'live_fork': live_fork,
                                 'live_fork_total': forks_meta.get(bet_key, dict()).get('live_fork_total', 0) + live_fork
+
                             })
 
                             if True:

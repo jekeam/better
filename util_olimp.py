@@ -6,7 +6,7 @@ from proxy_worker import del_proxy
 import re
 import time
 from exceptions import OlimpMatchСompleted, TimeOut
-from utils import prnts
+from utils import prnts, get_vector
 
 olimp_url = 'http://12.olimp-proxy.ru:10600'
 olimp_url_https = 'https://12.olimp-proxy.ru'
@@ -296,10 +296,20 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out):
             sport_name = resp.get('cn')
             name = resp.get('n')
             score = ''
+            sc1 = 0
+            sc2 = 0
             try:
                 score = resp.get('sc', '0:0').split(' ')[0]
+                try:
+                    sc1 = int(score.split(':')[0])
+                except Exception as e:
+                    prnts('err util_olimp sc1: ' + str(e))
+                try:
+                    sc2 = int(score.split(':')[1])
+                except Exception as e:
+                    prnts('err util_olimp sc2: ' + str(e))
             except:
-                prnts('util_olimp: error split: ' + str(resp.get('sc', '0:0')))
+                prnts('err util_olimp error split: ' + str(resp.get('sc', '0:0')))
 
             try:
                 bets_olimp[key_id].update({
@@ -403,6 +413,7 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out):
                                                 'factor': d.get('v', ''),  # d.get('p', ''),
                                                 'sport_id': skId,
                                                 'event': match_id,
+                                                'vector': get_vector(coef, sc1, sc2),
                                                 'hist': {
                                                     'time_change': time_change,
                                                     'avg_change': avg_change,

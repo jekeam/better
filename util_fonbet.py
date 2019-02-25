@@ -3,7 +3,8 @@ import requests
 from proxy_worker import del_proxy
 import time
 from exceptions import FonbetMatchСompleted
-from utils import prnts
+from utils import prnts, get_vector
+import re
 
 url_fonbet_matchs = "https://line-02.ccf4ab51771cacd46d.com/live/currentLine/en/?2lzf1earo8wjksbh22s"
 url_fonbet_match = "https://23.111.80.222/line/eventView?eventId="
@@ -160,6 +161,21 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out):
             # exit()
 
             score = event.get('score', '0:0').replace('-', ':')
+            sc1 = 0
+            sc2 = 0
+            try:
+                scs = value = re.findall('[0-9]:[0-9]', score)[0]
+                try:
+                    sc1 = int(scs.split(':')[0])
+                except Exception as e:
+                    prnts('err util_fonbet sc1: ' + str(e))
+                try:
+                    sc2 = int(scs.split(':')[1])
+                except Exception as e:
+                    prnts('err util_fonbet sc2: ' + str(e))
+            except Exception as e:
+                prnts('err util_fonbet scs: ' + str(e))
+
             timer = event.get('timer')
             minute = event.get('timerSeconds', 0) / 60
             skId = event.get('skId')
@@ -294,6 +310,7 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out):
                                                     'param': '',
                                                     'factor': factorId,
                                                     'score': score,
+                                                    'vector': get_vector(coef, sc1, sc2),
                                                     'hist': {
                                                         'time_change': time_change,
                                                         'avg_change': avg_change,
@@ -369,6 +386,7 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out):
                                                     'param': pValue,
                                                     'factor': factorId,
                                                     'score': score,
+                                                    'vector': get_vector(coef, sc1, sc2),
                                                     'hist': {
                                                         'time_change': time_change,
                                                         'avg_change': avg_change,
@@ -411,6 +429,7 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out):
         if bets_fonbet.get(key_id):
             bets_fonbet.pop(key_id)
         raise ValueError(e)
+
 
 if __name__ == '__main__':
     pass
