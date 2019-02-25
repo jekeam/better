@@ -454,8 +454,6 @@ if __name__ == '__main__':
                 vect1 = bk1_bet_json.get('vector')
                 vect2 = bk2_bet_json.get('vector')
 
-                print('v1, v2=' + str(vect1) + ', ' + str(vect2))
-
                 try:
                     info = key + ': ' + name + \
                            ' ' + k1_type + '=' + str(k1) + '/' + k2_type + '=' + str(k2) + ', ' + \
@@ -471,6 +469,7 @@ if __name__ == '__main__':
                 if vect1 and vect2:
                     if 0.0 <= l < l_temp and deff_max < 10 or DEBUG:
                         bet1, bet2 = get_sum_bets(k1, k2, total_bet)
+                        prnt('VECT1={}, VECT2={}'.format(str(vect1), str(vect2)))
                         # Проверим вилку на исключения
                         if check_fork(
                                 key, l_temp, k1, k2, live_fork, bk1_score, bk2_score,
@@ -482,7 +481,7 @@ if __name__ == '__main__':
                     elif deff_max >= 10:
                         pass
                 else:
-                    prnt('Вектор направления коф-та не определен: vect1=' + str(vect1) + ', vect2=' + str(vect2))
+                    prnt('Вектор направления коф-та не определен: VECT1=' + str(vect1) + ', VECT2=' + str(vect2))
             if go_bet_key:
                 prnt(' ')
                 prnt('Go bets: ' + info)
