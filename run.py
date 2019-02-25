@@ -285,6 +285,7 @@ def start_compare_matches(pair_mathes, json_bk1, json_bk2):
                                         if DEBUG and x > 0:
                                             return False
                                         if DEBUG:
+                                            pass
                                             x = 1
 
                                         prnts(
