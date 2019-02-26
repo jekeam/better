@@ -15,6 +15,7 @@ from sys import exit
 from exceptions import Shutdown, FonbetBetError, OlimpBetError, MaxFail
 import http.client
 import json
+import re
 
 shutdown = False
 
