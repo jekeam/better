@@ -236,7 +236,7 @@ def get_kof_fonbet(obj, match_id, factor_id, param):
         obj['fonbet'], rime_req = get_fonbet_info(match_id, factor_id, param)
         obj['fonbet_time_req'] = rime_req
     except Exception as e:
-        prnt('FORK_RECHECK.PY: fonbet-error: ошибка при повторной проверке коэф-та: ' + str(e))
+        prnt('FORK_RECHECK.PY - fonbet-error: ошибка при повторной проверке коэф-та: ' + str(e))
         obj['fonbet'] = 0
     if obj['fonbet'] is None:
         obj['fonbet'] = 0
@@ -252,7 +252,7 @@ def get_kof_olimp(obj, olimp_match, olimp_k):
         obj['olimp_time_req'] = rime_req
         obj['olimp'] = r_olimp_coef1
     except Exception as e:
-        prnt('FORK_RECHECK.PY: olimp-error: ошибка при повторной проверке коэф-та: ' + str(e))
+        prnt('FORK_RECHECK.PY - olimp-error: ошибка при повторной проверке коэф-та: ' + str(e))
     if obj['olimp'] is None:
         obj['olimp'] = 0
     return obj

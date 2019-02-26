@@ -1,10 +1,6 @@
-from run import opposition, get_vector
-import re
+x = dict()
 
-o = opposition
+x['a'] = 1
+x['b'] = 1
 
-for x in o:
-    try:
-        print(x+';'+ get_vector(x,1,0))
-    except Exception as e:
-        print(x+';'+str(e))
+print(x)

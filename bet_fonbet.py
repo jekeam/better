@@ -348,7 +348,7 @@ class FonbetBot:
             prnt(err_str)
             raise OlimpBetError(err_str)
 
-    def place_bet(self, amount: int = None, wager=None, obj={}, fonbet_bet_type=None) -> None:
+    def place_bet(self, amount: int = None, wager=None, obj={}) -> None:
 
         self.check_stat_olimp(obj)
         self._get_request_id()
@@ -357,7 +357,9 @@ class FonbetBot:
             self.wager = wager
         if self.amount is None and amount:
             self.amount = amount
-        if self.fonbet_bet_type is None:
+            
+        fonbet_bet_type = obj['fonbet_bet_type']
+        if self.fonbet_bet_type is None and fonbet_bet_type:
             self.fonbet_bet_type = fonbet_bet_type
 
         url = self.common_url.format("coupon/register")
