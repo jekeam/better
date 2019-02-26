@@ -111,12 +111,13 @@ class OlimpBot:
         else:
             return self.balance
 
-    def place_bet(self, amount: int = None, wager=None, obj={}) -> None:
+    def place_bet(self, obj={}) -> None:
         """
         :param amount: amount of money to be placed (RUB)
         :param wager: defines on which wager bet is to be placed (could be either OlimpWager or OlimpCondWager)
         """
-
+        wager = obj.get('wager_olimp')
+        amount = obj.get('amount_olimp')
         if self.wager is None and wager:
             self.wager = wager
         if self.amount is None and amount:
@@ -419,11 +420,13 @@ class OlimpBot:
 
 if __name__ == '__main__':
     OLIMP_USER = {"login": "eva.yushkova.81@mail.ru", "passw": "qvF3BwrNcRcJtB6"}
-    # X2
     wager_olimp = {'apid': '1162886444:46453134:1:3:-9999:2:0:0:1', 'factor': '1.06', 'sport_id': 1,
                    'event': '46453134'}
+    obj = {}
+    obj['wager_olimp'] = wager_olimp
+    obj['amount_olimp'] = 30
 
     olimp = OlimpBot(OLIMP_USER)
     olimp.sign_in()
-    olimp.place_bet(30, wager_olimp)
+    olimp.place_bet(obj)
     olimp.sale_bet()

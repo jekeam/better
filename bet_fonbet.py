@@ -348,16 +348,18 @@ class FonbetBot:
             prnt(err_str)
             raise OlimpBetError(err_str)
 
-    def place_bet(self, amount: int = None, wager=None, obj={}) -> None:
+    def place_bet(self, obj={}) -> None:
 
         self.check_stat_olimp(obj)
         self._get_request_id()
 
+        wager = obj.get('wager_fonbet')
+        amount = obj.get('amount_fonbet')
         if self.wager is None and wager:
             self.wager = wager
         if self.amount is None and amount:
             self.amount = amount
-            
+
         fonbet_bet_type = obj['fonbet_bet_type']
         if self.fonbet_bet_type is None and fonbet_bet_type:
             self.fonbet_bet_type = fonbet_bet_type
@@ -412,13 +414,12 @@ class FonbetBot:
 
         self._check_result(payload, obj)
 
-
     def manager_sold(self) -> None:
         '''Менеджер, включается в работку если не прошла ставка, нужно знать:
            принимает текущее значение тотола и счет команды 1 и 2 
         '''
         pass
-    
+
     def _check_result(self, payload: dict, obj) -> None:
         """Check if bet is placed successfully"""
 
@@ -939,11 +940,16 @@ def get_new_bets_fonbet(match_id, proxies, time_out):
 
 if __name__ == '__main__':
     FONBET_USER = {"login": 5699838, "password": "NTe2904H11"}
-    amount_fonbet = 30
     wager_fonbet = {'event': '13395343', 'factor': '1809', 'param': '250', 'score': '0:0', 'value': '1.42'}
+
+    obj = {}
+    obj['wager_fonbet'] = wager_fonbet
+    obj['amount_fonbet'] = 30
+    obj['fonbet_bet_type'] = None  # 'ТМ(2.5)'
+
     fonbet = FonbetBot(FONBET_USER)
     fonbet.sign_in()
-    fonbet.place_bet(amount_fonbet, wager_fonbet, fonbet_bet_type='ТМ(2.5)')
+    fonbet.place_bet(obj)
     time.sleep(3)
     fonbet.sale_bet()
     # fonbet_reg_id = fonbet.place_bet(amount_fonbet, wager_fonbet)

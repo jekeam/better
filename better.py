@@ -38,12 +38,12 @@ def get_sum_bets(k1, k2, total_bet, print_hide=True):
         return bet_1, bet_2
 
 
-def bet_fonbet_cl(obj, amount_fonbet, wager_fonbet):
+def bet_fonbet_cl(obj):
     global FONBET_USER
     try:
         fonbet = FonbetBot(FONBET_USER)
         fonbet.sign_in()
-        fonbet_reg_id = fonbet.place_bet(amount_fonbet, wager_fonbet, obj)
+        fonbet.place_bet(obj)
         obj['fonbet_err'] = 'ok'
     except OlimpBetError:
         obj['fonbet_err'] = 'ok'
@@ -55,12 +55,12 @@ def bet_fonbet_cl(obj, amount_fonbet, wager_fonbet):
         obj['fonbet'] = fonbet
 
 
-def bet_olimp_cl(obj, amount_olimp, wager_olimp):
+def bet_olimp_cl(obj):
     global OLIMP_USER
     try:
         olimp = OlimpBot(OLIMP_USER)
         olimp.sign_in()
-        olimp.place_bet(amount_olimp, wager_olimp, obj)
+        olimp.place_bet(obj)
         obj['olimp_err'] = 'ok'
     except FonbetBetError:
         obj['olimp_err'] = 'ok'
@@ -250,19 +250,26 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max, vect1, vect2, s
 
         with Manager() as manager:
             obj = manager.dict()
-            
+
+            obj['amount_olimp'] = amount_olimp
+            obj['wager_olimp'] = wager_olimp
+
+            obj['amount_fonbet'] = amount_fonbet
+            obj['wager_fonbet'] = wager_fonbet
+
             obj['olimp_bet_type'] = olimp_bet_type
             obj['fonbet_bet_type'] = fonbet_bet_type
-            
+
             obj['ol_vect'] = vect1
             obj['fb_vect'] = vect2
             obj['sc1'] = sc1
             obj['sc2'] = sc2
-            obj['cur_total'] = sc1+sc2
+            obj['cur_total'] = sc1 + sc2
             if '(' in fonbet_bet_type:
                 obj['bet_total'] = re.findall('\((.*)\)', fonbet_bet_type)[0]
-                
-            prnt('bet_total:{}, cur_total:{}, sc1:{}, sc2:{}, v_ol:{}, v_fb:{}'.format(
+
+            prnt(
+                'bet_total:{}, cur_total:{}, sc1:{}, sc2:{}, v_ol:{}, v_fb:{}'.format(
                     obj.get('bet_total', ''),
                     obj.get('cur_total', ''),
                     obj.get('sc1', ''),
@@ -271,9 +278,9 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max, vect1, vect2, s
                     obj.get('fb_vect', ''),
                 )
             )
-            
-            pid_olimp = Process(target=bet_olimp_cl, args=(obj, amount_olimp, wager_olimp))
-            pid_fonbet = Process(target=bet_fonbet_cl, args=(obj, amount_fonbet, wager_fonbet))
+
+            pid_olimp = Process(target=bet_olimp_cl, args=(obj,))
+            pid_fonbet = Process(target=bet_fonbet_cl, args=(obj,))
 
             pid_olimp.start()
             pid_fonbet.start()
@@ -451,7 +458,7 @@ if __name__ == '__main__':
                 bk1_score = str(val_json.get('bk1_score', 'bk1_score'))
                 bk2_score = str(val_json.get('bk2_score', 'bk2_score'))
                 score = '[' + bk1_score + '|' + bk2_score + ']'
-                
+
                 sc1 = 0
                 sc2 = 0
                 try:
@@ -462,7 +469,7 @@ if __name__ == '__main__':
                     sc2 = int(bk2_score.split(':')[1])
                 except:
                     pass
-                
+
                 v_time = val_json.get('time', 'v_time')
                 minute = val_json.get('minute', 0)
                 time_break_fonbet = val_json.get('time_break_fonbet')
