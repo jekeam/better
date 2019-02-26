@@ -1,6 +1,3 @@
-x = dict()
+import re
 
-x['a'] = 1
-x['b'] = 1
-
-print(x)
+print(re.findall('\((.*)\)', 'ТМ(1.5')[0])

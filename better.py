@@ -250,7 +250,22 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
         with Manager() as manager:
             obj = manager.dict()
             
+            obj['olimp_bet_type'] = olimp_bet_type
             obj['fonbet_bet_type'] = fonbet_bet_type
+            obj['sc1'] = sc1
+            obj['sc2'] = sc2
+            obj['cur_total'] = sc1+sc2
+            if '(' in fonbet_bet_type:
+                obj['bet_total'] = re.findall('\((.*)\)', fonbet_bet_type)[0]
+                
+            prnt('bet_total:{}, cur_total:{}, sc1:{}, sc2:{}'.format(
+                    obj['bet_total'], 
+                    obj['cur_total'], 
+                    obj['sc1'],
+                    obj['sc2']
+                )
+            )
+            
 
             pid_olimp = Process(target=bet_olimp_cl, args=(obj, amount_olimp, wager_olimp))
             pid_fonbet = Process(target=bet_fonbet_cl, args=(obj, amount_fonbet, wager_fonbet))
