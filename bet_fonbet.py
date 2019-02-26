@@ -412,6 +412,13 @@ class FonbetBot:
 
         self._check_result(payload, obj)
 
+
+    def manager_sold(self) -> None:
+        '''Менеджер, включается в работку если не прошла ставка, нужно знать:
+           принимает текущее значение тотола и счет команды 1 и 2 
+        '''
+        pass
+    
     def _check_result(self, payload: dict, obj) -> None:
         """Check if bet is placed successfully"""
 

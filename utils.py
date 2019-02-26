@@ -65,7 +65,6 @@ opposition = {
     'ННН': 'ННД'
 }
 
-
 def get_vector(bet_type, sc1=None, sc2=None):
     def raise_err(VECT, sc1, sc2):
         if sc1 is None or sc2 is None and VECT != '':

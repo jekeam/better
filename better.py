@@ -272,7 +272,6 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max, vect1, vect2, s
                 )
             )
             
-
             pid_olimp = Process(target=bet_olimp_cl, args=(obj, amount_olimp, wager_olimp))
             pid_fonbet = Process(target=bet_fonbet_cl, args=(obj, amount_fonbet, wager_fonbet))
 
