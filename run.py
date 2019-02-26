@@ -151,7 +151,7 @@ def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi
             ps.rep_cur_proxy(gen_proxi_olimp.next())
             time_resp = TIMEOUT_MATCH
 
-        time_sleep = max(0, (TIMEOUT_MATCH - (time_resp - TIMEOUT_MATCH_MINUS)))
+        time_sleep = max(0, (TIMEOUT_MATCH - (TIMEOUT_MATCH_MINUS-time_resp)))
 
         if DEBUG:
             prnts('Олимп, матч ' + str(match_id_olimp) + '. Время ответа: ' + str(time_resp) +
@@ -190,7 +190,7 @@ def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_p
             ps.rep_cur_proxy(gen_proxi_fonbet.next())
             time_resp = TIMEOUT_MATCH
 
-        time_sleep = max(0, (TIMEOUT_MATCH - (time_resp - TIMEOUT_MATCH_MINUS)))
+        time_sleep = max(0, (TIMEOUT_MATCH - (TIMEOUT_MATCH_MINUS-time_resp)))
 
         if DEBUG:
             prnts(str('Фонбет, матч ' + str(match_id_fonbet) + '. Время ответа: ' + str(time_resp) +
