@@ -262,7 +262,7 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max, vect1, vect2, s
             if '(' in fonbet_bet_type:
                 obj['bet_total'] = re.findall('\((.*)\)', fonbet_bet_type)[0]
                 
-            prnt('bet_total: {}, cur_total: {}, sc1: {}, sc2: {}, v_ol: {}, v_fb: {}'.format(
+            prnt('bet_total:{}, cur_total:{}, sc1:{}, sc2:{}, v_ol:{}, v_fb:{}'.format(
                     obj.get('bet_total', ''),
                     obj.get('cur_total', ''),
                     obj.get('sc1', ''),
