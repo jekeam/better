@@ -455,11 +455,11 @@ if __name__ == '__main__':
                 sc1 = 0
                 sc2 = 0
                 try:
-                    sc1 = bk2_score.split(':')[0]
+                    sc1 = int(bk2_score.split(':')[0])
                 except:
                     pass
                 try:
-                    sc2 = bk2_score.split(':')[1]
+                    sc2 = int(bk2_score.split(':')[1])
                 except:
                     pass
                 
