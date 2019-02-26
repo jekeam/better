@@ -260,7 +260,7 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
                 
             prnt('bet_total:{}, cur_total:{}, sc1:{}, sc2:{}'.format(
                     obj.get('bet_total', ''),
-                    obj.get('cur_total', '',
+                    obj.get('cur_total', ''),
                     obj.get('sc1', ''),
                     obj.get('sc2', '')
                 )
