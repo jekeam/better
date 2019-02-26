@@ -10,4 +10,3 @@ venv
 *.session
 test.py
 *.json_old
-test.py
