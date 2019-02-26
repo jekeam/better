@@ -143,7 +143,7 @@ def check_fork(key, L, k1, k2, live_fork, bk1_score, bk2_score, minute, time_bre
     return v
 
 
-def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
+def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max, vect1, vect2):
     global bal1
     global bal2
     global cnt_fail
@@ -252,17 +252,22 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
             
             obj['olimp_bet_type'] = olimp_bet_type
             obj['fonbet_bet_type'] = fonbet_bet_type
+            
+            obj['ol_vect'] = vect1
+            obj['fb_vect'] = vect2
             #obj['sc1'] = sc1
             #obj['sc2'] = sc2
             #obj['cur_total'] = sc1+sc2
             if '(' in fonbet_bet_type:
                 obj['bet_total'] = re.findall('\((.*)\)', fonbet_bet_type)[0]
                 
-            prnt('bet_total:{}, cur_total:{}, sc1:{}, sc2:{}'.format(
+            prnt('bet_total:{}, cur_total:{}, sc1:{}, sc2:{}, v_ol:{}, v_fb:{}'.format(
                     obj.get('bet_total', ''),
                     obj.get('cur_total', ''),
                     obj.get('sc1', ''),
-                    obj.get('sc2', '')
+                    obj.get('sc2', ''),
+                    obj.get('ol_vect', ''),
+                    obj.get('fb_vect', ''),
                 )
             )
             
@@ -485,7 +490,6 @@ if __name__ == '__main__':
                 if vect1 and vect2:
                     if 0.0 <= l < l_temp and deff_max < 10 or DEBUG:
                         bet1, bet2 = get_sum_bets(k1, k2, total_bet)
-                        prnt('VECT1={}, VECT2={}'.format(str(vect1), str(vect2)))
                         # Проверим вилку на исключения
                         if check_fork(
                                 key, l_temp, k1, k2, live_fork, bk1_score, bk2_score,
@@ -506,7 +510,9 @@ if __name__ == '__main__':
                     go_bet_json.get('kof_fonbet'),
                     total_bet,
                     go_bet_key,
-                    deff_max
+                    deff_max,
+                    vect1,
+                    vect2
                 )
             else:
                 pass
