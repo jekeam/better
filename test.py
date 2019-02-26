@@ -1,3 +1,4 @@
-import re
+a = {}
 
-print(re.findall('\((.*)\)', 'ТМ(1.5')[0])
+a['x'] = 1
+print(a['y'])
