@@ -246,7 +246,6 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
             amount_olimp = 30
             amount_fonbet = 30
             return False
-            time.sleep(5)
 
         with Manager() as manager:
             obj = manager.dict()
