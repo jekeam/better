@@ -1,40 +1,11 @@
 # -*- coding: utf-8 -*-
 import requests
-from olimp import get_xtoken, to_abb
+from olimp import get_xtoken, to_abb, abbreviations
 import re
 from utils import prnt
 
 cnt_fail = 0
 
-abbreviations = {
-    "Победапервой": "П1",
-    "Победавторой": "П2",
-    "Ничья": "Н",
-    "Перваянепроиграет": "П1Н",
-    "Втораянепроиграет": "П2Н",
-    "Ничьейнебудет": "12",
-
-    "Обезабьют:да": "ОЗД",
-    "Обезабьют:нет": "ОЗН",
-    "Т1забьет:да": "КЗ1",
-    "Т1забьет:нет": "КНЗ1",
-    "Т2забьет:да": "КЗ2",
-    "Т2забьет:нет": "КНЗ2",
-    "Тоталбол": "ТБ({})",
-    "Тоталмен": "ТМ({})",
-    "Тотал1-готаймабол": "1ТБ({})",
-    "Тотал1-готаймамен": "1ТМ({})",
-    "Тотал2-готаймабол": "2ТБ({})",
-    "Тотал2-готаймамен": "2ТМ({})",
-    # "Т1бол":"ИТБ1({})",
-    # "Т1мен":"ИТМ1({})",
-    # "Т2бол":"ИТБ2({})",
-    # "Т2мен":"ИТМ2({})"
-    "Т1бол": "ТБ1({})",
-    "Т1мен": "ТМ1({})",
-    "Т2бол": "ТБ2({})",
-    "Т2мен": "ТМ2({})"
-}
 olimp_stake_head = {
     'Content-Type': 'application/x-www-form-urlencoded',
     'Connection': 'Keep-Alive',
@@ -50,57 +21,9 @@ olimp_data = {
     "time_shift": 0
 }
 
-opposition = {
-    '1ТБ': '1ТМ',
-    '1ТМ': '1ТБ',
-    '2ТБ': '2ТМ',
-    '2ТМ': '2ТБ',
-    'ТБ': 'ТМ',
-    'ТМ': 'ТБ',
-    '1ТБ1': '1ТМ1',
-    '1ТМ1': '1ТБ1',
-    '1ТБ2': '1ТМ2',
-    '1ТМ2': '1ТБ2',
-    '2ТБ1': '2ТМ1',
-    '2ТМ1': '2ТБ1',
-    '2ТБ2': '2ТМ2',
-    '2ТМ2': '2ТБ2',
-    'ТБ1': 'ТМ1',
-    'ТМ1': 'ТБ1',
-    'ТБ2': 'ТМ2',
-    'ТМ2': 'ТБ2',
-    '1УГЛТБ': '1УГЛТМ',
-    '1УГЛТМ': '1УГЛТБ',
-    '2УГЛТБ': '2УГЛТМ',
-    '2УГЛТМ': '2УГЛТБ',
-    'УГЛТБ': 'УГЛТМ',
-    'УГЛТМ': 'УГЛТБ',
-    'П1': 'П2Н',
-    'П2': 'П1Н',
-    'П1Н': 'П2',
-    'П2Н': 'П1',
-    'Н': '12',
-    '12': 'Н',
-    '1КЗ1': '1КНЗ1',
-    '1КНЗ1': '1КЗ1',
-    '1КЗ2': '1КНЗ2',
-    '1КНЗ2': '1КЗ2',
-    '2КЗ1': '2КНЗ1',
-    '2КНЗ1': '2КЗ1',
-    '2КЗ2': '2КНЗ2',
-    '2КНЗ2': '2КЗ2',
-    'КЗ1': 'КНЗ1',
-    'КНЗ1': 'КЗ1',
-    'КЗ2': 'КНЗ2',
-    'КНЗ2': 'КЗ2',
-    'ОЗД': 'ОЗН',
-    'ОЗН': 'ОЗД',
-    'ННД': 'ННН',
-    'ННН': 'ННД'
-}
-
 
 def get_olimp_info(id_matche, olimp_k):
+    global abbreviations
     olimp_secret_key = 'b2c59ba4-7702-4b12-bef5-0908391851d9'
     olimp_new_url = 'http://176.223.130.230:10600'
     bet_into = {}
@@ -110,7 +33,7 @@ def get_olimp_info(id_matche, olimp_k):
     olimp_stake_head.update(get_xtoken(olimp_data, olimp_secret_key))
     olimp_stake_head.pop('Accept-Language', None)
 
-    prnt('FORK_RECHECK.PY: get_olimp_info requests', 'hide')
+    prnt('FORK_RECHECK.PY: get_olimp_info rq: ' + str(olimp_data), 'hide')
     res = requests.post(
         olimp_new_url + '/api/stakes/',
         data=olimp_data,
@@ -118,9 +41,10 @@ def get_olimp_info(id_matche, olimp_k):
         timeout=10,
         verify=False
     )
-    prnt('FORK_RECHECK.PY: get_olimp_info response', 'hide')
-    # prnt('FORK_RECHECK.PY olimp: ' + str(res), 'hide')
+    prnt('FORK_RECHECK.PY: get_olimp_info rs: ' + str(res.text), 'hide')
+
     stake = res.json()
+    prnt('FORK_RECHECK.PY: get_olimp_info rs js: ' + str(stake), 'hide')
     if not stake.get('error', {}).get('err_code', 0):
         bet_into['ID'] = id_matche
 
@@ -143,7 +67,7 @@ def get_olimp_info(id_matche, olimp_k):
         # timeDif = currentTime-startTime
 
         # minuts
-        bet_into['SCORE'] = stake.get('sc', '0:0')
+        bet_into['SCORE'] = stake.get('sc', '0:0')  # .get('sc', '0:0').split(' ')[0]
         prnt('olimp score: ' + stake.get('data').get('sc'))
         for c in stake.get('data', {}).get('it', []):
             # if c.get('n','') in ['Main Bets', 'Goals', 'Corners', 'Individual total', 'Additional total']:
@@ -181,8 +105,10 @@ def get_olimp_info(id_matche, olimp_k):
                         bet_into[olimp_factor_short] = d.get('v', '')
     else:
         raise ValueError(stake)
+    k = bet_into.get(olimp_k, 0)
+    sc = bet_into.get('SCORE', '0:0').split(' ')[0]
     prnt('FORK_RECHECK.PY: get_olimp_info end work', 'hide')
-    return bet_into[olimp_k], round(res.elapsed.total_seconds(), 2)
+    return k, sc, round(res.elapsed.total_seconds(), 2)
 
 
 def get_fonbet_info(match_id, factor_id, param):
@@ -191,23 +117,24 @@ def get_fonbet_info(match_id, factor_id, param):
         'Connection': 'Keep-Alive',
         'Accept-Encoding': 'gzip'
     }
-    prnt('FORK_RECHECK.PY: get_fonbet_info request', 'hide')
     url = "https://23.111.80.222/line/eventView?eventId=" + str(match_id) + "&lang=ru"
+    prnt('FORK_RECHECK.PY: get_fonbet_info rq: ' + url + ' ' + str(header), 'hide')
     res = requests.get(
         url,
         headers=header,
         timeout=10,
         verify=False
     )
-    prnt('FORK_RECHECK.PY: get_fonbet_info response', 'hide')
-    # prnt('FORK_RECHECK.PY fonbet: ' + str(res), 'hide')
+    prnt('FORK_RECHECK.PY: get_fonbet_info rs: ' + str(res.text), 'hide')
     resp = res.json()
+    prnt('FORK_RECHECK.PY: get_fonbet_info rs jq: ' + str(resp), 'hide')
     if resp.get("result") == "error":
         raise ValueError(resp.get("errorMessage"))
 
     for event in resp.get("events"):
         if event.get('id') == match_id:
-            prnt('fonbet score: ' + event.get('score'))
+            sc = event.get('score', '0:0').replace('-', ':')
+            prnt('fonbet score: ' + sc)
             for cat in event.get('subcategories'):
                 for kof in cat.get('quotes'):
                     if kof.get('factorId') == factor_id:
@@ -221,7 +148,8 @@ def get_fonbet_info(match_id, factor_id, param):
 
                         k = kof.get('value')
                         prnt('FORK_RECHECK.PY: get_olimp_info end work', 'hide')
-                        return k, round(res.elapsed.total_seconds(), 2)
+                        return k, sc, round(res.elapsed.total_seconds(), 2)
+    return None, None, None
 
 
 def get_kof_fonbet(obj, match_id, factor_id, param):
@@ -229,11 +157,12 @@ def get_kof_fonbet(obj, match_id, factor_id, param):
     factor_id = int(factor_id)
     obj['fonbet'] = 0
     obj['fonbet_time_req'] = 0
+    sc = ''
     if param:
         param = int(param)
 
     try:
-        obj['fonbet'], rime_req = get_fonbet_info(match_id, factor_id, param)
+        obj['fonbet'], sc, rime_req = get_fonbet_info(match_id, factor_id, param)
         obj['fonbet_time_req'] = rime_req
     except Exception as e:
         prnt('FORK_RECHECK.PY - fonbet-error: ошибка при повторной проверке коэф-та: ' + str(e))
@@ -247,8 +176,9 @@ def get_kof_fonbet(obj, match_id, factor_id, param):
 def get_kof_olimp(obj, olimp_match, olimp_k):
     obj['olimp'] = 0
     obj['olimp_time_req'] = 0
+    sc = ''
     try:
-        (r_olimp_coef1, rime_req) = get_olimp_info(olimp_match, olimp_k)
+        r_olimp_coef1, sc, rime_req = get_olimp_info(olimp_match, olimp_k)
         obj['olimp_time_req'] = rime_req
         obj['olimp'] = r_olimp_coef1
     except Exception as e:
@@ -259,6 +189,7 @@ def get_kof_olimp(obj, olimp_match, olimp_k):
 
 
 if __name__ == "__main__":
-    # print(get_fonbet_info(12264412))
-    # print(get_kof_fonbet({}, '12359234', '921', ''))
-    print(get_olimp_info(45146516))
+    x, y, z = get_fonbet_info(13446502, 922, None)
+    print(x, y, z)
+    x, y, z = get_olimp_info(46979507, 'Н')
+    print(x, y, z)
