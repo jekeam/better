@@ -140,7 +140,7 @@ def check_fork(key, L, k1, k2, live_fork, bk1_score, bk2_score, minute, time_bre
     return v
 
 
-def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
+def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max, up_is_check=False):
     global bal1
     global bal2
     global cnt_fail
@@ -201,19 +201,26 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
                 new_proc = round((1 - L) * 100, 2)
                 change_proc = round(new_proc - cur_proc, 2)
                 prnt('new proc: ' + str(new_proc) + '%, change: ' + str(change_proc))
-
-                # Проверяем, берем вилку только если она выросла в цене
-                # Если не изменилась, продолжаем мониторить,
-                # Bначе выбразываем
-                if change_proc < 0:
-                    prnt('Fork exclude: change_proc = ' + str(change_proc) + '\n')
-                    return False
-                elif change_proc == 0:
-                    prnt('Check replay: change_proc = ' + str(change_proc) + '\n')
-                    return go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max)
-                elif check_l(L) != '':
-                    prnt('Check replay: fork be up, but new_proc = ' + str(new_proc) + '%)')
-                    return go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max)
+                
+                # Задержка: если ставка пошла вверх, мы ждем и перепроверяем, если ок ставим
+                # Если перепроверили то наличие вилки будет достаточно
+                if up_is_check is False:
+                    
+                    # Проверяем, берем вилку только если она выросла в цене
+                    # Если не изменилась, продолжаем мониторить,
+                    # Bначе выбразываем
+                    if change_proc < 0:
+                        prnt('Fork exclude: change_proc = ' + str(change_proc) + '\n')
+                        return False
+                    elif change_proc == 0:
+                        prnt('Check replay: change_proc = ' + str(change_proc) + '\n')
+                        return go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max)
+                    else:
+                        sleep_up = 10
+                        prnt('Time sleep for recheck: {} sec.'.format(str(sleep_up)))
+                        time.sleep(sleep_up)
+                        up_is_check = True
+                        return go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max, up_is_check)
 
                 if check_l(L) == '' or DEBUG:
 
