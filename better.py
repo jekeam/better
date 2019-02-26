@@ -256,7 +256,7 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max):
             #obj['sc2'] = sc2
             #obj['cur_total'] = sc1+sc2
             if '(' in fonbet_bet_type:
-                obj.get('bet_total', '') = re.findall('\((.*)\)', fonbet_bet_type)[0]
+                obj['bet_total'] = re.findall('\((.*)\)', fonbet_bet_type)[0]
                 
             prnt('bet_total:{}, cur_total:{}, sc1:{}, sc2:{}'.format(
                     obj.get('bet_total', ''),
