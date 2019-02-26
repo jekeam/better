@@ -100,6 +100,7 @@ class OlimpBot:
                           ', err: ' + str(e) + \
                           ', resp: ' + str(resp.text)
                 prnt(str_err)
+                time.sleep(3)
                 raise ValueError(str_err)
             prnt(e)
             return self.sign_in()

@@ -26,6 +26,9 @@ class FonbetBetError(Exception):
 class OlimpBetError(Exception):
     pass
 
+class BetIsLost(Exception):
+    pass
+
 
 class MaxFail(Exception):
     pass
