@@ -143,7 +143,7 @@ def check_fork(key, L, k1, k2, live_fork, bk1_score, bk2_score, minute, time_bre
     return v
 
 
-def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max, vect1, vect2):
+def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
     global bal1
     global bal2
     global cnt_fail
@@ -255,9 +255,9 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max, vect1, vect2):
             
             obj['ol_vect'] = vect1
             obj['fb_vect'] = vect2
-            #obj['sc1'] = sc1
-            #obj['sc2'] = sc2
-            #obj['cur_total'] = sc1+sc2
+            obj['sc1'] = sc1
+            obj['sc2'] = sc2
+            obj['cur_total'] = sc1+sc2
             if '(' in fonbet_bet_type:
                 obj['bet_total'] = re.findall('\((.*)\)', fonbet_bet_type)[0]
                 
@@ -451,6 +451,18 @@ if __name__ == '__main__':
                 bk1_score = str(val_json.get('bk1_score', 'bk1_score'))
                 bk2_score = str(val_json.get('bk2_score', 'bk2_score'))
                 score = '[' + bk1_score + '|' + bk2_score + ']'
+                
+                sc1 = 0
+                sc2 = 0
+                try:
+                    sc1 = bk2_score.split(':')[0]
+                except:
+                    pass
+                try:
+                    sc2 = bk2_score.split(':')[1]
+                except:
+                    pass
+                
                 v_time = val_json.get('time', 'v_time')
                 minute = val_json.get('minute', 0)
                 time_break_fonbet = val_json.get('time_break_fonbet')
@@ -512,7 +524,9 @@ if __name__ == '__main__':
                     go_bet_key,
                     deff_max,
                     vect1,
-                    vect2
+                    vect2,
+                    sc1,
+                    sc2
                 )
             else:
                 pass
