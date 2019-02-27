@@ -1,13 +1,14 @@
-from exceptions import BetIsLost, SessionNotDefined
+from exceptions import BetIsLost, SessionNotDefined, BkOppBetError, NoMoney, BetError, SessionExpired
 from math import floor
-from utils import prnt, package_dir, check_status_with_resp
-from time import time
+from utils import prnt, package_dir, write_file, read_file
+from time import time, sleep
 from os import path
 from json import load, dumps
 import requests
 import inspect
 import sys
 import traceback
+from threading import Thread
 
 # disable:
 # /usr/local/lib/python3.6/site-packages/urllib3/connectionpool.py:847: 
@@ -19,10 +20,14 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 package_dir = path.dirname(path.abspath(__file__))
 
-class Bk:
+class BetManager:
     
-    def __init__(self, bk: str) -> None:
-        self.bk = bk
+    def __init__(self, bk_obj: dict, obj: dict, bk1: str, bk2: str) -> None:
+        self.my_name = inspect.stack()[0][3]
+        
+        self.bk = bk1
+        self.bk_opposite = bk2
+        self.wager = {}
         self.account = self.get_account_info()
         self.session = {}
         self.timeout = 50
@@ -38,11 +43,30 @@ class Bk:
         self.sleep_add = 0
         self.bet_type = None
         self.proxies = self.get_proxy()
-        self.mirror = self.get_account_info()['mirror']
         self.server_olimp = 12
         self.err_def = self.bk+'. {}, err: {}'
         self.msg = self.bk+'. {}, msg: {}'
-        self.my_name = ''
+        self.mirror = self.get_account_info().get('mirror')
+        self.session_file = 'session.' + self.bk
+        
+        err_msg = ''
+        
+        bk_work = ('olimp', 'fonbet')
+        if (self.bk not in bk_work or self.bk_opposite not in bk_work) and 1==0:
+            err_msg = 'bk not defined: bk1={}, bk2={}'.format(self.bk, self.bk_opposite)
+        
+        elif self.mirror is None:
+            err_msg = 'mirror not defined: {}'.format(self.mirror)
+        
+        if err_msg != '':
+            err_str = self.err_def.format(self.my_name, err_msg)
+            prnt(err_str)
+            raise ValueError(err_str)
+        
+        bk_obj[self.bk] = self
+        
+        self.manager(bk_obj, obj)
+            
         
     def get_proxy(self) -> str:
         with open(path.join(package_dir, 'proxies.json')) as file:
@@ -52,32 +76,70 @@ class Bk:
     def get_account_info(self) -> str:
         with open(path.join(package_dir, 'account.json')) as file:
             account = load(file)
-        return account.get(self.bk)
+        return account.get(self.bk, {})
+    
+    def manager(self, bk_obj: dict, obj: dict) -> None:
+        #obj['fonbet_err'] = 'bla bla bla'
+        #obj['olimp_err'] = 'bla bla bla'
         
-    def sign_in(self) -> None:
+        bk_obj[self.bk].sign_in(obj)
+        
+        try:
+            bk_obj[self.bk].place_bet(obj)
+        except NoMoney as e:
+            prnt(e)
+        except BkOppBetError as e:
+            prnt(e)
+        except SessionExpired as e:
+            prnt(e)
+            self.sign_in(obj)
+            bk_obj[self.bk].place_bet(obj)
+        except Exception as e:
+            prnt(e)
+            
+        #bk1.sale_bet()
+        
+    def wait_sign_in_opp(self):
+        self.my_name = inspect.stack()[0][3]
+        msg_push = True
+        
+        obj['sign_in_' + self.bk] = 'ok'
+        
+        while obj.get('sign_in_' + self.bk_opposite) != 'ok':
+            if msg_push:
+                err_str = self.err_def.format(
+                    self.my_name, 
+                    self.bk + ' wait sign in from ' + self.bk_opposite
+                )
+                prnt(err_str)
+                msg_push = False
+    
+    def sign_in(self, obj: dict) -> None:
         self.my_name = inspect.stack()[0][3]
         if self.bk == 'olimp':
             try:
-                from meta_ol import url_autorize, payload, head, get_xtoken_bet
+                from meta_ol import url_api, payload, head, get_xtoken_bet
                 
                 payload = payload.copy()
-                payload.update(self.account)
+                payload.update({
+                    'login' : self.account['login'],
+                    'password': self.account['password']
+                })
     
                 headers = head.copy()
                 headers.update(get_xtoken_bet(payload))
                 headers.update({'X-XERPC': '1'})
                 
-                prnt(self.msg.format(self.my_name, 'rq data: '+str(payload)), 'hide')
+                prnt(self.msg.format(self.my_name, 'rq: '+str(payload)), 'hide')
                 resp = requests.post(
-                    url_autorize.format(str(self.server_olimp),'autorize'),
+                    url_api.format(str(self.server_olimp),'autorize'),
                     headers=headers,
                     data=payload,
                     verify=False,
                     timeout=self.timeout,
                     proxies=self.proxies
                 )
-                prnt(self.msg.format(self.my_name, 'rs: '+str(resp.text)), 'hide')
-                check_status_with_resp(resp)
+                prnt(self.msg.format(self.my_name, 'rs: '+str(resp.text.strip())), 'hide')
                 
                 data = resp.json()['data']
                 session_id = data.get('session')
@@ -85,8 +147,17 @@ class Bk:
                 if session_id:
                     self.session['session'] = session_id
                     self.session['balance'] = float(dict(data).get('s'))
+                    self.session['currency'] = dict(data).get('cur')
                     prnt(self.msg.format(self.my_name, 'session: '+str(self.session['session'])))
-                    prnt(self.msg.format(self.my_name, 'balance: '+str(self.session['balance'])))
+                    prnt(
+                        self.msg.format(
+                            self.my_name, 
+                            'balance: '+str(self.session['balance']) + ' ' + \
+                            self.session['currency']
+                        )
+                    )
+                    write_file(self.session_file, self.session['session'].strip())
+                    self.wait_sign_in_opp()
                 else:
                     err_msg = 'session_id not defined'
                     err_str = self.err_def.format(self.my_name, err_msg)
@@ -122,7 +193,7 @@ class Bk:
                 data_urls = get_urls(self.mirror, self.proxies)
                 url, self.timeout = get_common_url(data_urls)
                 
-                prnt(self.msg.format(self.my_name, 'rq data: '+str(data)), 'hide')
+                prnt(self.msg.format(self.my_name, 'rq: '+str(data)), 'hide')
                 resp = requests.post(
                     url.format("login"),
                     headers=head,
@@ -131,8 +202,7 @@ class Bk:
                     timeout=self.timeout,
                     proxies=self.proxies
                 )
-                prnt(self.msg.format(self.my_name, 'rs: '+str(resp.text)), 'hide')
-                check_status_with_resp(resp)
+                prnt(self.msg.format(self.my_name, 'rs: '+str(resp.text.strip())), 'hide')
                 res = resp.json()
                 
                 self.session['session'] = res.get("fsid")
@@ -152,6 +222,9 @@ class Bk:
                         self.session['currency']
                     )
                 )
+                write_file(self.session_file, self.session['session'].strip())
+                
+                self.wait_sign_in_opp()
 
             except SessionNotDefined as e:
                 prnt(err_str)
@@ -162,23 +235,127 @@ class Bk:
                 err_str = self.err_def.format(self.my_name, err_msg)
                 prnt(err_str)
                 raise ValueError(err_str)
-                
-
-
-class BetManager:
-
-    def __init__(self, bk: str):
         
-        if bk in ('fonbet', 'olimp'):
-            self.bk = bk
-        else:
-            raise ValueError('bk not defined, bk=' + bk)
+    def place_bet(self, obj: dict)->None:
+        self.my_name = inspect.stack()[0][3]
+        
+        if self.bk == 'olimp':
+            from meta_ol import url_api, payload, head, get_xtoken_bet
             
-        bk = Bk(self.bk).sign_in()
-        sys.exit()
- 
+            self.wager = obj.get('wager')
+            self.sum_bet = obj.get('amount')
+            
+            cur_bal = self.session.get('balance')
+            if cur_bal and self.sum_bet < cur_bal:
+                err_str = self.err_def.format(
+                    self.my_name, 
+                    self.bk + ' balance < sum_bet, balance: ' + cur_bal
+                )
+                raise NoMoney(err_str)
+    
+    
+            opposite_stat = str(obj.get(self.bk_opposite + '_err', 'ok'))
+            if opposite_stat != 'ok':
+                err_str = self.err_def.format(
+                    self.my_name, 
+                    self.bk + ' get error from ' + self.bk_opposite + ': ' + opposite_stat
+                )
+                raise BkOppBetError(err_str)
+    
+            url = url_api.format(self.server_olimp, "basket/fast")
+    
+            payload = payload.copy()
+            
+            self.session['session'] = None
+            if not self.session['session']:
+                self.session['session'] = read_file(self.session_file)
+    
+            payload.update({
+                "coefs_ids": '[["{apid}",{factor},1]]'.format(
+                    apid=self.wager.get('apid'), factor=self.wager.get('factor')),
+                "sport_id": self.wager.get('sport_id'),
+                "sum": self.sum_bet,
+                "save_any": 3,
+                "fast": 1,
+                "any_handicap": 1,
+                'session': self.session['session']
+            })
+            # Принимать с изменёнными коэффициентами:
+            # save_any: 1 - никогда, 2 - при повышении, 3 - всегда
+            
+            # Принимать с измененными тоталами/форами:
+            # any_handicap: 1 - Нет, 2 - Да
+        
+            headers = head.copy()
+            headers.update(get_xtoken_bet(payload))
+            
+            prnt(self.msg.format(self.my_name, 'rq: '+str(payload)), 'hide')
+            resp = requests.post(
+                url,
+                headers=headers,
+                data=payload,
+                verify=False,
+                timeout=self.timeout,
+                proxies=self.proxies
+            )
+            prnt(self.msg.format(self.my_name, 'rs: '+str(resp.text.strip())), 'hide')
+            res = resp.json()
+    
+            req_time = round(resp.elapsed.total_seconds(), 2)
+    
+            err_code = res.get("error", {}).get('err_code')
+            err_msg = res.get("error", {}).get('err_desc')
+            
+            if err_code == 401 and 'не вошли в систему' in err_msg:
+                err_str = self.err_def.format(
+                    self.my_name, 
+                    self.bk + ' session expired: ' + self.session['session']
+                )
+                prnt(err_str)
+                raise SessionExpired(err_str)
+            
+            #{"error":{"err_code":401,"err_desc":"У Вас нет доступа к этой зоне, т.к. Вы не вошли в систему!"},"data":null}
+            
+            '''
+    
+            if err_code == 0:
+                self.matchid = self.wager['event']
+                self.get_cur_max_bet_id(self.matchid)
+                prnt('BET_OLIMP.PY: bet successful, reg_id: ' + str(self.reg_id))
+            elif err_code in (400, 417):
+                if err_code == 417 and 'Такой исход не существует' in err_msg:
+                    err_str = 'BET_OLIMP.PY: error place bet: ' + \
+                              str(res.get("error", {}).get('err_desc'))
+                    prnt(err_str)
+                    raise BetError(err_str)
+                # MaxBet
+                elif 'максимальная ставка' in err_msg:
+                    err_str = 'BET_OLIMP.PY: error max bet: ' + \
+                              str(res.get("error", {}).get('err_desc'))
+                    prnt(err_str)
+                    raise BetError(err_str)
+                else:
+                    if self.cnt_bet_attempt > (60 * 0.4) / self.sleep:
+                        err_str = 'BET_OLIMP.PY: error place bet: ' + \
+                                  str(res.get("error", {}).get('err_desc'))
+                        prnt(err_str)
+                        raise BetError(err_str)
+    
+                    self.cnt_bet_attempt = self.cnt_bet_attempt + 1
+                    prnt('BET_OLIMP.PY: ' + str(res.get("error", {}).get('err_desc')) + '. попытка #'
+                         + str(self.cnt_bet_attempt) + ' через ' + str(n_sleep) + ' сек')
+                    time.sleep(n_sleep)
+                    return self.place_bet(obj=obj)
+            elif "data" not in res or res.get("data") != "Ваша ставка успешно принята!":
+                err_str = 'BET_OLIMP.PY: error place bet: ' + str(res)
+                prnt(err_str)
+                raise BetError(err_str)
+                    
+        if self.bk == 'fonbet':
+            pass
+        '''
 
-    def trasher(self, obj: dict, vector: str, sc1: int, sc2: int, cur_total: float):
+    def finishing(self, obj: dict, vector: str, sc1: int, sc2: int, cur_total: float) -> None:
     
         self.vector = vector
         self.sc1 = int(sc1)
@@ -246,4 +423,22 @@ class BetManager:
                 # go bets
 
 if __name__=='__main__':
-    BetManager('fonbet')
+
+    bk_obj = {}
+    
+    
+    OLIMP_USER = {"login": "eva.yushkova.81@mail.ru", "passw": "qvF3BwrNcRcJtB6"}
+    wager_olimp = {'apid': '1162886444:46453134:1:3:-9999:2:0:0:1', 'factor': '1.06', 'sport_id': 1,
+                   'event': '46453134'}
+    obj = {}
+    obj['wager'] = wager_olimp
+    obj['amount'] = 30
+    
+    bk1 = Thread(target=BetManager, args=(bk_obj, obj, 'olimp', 'fonbet'))
+    bk2 = Thread(target=BetManager, args=(bk_obj, obj, 'fonbet', 'olimp'))
+    
+    bk1.start()
+    bk2.start()
+    
+    bk1.join()
+    bk2.join()
