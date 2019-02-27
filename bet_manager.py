@@ -1,4 +1,4 @@
-from exceptions import BetIsLost, SessionNotDefined, BkOppBetError, NoMoney, BetError, SessionExpired
+from exceptions import BetIsLost, SessionNotDefined, BkOppBetError, NoMoney, BetError, SessionExpired, MaxBet
 from math import floor
 from utils import prnt, package_dir, write_file, read_file
 from time import time, sleep
@@ -86,6 +86,8 @@ class BetManager:
         
         try:
             bk_obj[self.bk].place_bet(obj)
+        except BetIsLost as e:
+            prnt(e)
         except NoMoney as e:
             prnt(e)
         except BkOppBetError as e:
@@ -93,6 +95,8 @@ class BetManager:
         except SessionExpired as e:
             prnt(e)
             self.sign_in(obj)
+            bk_obj[self.bk].place_bet(obj)
+        except BetError as e:
             bk_obj[self.bk].place_bet(obj)
         except Exception as e:
             prnt(e)
@@ -257,7 +261,6 @@ class BetManager:
             opposite_stat = str(obj.get(self.bk_opposite + '_err', 'ok'))
             if opposite_stat != 'ok':
                 err_str = self.err_def.format(
-                    self.my_name, 
                     self.bk + ' get error from ' + self.bk_opposite + ': ' + opposite_stat
                 )
                 raise BkOppBetError(err_str)
@@ -306,54 +309,30 @@ class BetManager:
             err_code = res.get("error", {}).get('err_code')
             err_msg = res.get("error", {}).get('err_desc')
             
-            if err_code == 401 and 'не вошли в систему' in err_msg:
-                err_str = self.err_def.format(
-                    self.my_name, 
-                    self.bk + ' session expired: ' + self.session['session']
-                )
-                prnt(err_str)
-                raise SessionExpired(err_str)
-            
-            #{"error":{"err_code":401,"err_desc":"У Вас нет доступа к этой зоне, т.к. Вы не вошли в систему!"},"data":null}
-            
-            '''
-    
             if err_code == 0:
                 self.matchid = self.wager['event']
                 self.get_cur_max_bet_id(self.matchid)
-                prnt('BET_OLIMP.PY: bet successful, reg_id: ' + str(self.reg_id))
-            elif err_code in (400, 417):
-                if err_code == 417 and 'Такой исход не существует' in err_msg:
-                    err_str = 'BET_OLIMP.PY: error place bet: ' + \
-                              str(res.get("error", {}).get('err_desc'))
-                    prnt(err_str)
-                    raise BetError(err_str)
-                # MaxBet
-                elif 'максимальная ставка' in err_msg:
-                    err_str = 'BET_OLIMP.PY: error max bet: ' + \
-                              str(res.get("error", {}).get('err_desc'))
-                    prnt(err_str)
-                    raise BetError(err_str)
-                else:
-                    if self.cnt_bet_attempt > (60 * 0.4) / self.sleep:
-                        err_str = 'BET_OLIMP.PY: error place bet: ' + \
-                                  str(res.get("error", {}).get('err_desc'))
-                        prnt(err_str)
-                        raise BetError(err_str)
+                
+                prnt(self.msg.format(self.my_name, 'bet successful, reg_id: ' + str(self.reg_id)))
+                
+            if 'Такой исход не существует' in err_msg:
+                raise BetIsLost(err_msg)
+            
+            elif 'максимальная ставка' in err_msg:
+                raise BetIsLost(err_msg)
+                
+            elif 'не вошли в систему' in err_msg:
+                err_str = self.err_def.format(
+                    self.my_name, 'session expired: ' + self.session['session']
+                )
+                raise SessionExpired(err_str)
     
-                    self.cnt_bet_attempt = self.cnt_bet_attempt + 1
-                    prnt('BET_OLIMP.PY: ' + str(res.get("error", {}).get('err_desc')) + '. попытка #'
-                         + str(self.cnt_bet_attempt) + ' через ' + str(n_sleep) + ' сек')
-                    time.sleep(n_sleep)
-                    return self.place_bet(obj=obj)
-            elif "data" not in res or res.get("data") != "Ваша ставка успешно принята!":
-                err_str = 'BET_OLIMP.PY: error place bet: ' + str(res)
-                prnt(err_str)
+            elif "data" not in res or 'ставка успешно принята' not in res.get("data"):
+                err_str = self.err_def.format(self.my_name, err_msg)
                 raise BetError(err_str)
-                    
-        if self.bk == 'fonbet':
+        
+        elif self.bk == 'fonbet':
             pass
-        '''
 
     def finishing(self, obj: dict, vector: str, sc1: int, sc2: int, cur_total: float) -> None:
     
