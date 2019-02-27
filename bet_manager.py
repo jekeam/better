@@ -1,4 +1,4 @@
-from exceptions import BetIsLost, SessionNotDefined, BkOppBetError, NoMoney, BetError, SessionExpired
+from exceptions import BetIsLost, SessionNotDefined, BkOppBetError, NoMoney, BetError, SessionExpired, SaleError, CouponBlocked
 from math import floor
 from utils import prnt, package_dir, write_file, read_file
 from time import time, sleep
@@ -9,8 +9,10 @@ import inspect
 import sys
 import traceback
 from threading import Thread
-from meta_ol import url_api, payload, head, get_xtoken_bet
-from meta_fb import base_payload, get_random_str, get_dumped_payload, get_urls, get_common_url, head
+import hmac
+from hashlib import sha512
+from meta_ol import ol_url_api, ol_payload, ol_headers, get_xtoken_bet
+from meta_fb import fb_payload, get_random_str, get_dumped_payload, get_urls, get_common_url, fb_headers
 
 
 # disable:
@@ -100,9 +102,16 @@ class BetManager:
             self.sign_in(obj)
             bk_obj[self.bk].place_bet(obj)
         except BetError as e:
-            bk_obj[self.bk].place_bet(obj)
-        except Exception as e:
             prnt(e)
+            pass
+            # bk_obj[self.bk].place_bet(obj)
+        except Exception as e:
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            err_msg = 'unknown err: ' + str(e) + '. ' + \
+                str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
+            err_str = self.err_def.format(self.my_name, err_msg)
+            prnt(err_str)
+            raise ValueError(err_str)
             
         #bk1.sale_bet()
         
@@ -125,19 +134,19 @@ class BetManager:
         self.my_name = inspect.stack()[0][3]
         if self.bk == 'olimp':
             try:
-                payload = payload.copy()
+                payload = ol_payload.copy()
                 payload.update({
                     'login' : self.account['login'],
                     'password': self.account['password']
                 })
     
-                headers = head.copy()
+                headers = ol_headers.copy()
                 headers.update(get_xtoken_bet(payload))
                 headers.update({'X-XERPC': '1'})
                 
                 prnt(self.msg.format(self.my_name, 'rq: '+str(payload)), 'hide')
                 resp = requests.post(
-                    url_api.format(str(self.server_olimp),'autorize'),
+                    ol_url_api.format(str(self.server_olimp),'autorize'),
                     headers=headers,
                     data=payload,
                     verify=False,
@@ -179,13 +188,11 @@ class BetManager:
         
         elif self.bk == 'fonbet':
             try:
-                import hmac
-                from hashlib import sha512
                 
-                base_payload["platform"] = "mobile_android"
-                base_payload["clientId"] = self.account['login']
+                fb_payload["platform"] = "mobile_android"
+                fb_payload["clientId"] = self.account['login']
     
-                payload = base_payload
+                payload = fb_payload
                 payload["random"] = get_random_str()
                 payload["sign"] = "secret password"
     
@@ -200,7 +207,7 @@ class BetManager:
                 prnt(self.msg.format(self.my_name, 'rq: '+str(data)), 'hide')
                 resp = requests.post(
                     url.format("login"),
-                    headers=head,
+                    headers=fb_headers,
                     data=data,
                     verify=False,
                     timeout=self.timeout,
@@ -264,11 +271,10 @@ class BetManager:
                 )
                 raise BkOppBetError(err_str)
     
-            url = url_api.format(self.server_olimp, "basket/fast")
+            url = ol_url_api.format(self.server_olimp, "basket/fast")
     
-            payload = payload.copy()
+            payload = ol_payload.copy()
             
-            self.session['session'] = None
             if not self.session['session']:
                 self.session['session'] = read_file(self.session_file)
     
@@ -288,7 +294,7 @@ class BetManager:
             # Принимать с измененными тоталами/форами:
             # any_handicap: 1 - Нет, 2 - Да
         
-            headers = head.copy()
+            headers = ol_headers.copy()
             headers.update(get_xtoken_bet(payload))
             
             prnt(self.msg.format(self.my_name, 'rq: '+str(payload)), 'hide')
@@ -314,7 +320,7 @@ class BetManager:
                 
                 prnt(self.msg.format(self.my_name, 'bet successful, reg_id: ' + str(self.reg_id)))
                 
-            if 'Такой исход не существует' in err_msg:
+            elif 'Такой исход не существует' in err_msg:
                 raise BetIsLost(err_msg)
             
             elif 'максимальная ставка' in err_msg:
@@ -326,9 +332,60 @@ class BetManager:
                 )
                 raise SessionExpired(err_str)
     
-            elif "data" not in res or 'ставка успешно принята' not in res.get("data"):
+            elif res.get("data") is None:
                 err_str = self.err_def.format(self.my_name, err_msg)
                 raise BetError(err_str)
+        
+        elif self.bk == 'fonbet':
+            pass
+        
+    def sale_bet(self) -> None:
+        self.my_name = inspect.stack()[0][3]
+        
+        if self.bk == 'olimp':
+            
+            coupon = self.get_cur_max_bet_id()
+            cashout_allowed = coupon.get('cashout_allowed', False)
+            self.sum_sell = coupon.get('cashout_amount', 0)
+            prnt(self.msg.format(self.my_name,  'coupon cashout_allowed: ' + str(cashout_allowed)))
+            prnt(self.msg.format(self.my_name,  'coupon amount: ' + str(self.sum_sell)))
+    
+            if cashout_allowed is True and self.sum_sell > 0:
+    
+                payload = {}
+                payload["bet_id"] = self.reg_id
+                payload["amount"] = self.sum_sell
+                payload["session"] = self.session["session"]
+    
+                headers = ol_headers.copy()
+                headers.update(get_xtoken_bet(payload))
+                headers.update({'X-XERPC': '1'})
+                
+                prnt(self.msg.format(self.my_name, 'rq: '+str(payload)), 'hide')
+                resp = requests.post(
+                    ol_url_api.format("user/cashout"),
+                    headers=ol_headers,
+                    data=payload,
+                    verify=False,
+                    timeout=self.timeout,
+                    proxies=self.proxies
+                )
+                prnt(self.msg.format(self.my_name, 'rs: '+str(resp.text.strip())), 'hide')
+                res = resp.json()
+                
+                err_code = res.get("error", {}).get('err_code')
+                err_msg = res.get("error", {}).get('err_desc')
+                
+                req_time = round(resp.elapsed.total_seconds(), 2)
+    
+                if res.get('data', {}).get('status', 'err') == 'ok':
+                    prnt(self.msg.format(self.my_name, res.get('data').get('msg')))
+                else:
+                    raise SaleError(err_msg)
+    
+            else:
+                err_msg = 'coupon ' + str(self.reg_id) + ' blocked'
+                raise CouponBlocked(err_msg)
         
         elif self.bk == 'fonbet':
             pass
@@ -404,16 +461,13 @@ class BetManager:
     def get_cur_max_bet_id(self, filter="0100", offset="0"):
         self.my_name = inspect.stack()[0][3]
         
-        req_url = url_api.format("user/history")
+        req_url = ol_url_api.format("user/history")
         payload = {}
         payload["filter"] = filter  # только не расчитанные
         payload["offset"] = offset
         payload["session"] = self.session['session']
-        payload["lang_id"] = "0"
-        payload["platforma"] = "ANDROID1"
-        payload["time_shift"] = "0"
 
-        headers = head.copy()
+        headers = ol_headers.copy()
         headers.update(get_xtoken_bet(payload))
         headers.update({'X-XERPC': '1'})
         

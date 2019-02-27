@@ -47,5 +47,11 @@ class NoMoney(Exception):
 class BetError(Exception):
     pass
 
+class SaleError(Exception):
+    pass
+
+class CouponBlocked(Exception):
+    pass
+
 class SessionExpired(Exception):
     pass
