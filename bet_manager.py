@@ -1,4 +1,4 @@
-from exceptions import BetIsLost, SessionNotDefined, BkOppBetError, NoMoney, BetError, SessionExpired, MaxBet
+from exceptions import BetIsLost, SessionNotDefined, BkOppBetError, NoMoney, BetError, SessionExpired
 from math import floor
 from utils import prnt, package_dir, write_file, read_file
 from time import time, sleep
@@ -9,6 +9,9 @@ import inspect
 import sys
 import traceback
 from threading import Thread
+from meta_ol import url_api, payload, head, get_xtoken_bet
+from meta_fb import base_payload, get_random_str, get_dumped_payload, get_urls, get_common_url, head
+
 
 # disable:
 # /usr/local/lib/python3.6/site-packages/urllib3/connectionpool.py:847: 
@@ -122,8 +125,6 @@ class BetManager:
         self.my_name = inspect.stack()[0][3]
         if self.bk == 'olimp':
             try:
-                from meta_ol import url_api, payload, head, get_xtoken_bet
-                
                 payload = payload.copy()
                 payload.update({
                     'login' : self.account['login'],
@@ -178,7 +179,6 @@ class BetManager:
         
         elif self.bk == 'fonbet':
             try:
-                from meta_fb import base_payload, get_random_str, get_dumped_payload, get_urls, get_common_url, head
                 import hmac
                 from hashlib import sha512
                 
@@ -244,7 +244,6 @@ class BetManager:
         self.my_name = inspect.stack()[0][3]
         
         if self.bk == 'olimp':
-            from meta_ol import url_api, payload, head, get_xtoken_bet
             
             self.wager = obj.get('wager')
             self.sum_bet = obj.get('amount')
@@ -310,8 +309,8 @@ class BetManager:
             err_msg = res.get("error", {}).get('err_desc')
             
             if err_code == 0:
-                self.matchid = self.wager['event']
-                self.get_cur_max_bet_id(self.matchid)
+                self.match_id = self.wager['event']
+                self.get_cur_max_bet_id()
                 
                 prnt(self.msg.format(self.my_name, 'bet successful, reg_id: ' + str(self.reg_id)))
                 
@@ -335,6 +334,7 @@ class BetManager:
             pass
 
     def finishing(self, obj: dict, vector: str, sc1: int, sc2: int, cur_total: float) -> None:
+        self.my_name = inspect.stack()[0][3]
     
         self.vector = vector
         self.sc1 = int(sc1)
@@ -400,6 +400,76 @@ class BetManager:
                 pass
                 # recalc sum
                 # go bets
+                
+    def get_cur_max_bet_id(self, filter="0100", offset="0"):
+        self.my_name = inspect.stack()[0][3]
+        
+        req_url = url_api.format("user/history")
+        payload = {}
+        payload["filter"] = filter  # только не расчитанные
+        payload["offset"] = offset
+        payload["session"] = self.session['session']
+        payload["lang_id"] = "0"
+        payload["platforma"] = "ANDROID1"
+        payload["time_shift"] = "0"
+
+        headers = head.copy()
+        headers.update(get_xtoken_bet(payload))
+        headers.update({'X-XERPC': '1'})
+        
+        prnt(self.msg.format(self.my_name, 'rq: '+str(payload)), 'hide')
+        resp = requests.post(
+            req_url,
+            headers=headers,
+            data=payload,
+            verify=False,
+            timeout=self.timeout,
+            proxies=self.proxies
+        )
+        prnt(self.msg.format(self.my_name, 'rs: '+str(resp.text.strip())), 'hide')
+        res = resp.json()
+        
+        err_code = res.get("error", {}).get('err_code')
+        err_msg = res.get("error", {}).get('err_desc')
+        
+        if err_code != 0:
+            raise BetIsLost(err_msg)
+
+        max_bet_id = 0
+        coupon_data = {}
+        # reg_id - мы знаем заранее - только при ручном выкупе как правило
+        if self.reg_id:
+            coupon_found = False
+            for bet_list in res.get('data').get('bet_list', []):
+                cur_bet_id = bet_list.get('bet_id')
+                if cur_bet_id == self.reg_id:
+                    coupon_found = True
+                    max_bet_id = cur_bet_id
+                    coupon_data = bet_list
+            if not coupon_found:
+                err_str = 'coupon reg_id: ' + str(self.reg_id) + ', not found'
+                prnt(err_str)
+                raise BetIsLost(err_str)
+
+        # Мы не знаем reg_id и берем последний по матчу
+        elif self.match_id:
+            for bet_list in res.get('data').get('bet_list', []):
+                if str(bet_list.get('events')[0].get('matchid')) == str(self.match_id):
+                    cur_bet_id = bet_list.get('bet_id')
+                    if cur_bet_id > max_bet_id:
+                        max_bet_id = cur_bet_id
+                        coupon_data = bet_list
+        # Мы не знаем мата и берем просто последний
+        else:
+            for bet_list in res.get('data').get('bet_list', []):
+                cur_bet_id = bet_list.get('bet_id')
+                if cur_bet_id > max_bet_id:
+                    max_bet_id = cur_bet_id
+                    coupon_data = bet_list
+
+        if max_bet_id:
+            self.reg_id = max_bet_id
+            return coupon_data
 
 if __name__=='__main__':
 
