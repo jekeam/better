@@ -32,3 +32,6 @@ class BetIsLost(Exception):
 
 class MaxFail(Exception):
     pass
+
+class SessionNotDefined(Exception):
+    pass

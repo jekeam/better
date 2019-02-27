@@ -6,6 +6,7 @@ from math import floor
 import time
 from retry_requests import requests_retry_session
 from exceptions import FonbetBetError
+from util_olimp import get_xtoken_bet
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -29,10 +30,7 @@ base_headers = {
 }
 
 
-def get_xtoken_bet(payload):
-    sorted_values = [str(payload[key]) for key in sorted(payload.keys())]
-    to_encode = ";".join(sorted_values + [secret_key])
-    return {"X-TOKEN": md5(to_encode.encode()).hexdigest()}
+
 
 
 class OlimpBot:
