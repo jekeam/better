@@ -8,6 +8,21 @@ import time
 from exceptions import OlimpMatchСompleted, TimeOut
 from utils import prnts, get_vector
 
+url_autorize = "https://{}.olimp-proxy.ru/api/{}"
+payload = {"lang_id": "0", "platforma": "ANDROID1"}
+head = {
+    'Content-Type': 'application/x-www-form-urlencoded',
+    'Connection': 'Keep-Alive',
+    'Accept-Encoding': 'gzip',
+    'User-Agent': 'okhttp/3.9.1'
+}
+
+def get_xtoken_bet(payload):
+    sorted_values = [str(payload[key]) for key in sorted(payload.keys())]
+    to_encode = ";".join(sorted_values + [secret_key])
+    return {"X-TOKEN": md5(to_encode.encode()).hexdigest()}
+
+
 olimp_url = 'http://12.olimp-proxy.ru:10600'
 olimp_url_https = 'https://12.olimp-proxy.ru'
 olimp_url_random = 'https://{}.olimp-proxy.ru'  # c 10 по 18й

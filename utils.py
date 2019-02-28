@@ -10,9 +10,6 @@ import statistics
 # DEBUG = True
 DEBUG = False
 
-file_session_ol = 'olimp.session'
-file_session_fb = 'fonbet.session'
-
 package_dir = os.path.dirname(__file__)
 dtOld = datetime.datetime.now()
 
@@ -225,7 +222,6 @@ def check_status(status_code):
 def check_status_with_resp(resp, olimp=None):
     if (resp.status_code != 200 and olimp is None) \
             or (olimp is not None and resp.status_code not in (200, 400, 417, 406, 403, 500)):
-        prnt(resp.text)
         raise LoadException("Site is not responding, status code: {}".format(resp.status_code))
 
 
