@@ -10,3 +10,4 @@ venv
 *.json
 *.session
 *.json_old
+*.zip
