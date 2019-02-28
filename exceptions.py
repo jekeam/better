@@ -27,5 +27,31 @@ class OlimpBetError(Exception):
     pass
 
 
+
+# new except new concept
+class BetIsLost(Exception):
+    pass
+
 class MaxFail(Exception):
+    pass
+
+class SessionNotDefined(Exception):
+    pass
+
+class BkOppBetError(Exception):
+    pass
+
+class NoMoney(Exception):
+    pass
+
+class BetError(Exception):
+    pass
+
+class SaleError(Exception):
+    pass
+
+class CouponBlocked(Exception):
+    pass
+
+class SessionExpired(Exception):
     pass
