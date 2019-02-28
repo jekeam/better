@@ -14,6 +14,13 @@ fonbet_header = {
     'Connection': 'Keep-Alive',
     'Accept-Encoding': 'gzip'
 }
+base_payload = {
+    "appVersion": "5.1.3b",
+    "lang": "ru",
+    "rooted": "false",
+    "sdkVersion": 21,
+    "sysId": 4
+}
 
 # VICTORIES
 VICTS = [['П1', 921], ['Н', 922], ['П2', 923], ['П1Н', 924], ['12', 1571], ['П2Н', 925],
@@ -164,17 +171,17 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out):
             sc1 = 0
             sc2 = 0
             try:
-                scs = value = re.findall('[0-9]:[0-9]', score)[0]
+                scs = re.findall('[0-9]:[0-9]', score)[0]
                 try:
                     sc1 = int(scs.split(':')[0])
                 except Exception as e:
-                    prnts('err util_fonbet sc1: ' + str(e))
+                    prnts('err util_fonbet sc1: ' + 'score=' + str(score) + ' ' + str(e))
                 try:
                     sc2 = int(scs.split(':')[1])
                 except Exception as e:
-                    prnts('err util_fonbet sc2: ' + str(e))
+                    prnts('err util_fonbet sc2: ' + 'score=' + str(score) + ' ' + str(e))
             except Exception as e:
-                prnts('err util_fonbet scs: ' + str(e))
+                prnts('err util_fonbet scs: ' + 'score=' + str(score) + ' ' + str(e))
 
             timer = event.get('timer')
             minute = event.get('timerSeconds', 0) / 60
