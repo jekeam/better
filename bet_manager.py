@@ -124,7 +124,9 @@ class BetManager:
         self.my_name = inspect.stack()[0][3]
 
         if err_msg:
-            if 'не вошли в систему' in err_msg:
+            if 'не вошли в систему' in err_msg or \
+                    'Not token access' in err_msg or \
+                    'invalid session id' in err_msg:
                 err_str = self.msg_err.format(
                     self.my_name, 'session expired: ' + self.session['session']
                 )
@@ -257,6 +259,7 @@ class BetManager:
 
     def get_opposite_stat(self, obj):
         self.my_name = inspect.stack()[0][3]
+
         opposite_stat = str(obj.get(self.bk_opposite + '_err', 'ok'))
         if opposite_stat != 'ok':
             err_str = self.msg_err.format(self.my_name,
@@ -265,8 +268,8 @@ class BetManager:
             raise BkOppBetError(err_str)
 
     def check_max_bet(self, obj):
-        self.my_name = inspect.stack()[0][3]
         self.get_opposite_stat(obj)
+        self.my_name = inspect.stack()[0][3]
 
         url, timeout = get_common_url(self.server_fb)
 
@@ -281,7 +284,7 @@ class BetManager:
         payload['coupon']['bets'][0]['factor'] = int(self.wager['factor'])
 
         payload['fsid'] = self.session['session']
-        payload['clientId'] = self.session['login']
+        payload['clientId'] = self.account['login']
 
         prnt(self.msg.format(self.my_name, 'rq: ' + str(payload) + ' ' + str(headers)), 'hide')
         resp = requests.post(
@@ -295,8 +298,12 @@ class BetManager:
         prnt(self.msg.format(self.my_name, 'rs: ' + str(resp.text.strip())), 'hide')
         res = resp.json()
 
+        result = res.get('result')
+        msg_str = res.get('errorMessage')
+        self.check_responce(msg_str)
+        self.my_name = inspect.stack()[0][3]
+
         if 'min' not in res:
-            err_str = 'error (min): ' + str(res)
             err_str = self.msg_err.format(
                 self.my_name,
                 'min sum not found'
@@ -314,8 +321,6 @@ class BetManager:
         prnt(self.msg(self.my_name, 'min_amount=' + str(min_amount) + ', max_amount=' + str(max_amount)))
 
     def check_result(self, obj) -> None:
-        self.my_name = inspect.stack()[0][3]
-
         self.get_opposite_stat(obj)
         self.my_name = inspect.stack()[0][3]
 
@@ -340,14 +345,17 @@ class BetManager:
             timeout=self.timeout
         )
         prnt(self.msg.format(self.my_name, 'rs: ' + str(resp.text.strip())), 'hide')
-
         res = resp.json()
 
-        err_res = res.get('result')
-        err_code = res.get('coupon').get('resultCode')
-        err_msg = res.get('coupon').get('errorMessageRus')
+        result = res.get('result')
+        msg_str = res.get('errorMessage')
+        self.check_responce(msg_str)
+        self.my_name = inspect.stack()[0][3]
 
-        if err_res == 'couponResult':
+        err_code = res.get('coupon', {}).get('resultCode')
+        err_msg = res.get('coupon', {}).get('errorMessageRus')
+
+        if result == 'couponResult':
             if err_code == 0:
                 self.reg_id = res.get('coupon').get('regId')
                 prnt(self.msg.format(self.my_name, 'bet successful, reg_id: ' + str(self.reg_id)))
@@ -420,7 +428,7 @@ class BetManager:
                         )
                         prnt(err_str)
                         raise BetIsLost(err_str)
-        elif err_res == 'error' and "temporary unknown result" in resp.text:
+        elif result == 'error' and "temporary unknown result" in resp.text:
             err_str = 'Get temporary unknown result: ' + str(res)
             prnt(err_str)
             sleep(3)
@@ -551,6 +559,9 @@ class BetManager:
             res = resp.json()
 
             result = res.get('result')
+            msg_str = res.get('errorMessage')
+            self.check_responce(msg_str)
+            self.my_name = inspect.stack()[0][3]
 
             if result == 'betDelay':
                 bet_delay_sec = (float(res.get('betDelay')) / 1000)
@@ -603,7 +614,6 @@ class BetManager:
                 self.check_responce(err_msg)
                 self.my_name = inspect.stack()[0][3]
 
-                # {"error": {"err_code": 511, "err_desc": "Not token access"}, "data": null}
                 if res.get('data') and res.get('data').get('status', 'err') == 'ok':
                     prnt(
                         self.msg.format(self.my_name, 'code: ' +
@@ -759,16 +769,20 @@ class BetManager:
 if __name__ == '__main__':
     bk_obj = {}
 
-    OLIMP_USER = {'login': 'eva.yushkova.81@mail.ru', 'passw': 'qvF3BwrNcRcJtB6'}
-    wager_olimp = {'apid': '1181740951:47030887:1:3:-9999:2:0:0:1', 'factor': '1.06', 'sport_id': 1,
-                   'event': '47030887'}
+    # OLIMP_USER = {'login': 'eva.yushkova.81@mail.ru', 'passw': 'qvF3BwrNcRcJtB6'}
+    # wager_olimp = {'apid': '1181740951:47030887:1:3:-9999:2:0:0:1', 'factor': '1.06', 'sport_id': 1,
+    #                'event': '47030887'}
+
+    FONBET_USER = {"login": 5699838, "password": "NTe2904H11"}
+    wager_fonbet = {'event': '13395343', 'factor': '1809', 'param': '250', 'score': '0:0', 'value': '1.42'}
+
     obj = {}
-    obj['wager'] = wager_olimp
+    obj['wager'] = wager_fonbet  # wager_olimp
     obj['amount'] = 30
 
-    bk1 = Thread(target=BetManager, args=(bk_obj, obj, 'olimp', 'fonbet'))
-    # bk2 = Thread(target=BetManager, args=(bk_obj, obj, 'fonbet', 'olimp'))
-    bk1.start()
-    # bk2.start()
-    bk1.join()
-    # bk2.join()
+    # bk1 = Thread(target=BetManager, args=(bk_obj, obj, 'olimp', 'fonbet'))
+    bk2 = Thread(target=BetManager, args=(bk_obj, obj, 'fonbet', 'olimp'))
+    # bk1.start()
+    bk2.start()
+    # bk1.join()
+    bk2.join()
