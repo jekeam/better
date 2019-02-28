@@ -34,17 +34,20 @@ else:
         df = pd.read_csv(f, encoding='utf-8', sep=';')
         df = df.round({'minute': 2})
 
-        idx = df.groupby(
-            ['match_ol', 'match_fb', 'kof_ol', 'kof_fb', 'name'], sort=False
-        )['live_fork'].transform('max') == df['live_fork']
+        try:
+            idx = df.groupby(
+                ['match_ol', 'match_fb', 'kof_ol', 'kof_fb', 'name'], sort=False
+            )['live_fork_total'].transform('max') == df['live_fork_total']
 
-        df = df[idx]
+            df = df[idx]
 
-        idx = df.groupby(
-            ['match_ol', 'match_fb', 'kof_ol', 'kof_fb', 'name'], sort=False
-        )['minute'].transform('min') == df['minute']
+            idx = df.groupby(
+                ['match_ol', 'match_fb', 'kof_ol', 'kof_fb', 'name'], sort=False
+            )['minute'].transform('min') == df['minute']
 
-        with open('forks_live.csv', 'a') as f:
-            df[idx]['live_fork'].to_csv(f, encoding='utf-8', sep=';', header=is_first)
-            if is_first:
-                is_first = False
+            with open('live_fork_total.csv', 'a') as f:
+                df[idx]['live_fork_total'].to_csv(f, encoding='utf-8', sep=';', header=is_first)
+                if is_first:
+                    is_first = False
+        except:
+            pass

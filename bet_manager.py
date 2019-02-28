@@ -84,26 +84,6 @@ class BetManager:
         self.manager(bk_obj, obj)
         self.my_name = inspect.stack()[0][3]
 
-    def check_responce(self, err_msg):
-        self.my_name = inspect.stack()[0][3]
-        if 'не вошли в систему' in err_msg:
-            err_str = self.msg_err.format(
-                self.my_name, 'session expired: ' + self.session['session']
-            )
-            raise SessionExpired(err_str)
-
-    def get_proxy(self) -> str:
-        self.my_name = inspect.stack()[0][3]
-        with open(path.join(package_dir, 'proxies.json')) as file:
-            proxies = load(file)
-        return proxies.get(self.bk)
-
-    def get_account_info(self) -> str:
-        self.my_name = inspect.stack()[0][3]
-        with open(path.join(package_dir, 'account.json')) as file:
-            account = load(file)
-        return account.get(self.bk, {})
-
     def manager(self, bk_obj: dict, obj: dict) -> None:
         self.my_name = inspect.stack()[0][3]
         # obj['fonbet_err'] = 'bla bla bla'
@@ -112,8 +92,7 @@ class BetManager:
         # bk_obj[self.bk].sign_in(obj)
 
         try:
-            # bk_obj[self.bk].place_bet(obj)
-            self.reg_id = 1298
+            bk_obj[self.bk].place_bet(obj)
             bk_obj[self.bk].sale_bet()
         except CouponBlocked as e:
             prnt(e)
@@ -139,6 +118,28 @@ class BetManager:
             raise ValueError(err_str)
 
         # bk1.sale_bet()
+
+    def check_responce(self, err_msg):
+        self.my_name = inspect.stack()[0][3]
+
+        if err_msg:
+            if 'не вошли в систему' in err_msg:
+                err_str = self.msg_err.format(
+                    self.my_name, 'session expired: ' + self.session['session']
+                )
+                raise SessionExpired(err_str)
+
+    def get_proxy(self) -> str:
+        self.my_name = inspect.stack()[0][3]
+        with open(path.join(package_dir, 'proxies.json')) as file:
+            proxies = load(file)
+        return proxies.get(self.bk)
+
+    def get_account_info(self) -> str:
+        self.my_name = inspect.stack()[0][3]
+        with open(path.join(package_dir, 'account.json')) as file:
+            account = load(file)
+        return account.get(self.bk, {})
 
     def wait_sign_in_opp(self):
         self.my_name = inspect.stack()[0][3]
@@ -486,7 +487,6 @@ class BetManager:
 
             err_code = res.get('error', {}).get('err_code')
             err_msg = res.get('error', {}).get('err_desc')
-
             self.check_responce(err_msg)
             self.my_name = inspect.stack()[0][3]
 
@@ -559,7 +559,6 @@ class BetManager:
             self.check_result(obj)
             self.my_name = inspect.stack()[0][3]
 
-
     def sale_bet(self) -> None:
         self.set_session_state()
         self.my_name = inspect.stack()[0][3]
@@ -598,7 +597,9 @@ class BetManager:
                 prnt(self.msg.format(self.my_name, 'rs: ' + str(resp.text.strip())), 'hide')
                 res = resp.json()
 
-                self.check_responce(res)
+                err_code = res.get('error', {}).get('err_code')
+                err_msg = res.get('error', {}).get('err_desc')
+                self.check_responce(err_msg)
                 self.my_name = inspect.stack()[0][3]
 
                 # {"error": {"err_code": 511, "err_desc": "Not token access"}, "data": null}
@@ -617,7 +618,6 @@ class BetManager:
 
         elif self.bk == 'fonbet':
             pass
-
 
     def finishing(self, obj: dict, vector: str, sc1: int, sc2: int, cur_total: float) -> None:
         self.my_name = inspect.stack()[0][3]
@@ -687,7 +687,6 @@ class BetManager:
                 # recalc sum
                 # go bets
 
-
     def get_cur_max_bet_id(self, filter='0100', offset='0'):
         self.my_name = inspect.stack()[0][3]
 
@@ -719,15 +718,13 @@ class BetManager:
         self.check_responce(err_msg)
         self.my_name = inspect.stack()[0][3]
 
-        if err_code != 0:
-            raise BetIsLost(err_msg)
-
         max_bet_id = 0
         coupon_data = {}
+
         # reg_id - мы знаем заранее - только при ручном выкупе как правило
         if self.reg_id:
             coupon_found = False
-            for bet_list in res.get('data').get('bet_list', []):
+            for bet_list in res.get('data').get('bet_list', {}):
                 cur_bet_id = bet_list.get('bet_id')
                 if cur_bet_id == self.reg_id:
                     coupon_found = True
@@ -735,7 +732,6 @@ class BetManager:
                     coupon_data = bet_list
             if not coupon_found:
                 err_str = 'coupon reg_id: ' + str(self.reg_id) + ', not found'
-                prnt(err_str)
                 raise BetIsLost(err_str)
 
         # Мы не знаем reg_id и берем последний по матчу
