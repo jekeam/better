@@ -14,7 +14,7 @@ ol_headers = {
 
 
 def get_xtoken_bet(payload):
-    secret_key = 'b2c59ba4-7702-4b12-bef5-0908391851d9'
+    secret_key = "b2c59ba4-7702-4b12-bef5-0908391851d9"
     sorted_values = [str(payload[key]) for key in sorted(payload.keys())]
     to_encode = ";".join(sorted_values + [secret_key])
     return {"X-TOKEN": md5(to_encode.encode()).hexdigest()}

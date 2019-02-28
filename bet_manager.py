@@ -93,6 +93,7 @@ class BetManager:
 
         try:
             bk_obj[self.bk].place_bet(obj)
+            # self.reg_id = 1300
             bk_obj[self.bk].sale_bet()
         except CouponBlocked as e:
             prnt(e)
@@ -588,7 +589,7 @@ class BetManager:
                 prnt(self.msg.format(self.my_name, 'rq: ' + str(payload) + ' ' + str(headers)), 'hide')
                 resp = requests.post(
                     ol_url_api.format(str(self.server_olimp), 'user/cashout'),
-                    headers=ol_headers,
+                    headers=headers,
                     data=payload,
                     verify=False,
                     timeout=self.timeout,
@@ -759,8 +760,8 @@ if __name__ == '__main__':
     bk_obj = {}
 
     OLIMP_USER = {'login': 'eva.yushkova.81@mail.ru', 'passw': 'qvF3BwrNcRcJtB6'}
-    wager_olimp = {'apid': '1182473933:47044376:1:3:-9999:1:0:0:1', 'factor': '1.06', 'sport_id': 1,
-                   'event': '46453134'}
+    wager_olimp = {'apid': '1181740951:47030887:1:3:-9999:2:0:0:1', 'factor': '1.06', 'sport_id': 1,
+                   'event': '47030887'}
     obj = {}
     obj['wager'] = wager_olimp
     obj['amount'] = 30
