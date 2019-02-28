@@ -14,13 +14,6 @@ fonbet_header = {
     'Connection': 'Keep-Alive',
     'Accept-Encoding': 'gzip'
 }
-base_payload = {
-    "appVersion": "5.1.3b",
-    "lang": "ru",
-    "rooted": "false",
-    "sdkVersion": 21,
-    "sysId": 4
-}
 
 # VICTORIES
 VICTS = [['П1', 921], ['Н', 922], ['П2', 923], ['П1Н', 924], ['12', 1571], ['П2Н', 925],

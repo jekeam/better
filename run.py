@@ -146,8 +146,11 @@ def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi
             prnts(e)
             raise ValueError(e)
         except Exception as e:
-            prnts('Exception: Олимп, ошибка при запросе матча ' + str(match_id_olimp) + ': ' +
-                  str(e) + ' ' + ps.get_cur_proxy())
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            err_str = 'Exception: Олимп, ошибка при запросе матча ' + str(match_id_olimp) + ': ' + \
+                  str(e) + ' ' + ps.get_cur_proxy() + '. ' + \
+                str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
+            prnt(err_str)
             ps.rep_cur_proxy(gen_proxi_olimp.next())
             time_resp = TIMEOUT_MATCH
 
@@ -185,8 +188,15 @@ def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_p
             prnts(e)
             raise ValueError('start_seeker_bets_fonbet:' + str(e))
         except Exception as e:
-            prnts('Exception: Фонбет, ошибка при запросе матча ' + str(match_id_fonbet) + ': ' +
-                  str(e) + ' ' + ps.get_cur_proxy())
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            err_str = 'Exception: Фонбет, ошибка при запросе матча ' + str(match_id_fonbet) + ': ' + \
+                  str(e) + ' ' + ps.get_cur_proxy() + '. ' + \
+                str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
+            prnt(err_str)
+            ps.rep_cur_proxy(gen_proxi_fonbet.next())
+            time_resp = TIMEOUT_MATCH
+            
+            prnts()
             ps.rep_cur_proxy(gen_proxi_fonbet.next())
             time_resp = TIMEOUT_MATCH
 
