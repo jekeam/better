@@ -168,13 +168,13 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out):
                 try:
                     sc1 = int(scs.split(':')[0])
                 except Exception as e:
-                    prnts('err util_fonbet sc1: ' + str(e))
+                    prnts('err util_fonbet sc1: ' + 'score=' + str(score) + ' ' + str(e))
                 try:
                     sc2 = int(scs.split(':')[1])
                 except Exception as e:
-                    prnts('err util_fonbet sc2: ' + str(e))
+                    prnts('err util_fonbet sc2: ' + 'score=' + str(score) + ' ' + str(e))
             except Exception as e:
-                prnts('err util_fonbet scs: ' + str(e))
+                prnts('err util_fonbet scs: ' + 'score=' + str(score) + ' ' + str(e))
 
             timer = event.get('timer')
             minute = event.get('timerSeconds', 0) / 60
