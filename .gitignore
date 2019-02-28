@@ -10,3 +10,7 @@ venv
 *.json
 *.session
 *.json_old
+*.zip
+*.R
+*.fonbet
+*.olimp
