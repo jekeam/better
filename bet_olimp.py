@@ -167,7 +167,7 @@ class OlimpBot:
         prnt('BET_OLIMP.PY: rs olimp: ' + str(resp.text), 'hide')
         
         
-        if resp.status_code == 504:
+        if resp.status_code in (504, 500):
             return self.place_bet(obj=obj)
         
         check_status_with_resp(resp, True)
