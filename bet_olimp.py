@@ -165,6 +165,11 @@ class OlimpBot:
             proxies=self.proxies
         )
         prnt('BET_OLIMP.PY: rs olimp: ' + str(resp.text), 'hide')
+        
+        
+        if resp.status_code == 504:
+            return self.place_bet(obj=obj)
+        
         check_status_with_resp(resp, True)
         res = resp.json()
         prnt('BET_OLIMP.PY: rs js olimp: ' + str(res), 'hide')
