@@ -3,7 +3,7 @@ from bet_fonbet import *
 from bet_olimp import *
 import datetime
 from fork_recheck import get_kof_olimp, get_kof_fonbet
-from utils import prnt, get_account_info, DEBUG, get_account_summ
+from utils import prnt, get_account_info, DEBUG, get_account_summ, get_param
 # from client import run_client
 import threading
 from multiprocessing import Manager, Process, Pipe
@@ -130,11 +130,11 @@ def check_fork(key, L, k1, k2, live_fork, bk1_score, bk2_score, minute, time_bre
             + str(minute) + ' минута матча \n'
 
     # Вилка живет достаточно
-    long_livers = 10
-    if live_fork < long_livers:
+    fork_life_time = get_param('fork_life_time')
+    if live_fork < fork_life_time:
         fork_exclude_text = \
             fork_exclude_text + 'Вилка ' + str(round((1 - L) * 100, 2)) + '% исключена т.к. живет меньше ' \
-            + str(long_livers) + ' сек. \n'
+            + str(fork_life_time) + ' сек. \n'
 
     fork_exclude_text = fork_exclude_text + check_l(L)
 
@@ -159,7 +159,7 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max, vect1, vect2, s
     amount_olimp, amount_fonbet = get_sum_bets(wager_olimp['factor'], wager_fonbet['value'], total_bet, False)
 
     if __name__ == '__main__':
-        wait_sec = 6  # max(0, (3.5 - deff_max))
+        wait_sec = 0  # max(0, (3.5 - deff_max))
         prnt('Wait sec: ' + str(wait_sec))
         prnt('Real wait sec: ' + str(wait_sec + deff_max))
         time.sleep(wait_sec)
@@ -416,6 +416,7 @@ if __name__ == '__main__':
     prnt('bal2: ' + str(bal2) + ' руб.')
     prnt('total bet: ' + str(total_bet) + ' руб.')
     prnt('balance line: ' + str(balance_line))
+    prnt('fork life time: ' + str(get_param('fork_life_time')))
 
     server_forks = dict()
     success = []

@@ -160,6 +160,11 @@ def get_account_info(bk, param):
     with open(os.path.join(package_dir, "account.json")) as file:
         json = load(file)
     return json[bk].get(param, None)
+    
+def get_param(param):
+    with open(os.path.join(package_dir, "account.json")) as file:
+        json = load(file)
+    return json.get(param)
 
 
 def get_account_summ():
