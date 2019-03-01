@@ -49,7 +49,7 @@ class OlimpBot:
         self.wager = None
         self.amount = None
         self.sleep = 11
-        self.timeout = 50
+        self.timeout = 20
 
         with open(os.path.join(package_dir, "proxies.json")) as file:
             proxies = load(file)
@@ -75,7 +75,7 @@ class OlimpBot:
             headers = base_headers.copy()
             headers.update(get_xtoken_bet(payload))
             headers.update({'X-XERPC': '1'})
-            resp = requests.post(
+            resp = requests_retry_session().post(
                 req_url,
                 headers=headers,
                 data=payload,
@@ -157,7 +157,7 @@ class OlimpBot:
         prnt('BET_OLIMP.PY: send bet to bk olimp, time: ' + str(datetime.datetime.now()))
         prnt('BET_OLIMP.PY: rq olimp: ' + str(payload), 'hide')
         try:
-            resp = requests.post(
+            resp = requests_retry_session().post(
                 url,
                 headers=headers,
                 data=payload,
@@ -252,7 +252,7 @@ class OlimpBot:
         headers.update(get_xtoken_bet(payload))
         headers.update({'X-XERPC': '1'})
         prnt('BET_OLIMP.PY - get_cur_bet_id rq: ' + str(payload), 'hide')
-        resp = requests.post(
+        resp = requests_retry_session().post(
             req_url,
             headers=headers,
             data=payload,
@@ -329,7 +329,7 @@ class OlimpBot:
         headers.update(get_xtoken_bet(payload))
         headers.update({'X-XERPC': '1'})
         prnt('BET_OLIMP.PY - sale_bet rq hist: ' + str(payload), 'hide')
-        resp = requests.post(
+        resp = requests_retry_session().post(
             req_url,
             headers=headers,
             data=payload,
@@ -384,7 +384,7 @@ class OlimpBot:
             headers.update(get_xtoken_bet(payload))
             headers.update({'X-XERPC': '1'})
             prnt('BET_OLIMP: sale_bet rq: ' + str(payload), 'hide')
-            resp = requests.post(
+            resp = requests_retry_session().post(
                 req_url,
                 headers=headers,
                 data=payload,

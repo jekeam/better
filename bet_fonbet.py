@@ -58,7 +58,7 @@ class FonbetBot:
         self.sleep = 4
         self.cnt_test = 0
         self.add_sleep = 0
-        self.timeout = 50
+        self.timeout = 15
         self.fonbet_bet_type = None
 
         with open(os.path.join(package_dir, "proxies.json")) as file:
@@ -193,7 +193,7 @@ class FonbetBot:
         if url == '':
             url = 'www.fonbet.com'
         url = "https://" + url + "/urls.json?{}".format(random())
-        resp = requests.get(
+        resp = requests_retry_session().get(
             url,
             headers=browser_headers,
             verify=False,
@@ -236,7 +236,7 @@ class FonbetBot:
             sign = hmac.new(key=self.account['password'].encode(), msg=msg.encode(), digestmod=sha512).hexdigest()
             payload["sign"] = sign
             data = get_dumped_payload(payload)
-            resp = requests.post(
+            resp = requests_retry_session().post(
                 self.common_url.format("login"),
                 headers=self.fonbet_headers,
                 data=data,
@@ -296,7 +296,7 @@ class FonbetBot:
         payload['clientId'] = self.base_payload["clientId"]
 
         prnt('BET_FONBET.PY: check bet to bk fonbet, time: ' + str(datetime.datetime.now()))
-        resp = requests.post(
+        resp = requests_retry_session().post(
             url,
             headers=headers,
             json=payload,
@@ -331,7 +331,7 @@ class FonbetBot:
         payload_req['clientId'] = self.base_payload["clientId"]
         payload_req['client']['id'] = self.base_payload["clientId"]
 
-        resp = requests.post(url, headers=headers, json=payload_req, verify=False, timeout=self.timeout)
+        resp = requests_retry_session().post(url, headers=headers, json=payload_req, verify=False, timeout=self.timeout)
         check_status_with_resp(resp)
         res = resp.json()
         if "requestId" not in res:
@@ -389,7 +389,7 @@ class FonbetBot:
 
         prnt('BET_FONBET.PY: send bet to bk fonbet, time: ' + str(datetime.datetime.now()))
         try:
-            resp = requests.post(
+            resp = requests_retry_session().post(
                 url,
                 headers=headers,
                 json=payload,
@@ -445,7 +445,7 @@ class FonbetBot:
         '''
 
         headers = self.fonbet_headers
-        resp = requests.post(
+        resp = requests_retry_session().post(
             url,
             headers=headers,
             json=payload,
@@ -582,7 +582,7 @@ class FonbetBot:
             payload['clientId'] = self.base_payload["clientId"]
             payload['fsid'] = self.payload['fsid']
             prnt('BET_FONBET.PY - sale_bet rq 1: ' + str(payload), 'hide')
-            resp = requests.post(
+            resp = requests_retry_session().post(
                 url,
                 headers=headers,
                 json=payload,
@@ -638,7 +638,7 @@ class FonbetBot:
             payload['clientId'] = self.base_payload["clientId"]
             payload['fsid'] = self.payload['fsid']
             prnt('BET_FONBET.PY - sale_bet rq 2: ' + str(payload), 'hide')
-            resp = requests.post(
+            resp = requests_retry_session().post(
                 url,
                 headers=headers,
                 json=payload,
@@ -665,7 +665,7 @@ class FonbetBot:
             payload['clientId'] = self.base_payload["clientId"]
             payload['fsid'] = self.payload['fsid']
             prnt('BET_FONBET.PY - sale_bet rq 3: ' + str(payload), 'hide')
-            resp = requests.post(
+            resp = requests_retry_session().post(
                 url,
                 headers=headers,
                 json=payload,
@@ -703,7 +703,7 @@ class FonbetBot:
         payload['clientId'] = self.base_payload["clientId"]
         payload['fsid'] = self.payload['fsid']
         prnt('BET_FONBET.PY - _check_sell_result rq: ' + str(payload), 'hide')
-        resp = requests.post(
+        resp = requests_retry_session().post(
             url,
             headers=headers,
             json=payload,
@@ -762,7 +762,7 @@ class FonbetBot:
         payload['clientId'] = self.base_payload["clientId"]
         payload['fsid'] = self.payload['fsid']
 
-        resp = requests.post(
+        resp = requests_retry_session().post(
             url,
             headers=headers,
             json=payload,
@@ -794,7 +794,7 @@ class FonbetBot:
         sign = hmac.new(key=self.account['password'].encode(), msg=msg.encode(), digestmod=sha512).hexdigest()
         payload["sign"] = sign
         data = get_dumped_payload(payload)
-        resp = requests.post(
+        resp = requests_retry_session().post(
             url,
             headers=self.fonbet_headers,
             data=data,
@@ -817,7 +817,7 @@ def get_new_bets_fonbet(match_id, proxies, time_out):
     key_id = str(match_id)
     bets_fonbet = {}
     try:
-        resp = requests.get(
+        resp = requests_retry_session().get(
             url_fonbet_match + str(match_id) + "&lang=en",
             headers=fonbet_header,
             timeout=time_out,
