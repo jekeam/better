@@ -55,7 +55,6 @@ def get_account_summ():
         json = load(file)
     return json.get('summ', None)
 
-
 def rq_log(vstr: str):
     Outfile = open('rq_log/log.txt', "a+", encoding='utf-8')
     Outfile.write(vstr + '\n')
