@@ -49,10 +49,10 @@ def bet_fonbet_cl(obj):
         obj['fonbet_err'] = 'ok'
         obj['olimp_err'] = 'ok'
     except Exception as e:
-        obj['fonbet'] = fonbet
         obj['fonbet_err'] = str(e)
     finally:
-        obj['fonbet'] = fonbet
+        if fonbet:
+            obj['fonbet'] = fonbet
 
 
 def bet_olimp_cl(obj):
@@ -68,7 +68,8 @@ def bet_olimp_cl(obj):
     except Exception as e:
         obj['olimp_err'] = str(e)
     finally:
-        obj['olimp'] = olimp
+        if olimp:
+            obj['olimp'] = olimp
 
 
 def check_l(L):
@@ -156,7 +157,10 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max, vect1, vect2, s
     L = ((1 / float(wager_olimp['factor'])) + (1 / float(wager_fonbet['value'])))
     cur_proc = round((1 - L) * 100, 2)
 
-    amount_olimp, amount_fonbet = get_sum_bets(wager_olimp['factor'], wager_fonbet['value'], total_bet, False)
+    try:
+        amount_olimp, amount_fonbet = get_sum_bets(wager_olimp['factor'], wager_fonbet['value'], total_bet, False)
+    except Exception as e:
+        prnt(e)
 
     if __name__ == '__main__':
         wait_sec = 0  # max(0, (3.5 - deff_max))
