@@ -6,6 +6,7 @@ from math import floor
 import time
 from retry_requests import requests_retry_session
 from exceptions import FonbetBetError
+from util_olimp import get_xtoken_bet
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -29,10 +30,7 @@ base_headers = {
 }
 
 
-def get_xtoken_bet(payload):
-    sorted_values = [str(payload[key]) for key in sorted(payload.keys())]
-    to_encode = ";".join(sorted_values + [secret_key])
-    return {"X-TOKEN": md5(to_encode.encode()).hexdigest()}
+
 
 
 class OlimpBot:
@@ -51,7 +49,7 @@ class OlimpBot:
         self.wager = None
         self.amount = None
         self.sleep = 11
-        self.timeout = 50
+        self.timeout = 20
 
         with open(os.path.join(package_dir, "proxies.json")) as file:
             proxies = load(file)
@@ -77,7 +75,7 @@ class OlimpBot:
             headers = base_headers.copy()
             headers.update(get_xtoken_bet(payload))
             headers.update({'X-XERPC': '1'})
-            resp = requests.post(
+            resp = requests_retry_session().post(
                 req_url,
                 headers=headers,
                 data=payload,
@@ -100,6 +98,7 @@ class OlimpBot:
                           ', err: ' + str(e) + \
                           ', resp: ' + str(resp.text)
                 prnt(str_err)
+                time.sleep(3)
                 raise ValueError(str_err)
             prnt(e)
             return self.sign_in()
@@ -111,12 +110,13 @@ class OlimpBot:
         else:
             return self.balance
 
-    def place_bet(self, amount: int = None, wager=None, obj={}) -> None:
+    def place_bet(self, obj={}) -> None:
         """
         :param amount: amount of money to be placed (RUB)
         :param wager: defines on which wager bet is to be placed (could be either OlimpWager or OlimpCondWager)
         """
-
+        wager = obj.get('wager_olimp')
+        amount = obj.get('amount_olimp')
         if self.wager is None and wager:
             self.wager = wager
         if self.amount is None and amount:
@@ -156,15 +156,24 @@ class OlimpBot:
 
         prnt('BET_OLIMP.PY: send bet to bk olimp, time: ' + str(datetime.datetime.now()))
         prnt('BET_OLIMP.PY: rq olimp: ' + str(payload), 'hide')
-        resp = requests.post(
-            url,
-            headers=headers,
-            data=payload,
-            verify=False,
-            timeout=self.timeout,
-            proxies=self.proxies
-        )
+        try:
+            resp = requests_retry_session().post(
+                url,
+                headers=headers,
+                data=payload,
+                verify=False,
+                timeout=15,
+                proxies=self.proxies
+            )
+        except Exception as e:
+            prnt('BET_OLIMP.PY: rs timeout: ' + str(e))
+            self.place_bet(obj=obj)
+            
         prnt('BET_OLIMP.PY: rs olimp: ' + str(resp.text), 'hide')
+        
+        if resp.status_code in (504, 500):
+            return self.place_bet(obj=obj)
+        
         check_status_with_resp(resp, True)
         res = resp.json()
         prnt('BET_OLIMP.PY: rs js olimp: ' + str(res), 'hide')
@@ -243,7 +252,7 @@ class OlimpBot:
         headers.update(get_xtoken_bet(payload))
         headers.update({'X-XERPC': '1'})
         prnt('BET_OLIMP.PY - get_cur_bet_id rq: ' + str(payload), 'hide')
-        resp = requests.post(
+        resp = requests_retry_session().post(
             req_url,
             headers=headers,
             data=payload,
@@ -320,7 +329,7 @@ class OlimpBot:
         headers.update(get_xtoken_bet(payload))
         headers.update({'X-XERPC': '1'})
         prnt('BET_OLIMP.PY - sale_bet rq hist: ' + str(payload), 'hide')
-        resp = requests.post(
+        resp = requests_retry_session().post(
             req_url,
             headers=headers,
             data=payload,
@@ -375,7 +384,7 @@ class OlimpBot:
             headers.update(get_xtoken_bet(payload))
             headers.update({'X-XERPC': '1'})
             prnt('BET_OLIMP: sale_bet rq: ' + str(payload), 'hide')
-            resp = requests.post(
+            resp = requests_retry_session().post(
                 req_url,
                 headers=headers,
                 data=payload,
@@ -419,11 +428,13 @@ class OlimpBot:
 
 if __name__ == '__main__':
     OLIMP_USER = {"login": "eva.yushkova.81@mail.ru", "passw": "qvF3BwrNcRcJtB6"}
-    # X2
     wager_olimp = {'apid': '1162886444:46453134:1:3:-9999:2:0:0:1', 'factor': '1.06', 'sport_id': 1,
                    'event': '46453134'}
+    obj = {}
+    obj['wager_olimp'] = wager_olimp
+    obj['amount_olimp'] = 30
 
     olimp = OlimpBot(OLIMP_USER)
     olimp.sign_in()
-    olimp.place_bet(30, wager_olimp)
+    olimp.place_bet(obj)
     olimp.sale_bet()

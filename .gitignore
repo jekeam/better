@@ -6,8 +6,11 @@ venv
 *.csv
 *.proxy
 *.csv#
+*.csv
 *.json
 *.session
-test.py
 *.json_old
-test.py
+*.zip
+*.R
+*.fonbet
+*.olimp

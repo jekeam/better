@@ -6,7 +6,22 @@ from proxy_worker import del_proxy
 import re
 import time
 from exceptions import OlimpMatchСompleted, TimeOut
-from utils import prnts
+from utils import prnts, get_vector
+
+url_autorize = "https://{}.olimp-proxy.ru/api/{}"
+payload = {"lang_id": "0", "platforma": "ANDROID1"}
+head = {
+    'Content-Type': 'application/x-www-form-urlencoded',
+    'Connection': 'Keep-Alive',
+    'Accept-Encoding': 'gzip',
+    'User-Agent': 'okhttp/3.9.1'
+}
+
+def get_xtoken_bet(payload):
+    sorted_values = [str(payload[key]) for key in sorted(payload.keys())]
+    to_encode = ";".join(sorted_values + [olimp_secret_key])
+    return {"X-TOKEN": md5(to_encode.encode()).hexdigest()}
+
 
 olimp_url = 'http://12.olimp-proxy.ru:10600'
 olimp_url_https = 'https://12.olimp-proxy.ru'
@@ -62,9 +77,9 @@ abbreviations = {
 }
 
 
-def olimp_get_xtoken(payload, secret_key):
+def olimp_get_xtoken(payload, olimp_secret_key):
     sorted_values = [str(payload[key]) for key in sorted(payload.keys())]
-    to_encode = ";".join(sorted_values + [secret_key])
+    to_encode = ";".join(sorted_values + [olimp_secret_key])
     return {"X-TOKEN": md5(to_encode.encode()).hexdigest()}
 
 
@@ -144,9 +159,9 @@ def get_matches_olimp(proxies, proxy, time_out):
         raise ValueError(err_str)
 
 
-def get_xtoken(payload, secret_key):
+def get_xtoken(payload, olimp_secret_key):
     sorted_values = [str(payload[key]) for key in sorted(payload.keys())]
-    to_encode = ";".join(sorted_values + [secret_key])
+    to_encode = ";".join(sorted_values + [olimp_secret_key])
 
     X_TOKEN = md5(to_encode.encode()).hexdigest()
     return {"X-TOKEN": X_TOKEN}
@@ -296,10 +311,20 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out):
             sport_name = resp.get('cn')
             name = resp.get('n')
             score = ''
+            sc1 = 0
+            sc2 = 0
             try:
                 score = resp.get('sc', '0:0').split(' ')[0]
+                try:
+                    sc1 = int(score.split(':')[0])
+                except Exception as e:
+                    prnts('err util_olimp sc1: ' + str(e))
+                try:
+                    sc2 = int(score.split(':')[1])
+                except Exception as e:
+                    prnts('err util_olimp sc2: ' + str(e))
             except:
-                prnts('util_olimp: error split: ' + str(resp.get('sc', '0:0')))
+                prnts('err util_olimp error split: ' + str(resp.get('sc', '0:0')))
 
             try:
                 bets_olimp[key_id].update({
@@ -403,6 +428,7 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out):
                                                 'factor': d.get('v', ''),  # d.get('p', ''),
                                                 'sport_id': skId,
                                                 'event': match_id,
+                                                'vector': get_vector(coef, sc1, sc2),
                                                 'hist': {
                                                     'time_change': time_change,
                                                     'avg_change': avg_change,
