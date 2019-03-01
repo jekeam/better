@@ -11,3 +11,6 @@ venv
 *.session
 *.json_old
 *.zip
+*.R
+*.fonbet
+*.olimp
