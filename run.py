@@ -139,10 +139,10 @@ def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi
         except OlimpMatchСompleted as e:
             cnt = 0
             for pair_match in pair_mathes:
-                if pair_match[0] == str(match_id_olimp):
+                if str(pair_match[0]) == str(match_id_olimp):
+                    prnts('pair mathes remove: ' + str(cnt))
                     pair_mathes.remove(pair_mathes[cnt])
                 cnt += 1
-            print(e)
             prnts(e)
             raise ValueError(e)
         except Exception as e:
@@ -180,6 +180,7 @@ def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_p
             cnt = 0
             for pair_match in pair_mathes:
                 if pair_match[1] == str(match_id_fonbet):
+                    prnts('pair mathes remove: ' + str(cnt))
                     pair_mathes.remove(pair_mathes[cnt])
                 cnt += 1
             prnts(e)
