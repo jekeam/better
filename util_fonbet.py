@@ -86,9 +86,19 @@ def get_matches_fonbet(proxies, proxy, time_out):
         raise ValueError(err_str)
 
 
-def get_match_fonbet(match_id, proxi_list, proxy, time_out):
+def get_match_fonbet(match_id, proxi_list, proxy, time_out, pair_mathes):
     global url_fonbet_match
     global fonbet_header
+
+    match_exists = False
+    cnt = 0
+    for pair_match in pair_mathes:
+        if str(pair_match[1]) == str(match_id):
+            match_exists = True
+        cnt += 1
+    if match_exists is False:
+        err_str = 'Фонбет: матч' + str(match_id) + 'не найден в спике активных, поток завершен.'
+        raise FonbetMatchСompleted(err_str)
 
     try:
         proxies = {'http': proxy}
@@ -143,11 +153,12 @@ def get_match_fonbet(match_id, proxi_list, proxy, time_out):
         raise ValueError(err_str)
 
 
-def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out):
+def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair_mathes):
     global VICTS, TTO, TTU, TT1O, TT1U, TT2O, TT2U
+
     key_id = str(match_id)
     try:
-        resp, time_resp = get_match_fonbet(match_id, proxies_fonbet, proxy, time_out)
+        resp, time_resp = get_match_fonbet(match_id, proxies_fonbet, proxy, time_out, pair_mathes)
         # Очистим дстарые данные
         # if bets_fonbet.get(key_id):
         # bets_fonbet[key_id] = dict()

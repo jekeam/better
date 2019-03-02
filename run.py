@@ -129,7 +129,7 @@ def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi
     while True:
         try:
             time_resp = get_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp,
-                                       ps.get_next_proxy(), TIMEOUT_MATCH)
+                                       ps.get_next_proxy(), TIMEOUT_MATCH, pair_mathes)
             stat_req_ol.append(round(time_resp, 2))
         except TimeOut as e:
             ps.rep_cur_proxy(gen_proxi_olimp.next())
@@ -174,7 +174,7 @@ def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_p
     while True:
         try:
             time_resp = get_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet,
-                                        ps.get_next_proxy(), TIMEOUT_MATCH)
+                                        ps.get_next_proxy(), TIMEOUT_MATCH, pair_mathes)
             stat_req_fb.append(round(time_resp, 2))
         except FonbetMatchСompleted as e:
             cnt = 0
