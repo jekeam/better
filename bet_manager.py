@@ -13,8 +13,9 @@ from threading import Thread
 import hmac
 from hashlib import sha512
 from meta_ol import ol_url_api, ol_payload, ol_headers, get_xtoken_bet
-from meta_fb import fb_payload, fb_payload_bet, get_random_str, get_dumped_payload, get_urls, get_common_url, \
-    fb_headers, get_new_bets_fonbet, payload_req
+from meta_fb import fb_payload, fb_payload_bet, get_random_str, get_dumped_payload, get_urls, get_common_url
+from meta_fb import fb_headers, get_new_bets_fonbet, payload_req
+import copy
 
 prnt('DEBUG: ' + str(DEBUG))
 
@@ -90,7 +91,8 @@ class BetManager:
         try:
             bk_obj[self.bk].place_bet(obj)
             # self.reg_id = 1300
-            bk_obj[self.bk].sale_bet()
+            # self.reg_id = 14652959641
+            # bk_obj[self.bk].sale_bet()
         except CouponBlocked as e:
             prnt(e)
         except BetIsLost as e:
@@ -161,13 +163,13 @@ class BetManager:
 
         try:
             if self.bk == 'olimp':
-                payload = ol_payload.copy()
+                payload = copy.deepcopy(ol_payload)
                 payload.update({
                     'login': self.account['login'],
                     'password': self.account['password']
                 })
 
-                headers = ol_headers.copy()
+                headers = copy.deepcopy(ol_headers)
                 headers.update(get_xtoken_bet(payload))
                 headers.update({'X-XERPC': '1'})
 
@@ -194,7 +196,7 @@ class BetManager:
                 fb_payload['platform'] = 'mobile_android'
                 fb_payload['clientId'] = self.account['login']
 
-                payload = fb_payload
+                payload = copy.deepcopy(fb_payload)
                 payload['random'] = get_random_str()
                 payload['sign'] = 'secret password'
 
@@ -269,9 +271,8 @@ class BetManager:
         self.get_opposite_stat(obj)
 
         url, timeout = get_common_url(self.server_fb)
-
-        payload = fb_payload_bet.copy()
-        headers = fb_headers.copy()
+        payload = copy.deepcopy(fb_payload_bet)
+        headers = copy.deepcopy(fb_headers)
 
         if self.wager.get('param'):
             payload['coupon']['bets'][0]['param'] = int(self.wager['param'])
@@ -287,7 +288,6 @@ class BetManager:
 
         payload['coupon'].pop('flexBet')
         payload['coupon'].pop('flexParam')
-        payload['rooted'] = False
 
         prnt(self.msg.format(sys._getframe().f_code.co_name, 'rq: ' + str(payload) + ' ' + str(headers)), 'hide')
         resp = requests.post(
@@ -306,10 +306,7 @@ class BetManager:
         self.check_responce(msg_str)
 
         if 'min' not in res:
-            err_str = self.msg_err.format(sys._getframe().f_code.co_name,
-
-                                          'min sum not found'
-                                          )
+            err_str = self.msg_err.format(sys._getframe().f_code.co_name, 'min sum not found')
             raise BetIsLost(err_str)
 
         min_amount, max_amount = res['min'] // 100, res['max'] // 100
@@ -327,7 +324,7 @@ class BetManager:
     def check_result(self, obj) -> None:
         self.get_opposite_stat(obj)
 
-        payload = self.payload
+        payload = copy.deepcopy(self.payload)
 
         url, timeout = get_common_url(self.server_fb)
 
@@ -336,7 +333,7 @@ class BetManager:
         except:
             pass
 
-        headers = fb_headers.copy()
+        headers = copy.deepcopy(fb_headers)
 
         prnt(self.msg.format(sys._getframe().f_code.co_name, 'rs: ' + str(payload)), 'hide')
         resp = requests.post(
@@ -384,11 +381,9 @@ class BetManager:
                     if str(new_wager.get('param', '')) == str(self.wager.get('param', '')) and \
                             int(self.wager.get('factor', 0)) != int(new_wager.get('factor', 0)):
 
-                        prnt(
-                            self.msg.format(sys._getframe().f_code.co_name,
-
-                                            'Изменилась ИД ставки: old: ' + str(self.wager) + ', new: ' + str(new_wager)
-                                            )
+                        prnt(self.msg.format(
+                            sys._getframe().f_code.co_name,
+                            'Изменилась ИД ставки: old: ' + str(self.wager) + ', new: ' + str(new_wager))
                         )
                         self.wager.update(new_wager)
                         return self.place_bet(obj=obj)
@@ -396,20 +391,13 @@ class BetManager:
                     elif str(new_wager.get('param', '')) != str(self.wager.get('param', '')) and \
                             int(self.wager.get('factor', 0)) == int(new_wager.get('factor', 0)):
 
-                        prnt(
-                            self.msg_err.format(sys._getframe().f_code.co_name,
-
-                                                'Изменилась тотал ставки, param не совпадает: ' + \
-                                                'new_wager: ' + str(new_wager) + ', old_wager: ' + str(self.wager)
-                                                )
-                        )
+                        prnt(self.msg_err.format(sys._getframe().f_code.co_name,
+                                                 'Изменилась тотал ставки, param не совпадает: ' + \
+                                                 'new_wager: ' + str(new_wager) + ', old_wager: ' + str(self.wager)))
 
                         if obj.get('fonbet_bet_type'):
-
                             self.msg.format(sys._getframe().f_code.co_name,
-
-                                            'поиск нового id тотала: ' + obj.get('fonbet_bet_type')
-                                            )
+                                            'поиск нового id тотала: ' + obj.get('fonbet_bet_type'))
                             match_id = self.wager.get('event')
                             new_wager = get_new_bets_fonbet(match_id, self.proxies, self.timeout)
                             new_wager = new_wager.get(str(match_id), {}).get('kofs', {}).get(obj.get('fonbet_bet_type'))
@@ -455,9 +443,9 @@ class BetManager:
 
         url, self.timeout = get_common_url(self.server_fb)
 
-        headers = fb_headers.copy()
+        headers = copy.deepcopy(fb_headers)
 
-        payload = payload_req.copy()
+        payload = copy.deepcopy(payload_req)
         payload['fsid'] = self.payload['fsid']
         payload['clientId'] = self.account['login']
         payload['client']['id'] = self.account['login']
@@ -496,16 +484,15 @@ class BetManager:
 
         cur_bal = self.session.get('balance')
         if cur_bal and cur_bal < self.sum_bet:
-            err_str = self.msg_err.format(sys._getframe().f_code.co_name,
-
-                                          self.bk + ' balance ({}) < sum_bet({})'.format(str(cur_bal),
-                                                                                         str(self.sum_bet))
-                                          )
+            err_str = self.msg_err.format(
+                sys._getframe().f_code.co_name,
+                self.bk + ' balance ({}) < sum_bet({})'.format(str(cur_bal), str(self.sum_bet))
+            )
             raise NoMoney(err_str)
 
         if self.bk == 'olimp':
 
-            payload = ol_payload.copy()
+            payload = copy.deepcopy(ol_payload)
 
             payload.update({
                 'coefs_ids': '[["{apid}",{factor},1]]'.format(
@@ -523,7 +510,7 @@ class BetManager:
             # Принимать с измененными тоталами/форами:
             # any_handicap: 1 - Нет, 2 - Да
 
-            headers = ol_headers.copy()
+            headers = copy.deepcopy(ol_headers)
             headers.update(get_xtoken_bet(payload))
 
             prnt(self.msg.format(sys._getframe().f_code.co_name, 'rq: ' + str(payload) + ' ' + str(headers)), 'hide')
@@ -565,33 +552,32 @@ class BetManager:
 
             url, self.timeout = get_common_url(self.server_fb)
 
-            payload = fb_payload_bet.copy()
-            headers = fb_headers.copy()
+            payload = copy.deepcopy(fb_payload_bet)
+            headers = copy.deepcopy(fb_headers)
 
             payload['client'] = {'id': self.account['login']}
+            payload['coupon']['amount'] = self.sum_bet
 
             if self.wager.get('param'):
                 payload['coupon']['bets'][0]['param'] = int(self.wager['param'])
-
             payload['coupon']['bets'][0]['score'] = self.wager['score']
             payload['coupon']['bets'][0]['value'] = float(self.wager['value'])
             payload['coupon']['bets'][0]['event'] = int(self.wager['event'])
             payload['coupon']['bets'][0]['factor'] = int(self.wager['factor'])
             payload['fsid'] = self.session['session']
             payload['clientId'] = self.account['login']
-            payload['coupon']['amount'] = self.sum_bet
-            self.payload = payload
+
+            self.payload = copy.deepcopy(payload)
 
             self.check_max_bet(obj)
             self.get_request_id()
-
-            payload['requestId'] = self.reqId
+            self.payload['requestId'] = self.reqId
 
             prnt(self.msg.format(sys._getframe().f_code.co_name, 'rq: ' + str(payload) + ' ' + str(headers)), 'hide')
             resp = requests.post(
                 url.format('coupon/register'),
                 headers=headers,
-                json=payload,
+                json=self.payload,
                 verify=False,
                 timeout=self.timeout,
                 proxies=self.proxies
@@ -627,10 +613,10 @@ class BetManager:
                 payload['bet_id'] = self.reg_id
                 payload['amount'] = self.sum_sell
                 payload['session'] = self.session['session']
-                payload.update(ol_payload.copy())
+                payload.update(copy.deepcopy(ol_payload))
                 payload.pop('time_shift')
 
-                headers = ol_headers.copy()
+                headers = copy.deepcopy(ol_headers)
                 headers.update(get_xtoken_bet(payload))
                 headers.update({'X-XERPC': '1'})
 
@@ -738,12 +724,12 @@ class BetManager:
 
         req_url = ol_url_api.format(str(self.server_olimp), 'user/history')
 
-        payload = ol_payload.copy()
+        payload = copy.deepcopy(ol_payload)
         payload['filter'] = filter  # только не расчитанные
         payload['offset'] = offset
         payload['session'] = self.session['session']
 
-        headers = ol_headers.copy()
+        headers = copy.deepcopy(ol_headers)
         headers.update(get_xtoken_bet(payload))
         headers.update({'X-XERPC': '1'})
 
@@ -808,11 +794,11 @@ if __name__ == '__main__':
     #                'event': '47030887'}
 
     FONBET_USER = {"login": 5447708, "password": "tStseFuY"}
-    wager_fonbet = {'event': '13533961', 'factor': '924', 'param': '', 'score': '0:0', 'value': '1.11'}
+    wager_fonbet = {'event': '13532044', 'factor': '924', 'param': '', 'score': '0:0', 'value': '1.11'}
 
     obj = {}
     obj['wager'] = wager_fonbet  # wager_olimp
-    obj['amount'] = 35
+    obj['amount'] = 45
 
     # bk1 = Thread(target=BetManager, args=(bk_obj, obj, 'olimp', 'fonbet'))
     bk2 = Thread(target=BetManager, args=(bk_obj, obj, 'fonbet', 'olimp'))
