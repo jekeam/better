@@ -19,7 +19,7 @@ head = {
 
 def get_xtoken_bet(payload):
     sorted_values = [str(payload[key]) for key in sorted(payload.keys())]
-    to_encode = ";".join(sorted_values + [secret_key])
+    to_encode = ";".join(sorted_values + [olimp_secret_key])
     return {"X-TOKEN": md5(to_encode.encode()).hexdigest()}
 
 
@@ -77,9 +77,9 @@ abbreviations = {
 }
 
 
-def olimp_get_xtoken(payload, secret_key):
+def olimp_get_xtoken(payload, olimp_secret_key):
     sorted_values = [str(payload[key]) for key in sorted(payload.keys())]
-    to_encode = ";".join(sorted_values + [secret_key])
+    to_encode = ";".join(sorted_values + [olimp_secret_key])
     return {"X-TOKEN": md5(to_encode.encode()).hexdigest()}
 
 
@@ -159,9 +159,9 @@ def get_matches_olimp(proxies, proxy, time_out):
         raise ValueError(err_str)
 
 
-def get_xtoken(payload, secret_key):
+def get_xtoken(payload, olimp_secret_key):
     sorted_values = [str(payload[key]) for key in sorted(payload.keys())]
-    to_encode = ";".join(sorted_values + [secret_key])
+    to_encode = ";".join(sorted_values + [olimp_secret_key])
 
     X_TOKEN = md5(to_encode.encode()).hexdigest()
     return {"X-TOKEN": X_TOKEN}

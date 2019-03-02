@@ -20,7 +20,7 @@ url_test = "http://httpbin.org/delay/3"
 
 base_payload = {"time_shift": 0, "lang_id": "0", "platforma": "ANDROID1"}
 
-secret_key = "b2c59ba4-7702-4b12-bef5-0908391851d9"
+olimp_secret_key = "b2c59ba4-7702-4b12-bef5-0908391851d9"
 
 base_headers = {
     'Accept-Encoding': 'gzip',

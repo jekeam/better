@@ -57,6 +57,21 @@ fb_payload_bet = {
     "clientId": 0
 }
 
+payload_req = {
+    "client": {"id": 0},
+    "appVersion": "5.1.3b",
+    "carrier": "MegaFon",
+    "deviceManufacturer": "LENOVO",
+    "deviceModel": "Lenovo A5000",
+    "fsid": "",
+    "lang": "ru",
+    "platform": "mobile_android",
+    "rooted": "false",
+    "sdkVersion": 21,
+    "sysId": 4,
+    "clientId": 0
+}
+
 def get_random_str():
     result = ''
     alph_num = '0123456789'

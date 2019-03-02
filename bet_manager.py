@@ -14,7 +14,7 @@ import hmac
 from hashlib import sha512
 from meta_ol import ol_url_api, ol_payload, ol_headers, get_xtoken_bet
 from meta_fb import fb_payload, fb_payload_bet, get_random_str, get_dumped_payload, get_urls, get_common_url, \
-    fb_headers, get_new_bets_fonbet
+    fb_headers, get_new_bets_fonbet, payload_req
 
 prnt('DEBUG: ' + str(DEBUG))
 
@@ -33,13 +33,12 @@ package_dir = path.dirname(path.abspath(__file__))
 class BetManager:
 
     def __init__(self, bk_obj: dict, obj: dict, bk1: str, bk2: str) -> None:
-        self.my_name = inspect.stack()[0][3]
 
         self.bk = bk1
         self.bk_opposite = bk2
         self.wager = {}
         self.account = self.get_account_info()
-        self.my_name = inspect.stack()[0][3]
+
         self.timeout = 50
         self.match_id = None
         self.reg_id = None
@@ -55,13 +54,13 @@ class BetManager:
         self.sleep_add = 0
         self.bet_type = None
         self.proxies = self.get_proxy()
-        self.my_name = inspect.stack()[0][3]
-        self.server_olimp = 12
+
+        self.server_olimp = 10
         self.server_fb = {}
-        self.msg_err = self.bk + '. {}, err: {}'
-        self.msg = self.bk + '. {}, msg: {}'
+        self.msg_err = self.bk + '. err: {}'
+        self.msg = self.bk + '. msg: {}'
         self.mirror = self.get_account_info().get('mirror')
-        self.my_name = inspect.stack()[0][3]
+
         self.session_file = 'session.' + self.bk
         self.session = {}
 
@@ -75,17 +74,16 @@ class BetManager:
             err_msg = 'mirror not defined: {}'.format(self.mirror)
 
         if err_msg != '':
-            err_str = self.msg_err.format(self.my_name, err_msg)
+            err_str = self.msg_err.format(err_msg)
             prnt(err_str)
             raise ValueError(err_str)
 
         bk_obj[self.bk] = self
 
         self.manager(bk_obj, obj)
-        self.my_name = inspect.stack()[0][3]
 
     def manager(self, bk_obj: dict, obj: dict) -> None:
-        self.my_name = inspect.stack()[0][3]
+
         # obj['fonbet_err'] = 'bla bla bla'
         # obj['olimp_err'] = 'bla bla bla'
 
@@ -114,40 +112,40 @@ class BetManager:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             err_msg = 'unknown err: ' + str(e) + '. ' + \
                       str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
-            err_str = self.msg_err.format(self.my_name, err_msg)
+
+            err_str = self.msg_err.format(err_msg)
             prnt(err_str)
             raise ValueError(err_str)
 
         # bk1.sale_bet()
 
     def check_responce(self, err_msg):
-        self.my_name = inspect.stack()[0][3]
 
         if err_msg:
             if 'не вошли в систему' in err_msg or \
                     'Not token access' in err_msg or \
                     'invalid session id' in err_msg:
                 err_str = self.msg_err.format(
-                    self.my_name, 'session expired: ' + self.session['session']
+                    'session expired: ' + self.session['session']
                 )
                 raise SessionExpired(err_str)
 
     def get_proxy(self) -> str:
-        self.my_name = inspect.stack()[0][3]
+
         with open(path.join(package_dir, 'proxies.json')) as file:
             proxies = load(file)
         return proxies.get(self.bk)
 
     def get_account_info(self) -> str:
-        self.my_name = inspect.stack()[0][3]
+
         with open(path.join(package_dir, 'account.json')) as file:
             account = load(file)
         return account.get(self.bk, {})
 
     def wait_sign_in_opp(self):
-        self.my_name = inspect.stack()[0][3]
+
         if not DEBUG:
-            self.my_name = inspect.stack()[0][3]
+
             msg_push = True
 
             obj['sign_in_' + self.bk] = 'ok'
@@ -155,14 +153,14 @@ class BetManager:
             while obj.get('sign_in_' + self.bk_opposite) != 'ok':
                 if msg_push:
                     err_str = self.msg_err.format(
-                        self.my_name,
+
                         self.bk + ' wait sign in from ' + self.bk_opposite
                     )
                     prnt(err_str)
                     msg_push = False
 
     def sign_in(self, obj: dict) -> None:
-        self.my_name = inspect.stack()[0][3]
+
         try:
             if self.bk == 'olimp':
                 payload = ol_payload.copy()
@@ -175,7 +173,7 @@ class BetManager:
                 headers.update(get_xtoken_bet(payload))
                 headers.update({'X-XERPC': '1'})
 
-                prnt(self.msg.format(self.my_name, 'rq: ' + str(payload) + ' ' + str(headers)), 'hide')
+                prnt(self.msg.format('rq: ' + str(payload) + ' ' + str(headers)), 'hide')
                 resp = requests.post(
                     ol_url_api.format(str(self.server_olimp), 'autorize'),
                     headers=headers,
@@ -184,7 +182,7 @@ class BetManager:
                     timeout=self.timeout,
                     proxies=self.proxies
                 )
-                prnt(self.msg.format(self.my_name, 'rs: ' + str(resp.text.strip())), 'hide')
+                prnt(self.msg.format('rs: ' + str(resp.text.strip())), 'hide')
 
                 data = resp.json()['data']
 
@@ -209,7 +207,7 @@ class BetManager:
                 self.server_fb = get_urls(self.mirror, self.proxies)
                 url, self.timeout = get_common_url(self.server_fb)
 
-                prnt(self.msg.format(self.my_name, 'rq: ' + str(data)), 'hide')
+                prnt(self.msg.format('rq: ' + str(data)), 'hide')
                 resp = requests.post(
                     url.format('login'),
                     headers=fb_headers,
@@ -218,7 +216,7 @@ class BetManager:
                     timeout=self.timeout,
                     proxies=self.proxies
                 )
-                prnt(self.msg.format(self.my_name, 'rs: ' + str(resp.text.strip())), 'hide')
+                prnt(self.msg.format('rs: ' + str(resp.text.strip())), 'hide')
                 res = resp.json()
 
                 self.session['session'] = res.get('fsid')
@@ -227,24 +225,25 @@ class BetManager:
 
             if not self.session.get('session'):
                 err_msg = 'session_id not defined'
-                err_str = self.msg_err.format(self.my_name, err_msg)
+
+                err_str = self.msg_err.format(err_msg)
                 raise SessionNotDefined(err_str)
 
-            prnt(self.msg.format(self.my_name, 'session: ' + str(self.session['session'])))
+            prnt(self.msg.format('session: ' + str(self.session['session'])))
             prnt(
                 self.msg.format(
-                    self.my_name, 'balance: ' + \
-                                  str(self.session.get('balance')) + ' ' +
-                                  str(self.session.get('currency'))
+                    'balance: ' + \
+                    str(self.session.get('balance')) + ' ' +
+                    str(self.session.get('currency'))
                 )
             )
             write_file(self.session_file, self.session['session'].strip())
             self.wait_sign_in_opp()
-            self.my_name = inspect.stack()[0][3]
 
             if not self.session.get('session'):
                 err_msg = 'session_id not defined'
-                err_str = self.msg_err.format(self.my_name, err_msg)
+
+                err_str = self.msg_err.format(err_msg)
                 raise SessionNotDefined(err_str)
 
         except SessionNotDefined as e:
@@ -253,23 +252,22 @@ class BetManager:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             err_msg = 'unknown err: ' + str(e) + '. ' + \
                       str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
-            err_str = self.msg_err.format(self.my_name, err_msg)
+
+            err_str = self.msg_err.format(err_msg)
             prnt(err_str)
             raise ValueError(err_str)
 
     def get_opposite_stat(self, obj):
-        self.my_name = inspect.stack()[0][3]
 
         opposite_stat = str(obj.get(self.bk_opposite + '_err', 'ok'))
         if opposite_stat != 'ok':
-            err_str = self.msg_err.format(self.my_name,
-                                          self.bk + ' get error from ' + self.bk_opposite + ': ' + opposite_stat
-                                          )
+            err_str = self.msg_err.format(
+                self.bk + ' get error from ' + self.bk_opposite + ': ' + opposite_stat
+            )
             raise BkOppBetError(err_str)
 
     def check_max_bet(self, obj):
         self.get_opposite_stat(obj)
-        self.my_name = inspect.stack()[0][3]
 
         url, timeout = get_common_url(self.server_fb)
 
@@ -286,7 +284,7 @@ class BetManager:
         payload['fsid'] = self.session['session']
         payload['clientId'] = self.account['login']
 
-        prnt(self.msg.format(self.my_name, 'rq: ' + str(payload) + ' ' + str(headers)), 'hide')
+        prnt(self.msg.format('rq: ' + str(payload) + ' ' + str(headers)), 'hide')
         resp = requests.post(
             url.format('coupon/getMinMax'),
             headers=headers,
@@ -295,39 +293,37 @@ class BetManager:
             timeout=self.timeout,
             proxies=self.proxies
         )
-        prnt(self.msg.format(self.my_name, 'rs: ' + str(resp.text.strip())), 'hide')
+        prnt(self.msg.format('rs: ' + str(resp.text.strip())), 'hide')
         res = resp.json()
 
         result = res.get('result')
         msg_str = res.get('errorMessage')
         self.check_responce(msg_str)
-        self.my_name = inspect.stack()[0][3]
 
         if 'min' not in res:
             err_str = self.msg_err.format(
-                self.my_name,
+
                 'min sum not found'
             )
             raise BetIsLost(err_str)
 
         min_amount, max_amount = res['min'] // 100, res['max'] // 100
-        if not (min_amount <= self.sum_bet <= self.session['balance']) or \
-                not (min_amount <= self.sum_bet <= max_amount):
-            err_str = self.msg_err.format(
-                self.my_name,
-                'no money: min_amount:{}, sum_bet:{}, max_amount:{}'.format(min_amount, self.sum_bet, max_amount)
-            )
+
+        prnt(self.msg.format('sum bet=' + str(self.sum_bet)))
+        prnt(self.msg.format('min_amount=' + str(min_amount) + ', max_amount=' + str(max_amount)))
+        if (self.sum_bet < min_amount) or (max_amount < self.sum_bet):
+            err_str = self.msg_err.format('max or min bet')
+            raise BetIsLost(err_str)
+        if self.session.get('balance') and self.sum_bet < self.session['balance']:
+            err_str = self.msg_err.format('mo money')
             raise NoMoney(err_str)
-        prnt(self.msg(self.my_name, 'min_amount=' + str(min_amount) + ', max_amount=' + str(max_amount)))
 
     def check_result(self, obj) -> None:
         self.get_opposite_stat(obj)
-        self.my_name = inspect.stack()[0][3]
 
         payload = self.payload
 
         url, timeout = get_common_url(self.server_fb)
-        self.my_name = inspect.stack()[0][3]
 
         try:
             del payload["coupon"]
@@ -336,7 +332,7 @@ class BetManager:
 
         headers = fb_headers.copy()
 
-        prnt(self.msg.format(self.my_name, 'rs: ' + str(payload)), 'hide')
+        prnt(self.msg.format('rs: ' + str(payload)), 'hide')
         resp = requests.post(
             url.format("coupon/result"),
             headers=headers,
@@ -344,13 +340,12 @@ class BetManager:
             verify=False,
             timeout=self.timeout
         )
-        prnt(self.msg.format(self.my_name, 'rs: ' + str(resp.text.strip())), 'hide')
+        prnt(self.msg.format('rs: ' + str(resp.text.strip())), 'hide')
         res = resp.json()
 
         result = res.get('result')
         msg_str = res.get('errorMessage')
         self.check_responce(msg_str)
-        self.my_name = inspect.stack()[0][3]
 
         err_code = res.get('coupon', {}).get('resultCode')
         err_msg = res.get('coupon', {}).get('errorMessageRus')
@@ -358,15 +353,18 @@ class BetManager:
         if result == 'couponResult':
             if err_code == 0:
                 self.reg_id = res.get('coupon').get('regId')
-                prnt(self.msg.format(self.my_name, 'bet successful, reg_id: ' + str(self.reg_id)))
+                prnt(self.msg.format('bet successful, reg_id: ' + str(self.reg_id)))
+            if err_code == 1:
+                err_str = self.msg.format(err_msg)
+                raise BetIsLost(err_str)
             elif err_code == 100:
                 if 'Слишком частые ставки на событие' in err_msg:
-                    err_str = self.msg_err.format(self.my_name, err_msg)
+                    err_str = self.msg_err.format(err_msg)
                     raise BetIsLost(err_str)
                 else:
                     err_str = err_msg + ', новая котировка:' + str(res.get('coupon', {}).get('bets')[0].get('value', 0))
                     sleep(self.sleep_bet)
-                    err_str = self.msg_err.format(self.my_name, err_msg)
+                    err_str = self.msg_err.format(err_msg)
                     raise BetError(err_str)
             elif err_code == 2:
                 # Котировка вообще ушла
@@ -382,7 +380,7 @@ class BetManager:
 
                         prnt(
                             self.msg.format(
-                                self.my_name,
+
                                 'Изменилась ИД ставки: old: ' + str(self.wager) + ', new: ' + str(new_wager)
                             )
                         )
@@ -394,7 +392,7 @@ class BetManager:
 
                         prnt(
                             self.msg_err.format(
-                                self.my_name,
+
                                 'Изменилась тотал ставки, param не совпадает: ' + \
                                 'new_wager: ' + str(new_wager) + ', old_wager: ' + str(self.wager)
                             )
@@ -403,27 +401,27 @@ class BetManager:
                         if obj.get('fonbet_bet_type'):
 
                             self.msg.format(
-                                self.my_name,
+
                                 'поиск нового id тотала: ' + obj.get('fonbet_bet_type')
                             )
                             match_id = self.wager.get('event')
                             new_wager = get_new_bets_fonbet(match_id, self.proxies, self.timeout)
                             new_wager = new_wager.get(str(match_id), {}).get('kofs', {}).get(obj.get('fonbet_bet_type'))
                             if new_wager:
-                                self.msg.format(self.my_name, 'Тотал найден: ' + str(new_wager))
+                                self.msg.format('Тотал найден: ' + str(new_wager))
                                 self.wager.update(new_wager)
                                 return self.place_bet(obj=obj)
                             else:
-                                err_str = self.msg_err.format(self.my_name, 'Тотал не найден' + str(new_wager))
+                                err_str = self.msg_err.format('Тотал не найден' + str(new_wager))
                                 raise BetIsLost(err_str)
                         else:
-                            err_str = self.msg_err.format(self.my_name,
-                                                          'Тип ставки, например 1ТМ(2.5) - не задан, выдаю ошибку.')
+                            err_str = self.msg_err.format(
+                                'Тип ставки, например 1ТМ(2.5) - не задан, выдаю ошибку.')
                             raise BetIsLost(err_str)
                     else:
                         err_str = self.msg_err.format(
-                            self.my_name, "неизвестная ошибка: " + \
-                                          str(err_msg) + ', new_wager: ' + str(new_wager) + ', old_wager: ' + str(
+                            "неизвестная ошибка: " + \
+                            str(err_msg) + ', new_wager: ' + str(new_wager) + ', old_wager: ' + str(
                                 self.wager)
                         )
                         prnt(err_str)
@@ -434,17 +432,54 @@ class BetManager:
             sleep(3)
             return self.check_result(obj)
         else:
-            err_str = self.msg_err.format(self.my_name, err_msg)
+            err_str = self.msg_err.format(err_msg)
             raise BetError(err_str)
 
     def set_session_state(self):
-        self.my_name = inspect.stack()[0][3]
+
         if not self.session.get('session'):
             self.session['session'] = read_file(self.session_file)
 
+    def get_request_id(self) -> int:
+
+        if not self.server_fb:
+            self.server_fb = get_urls(self.mirror, self.proxies)
+
+        url, self.timeout = get_common_url(self.server_fb)
+
+        headers = fb_headers.copy()
+
+        payload = payload_req.copy()
+        payload['fsid'] = self.payload['fsid']
+        payload['clientId'] = self.account['login']
+        payload['client']['id'] = self.account['login']
+
+        prnt(self.msg.format('rq: ' + str(payload) + ' ' + str(headers)), 'hide')
+        resp = requests.post(
+            url.format("coupon/requestId"),
+            headers=headers,
+            json=payload,
+            verify=False,
+            timeout=self.timeout,
+            proxies=self.proxies
+        )
+        prnt(self.msg.format('rq: ' + str(resp.text)), 'hide')
+        res = resp.json()
+
+        result = res.get('result')
+        msg_str = res.get('errorMessage')
+        self.check_responce(msg_str)
+
+        if "requestId" not in res:
+            err_str = self.msg_err.format('key requestId not found in response')
+            raise BetError(err_str)
+        else:
+            self.reqId = res["requestId"]
+            prnt(self.msg.format('Success get requestId=' + str(self.reqId)))
+            return self.reqId
+
     def place_bet(self, obj: dict) -> None:
         self.set_session_state()
-        self.my_name = inspect.stack()[0][3]
 
         self.get_opposite_stat(obj)
 
@@ -454,7 +489,7 @@ class BetManager:
         cur_bal = self.session.get('balance')
         if cur_bal and cur_bal < self.sum_bet:
             err_str = self.msg_err.format(
-                self.my_name,
+
                 self.bk + ' balance ({}) < sum_bet({})'.format(str(cur_bal), str(self.sum_bet))
             )
             raise NoMoney(err_str)
@@ -482,7 +517,7 @@ class BetManager:
             headers = ol_headers.copy()
             headers.update(get_xtoken_bet(payload))
 
-            prnt(self.msg.format(self.my_name, 'rq: ' + str(payload) + ' ' + str(headers)), 'hide')
+            prnt(self.msg.format('rq: ' + str(payload) + ' ' + str(headers)), 'hide')
             resp = requests.post(
                 ol_url_api.format(str(self.server_olimp), 'basket/fast'),
                 headers=headers,
@@ -491,21 +526,19 @@ class BetManager:
                 timeout=self.timeout,
                 proxies=self.proxies
             )
-            prnt(self.msg.format(self.my_name, 'rs: ' + str(resp.text.strip())), 'hide')
+            prnt(self.msg.format('rs: ' + str(resp.text.strip())), 'hide')
             res = resp.json()
 
             err_code = res.get('error', {}).get('err_code')
             err_msg = res.get('error', {}).get('err_desc')
             self.check_responce(err_msg)
-            self.my_name = inspect.stack()[0][3]
 
             if err_code == 0:
                 self.match_id = self.wager['event']
 
                 self.get_cur_max_bet_id()
-                self.my_name = inspect.stack()[0][3]
 
-                prnt(self.msg.format(self.my_name, 'bet successful, reg_id: ' + str(self.reg_id)))
+                prnt(self.msg.format('bet successful, reg_id: ' + str(self.reg_id)))
 
             elif 'Такой исход не существует' in err_msg:
                 raise BetIsLost(err_msg)
@@ -514,7 +547,7 @@ class BetManager:
                 raise BetIsLost(err_msg)
 
             elif res.get('data') is None:
-                err_str = self.msg_err.format(self.my_name, err_msg)
+                err_str = self.msg_err.format(err_msg)
                 raise BetError(err_str)
 
         elif self.bk == 'fonbet':
@@ -528,8 +561,6 @@ class BetManager:
 
             payload['client'] = {'id': self.account['login']}
 
-            payload['requestId'] = self.reqId
-
             if self.wager.get('param'):
                 payload['coupon']['bets'][0]['param'] = int(self.wager['param'])
 
@@ -540,13 +571,14 @@ class BetManager:
             payload['fsid'] = self.session['session']
             payload['clientId'] = self.account['login']
             payload['coupon']['amount'] = self.sum_bet
-
             self.payload = payload
 
             self.check_max_bet(obj)
-            self.my_name = inspect.stack()[0][3]
+            self.get_request_id()
 
-            prnt(self.msg.format(self.my_name, 'rq: ' + str(payload) + ' ' + str(headers)), 'hide')
+            payload['requestId'] = self.reqId
+
+            prnt(self.msg.format('rq: ' + str(payload) + ' ' + str(headers)), 'hide')
             resp = requests.post(
                 url.format('coupon/register'),
                 headers=headers,
@@ -555,35 +587,31 @@ class BetManager:
                 timeout=self.timeout,
                 proxies=self.proxies
             )
-            prnt(self.msg.format(self.my_name, 'rs: ' + str(resp.text.strip())), 'hide')
+            prnt(self.msg.format('rs: ' + str(resp.text.strip())), 'hide')
             res = resp.json()
 
             result = res.get('result')
             msg_str = res.get('errorMessage')
             self.check_responce(msg_str)
-            self.my_name = inspect.stack()[0][3]
 
             if result == 'betDelay':
                 bet_delay_sec = (float(res.get('betDelay')) / 1000)
-                prnt(self.msg(self.my_name, 'bet_delay: ' + str(bet_delay_sec) + ' sec.'))
+                prnt(self.msg.format('bet_delay: ' + str(bet_delay_sec) + ' sec.'))
                 sleep(bet_delay_sec)
 
             self.check_result(obj)
-            self.my_name = inspect.stack()[0][3]
 
     def sale_bet(self) -> None:
         self.set_session_state()
-        self.my_name = inspect.stack()[0][3]
 
         if self.bk == 'olimp':
 
             coupon = self.get_cur_max_bet_id()
-            self.my_name = inspect.stack()[0][3]
 
             cashout_allowed = coupon.get('cashout_allowed', False)
             self.sum_sell = coupon.get('cashout_amount', 0)
-            prnt(self.msg.format(self.my_name, 'coupon cashout_allowed: ' + str(cashout_allowed)))
-            prnt(self.msg.format(self.my_name, 'coupon amount: ' + str(self.sum_sell)))
+            prnt(self.msg.format('coupon cashout_allowed: ' + str(cashout_allowed)))
+            prnt(self.msg.format('coupon amount: ' + str(self.sum_sell)))
 
             if cashout_allowed is True and self.sum_sell > 0:
                 payload = {}
@@ -597,7 +625,7 @@ class BetManager:
                 headers.update(get_xtoken_bet(payload))
                 headers.update({'X-XERPC': '1'})
 
-                prnt(self.msg.format(self.my_name, 'rq: ' + str(payload) + ' ' + str(headers)), 'hide')
+                prnt(self.msg.format('rq: ' + str(payload) + ' ' + str(headers)), 'hide')
                 resp = requests.post(
                     ol_url_api.format(str(self.server_olimp), 'user/cashout'),
                     headers=headers,
@@ -606,17 +634,16 @@ class BetManager:
                     timeout=self.timeout,
                     proxies=self.proxies
                 )
-                prnt(self.msg.format(self.my_name, 'rs: ' + str(resp.text.strip())), 'hide')
+                prnt(self.msg.format('rs: ' + str(resp.text.strip())), 'hide')
                 res = resp.json()
 
                 err_code = res.get('error', {}).get('err_code')
                 err_msg = res.get('error', {}).get('err_desc')
                 self.check_responce(err_msg)
-                self.my_name = inspect.stack()[0][3]
 
                 if res.get('data') and res.get('data').get('status', 'err') == 'ok':
                     prnt(
-                        self.msg.format(self.my_name, 'code: ' +
+                        self.msg.format('code: ' +
                                         str(err_code) + ', ' +
                                         res.get('data', {}).get('msg'))
                     )
@@ -631,7 +658,6 @@ class BetManager:
             pass
 
     def finishing(self, obj: dict, vector: str, sc1: int, sc2: int, cur_total: float) -> None:
-        self.my_name = inspect.stack()[0][3]
 
         self.vector = vector
         self.sc1 = int(sc1)
@@ -699,7 +725,6 @@ class BetManager:
                 # go bets
 
     def get_cur_max_bet_id(self, filter='0100', offset='0'):
-        self.my_name = inspect.stack()[0][3]
 
         req_url = ol_url_api.format(str(self.server_olimp), 'user/history')
 
@@ -712,7 +737,7 @@ class BetManager:
         headers.update(get_xtoken_bet(payload))
         headers.update({'X-XERPC': '1'})
 
-        prnt(self.msg.format(self.my_name, 'rq: ' + str(payload) + ' ' + str(headers)), 'hide')
+        prnt(self.msg.format('rq: ' + str(payload) + ' ' + str(headers)), 'hide')
         resp = requests.post(
             req_url,
             headers=headers,
@@ -721,13 +746,12 @@ class BetManager:
             timeout=self.timeout,
             proxies=self.proxies
         )
-        prnt(self.msg.format(self.my_name, 'rs: ' + str(resp.text.strip())), 'hide')
+        prnt(self.msg.format('rs: ' + str(resp.text.strip())), 'hide')
         res = resp.json()
 
         err_code = res.get('error', {}).get('err_code')
         err_msg = res.get('error', {}).get('err_desc')
         self.check_responce(err_msg)
-        self.my_name = inspect.stack()[0][3]
 
         max_bet_id = 0
         coupon_data = {}
@@ -769,16 +793,16 @@ class BetManager:
 if __name__ == '__main__':
     bk_obj = {}
 
-    # OLIMP_USER = {'login': 'eva.yushkova.81@mail.ru', 'passw': 'qvF3BwrNcRcJtB6'}
+    # OLIMP_USER = {'login': 'mursalimov.ilmir10@gmail.com', 'passw': 'tStseFuY'}
     # wager_olimp = {'apid': '1181740951:47030887:1:3:-9999:2:0:0:1', 'factor': '1.06', 'sport_id': 1,
     #                'event': '47030887'}
 
-    FONBET_USER = {"login": 5699838, "password": "NTe2904H11"}
-    wager_fonbet = {'event': '13395343', 'factor': '1809', 'param': '250', 'score': '0:0', 'value': '1.42'}
+    FONBET_USER = {"login": 5447708, "password": "tStseFuY"}
+    wager_fonbet = {'event': '13344898', 'factor': '924', 'param': '', 'score': '1:1', 'value': '1.14'}
 
     obj = {}
     obj['wager'] = wager_fonbet  # wager_olimp
-    obj['amount'] = 30
+    obj['amount'] = 35
 
     # bk1 = Thread(target=BetManager, args=(bk_obj, obj, 'olimp', 'fonbet'))
     bk2 = Thread(target=BetManager, args=(bk_obj, obj, 'fonbet', 'olimp'))
