@@ -400,9 +400,9 @@ class FonbetBot:
         except Exception as e:
             prnt('BET_FONBET.PY: rs timeout: ' + str(e))
             self.place_bet(obj=obj)
-            
+
         prnt('BET_FONBET.PY: response fonbet: ' + str(resp.text), 'hide')
-        
+
         check_status_with_resp(resp)
         res = resp.json()
         prnt(res, 'hide')

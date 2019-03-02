@@ -30,9 +30,6 @@ base_headers = {
 }
 
 
-
-
-
 class OlimpBot:
     """Use to place bets on olimp site."""
 
@@ -168,12 +165,12 @@ class OlimpBot:
         except Exception as e:
             prnt('BET_OLIMP.PY: rs timeout: ' + str(e))
             self.place_bet(obj=obj)
-            
+
         prnt('BET_OLIMP.PY: rs olimp: ' + str(resp.text), 'hide')
-        
+
         if resp.status_code in (504, 500):
             return self.place_bet(obj=obj)
-        
+
         check_status_with_resp(resp, True)
         res = resp.json()
         prnt('BET_OLIMP.PY: rs js olimp: ' + str(res), 'hide')
