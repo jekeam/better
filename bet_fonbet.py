@@ -75,7 +75,7 @@ class FonbetBot:
         self.base_payload = {
             "appVersion": "5.1.3b",
             "lang": "ru",
-            "rooted": "false",
+            "rooted": False,
             "sdkVersion": 21,
             "sysId": 4
         }
@@ -106,7 +106,7 @@ class FonbetBot:
             "fsid": "",
             "lang": "ru",
             "platform": "mobile_android",
-            "rooted": "false",
+            "rooted": False,
             "sdkVersion": 21,
             "sysId": 4,
             "clientId": 0
@@ -121,7 +121,7 @@ class FonbetBot:
             "fsid": "",
             "lang": "ru",
             "platform": "mobile_android",
-            "rooted": "false",
+            "rooted": False,
             "sdkVersion": 21,
             "sysId": 4,
             "clientId": 0

@@ -9,7 +9,7 @@ import time
 fb_payload = {
     "appVersion": "5.1.3b",
     "lang": "ru",
-    "rooted": "false",
+    "rooted": False,
     "sdkVersion": 21,
     "sysId": 4
 }
@@ -51,7 +51,39 @@ fb_payload_bet = {
     "fsid": "",
     "lang": "ru",
     "platform": "mobile_android",
-    "rooted": "false",
+    "rooted": False,
+    "sdkVersion": 21,
+    "sysId": 4,
+    "clientId": 0
+}
+
+fb_payload_max_bet = {
+    "coupon":
+        {
+            "flexBet": "any",  # Изменения коэф-в, any - все, up - вверх
+            "flexParam": False,  # Изменения фор и тоталов, True - принимать, False - не принимать
+            "bets":
+                [
+                    {
+                        "lineType": "LIVE",
+                        "score": "",
+                        "value": 0,
+                        "event": 0,
+                        "factor": 0,
+                        "num": 0
+                    },
+                ],
+            "amount": 0.0,
+            "system": 0
+        },
+    "appVersion": "5.1.3b",
+    "carrier": "MegaFon",
+    "deviceManufacturer": "LENOVO",
+    "deviceModel": "Lenovo A5000",
+    "fsid": "",
+    "lang": "ru",
+    "platform": "mobile_android",
+    "rooted": False,
     "sdkVersion": 21,
     "sysId": 4,
     "clientId": 0
@@ -66,7 +98,7 @@ payload_req = {
     "fsid": "",
     "lang": "ru",
     "platform": "mobile_android",
-    "rooted": "false",
+    "rooted": False,
     "sdkVersion": 21,
     "sysId": 4,
     "clientId": 0
