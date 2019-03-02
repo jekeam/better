@@ -193,7 +193,7 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out, pair_mathes):
             match_exists = True
         cnt += 1
     if match_exists is False:
-        err_str = 'Фонбет: матч' + str(match_id) + 'не найден в спике активных, поток завершен.'
+        err_str = 'Олимп: матч ' + str(match_id) + ' не найден в спике активных, поток завершен.'
         raise OlimpMatchСompleted(err_str)
 
     olimp_data_m = olimp_data.copy()
