@@ -517,7 +517,7 @@ if __name__ == '__main__':
                         bet1, bet2 = get_sum_bets(k1, k2, total_bet)
                         # Проверим вилку на исключения
                         if check_fork(
-                                key, l_temp, k1, k2, live_fork, bk1_score, bk2_score,
+                                key, l_temp, k1, k2, live_fork_total, bk1_score, bk2_score,
                                 minute, time_break_fonbet, period, info
                         ) or DEBUG:
                             go_bet_key = key
