@@ -95,7 +95,7 @@ def get_match_fonbet(match_id, proxi_list, proxy, time_out, pair_mathes):
         if match_id in pair_match:
             match_exists = True
     if match_exists is False:
-        err_str = 'Фонбет: матч ' + str(match_id) + ' не найден в спике активных, поток завершен.'
+        err_str = 'Фонбет: матч ' + str(match_id) + ' не найден в спике активных, поток get_match_fonbet завершен.'
         raise FonbetMatchСompleted(err_str)
 
     try:
@@ -153,6 +153,14 @@ def get_match_fonbet(match_id, proxi_list, proxy, time_out, pair_mathes):
 def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair_mathes):
     global VICTS, TTO, TTU, TT1O, TT1U, TT2O, TT2U
     global MINUTE_COMPLITE
+
+    match_exists = False
+    for pair_match in pair_mathes:
+        if match_id in pair_match:
+            match_exists = True
+    if match_exists is False:
+        err_str = 'Фонбет: матч ' + str(match_id) + ' не найден в спике активных, поток get_bets_fonbet завершен.'
+        raise FonbetMatchСompleted(err_str)
 
     key_id = str(match_id)
     try:
