@@ -1,16 +1,10 @@
-from retry_requests import requests_retry_session
-import time
+pair_mathes = [[3, 4], [1, 2]]
 
-t0 = time.time()
-try:
-    response = requests_retry_session().get(
-        'http://httpbin.org/delay/99',
-        timeout=15
-    )
-except Exception as x:
-    print('It failed :(', x.__class__.__name__)
-else:
-    print('It eventually worked', response.status_code)
-finally:
-    t1 = time.time()
-    print('Took', t1 - t0, 'seconds')
+cnt = 0
+for pair_match in pair_mathes:
+    if '1' in str(pair_match):
+        print('Fonbet, pair mathes remove: ' + str(pair_mathes[cnt]))
+        pair_mathes.remove(pair_mathes[cnt])
+    cnt += 1
+
+print(pair_mathes)

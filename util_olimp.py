@@ -6,7 +6,7 @@ from proxy_worker import del_proxy
 import re
 import time
 from exceptions import OlimpMatchСompleted, TimeOut
-from utils import prnts, get_vector
+from utils import prnts, get_vector, MINUTE_COMPLITE
 
 url_autorize = "https://{}.olimp-proxy.ru/api/{}"
 payload = {"lang_id": "0", "platforma": "ANDROID1"}
@@ -186,6 +186,14 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out, pair_mathes):
     global olimp_url_https
     global olimp_data
 
+    match_exists = False
+    for pair_match in pair_mathes:
+        if match_id in pair_match:
+            match_exists = True
+    if match_exists is False:
+        err_str = 'Олимп: матч ' + str(match_id) + ' не найден в спике активных, поток завершен.'
+        raise OlimpMatchСompleted(err_str)
+
     olimp_data_m = olimp_data.copy()
 
     olimp_data_m.update({'id': match_id})
@@ -267,6 +275,7 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out, pair_mathes):
 
 
 def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_mathes):
+    global MINUTE_COMPLITE
     key_id = str(match_id)
     try:
         resp, time_resp = get_match_olimp(match_id, proxies_olimp, proxy, time_out, pair_mathes)
@@ -277,12 +286,11 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
         time_start_proc = time.time()
 
         # print(resp)
-        # if key_id == '46088996':
-        # prnts(json.dumps(resp, ensure_ascii=False))
-        #     f = open('olimp.txt', 'a+')
-        #     f.write(json.dumps(resp, ensure_ascii=False))
-        #     f.write('\n')
-        #     # prnts('olimp: '+json.dumps(resp, ensure_ascii=False))
+        # if key_id == '46953789':
+        #     import json
+        #     prnts(json.dumps(resp, ensure_ascii=False))
+        # f = open('olimp.txt', 'a+')
+        # f.write(json.dumps(resp, ensure_ascii=False))
 
         # prnts(json.dumps(resp, ensure_ascii=False, indent=4))
         # prnts(json.dumps(resp, ensure_ascii=False))
@@ -300,12 +308,13 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
 
             minute = -1
             try:
-                minute = re.findall(
-                    '\d{1,2}\"',
-                    resp.get('scd', '')
-                )[0].replace('"', '')
+                minute = int(re.findall('\d{1,2}\\"', resp.get('sc', ''))[0].replace('"', ''))
             except:
                 pass
+
+            if minute >= MINUTE_COMPLITE or ((time.time() - timer) / 60) > MINUTE_COMPLITE:
+                err_str = 'Олимп: матч ' + str(match_id) + ' завершен, т.к. больше 88 минуты прошло.'
+                raise OlimpMatchСompleted(err_str)
 
             skId = resp.get('sport_id')
             skName = resp.get('sn')

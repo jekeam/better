@@ -9,7 +9,7 @@ from difflib import SequenceMatcher
 import re
 from exceptions import *
 from server import run_server
-from utils import prnts, DEBUG, find_max_mode, opposition
+from utils import prnts, DEBUG, find_max_mode, opposition, MINUTE_COMPLITE
 from proxy_switcher import ProxySwitcher
 import json
 import os.path
@@ -21,6 +21,11 @@ from datetime import datetime
 TIMEOUT_MATCHS = 10
 TIMEOUT_MATCH = 10
 TIMEOUT_MATCH_MINUS = 9
+
+prnts('TIMEOUT_MATCHS: ' + str(TIMEOUT_MATCHS))
+prnts('TIMEOUT_MATCH: ' + str(TIMEOUT_MATCH))
+prnts('TIMEOUT_MATCH_MINUS: ' + str(TIMEOUT_MATCH_MINUS))
+prnts('MINUTE_COMPLITE: ' + str(MINUTE_COMPLITE))
 
 
 def get_olimp(resp, arr_matchs):
@@ -131,15 +136,10 @@ def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi
             time_resp = get_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp,
                                        ps.get_next_proxy(), TIMEOUT_MATCH, pair_mathes)
             stat_req_ol.append(round(time_resp, 2))
-        except TimeOut as e:
-            ps.rep_cur_proxy(gen_proxi_olimp.next())
-            err_str = 'Timeout: Олимп, ошибка при запросе матча ' + str(match_id_olimp)
-            prnts(err_str)
-            time_resp = TIMEOUT_MATCH
         except OlimpMatchСompleted as e:
             cnt = 0
             for pair_match in pair_mathes:
-                if pair_match[0] == str(match_id_fonbet):
+                if match_id_olimp in pair_match:
                     prnts('Olimp, pair mathes remove: ' + str(pair_mathes[cnt]))
                     pair_mathes.remove(pair_mathes[cnt])
                 cnt += 1
@@ -151,7 +151,7 @@ def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi
             ps.rep_cur_proxy(gen_proxi_olimp.next())
             time_resp = TIMEOUT_MATCH
 
-        time_sleep = max(0, (TIMEOUT_MATCH - abs(TIMEOUT_MATCH_MINUS+time_resp)))
+        time_sleep = max(0, (TIMEOUT_MATCH - abs(TIMEOUT_MATCH_MINUS + time_resp)))
 
         if DEBUG:
             prnts('Олимп, матч ' + str(match_id_olimp) + '. Время ответа: ' + str(time_resp) +
@@ -179,7 +179,7 @@ def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_p
         except FonbetMatchСompleted as e:
             cnt = 0
             for pair_match in pair_mathes:
-                if pair_match[1] == str(match_id_fonbet):
+                if match_id_fonbet in pair_match:
                     prnts('Fonbet, pair mathes remove: ' + str(pair_mathes[cnt]))
                     pair_mathes.remove(pair_mathes[cnt])
                 cnt += 1
@@ -191,7 +191,7 @@ def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_p
             ps.rep_cur_proxy(gen_proxi_fonbet.next())
             time_resp = TIMEOUT_MATCH
 
-        time_sleep = max(0, (TIMEOUT_MATCH - (TIMEOUT_MATCH_MINUS+time_resp)))
+        time_sleep = max(0, (TIMEOUT_MATCH - (TIMEOUT_MATCH_MINUS + time_resp)))
 
         if DEBUG:
             prnts(str('Фонбет, матч ' + str(match_id_fonbet) + '. Время ответа: ' + str(time_resp) +
@@ -283,10 +283,9 @@ def start_compare_matches(pair_mathes, json_bk1, json_bk2):
                                             bk2_match_info.get('team2')
                                     ):
 
-                                        if DEBUG and x > 0:
+                                        if DEBUG and x > 0 and str(bk2_match_id) != '13473603':
                                             return False
-                                        if DEBUG and str(bk1_match_id) == '46642896':
-                                            pass
+                                        if DEBUG:
                                             x = 1
 
                                         prnts(
@@ -307,6 +306,7 @@ def start_compare_matches(pair_mathes, json_bk1, json_bk2):
 
 def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
     global opposition
+
     def forks_meta_upd(forks_meta, forks):
         # Перед удалением сохраним время жизни вылки
         live_fork_total = forks_meta.get(bet_key, {}).get('live_fork_total', 0) + \
