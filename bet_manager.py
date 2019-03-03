@@ -14,7 +14,8 @@ import hmac
 from hashlib import sha512
 from meta_ol import ol_url_api, ol_payload, ol_headers, get_xtoken_bet
 from meta_fb import fb_payload, fb_payload_bet, get_random_str, get_dumped_payload, get_urls, get_common_url
-from meta_fb import fb_headers, get_new_bets_fonbet, payload_req
+from meta_fb import fb_headers, get_new_bets_fonbet, payload_req, payload_coupon_sum, payload_coupon_sell
+from meta_fb import payload_sell_check_result
 import copy
 
 prnt('DEBUG: ' + str(DEBUG))
@@ -43,6 +44,7 @@ class BetManager:
         self.match_id = None
         self.reg_id = None
         self.reqId = None
+        self.reqIdSale = None
         self.payload = None
         self.wager = None
         self.sum_bet = None
@@ -90,9 +92,8 @@ class BetManager:
 
         try:
             bk_obj[self.bk].place_bet(obj)
-            # self.reg_id = 1300
-            # self.reg_id = 14652959641
-            # bk_obj[self.bk].sale_bet()
+            #self.reg_id = 14665778876
+            bk_obj[self.bk].sale_bet()
         except CouponBlocked as e:
             prnt(e)
         except BetIsLost as e:
@@ -152,10 +153,9 @@ class BetManager:
 
             while obj.get('sign_in_' + self.bk_opposite) != 'ok':
                 if msg_push:
-                    err_str = self.msg_err.format(sys._getframe().f_code.co_name,
-
-                                                  self.bk + ' wait sign in from ' + self.bk_opposite
-                                                  )
+                    err_str = self.msg_err.format(
+                        sys._getframe().f_code.co_name, self.bk + ' wait sign in from ' + self.bk_opposite
+                    )
                     prnt(err_str)
                     msg_push = False
 
@@ -357,6 +357,8 @@ class BetManager:
             if err_code == 0:
                 self.reg_id = res.get('coupon').get('regId')
                 prnt(self.msg.format(sys._getframe().f_code.co_name, 'bet successful, reg_id: ' + str(self.reg_id)))
+                # prnt(self.msg.format(sys._getframe().f_code.co_name, 'time sleep 3 sec.'))
+                # sleep(3)
             if err_code == 1:
                 err_str = self.msg.format(sys._getframe().f_code.co_name, err_msg)
                 raise BetIsLost(err_str)
@@ -422,10 +424,9 @@ class BetManager:
                                                       )
                         prnt(err_str)
                         raise BetIsLost(err_str)
-        elif result == 'error' and "temporary unknown result" in resp.text:
-            err_str = 'Get temporary unknown result: ' + str(res)
-            prnt(err_str)
-            sleep(3)
+        elif result == 'error' and 'temporary unknown result' in msg_str:
+            err_str = 'Get temporary unknown result: ' + str(msg_str)
+            prnt(self.msg.format(sys._getframe().f_code.co_name, err_str))
             return self.check_result(obj)
         else:
             err_str = self.msg_err.format(sys._getframe().f_code.co_name, err_msg)
@@ -471,7 +472,7 @@ class BetManager:
             raise BetError(err_str)
         else:
             self.reqId = res["requestId"]
-            prnt(self.msg.format(sys._getframe().f_code.co_name, 'Success get requestId=' + str(self.reqId)))
+            prnt(self.msg.format(sys._getframe().f_code.co_name, 'success get requestId=' + str(self.reqId)))
             return self.reqId
 
     def place_bet(self, obj: dict) -> None:
@@ -608,7 +609,7 @@ class BetManager:
             prnt(self.msg.format(sys._getframe().f_code.co_name, 'coupon cashout_allowed: ' + str(cashout_allowed)))
             prnt(self.msg.format(sys._getframe().f_code.co_name, 'coupon amount: ' + str(self.sum_sell)))
 
-            if cashout_allowed is True and self.sum_sell > 0:
+            if cashout_allowed and self.sum_sell > 0:
                 payload = {}
                 payload['bet_id'] = self.reg_id
                 payload['amount'] = self.sum_sell
@@ -638,11 +639,7 @@ class BetManager:
                 self.check_responce(err_msg)
 
                 if res.get('data') and res.get('data').get('status', 'err') == 'ok':
-                    prnt(
-                        self.msg.format(sys._getframe().f_code.co_name, 'code: ' +
-                                        str(err_code) + ', ' +
-                                        res.get('data', {}).get('msg'))
-                    )
+                    prnt(self.msg.format(sys._getframe().f_code.co_name, 'code: ' +str(err_code) + ', ' +res.get('data', {}).get('msg')))
                 else:
                     raise SaleError(err_msg)
 
@@ -651,7 +648,169 @@ class BetManager:
                 raise CouponBlocked(err_msg)
 
         elif self.bk == 'fonbet':
-            pass
+            if self.reg_id:
+    
+                # step1 get from version and sell sum
+                if not self.server_fb:
+                    self.server_fb = get_urls(self.mirror, self.proxies)
+
+                url, self.timeout = get_common_url(self.server_fb)
+    
+                url = url.replace('session/', '')
+    
+                payload = copy.deepcopy(payload_coupon_sum)
+                headers = copy.deepcopy(fb_headers)
+    
+                payload['clientId'] = self.account["login"]
+                payload['fsid'] = self.session['session']
+                
+                prnt(self.msg.format(sys._getframe().f_code.co_name, 'rq: ' + str(payload) + ' ' + str(headers)), 'hide')
+                resp = requests.post(
+                    url.format("coupon/sell/conditions/getFromVersion"),
+                    headers=headers,
+                    json=payload,
+                    verify=False,
+                    timeout=self.timeout
+                )
+                prnt(self.msg.format(sys._getframe().f_code.co_name, 'rs: ' + str(resp.text)), 'hide')
+                res = resp.json()
+                result = res.get('result')
+                msg_str = res.get('errorMessage')
+                self.check_responce(msg_str)
+    
+                timer_update = float(res.get('recommendedUpdateFrequency', 3))
+    
+                coupon_found = False
+                for coupon in res.get('conditions'):
+                    if str(coupon.get('regId')) == str(self.reg_id):
+                        coupon_found = True
+                        prnt(self.msg.format(sys._getframe().f_code.co_name, 'canSell: ' + str(coupon.get('canSell', True))), 'hide')
+                        prnt(self.msg.format(sys._getframe().f_code.co_name, 'tempBlock: ' + str(coupon.get('tempBlock', False))), 'hide')
+                        if coupon.get('canSell', True) and not coupon.get('tempBlock', False):
+                            self.sell_sum = float(coupon.get('completeSellSum'))
+                        else:
+                            err_str = self.msg_err.format(sys._getframe().f_code.co_name, 'coupon is lock, time sleep ' + str(timer_update) + ' sec.')
+                            sleep(timer_update)
+                            raise CouponBlocked(err_str)
+                if not coupon_found:
+                    err_str = self.msg_err.format(
+                        sys._getframe().f_code.co_name, 
+                        'coupon regId ' + str(self.reg_id) + ' not found, retry, after sec: '+str(timer_update)
+                    )
+                    self.sale_bet()
+    
+                # step2 get rqid for sell coupn
+                payload = copy.deepcopy(payload_coupon_sum)
+                headers = copy.deepcopy(fb_headers)
+    
+                payload['clientId'] = self.account["login"]
+                payload['fsid'] = self.session["session"]
+                
+                prnt(self.msg.format(sys._getframe().f_code.co_name, 'rq: ' + str(payload) + ' ' + str(headers)), 'hide')
+                resp = requests.post(
+                    url.format("coupon/sell/requestId"),
+                    headers=headers,
+                    json=payload,
+                    verify=False,
+                    timeout=self.timeout,
+                    proxies=self.proxies
+                )
+                prnt(self.msg.format(sys._getframe().f_code.co_name, 'rs: ' + str(resp.text)), 'hide')
+                res = resp.json()
+                result = res.get('result')
+                msg_str = res.get('errorMessage')
+                self.check_responce(msg_str)
+                
+                
+                if res.get('result') == 'requestId':
+                    self.reqIdSale = res.get('requestId')
+    
+                # step3 sell
+                payload = copy.deepcopy(payload_coupon_sell)
+                headers = copy.deepcopy(fb_headers)
+    
+                payload['regId'] = int(self.reg_id)
+                payload['requestId'] = int(self.reqIdSale)
+                payload['sellSum'] = self.sell_sum
+                payload['clientId'] = self.account["login"]
+                payload['fsid'] = self.session["session"]
+                
+                prnt(self.msg.format(sys._getframe().f_code.co_name, 'rq: ' + str(payload) + ' ' + str(headers)), 'hide')
+                resp = requests.post(
+                    url.format("coupon/sell/completeSell"),
+                    headers=headers,
+                    json=payload,
+                    verify=False,
+                    timeout=self.timeout,
+                    proxies=self.proxies
+                )
+                prnt(self.msg.format(sys._getframe().f_code.co_name, 'rs: ' + str(resp.text)), 'hide')
+                res = resp.json()
+                result = res.get('result')
+                msg_str = res.get('errorMessage')
+                self.check_responce(msg_str)
+    
+                if result == "sellDelay":
+                    sell_delay_sec = (float(res.get('sellDelay')) / 1000)
+                    prnt(self.msg.format(sys._getframe().f_code.co_name, 'sell, delay: ' + str(sell_delay_sec) + ' sec.'))
+                    sleep(sell_delay_sec)
+    
+                return self.check_sell_result()
+                
+    def check_sell_result(self) -> None:
+        if not self.server_fb:
+            self.server_fb = get_urls(self.mirror, self.proxies)
+            
+        url, self.timeout = get_common_url(self.server_fb)
+        url = url.replace('session/', '')
+
+        payload = copy.deepcopy(payload_sell_check_result)
+        headers = copy.deepcopy(fb_headers)
+
+        payload['requestId'] = self.reqIdSale
+        payload['clientId'] = self.account['login']
+        payload['fsid'] = self.session['session']
+        
+        prnt(self.msg.format(sys._getframe().f_code.co_name, 'rq: ' + str(payload) + ' ' + str(headers)), 'hide')
+        resp = requests.post(
+            url.format("coupon/sell/result"),
+            headers=headers,
+            json=payload,
+            verify=False,
+            timeout=self.timeout,
+            proxies=self.proxies
+        )
+        prnt(self.msg.format(sys._getframe().f_code.co_name, 'rs: ' + str(resp.text)), 'hide')
+        res = resp.json()
+        result = res.get('result')
+        msg_str = res.get('errorMessage')
+        self.check_responce(msg_str)
+        
+        if result == 'error' and 'temporary unknown result' in msg_str:
+            err_str = 'Get temporary unknown result: ' + str(msg_str)
+            prnt(self.msg.format(sys._getframe().f_code.co_name, err_str))
+            sleep(3)
+            return self.check_sell_result()
+
+        elif result == "sellDelay":
+            sell_delay_sec = (float(res.get('sellDelay')) / 1000)
+            prnt(self.msg.format(sys._getframe().f_code.co_name, 'sell, delay: ' + str(sell_delay_sec) + ' sec.'))
+            sleep(sell_delay_sec)
+            return self.check_sell_result()
+
+        elif result == 'unableToSellCoupon':
+            if res.get('reason') in (2, 3):
+                err_str = self.msg_err.format(sys._getframe().f_code.co_name, 'unable to sell coupon, reason='+str(res.get('reason')))
+                raise BetIsLost(err_str)
+            else:
+                prnt(self.msg.format(sys._getframe().f_code.co_name, 'new actualSellSum: ' + str(res.get('actualSellSum') / 10)))
+                return self.sale_bet()
+
+        elif result == 'couponCompletelySold':
+            sold_sum = res.get('soldSum')
+            prnt(self.msg.format(sys._getframe().f_code.co_name, 'sell successful, sum sold: ' + str(sold_sum / 100)))
+        else:
+            raise BetIsLost
 
     def finishing(self, obj: dict, vector: str, sc1: int, sc2: int, cur_total: float) -> None:
 
@@ -794,11 +953,11 @@ if __name__ == '__main__':
     #                'event': '47030887'}
 
     FONBET_USER = {"login": 5447708, "password": "tStseFuY"}
-    wager_fonbet = {'event': '13532044', 'factor': '924', 'param': '', 'score': '0:0', 'value': '1.11'}
+    wager_fonbet = {'event': '13489145', 'factor': '924', 'param': '', 'score': '0:0', 'value': '1.11'}
 
     obj = {}
     obj['wager'] = wager_fonbet  # wager_olimp
-    obj['amount'] = 45
+    obj['amount'] = 30
 
     # bk1 = Thread(target=BetManager, args=(bk_obj, obj, 'olimp', 'fonbet'))
     bk2 = Thread(target=BetManager, args=(bk_obj, obj, 'fonbet', 'olimp'))

@@ -1,4 +1,3 @@
-x = {'min':{'max':''}}
+print(list(filter(None, range(5))))
 
-if 'max' not in x:
-    print('xxxx')
+print(None is None)

@@ -940,11 +940,11 @@ def get_new_bets_fonbet(match_id, proxies, time_out):
 
 if __name__ == '__main__':
     FONBET_USER = {"login": 5699838, "password": "NTe2904H11"}
-    wager_fonbet = {'event': '13395343', 'factor': '1809', 'param': '250', 'score': '0:0', 'value': '1.42'}
+    wager_fonbet = {'event': '13538626', 'factor': '1809', 'param': '250', 'score': '0:0', 'value': '1.42'}
 
     obj = {}
     obj['wager_fonbet'] = wager_fonbet
-    obj['amount_fonbet'] = 30
+    obj['amount_fonbet'] = 45
     obj['fonbet_bet_type'] = None  # 'ТМ(2.5)'
 
     fonbet = FonbetBot(FONBET_USER)

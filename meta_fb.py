@@ -104,6 +104,37 @@ payload_req = {
     "clientId": 0
 }
 
+payload_coupon_sum = {
+    "clientId": "",
+    "fsid": "",
+    "lang": "ru",
+    "platform": "mobile_android",
+    "sysId": 4
+}
+
+
+payload_sell_check_result = {
+    "requestId": 0,
+    "clientId": "",
+    "fsid": "",
+    "lang": "ru",
+    "platform": "mobile_android",
+    "sysId": 4
+}
+
+payload_coupon_sell = {
+    "flexSum": "up",
+    "regId": 0,
+    "requestId": 0,
+    "sellSum": 0.0,
+    "clientId": "",
+    "fsid": "",
+    "lang": "ru",
+    "platform": "mobile_android",
+    "sysId": 4
+}
+
+
 def get_random_str():
     result = ''
     alph_num = '0123456789'

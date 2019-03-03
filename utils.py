@@ -7,8 +7,8 @@ import requests
 import datetime
 import statistics
 
-# DEBUG = True
-DEBUG = False
+DEBUG = True
+# DEBUG = False
 
 package_dir = os.path.dirname(__file__)
 dtOld = datetime.datetime.now()
