@@ -167,182 +167,186 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max, vect1, vect2, s
         prnt('Wait sec: ' + str(wait_sec))
         real_wait = wait_sec + deff_max
         prnt('Real wait sec: ' + str(real_wait))
-        time.sleep(wait_sec)
-        with Manager() as manager:
-            obj = manager.dict()
-
-            recheck_o = Process(target=get_kof_olimp, args=(obj, wager_olimp['event'], olimp_bet_type,))
-            recheck_fb = Process(
-                target=get_kof_fonbet,
-                args=(
-                    obj,
-                    wager_fonbet['event'],
-                    int(wager_fonbet['factor']),
-                    wager_fonbet['param']
+        if real_wait < 9:
+            time.sleep(wait_sec)
+            with Manager() as manager:
+                obj = manager.dict()
+    
+                recheck_o = Process(target=get_kof_olimp, args=(obj, wager_olimp['event'], olimp_bet_type,))
+                recheck_fb = Process(
+                    target=get_kof_fonbet,
+                    args=(
+                        obj,
+                        wager_fonbet['event'],
+                        int(wager_fonbet['factor']),
+                        wager_fonbet['param']
+                    )
                 )
-            )
-
-            recheck_fb.start()
-            recheck_o.start()
-
-            recheck_fb.join()
-            recheck_o.join()
-
-            deff_max = max(obj['olimp_time_req'], obj['fonbet_time_req'])
-
-            prnt('deff_max: ' + str(deff_max) + ', O ' + olimp_bet_type + ': ' + str(wager_olimp['factor']) + ' -> ' +
-                 str(obj['olimp']) + '| F ' + fonbet_bet_type + ': ' + str(wager_fonbet['value']) + ' -> ' + str(
-                obj['fonbet']))
-
-            wager_fonbet['value'] = obj['fonbet']
-            wager_olimp['value'] = obj['olimp']
-            wager_olimp['factor'] = obj['olimp']
-
-            # Проверяем что полученный коэфициент больше 1
-            if float(obj['olimp']) > 1 < float(obj['fonbet']):
-
-                # пересчетаем суммы ставок
-                amount_olimp, amount_fonbet = get_sum_bets(float(obj['olimp']), float(obj['fonbet']), total_bet, False)
-
-                # Выведем текую доходность вилки
-                prnt('cur proc: ' + str(cur_proc) + '%')
-                L = (1 / float(obj['olimp'])) + (1 / float(obj['fonbet']))
-                new_proc = round((1 - L) * 100, 2)
-                change_proc = round(new_proc - cur_proc, 2)
-                prnt('new proc: ' + str(new_proc) + '%, change: ' + str(change_proc))
-
-                if check_l(L) == '' or DEBUG:
-
-                    is_recheck = True
-                    fork_id = int(time.time())
-                    fork_info = {
-                        fork_id: {
-                            "olimp": {
-                                "id": wager_olimp["event"],
-                                "kof": wager_olimp["factor"],
-                                "amount": amount_olimp,
-                                "reg_id": 0,
-                                "bet_type": olimp_bet_type,
-                                "balance": bal1,
-                                "err": 'ok'
-                            },
-                            "fonbet": {
-                                "id": wager_fonbet["event"],
-                                "kof": wager_fonbet["value"],
-                                "amount": amount_fonbet,
-                                "reg_id": 0,
-                                "bet_type": fonbet_bet_type,
-                                "balance": bal2,
-                                "err": 'ok'
-                            },
+    
+                recheck_fb.start()
+                recheck_o.start()
+    
+                recheck_fb.join()
+                recheck_o.join()
+    
+                deff_max = max(obj['olimp_time_req'], obj['fonbet_time_req'])
+    
+                prnt('deff_max: ' + str(deff_max) + ', O ' + olimp_bet_type + ': ' + str(wager_olimp['factor']) + ' -> ' +
+                     str(obj['olimp']) + '| F ' + fonbet_bet_type + ': ' + str(wager_fonbet['value']) + ' -> ' + str(
+                    obj['fonbet']))
+    
+                wager_fonbet['value'] = obj['fonbet']
+                wager_olimp['value'] = obj['olimp']
+                wager_olimp['factor'] = obj['olimp']
+    
+                # Проверяем что полученный коэфициент больше 1
+                if float(obj['olimp']) > 1 < float(obj['fonbet']):
+    
+                    # пересчетаем суммы ставок
+                    amount_olimp, amount_fonbet = get_sum_bets(float(obj['olimp']), float(obj['fonbet']), total_bet, False)
+    
+                    # Выведем текую доходность вилки
+                    prnt('cur proc: ' + str(cur_proc) + '%')
+                    L = (1 / float(obj['olimp'])) + (1 / float(obj['fonbet']))
+                    new_proc = round((1 - L) * 100, 2)
+                    change_proc = round(new_proc - cur_proc, 2)
+                    prnt('new proc: ' + str(new_proc) + '%, change: ' + str(change_proc))
+    
+                    if check_l(L) == '' or DEBUG:
+    
+                        is_recheck = True
+                        fork_id = int(time.time())
+                        fork_info = {
+                            fork_id: {
+                                "olimp": {
+                                    "id": wager_olimp["event"],
+                                    "kof": wager_olimp["factor"],
+                                    "amount": amount_olimp,
+                                    "reg_id": 0,
+                                    "bet_type": olimp_bet_type,
+                                    "balance": bal1,
+                                    "err": 'ok'
+                                },
+                                "fonbet": {
+                                    "id": wager_fonbet["event"],
+                                    "kof": wager_fonbet["value"],
+                                    "amount": amount_fonbet,
+                                    "reg_id": 0,
+                                    "bet_type": fonbet_bet_type,
+                                    "balance": bal2,
+                                    "err": 'ok'
+                                },
+                            }
                         }
-                    }
+                    else:
+                        is_recheck = False
+    
+                    prnt('Recheck fork result: ' + str(is_recheck))
+                    if is_recheck is False:
+                        prnt('Fork is lost =(')
+                        return False
                 else:
-                    is_recheck = False
-
-                prnt('Recheck fork result: ' + str(is_recheck))
-                if is_recheck is False:
-                    prnt('Fork is lost =(')
+                    prnt('One of the coefficients is not available')
                     return False
-            else:
-                prnt('One of the coefficients is not available')
+    
+            if DEBUG:
+                amount_olimp = 30
+                amount_fonbet = 30
                 return False
-
-        if DEBUG:
-            amount_olimp = 30
-            amount_fonbet = 30
-            return False
-
-        with Manager() as manager:
-            obj = manager.dict()
-
-            obj['amount_olimp'] = amount_olimp
-            obj['wager_olimp'] = wager_olimp
-
-            obj['amount_fonbet'] = amount_fonbet
-            obj['wager_fonbet'] = wager_fonbet
-
-            obj['olimp_bet_type'] = olimp_bet_type
-            obj['fonbet_bet_type'] = fonbet_bet_type
-
-            obj['ol_vect'] = vect1
-            obj['fb_vect'] = vect2
-            obj['sc1'] = sc1
-            obj['sc2'] = sc2
-            obj['cur_total'] = sc1 + sc2
-            if '(' in fonbet_bet_type:
-                obj['bet_total'] = re.findall('\((.*)\)', fonbet_bet_type)[0]
-
-            prnt(
-                'bet_total:{}, cur_total:{}, sc1:{}, sc2:{}, v_ol:{}, v_fb:{}'.format(
-                    obj.get('bet_total', ''),
-                    obj.get('cur_total', ''),
-                    obj.get('sc1', ''),
-                    obj.get('sc2', ''),
-                    obj.get('ol_vect', ''),
-                    obj.get('fb_vect', ''),
+    
+            with Manager() as manager:
+                obj = manager.dict()
+    
+                obj['amount_olimp'] = amount_olimp
+                obj['wager_olimp'] = wager_olimp
+    
+                obj['amount_fonbet'] = amount_fonbet
+                obj['wager_fonbet'] = wager_fonbet
+    
+                obj['olimp_bet_type'] = olimp_bet_type
+                obj['fonbet_bet_type'] = fonbet_bet_type
+    
+                obj['ol_vect'] = vect1
+                obj['fb_vect'] = vect2
+                obj['sc1'] = sc1
+                obj['sc2'] = sc2
+                obj['cur_total'] = sc1 + sc2
+                if '(' in fonbet_bet_type:
+                    obj['bet_total'] = re.findall('\((.*)\)', fonbet_bet_type)[0]
+    
+                prnt(
+                    'bet_total:{}, cur_total:{}, sc1:{}, sc2:{}, v_ol:{}, v_fb:{}'.format(
+                        obj.get('bet_total', ''),
+                        obj.get('cur_total', ''),
+                        obj.get('sc1', ''),
+                        obj.get('sc2', ''),
+                        obj.get('ol_vect', ''),
+                        obj.get('fb_vect', ''),
+                    )
                 )
-            )
-
-            pid_olimp = Process(target=bet_olimp_cl, args=(obj,))
-            pid_fonbet = Process(target=bet_fonbet_cl, args=(obj,))
-
-            pid_olimp.start()
-            pid_fonbet.start()
-
-            pid_fonbet.join()
-            pid_olimp.join()
-
-            prnt('obj: ' + str(obj))
-            sale_timeout = randint(1, 3)
-            if obj.get('fonbet_err') != 'ok' and obj.get('olimp_err') == 'ok':
-                cnt_fail = cnt_fail + 1
-                prnt('Ошибка при проставлении ставки в фонбет, делаю выкуп ставки в олимпе, через '
-                     + str(sale_timeout) + ' сек.')
-                try:
-                    obj['olimp'].sale_bet()
-                except Exception as e:
-                    prnts('Error sale_bet olimp: ' + str(e))
-                    obj['olimp_err'] = str(e)
-
-            if obj.get('olimp_err') != 'ok' and obj.get('fonbet_err') == 'ok':
-                cnt_fail = cnt_fail + 1
-                prnt('Ошибка при проставлении ставки в олимпе, делаю выкуп ставки в фонбет, через '
-                     + str(sale_timeout) + ' сек.')
-                try:
-                    obj['fonbet'].sale_bet()
-                except Exception as e:
-                    prnts('Error sale_bet fonbet: ' + str(e))
-                    obj['fonbet_err'] = str(e)
-
-            if obj.get('olimp_err') == 'ok' and obj.get('fonbet_err') == 'ok':
-                prnt('Ставки проставлены успешно!')
-                bal1 = bal1 - amount_olimp
-                prnt('bal1: ' + str(bal1))
-                bal2 = bal2 - amount_fonbet
-                prnt('bal2: ' + str(bal2))
-
-            # Добавим инфу о проставлении
-            success.append(key)
-
-            fork_info[fork_id]['olimp']['reg_id'] = obj['olimp'].get_reg_id()
-            fork_info[fork_id]['fonbet']['reg_id'] = obj['fonbet'].get_reg_id()
-
-            fork_info[fork_id]['olimp']['err'] = str(obj['olimp_err'])
-            fork_info[fork_id]['fonbet']['err'] = str(obj['fonbet_err'])
-
-            save_fork(fork_info)
-            prnt('Matchs exclude: ' + str(success))
-            sleep_post_work = 30
-            prnt('Ожидание ' + str(sleep_post_work) + ' сек.')
-            time.sleep(sleep_post_work)
-
-            max_fail = 5
-            if cnt_fail > max_fail:
-                err_str = 'Max fail > ' + str(max_fail) + ', script off'
-                raise MaxFail(err_str)
-
-            return True
+    
+                pid_olimp = Process(target=bet_olimp_cl, args=(obj,))
+                pid_fonbet = Process(target=bet_fonbet_cl, args=(obj,))
+    
+                pid_olimp.start()
+                pid_fonbet.start()
+    
+                pid_fonbet.join()
+                pid_olimp.join()
+    
+                prnt('obj: ' + str(obj))
+                sale_timeout = randint(1, 3)
+                if obj.get('fonbet_err') != 'ok' and obj.get('olimp_err') == 'ok':
+                    cnt_fail = cnt_fail + 1
+                    prnt('Ошибка при проставлении ставки в фонбет, делаю выкуп ставки в олимпе, через '
+                         + str(sale_timeout) + ' сек.')
+                    try:
+                        obj['olimp'].sale_bet()
+                    except Exception as e:
+                        prnts('Error sale_bet olimp: ' + str(e))
+                        obj['olimp_err'] = str(e)
+    
+                if obj.get('olimp_err') != 'ok' and obj.get('fonbet_err') == 'ok':
+                    cnt_fail = cnt_fail + 1
+                    prnt('Ошибка при проставлении ставки в олимпе, делаю выкуп ставки в фонбет, через '
+                         + str(sale_timeout) + ' сек.')
+                    try:
+                        obj['fonbet'].sale_bet()
+                    except Exception as e:
+                        prnts('Error sale_bet fonbet: ' + str(e))
+                        obj['fonbet_err'] = str(e)
+    
+                if obj.get('olimp_err') == 'ok' and obj.get('fonbet_err') == 'ok':
+                    prnt('Ставки проставлены успешно!')
+                    bal1 = bal1 - amount_olimp
+                    prnt('bal1: ' + str(bal1))
+                    bal2 = bal2 - amount_fonbet
+                    prnt('bal2: ' + str(bal2))
+    
+                # Добавим инфу о проставлении
+                success.append(key)
+    
+                fork_info[fork_id]['olimp']['reg_id'] = obj['olimp'].get_reg_id()
+                fork_info[fork_id]['fonbet']['reg_id'] = obj['fonbet'].get_reg_id()
+    
+                fork_info[fork_id]['olimp']['err'] = str(obj['olimp_err'])
+                fork_info[fork_id]['fonbet']['err'] = str(obj['fonbet_err'])
+    
+                save_fork(fork_info)
+                prnt('Matchs exclude: ' + str(success))
+                sleep_post_work = 30
+                prnt('Ожидание ' + str(sleep_post_work) + ' сек.')
+                time.sleep(sleep_post_work)
+    
+                max_fail = 5
+                if cnt_fail > max_fail:
+                    err_str = 'Max fail > ' + str(max_fail) + ', script off'
+                    raise MaxFail(err_str)
+    
+                return True
+        else:
+            prnt('Fork is lost: real wait > 9')
+            return False
 
 
 def run_client():
