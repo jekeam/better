@@ -4,7 +4,7 @@ import glob
 import sys
 import os
 
-if 1 == 0:
+if 1 == 1:
 
     df = pd.read_csv('forks.csv', encoding='utf-8', sep=';')
     df = df.round({'minute': 2})
