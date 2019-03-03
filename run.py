@@ -252,9 +252,6 @@ def compare_teams(team1_bk1, team2_bk1, team1_bk2, team2_bk2):
 
 
 def start_compare_matches(pair_mathes, json_bk1, json_bk2):
-    if DEBUG:
-        x = 0
-
     while True:
         try:
             # Проверим какие матчи завершились
@@ -283,21 +280,26 @@ def start_compare_matches(pair_mathes, json_bk1, json_bk2):
                                             bk2_match_info.get('team2')
                                     ):
 
-                                        if DEBUG and x > 0 and str(bk2_match_id) != '13473603':
-                                            return False
-                                        if DEBUG:
-                                            x = 1
-
-                                        prnts(
-                                            'Матч добавлен: ' + str(bk1_match_id) + ' ' +
-                                            bk1_match_info.get('team1') + ' vs ' +
-                                            bk1_match_info.get('team2') + ' | ' +
-                                            str(bk2_match_id) + ' ' +
-                                            bk2_match_info.get('team1') + ' vs ' +
-                                            bk2_match_info.get('team2')
-                                        )
-
-                                        pair_mathes.append([bk1_match_id, bk2_match_id])
+                                        if DEBUG and str(bk2_match_id) == '13344902':
+                                            prnts(
+                                                'Матч добавлен: ' + str(bk1_match_id) + ' ' +
+                                                bk1_match_info.get('team1') + ' vs ' +
+                                                bk1_match_info.get('team2') + ' | ' +
+                                                str(bk2_match_id) + ' ' +
+                                                bk2_match_info.get('team1') + ' vs ' +
+                                                bk2_match_info.get('team2')
+                                            )
+                                            pair_mathes.append([bk1_match_id, bk2_match_id])
+                                        elif not DEBUG:
+                                            prnts(
+                                                'Матч добавлен: ' + str(bk1_match_id) + ' ' +
+                                                bk1_match_info.get('team1') + ' vs ' +
+                                                bk1_match_info.get('team2') + ' | ' +
+                                                str(bk2_match_id) + ' ' +
+                                                bk2_match_info.get('team1') + ' vs ' +
+                                                bk2_match_info.get('team2')
+                                            )
+                                            pair_mathes.append([bk1_match_id, bk2_match_id])
 
             time.sleep(15)
         except Exception as e:
