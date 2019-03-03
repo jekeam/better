@@ -355,7 +355,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
                 k_fonbet = math_json_fonbet.get('kofs', {}).get(kof_type_fonbet, {})
 
                 v_olimp = k_olimp.get('value', 0.0)
-                v_fonbet = k_fonbet.get('value', 0.0)-11
+                v_fonbet = k_fonbet.get('value', 0.0)
 
                 if DEBUG:
                     v_olimp = v_olimp - 1
