@@ -120,7 +120,8 @@ def start_seeker_matchs_fonbet(proxies, gen_proxi_fonbet, arr_matchs):
         time.sleep(time_sleep)
 
 
-def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi_olimp, pair_mathes, stat_req_ol):
+def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi_olimp,
+                            pair_mathes, mathes_complite, stat_req_ol):
     global TIMEOUT_MATCH, TIMEOUT_MATCH_MINUS
 
     proxy_size = 10
@@ -142,6 +143,7 @@ def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi
                 if match_id_olimp in pair_match:
                     prnts('Olimp, pair mathes remove: ' + str(pair_mathes[cnt]))
                     pair_mathes.remove(pair_mathes[cnt])
+                    mathes_complite.append(match_id_olimp)
                 cnt += 1
             prnts(e)
             raise ValueError('start_seeker_bets_olimp:' + str(e))
@@ -160,7 +162,8 @@ def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi
         time.sleep(time_sleep)
 
 
-def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_proxi_fonbet, pair_mathes, stat_req_fb):
+def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_proxi_fonbet,
+                             pair_mathes, mathes_complite, stat_req_fb):
     global TIMEOUT_MATCH, TIMEOUT_MATCH_MINUS
 
     proxy_size = 5
@@ -182,6 +185,7 @@ def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_p
                 if match_id_fonbet in pair_match:
                     prnts('Fonbet, pair mathes remove: ' + str(pair_mathes[cnt]))
                     pair_mathes.remove(pair_mathes[cnt])
+                    mathes_complite.append(match_id_fonbet)
                 cnt += 1
             prnts(e)
             raise ValueError('start_seeker_bets_fonbet:' + str(e))
@@ -204,6 +208,7 @@ def starter_bets(
         bets_olimp,
         bets_fonbet,
         pair_mathes,
+        mathes_complite,
         mathes_id_is_work,
         proxies_olimp,
         gen_proxi_olimp,
@@ -221,7 +226,8 @@ def starter_bets(
 
                 start_seeker_olimp_bets_by_id = threading.Thread(
                     target=start_seeker_bets_olimp,
-                    args=(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi_olimp, pair_mathes, stat_req_olimp)
+                    args=(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi_olimp,
+                          pair_mathes, mathes_complite, stat_req_olimp)
                 )
                 start_seeker_olimp_bets_by_id.start()
 
@@ -230,7 +236,8 @@ def starter_bets(
 
                 start_seeker_fonbet_bets_by_id = threading.Thread(
                     target=start_seeker_bets_fonbet,
-                    args=(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_proxi_fonbet, pair_mathes, stat_req_fonbet)
+                    args=(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_proxi_fonbet,
+                          pair_mathes, mathes_complite, stat_req_fonbet)
                 )
                 start_seeker_fonbet_bets_by_id.start()
 
@@ -251,18 +258,9 @@ def compare_teams(team1_bk1, team2_bk1, team1_bk2, team2_bk2):
         return False
 
 
-def start_compare_matches(pair_mathes, json_bk1, json_bk2):
+def start_compare_matches(pair_mathes, json_bk1, json_bk2, mathes_complite):
     while True:
         try:
-            # Проверим какие матчи завершились
-            cnt = 0
-            for bk1_match_id, bk2_match_id in pair_mathes:
-                if bk1_match_id not in json_bk1.keys() or \
-                        bk2_match_id not in json_bk2.keys():
-                    prnts('Матч исключен: [' + str(bk1_match_id) + ', ' + str(bk2_match_id) + ']')
-                    pair_mathes.remove(pair_mathes[cnt])
-                cnt = cnt + 1
-
             prnts('Найдено матчей: ' + str(len(pair_mathes)) + ' ' + str(pair_mathes))
             for bk1_match_id, bk1_match_info in json_bk1.items():
                 if bk1_match_info:
@@ -273,33 +271,36 @@ def start_compare_matches(pair_mathes, json_bk1, json_bk2):
                                 # Проверим что ид матча 2 нет в списке
                                 if 'yes' not in list(
                                         map(lambda id: 'yes' if bk2_match_id in id else 'no', pair_mathes)):
-                                    if compare_teams(
-                                            bk1_match_info.get('team1'),
-                                            bk1_match_info.get('team2'),
-                                            bk2_match_info.get('team1'),
-                                            bk2_match_info.get('team2')
-                                    ):
-
-                                        if DEBUG and str(bk2_match_id) == '13344902':
-                                            prnts(
-                                                'Матч добавлен: ' + str(bk1_match_id) + ' ' +
-                                                bk1_match_info.get('team1') + ' vs ' +
-                                                bk1_match_info.get('team2') + ' | ' +
-                                                str(bk2_match_id) + ' ' +
-                                                bk2_match_info.get('team1') + ' vs ' +
+                                    # Проверим что матч не завершен:
+                                    if bk1_match_id in mathes_complite or bk2_match_id in mathes_complite:
+                                        prnts('Матчи заверщены: ' + str(bk1_match_id) + '-' + str(bk2_match_id))
+                                    else:
+                                        if compare_teams(
+                                                bk1_match_info.get('team1'),
+                                                bk1_match_info.get('team2'),
+                                                bk2_match_info.get('team1'),
                                                 bk2_match_info.get('team2')
-                                            )
-                                            pair_mathes.append([bk1_match_id, bk2_match_id])
-                                        elif not DEBUG:
-                                            prnts(
-                                                'Матч добавлен: ' + str(bk1_match_id) + ' ' +
-                                                bk1_match_info.get('team1') + ' vs ' +
-                                                bk1_match_info.get('team2') + ' | ' +
-                                                str(bk2_match_id) + ' ' +
-                                                bk2_match_info.get('team1') + ' vs ' +
-                                                bk2_match_info.get('team2')
-                                            )
-                                            pair_mathes.append([bk1_match_id, bk2_match_id])
+                                        ):
+                                            if DEBUG and str(bk2_match_id) == '13344902':
+                                                prnts(
+                                                    'Матч добавлен: ' + str(bk1_match_id) + ' ' +
+                                                    bk1_match_info.get('team1') + ' vs ' +
+                                                    bk1_match_info.get('team2') + ' | ' +
+                                                    str(bk2_match_id) + ' ' +
+                                                    bk2_match_info.get('team1') + ' vs ' +
+                                                    bk2_match_info.get('team2')
+                                                )
+                                                pair_mathes.append([bk1_match_id, bk2_match_id])
+                                            elif not DEBUG:
+                                                prnts(
+                                                    'Матч добавлен: ' + str(bk1_match_id) + ' ' +
+                                                    bk1_match_info.get('team1') + ' vs ' +
+                                                    bk1_match_info.get('team2') + ' | ' +
+                                                    str(bk2_match_id) + ' ' +
+                                                    bk2_match_info.get('team1') + ' vs ' +
+                                                    bk2_match_info.get('team2')
+                                                )
+                                                pair_mathes.append([bk1_match_id, bk2_match_id])
 
             time.sleep(15)
         except Exception as e:
@@ -540,6 +541,7 @@ if __name__ == '__main__':
     # json by mathes
     arr_olimp_matchs = dict()
     arr_fonbet_matchs = dict()
+    mathes_complite = []
 
     # json by bets math
     bets_fonbet = dict()
@@ -553,7 +555,7 @@ if __name__ == '__main__':
 
     olimp_seeker_matchs = threading.Thread(
         target=start_seeker_matchs_olimp,
-        args=(proxies_olimp, gen_proxi_olimp, arr_olimp_matchs,)
+        args=(proxies_olimp, gen_proxi_olimp, arr_olimp_matchs)
     )
     olimp_seeker_matchs.start()
 
@@ -566,7 +568,7 @@ if __name__ == '__main__':
     pair_mathes = []
     compare_matches = threading.Thread(
         target=start_compare_matches,
-        args=(pair_mathes, arr_olimp_matchs, arr_fonbet_matchs)
+        args=(pair_mathes, arr_olimp_matchs, arr_fonbet_matchs, mathes_complite)
     )
     compare_matches.start()
 
@@ -577,6 +579,7 @@ if __name__ == '__main__':
             bets_olimp,
             bets_fonbet,
             pair_mathes,
+            mathes_complite,
             mathes_id_is_work,
             proxies_olimp,
             gen_proxi_olimp,
