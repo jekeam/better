@@ -159,7 +159,7 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max, vect1, vect2, s
     amount_olimp, amount_fonbet = get_sum_bets(wager_olimp['factor'], wager_fonbet['value'], total_bet, False)
 
     if __name__ == '__main__':
-        wait_sec = 6  # max(0, (3.5 - deff_max))
+        wait_sec = 0  # max(0, (3.5 - deff_max))
         prnt('Wait sec: ' + str(wait_sec))
         prnt('Real wait sec: ' + str(wait_sec + deff_max))
         time.sleep(wait_sec)
