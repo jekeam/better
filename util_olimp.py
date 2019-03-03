@@ -186,16 +186,6 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out, pair_mathes):
     global olimp_url_https
     global olimp_data
 
-    match_exists = False
-    cnt = 0
-    for pair_match in pair_mathes:
-        if str(pair_match[0]) == str(match_id):
-            match_exists = True
-        cnt += 1
-    if match_exists is False:
-        err_str = 'Олимп: матч ' + str(match_id) + ' не найден в спике активных, поток завершен.'
-        raise OlimpMatchСompleted(err_str)
-
     olimp_data_m = olimp_data.copy()
 
     olimp_data_m.update({'id': match_id})
@@ -204,7 +194,6 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out, pair_mathes):
     olimp_stake_head = olimp_head.copy()
 
     token = get_xtoken(olimp_data_m, olimp_secret_key)
-    # prnts(str(time.time()) + ' ' + proxy + ' ' + str(olimp_data_m) + ' ' + str(token), 'hide')
 
     olimp_stake_head.update(token)
     olimp_stake_head.pop('Accept-Language', None)

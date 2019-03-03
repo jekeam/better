@@ -90,19 +90,8 @@ def get_match_fonbet(match_id, proxi_list, proxy, time_out, pair_mathes):
     global url_fonbet_match
     global fonbet_header
 
-    match_exists = False
-    cnt = 0
-    for pair_match in pair_mathes:
-        if str(pair_match[1]) == str(match_id):
-            match_exists = True
-        cnt += 1
-    if match_exists is False:
-        err_str = 'Фонбет: матч ' + str(match_id) + ' не найден в спике активных, поток завершен.'
-        raise FonbetMatchСompleted(err_str)
-
     try:
         proxies = {'http': proxy}
-        # prnts('Fonbet: set proxy by ' + str(match_id) + ': ' + str(proxy), 'hide')
     except Exception as e:
         err_str = 'Fonbet error set proxy by ' + str(match_id) + ': ' + str(e)
         prnts(err_str)
