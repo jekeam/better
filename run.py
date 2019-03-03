@@ -273,7 +273,8 @@ def start_compare_matches(pair_mathes, json_bk1, json_bk2, mathes_complite):
                                         map(lambda id: 'yes' if bk2_match_id in id else 'no', pair_mathes)):
                                     # Проверим что матч не завершен:
                                     if bk1_match_id in mathes_complite or bk2_match_id in mathes_complite:
-                                        prnts('Матчи заверщены: ' + str(bk1_match_id) + '-' + str(bk2_match_id))
+                                        # prnts('Матчи завершены: ' + str(bk1_match_id) + '-' + str(bk2_match_id))
+                                        pass
                                     else:
                                         if compare_teams(
                                                 bk1_match_info.get('team1'),
