@@ -1,3 +1,2 @@
-print(list(filter(None, range(5))))
-
-print(None is None)
+import sys
+print('DOMINO TILE HORIZONTAL-00-00', file=sys.stderr)

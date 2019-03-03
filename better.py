@@ -161,7 +161,13 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max, vect1, vect2, s
     if __name__ == '__main__':
         wait_sec = 0  # max(0, (3.5 - deff_max))
         prnt('Wait sec: ' + str(wait_sec))
-        prnt('Real wait sec: ' + str(wait_sec + deff_max))
+        
+        real_wait = wait_sec + deff_max
+        prnt('Real wait sec: ' + str(real_wait))
+        if real_wait > 9:
+            prnt('Fork is lost: real wait > 9')
+            return False
+            
         time.sleep(wait_sec)
         with Manager() as manager:
             obj = manager.dict()

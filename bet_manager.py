@@ -235,8 +235,7 @@ class BetManager:
                 self.msg.format(sys._getframe().f_code.co_name,
                                 'balance: ' + \
                                 str(self.session.get('balance')) + ' ' +
-                                str(self.session.get('currency'))
-                                )
+                                str(self.session.get('currency')))
             )
             write_file(self.session_file, self.session['session'].strip())
             self.wait_sign_in_opp()
