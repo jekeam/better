@@ -131,7 +131,7 @@ def check_fork(key, L, k1, k2, live_fork_total, bk1_score, bk2_score, minute, ti
             + str(minute) + ' минута матча \n'
 
     # Вилка живет достаточно
-    long_livers = 110
+    long_livers = get_param('fork_life_time')
     if live_fork_total < long_livers:
         fork_exclude_text = \
             fork_exclude_text + 'Вилка ' + str(round((1 - L) * 100, 2)) + '% исключена т.к. живет меньше ' \
