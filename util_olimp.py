@@ -312,7 +312,7 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
             except:
                 pass
 
-            if minute >= MINUTE_COMPLITE or ((time.time() - timer) / 60) > MINUTE_COMPLITE:
+            if minute >= MINUTE_COMPLITE:
                 err_str = 'Олимп: матч ' + str(match_id) + ' завершен, т.к. больше 88 минуты прошло.'
                 raise OlimpMatchСompleted(err_str)
 
