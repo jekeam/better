@@ -4,7 +4,7 @@ from json import dumps
 import requests
 from utils import check_status_with_resp, prnt
 import time
-
+from retry_requests import requests_retry_session
 
 fb_payload = {
     "appVersion": "5.1.3b",

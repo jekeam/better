@@ -17,6 +17,7 @@ from meta_fb import fb_payload, fb_payload_bet, get_random_str, get_dumped_paylo
 from meta_fb import fb_headers, get_new_bets_fonbet, payload_req, payload_coupon_sum, payload_coupon_sell
 from meta_fb import payload_sell_check_result
 import copy
+from retry_requests import requests_retry_session
 
 prnt('DEBUG: ' + str(DEBUG))
 
