@@ -485,9 +485,9 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
             for i, j in bets_olimp.get(key_id, {}).get('kofs', {}).copy().items():
                 if round(float(time.time() - float(j.get('time_req', 0)))) > 8:
                     try:
-                        bets_olimp[key_id]['kofs'].pop(i)
+                        bets_olimp[key_id]['kofs'][i]['value'] = 0
                         prnts(
-                            'Олимп, данные по котировке из БК не получены более 8 сек., котировка удалена: ' +
+                            'Олимп, данные по котировке из БК не получены более 8 сек., знач. выставил в 0: ' +
                             key_id + ' ' + str(i) + ' ' + str(j), 'hide'
                         )
                     except Exception as e:

@@ -247,8 +247,6 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
                                 'kofs': {}
                             }
 
-                    # prnts('event_name', event.get('name'))
-
                     half = ''
                     if event.get('name') == '1st half':
                         half = '1'
@@ -258,25 +256,26 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
                     for cat in event.get('subcategories'):
 
                         cat_name = cat.get('name')
-                        # prnts('cat_name', cat_name)
+
                         if cat_name in (
                                 '1X2 (90 min)',
                                 '1X2',
                                 'Goal - no goal',
-                                'Total', 'Totals', 'Team Totals-1', 'Team Totals-2'):  # , '1st half', '2nd half'
+                                'Total', 'Totals', 'Team Totals-1', 'Team Totals-2'
+                        ):
 
                             for kof in cat.get('quotes'):
 
                                 factorId = str(kof.get('factorId'))
                                 pValue = kof.get('pValue', '')
                                 p = kof.get('p', '')
+
                                 kof_is_block = kof.get('blocked', False)
                                 if kof_is_block:
                                     value = 0
-                                    # prnts('fonbet block: '+str(name), str(kof.get('factorId')))
                                 else:
                                     value = kof.get('value')
-                                # {'event': '12788610', 'factor': '921', 'param': '', 'score': '1:0', 'value': '1.25'}
+
                                 for vct in VICTS:
                                     coef = half + str(vct[0])  # + num_team
                                     if str(vct[1]) == factorId:
@@ -449,9 +448,9 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
             for i, j in bets_fonbet.get(key_id, {}).get('kofs', {}).copy().items():
                 if round(float(time.time() - float(j.get('time_req', 0)))) > 8:
                     try:
-                        bets_fonbet[key_id]['kofs'].pop(i)
+                        bets_fonbet[key_id]['kofs'][i]['value'] = 0
                         prnts(
-                            'Фонбет, данные по котировке из БК не получены более 8 сек., котировка удалена: ' +
+                            'Фонбет, данные по котировке из БК не получены более 8 сек., знач. выставил в 0: ' +
                             key_id + ' ' + str(i) + ' ' + str(j), 'hide'
                         )
                     except Exception as e:
