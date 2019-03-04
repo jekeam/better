@@ -175,7 +175,7 @@ class BetManager:
 
                 prnt(self.msg.format(sys._getframe().f_code.co_name, 'rq: ' + str(payload) + ' ' + str(headers)),
                      'hide')
-                resp = requests.post(
+                resp = requests_retry_session().post(
                     ol_url_api.format(str(self.server_olimp), 'autorize'),
                     headers=headers,
                     data=payload,
@@ -209,7 +209,7 @@ class BetManager:
                 url, self.timeout = get_common_url(self.server_fb)
 
                 prnt(self.msg.format(sys._getframe().f_code.co_name, 'rq: ' + str(data)), 'hide')
-                resp = requests.post(
+                resp = requests_retry_session().post(
                     url.format('login'),
                     headers=fb_headers,
                     data=data,
@@ -289,7 +289,7 @@ class BetManager:
         payload['coupon'].pop('flexParam')
 
         prnt(self.msg.format(sys._getframe().f_code.co_name, 'rq: ' + str(payload) + ' ' + str(headers)), 'hide')
-        resp = requests.post(
+        resp = requests_retry_session().post(
             url.format('coupon/getMinMax'),
             headers=headers,
             json=payload,
@@ -335,7 +335,7 @@ class BetManager:
         headers = copy.deepcopy(fb_headers)
 
         prnt(self.msg.format(sys._getframe().f_code.co_name, 'rs: ' + str(payload)), 'hide')
-        resp = requests.post(
+        resp = requests_retry_session().post(
             url.format("coupon/result"),
             headers=headers,
             json=payload,
@@ -451,7 +451,7 @@ class BetManager:
         payload['client']['id'] = self.account['login']
 
         prnt(self.msg.format(sys._getframe().f_code.co_name, 'rq: ' + str(payload) + ' ' + str(headers)), 'hide')
-        resp = requests.post(
+        resp = requests_retry_session().post(
             url.format("coupon/requestId"),
             headers=headers,
             json=payload,
@@ -514,7 +514,7 @@ class BetManager:
             headers.update(get_xtoken_bet(payload))
 
             prnt(self.msg.format(sys._getframe().f_code.co_name, 'rq: ' + str(payload) + ' ' + str(headers)), 'hide')
-            resp = requests.post(
+            resp = requests_retry_session().post(
                 ol_url_api.format(str(self.server_olimp), 'basket/fast'),
                 headers=headers,
                 data=payload,
@@ -574,7 +574,7 @@ class BetManager:
             self.payload['requestId'] = self.reqId
 
             prnt(self.msg.format(sys._getframe().f_code.co_name, 'rq: ' + str(payload) + ' ' + str(headers)), 'hide')
-            resp = requests.post(
+            resp = requests_retry_session().post(
                 url.format('coupon/register'),
                 headers=headers,
                 json=self.payload,
@@ -622,7 +622,7 @@ class BetManager:
 
                 prnt(self.msg.format(sys._getframe().f_code.co_name, 'rq: ' + str(payload) + ' ' + str(headers)),
                      'hide')
-                resp = requests.post(
+                resp = requests_retry_session().post(
                     ol_url_api.format(str(self.server_olimp), 'user/cashout'),
                     headers=headers,
                     data=payload,
@@ -664,7 +664,7 @@ class BetManager:
                 payload['fsid'] = self.session['session']
                 
                 prnt(self.msg.format(sys._getframe().f_code.co_name, 'rq: ' + str(payload) + ' ' + str(headers)), 'hide')
-                resp = requests.post(
+                resp = requests_retry_session().post(
                     url.format("coupon/sell/conditions/getFromVersion"),
                     headers=headers,
                     json=payload,
@@ -706,7 +706,7 @@ class BetManager:
                 payload['fsid'] = self.session["session"]
                 
                 prnt(self.msg.format(sys._getframe().f_code.co_name, 'rq: ' + str(payload) + ' ' + str(headers)), 'hide')
-                resp = requests.post(
+                resp = requests_retry_session().post(
                     url.format("coupon/sell/requestId"),
                     headers=headers,
                     json=payload,
@@ -735,7 +735,7 @@ class BetManager:
                 payload['fsid'] = self.session["session"]
                 
                 prnt(self.msg.format(sys._getframe().f_code.co_name, 'rq: ' + str(payload) + ' ' + str(headers)), 'hide')
-                resp = requests.post(
+                resp = requests_retry_session().post(
                     url.format("coupon/sell/completeSell"),
                     headers=headers,
                     json=payload,
@@ -771,7 +771,7 @@ class BetManager:
         payload['fsid'] = self.session['session']
         
         prnt(self.msg.format(sys._getframe().f_code.co_name, 'rq: ' + str(payload) + ' ' + str(headers)), 'hide')
-        resp = requests.post(
+        resp = requests_retry_session().post(
             url.format("coupon/sell/result"),
             headers=headers,
             json=payload,
@@ -892,7 +892,7 @@ class BetManager:
         headers.update({'X-XERPC': '1'})
 
         prnt(self.msg.format(sys._getframe().f_code.co_name, 'rq: ' + str(payload) + ' ' + str(headers)), 'hide')
-        resp = requests.post(
+        resp = requests_retry_session().post(
             req_url,
             headers=headers,
             data=payload,
