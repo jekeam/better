@@ -483,12 +483,12 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
 
         try:
             for i, j in bets_olimp.get(key_id, {}).get('kofs', {}).copy().items():
-                if round(float(time.time() - float(j.get('time_req', 0)))) > 6 and j.get('value', 0) > 0:
+                if round(float(time.time() - float(j.get('time_req', 0)))) > 7 and j.get('value', 0) > 0:
                     try:
                         bets_olimp[key_id]['kofs'][i]['value'] = 0
                         bets_olimp[key_id]['kofs'][i]['factor'] = 0
                         prnts(
-                            'Олимп, данные по котировке из БК не получены более 6 сек., знач. выставил в 0: ' +
+                            'Олимп, данные по котировке из БК не получены более 7 сек., знач. выставил в 0: ' +
                             key_id + ' ' + str(i), 'hide'
                         )
                     except Exception as e:
