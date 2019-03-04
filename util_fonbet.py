@@ -446,7 +446,7 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
 
         try:
             for i, j in bets_fonbet.get(key_id, {}).get('kofs', {}).copy().items():
-                if round(float(time.time() - float(j.get('time_req', 0)))) > 4:
+                if round(float(time.time() - float(j.get('time_req', 0)))) > 4 and j.get('value', 0) > 0:
                     try:
                         bets_fonbet[key_id]['kofs'][i]['value'] = 0
                         prnts(

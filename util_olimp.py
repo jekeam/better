@@ -483,7 +483,7 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
 
         try:
             for i, j in bets_olimp.get(key_id, {}).get('kofs', {}).copy().items():
-                if round(float(time.time() - float(j.get('time_req', 0)))) > 4:
+                if round(float(time.time() - float(j.get('time_req', 0)))) > 4 and j.get('value', 0) > 0:
                     try:
                         bets_olimp[key_id]['kofs'][i]['value'] = 0
                         bets_olimp[key_id]['kofs'][i]['factor'] = 0
