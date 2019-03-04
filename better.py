@@ -161,13 +161,13 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max, vect1, vect2, s
     if __name__ == '__main__':
         wait_sec = 0  # max(0, (3.5 - deff_max))
         prnt('Wait sec: ' + str(wait_sec))
-        
+
         real_wait = wait_sec + deff_max
         prnt('Real wait sec: ' + str(real_wait))
         if real_wait > 9:
             prnt('Fork is lost: real wait > 9')
             return False
-            
+
         time.sleep(wait_sec)
         with Manager() as manager:
             obj = manager.dict()
@@ -254,96 +254,117 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max, vect1, vect2, s
             amount_fonbet = 30
             return False
 
-        with Manager() as manager:
-            obj = manager.dict()
+        # with Manager() as manager:
+        bk1 = dict()
+        bk1['name'] = 'olimp'
+        bk1['amount'] = amount_olimp
+        bk1['wager'] = wager_olimp
+        bk1['bet_type'] = olimp_bet_type
 
-            obj['amount_olimp'] = amount_olimp
-            obj['wager_olimp'] = wager_olimp
+        bk2 = dict()
+        bk2['name'] = 'fonbet'
+        bk2['amount'] = amount_fonbet
+        bk2['wager'] = wager_fonbet
+        bk2['bet_type'] = fonbet_bet_type
 
-            obj['amount_fonbet'] = amount_fonbet
-            obj['wager_fonbet'] = wager_fonbet
+        bk1['vect'] = vect1
+        bk2['vect'] = vect2
 
-            obj['olimp_bet_type'] = olimp_bet_type
-            obj['fonbet_bet_type'] = fonbet_bet_type
+        bk1['sc1'] = sc1
+        bk1['sc2'] = sc2
+        bk1['cur_total'] = sc1 + sc2
 
-            obj['ol_vect'] = vect1
-            obj['fb_vect'] = vect2
-            obj['sc1'] = sc1
-            obj['sc2'] = sc2
-            obj['cur_total'] = sc1 + sc2
-            if '(' in fonbet_bet_type:
-                obj['bet_total'] = re.findall('\((.*)\)', fonbet_bet_type)[0]
+        bk2['sc1'] = sc1
+        bk2['sc2'] = sc2
+        bk2['cur_total'] = sc1 + sc2
 
-            prnt(
-                'bet_total:{}, cur_total:{}, sc1:{}, sc2:{}, v_ol:{}, v_fb:{}'.format(
-                    obj.get('bet_total', ''),
-                    obj.get('cur_total', ''),
-                    obj.get('sc1', ''),
-                    obj.get('sc2', ''),
-                    obj.get('ol_vect', ''),
-                    obj.get('fb_vect', ''),
-                )
+        if '(' in fonbet_bet_type:
+            bk1['bet_total'] = re.findall('\((.*)\)', fonbet_bet_type)[0]
+            bk2['bet_total'] = re.findall('\((.*)\)', fonbet_bet_type)[0]
+
+        prnt(
+            'BK1 - bet_total:{}, cur_total:{}, sc1:{}, sc2:{}, v:{}'.format(
+                bk1.get('bet_total', ''),
+                bk1.get('cur_total', ''),
+                bk1.get('sc1', ''),
+                bk1.get('sc2', ''),
+                bk1.get('ol_vect', '')
             )
+        )
 
-            pid_olimp = Process(target=bet_olimp_cl, args=(obj,))
-            pid_fonbet = Process(target=bet_fonbet_cl, args=(obj,))
+        prnt(
+            'BK2 - bet_total:{}, cur_total:{}, sc1:{}, sc2:{}, v:{}'.format(
+                bk2.get('bet_total', ''),
+                bk2.get('cur_total', ''),
+                bk2.get('sc1', ''),
+                bk2.get('sc2', ''),
+                bk2.get('vect', '')
+            )
+        )
 
-            pid_olimp.start()
-            pid_fonbet.start()
+        from bet_manager import run_bets
 
-            pid_fonbet.join()
-            pid_olimp.join()
+        run_bets(bk1, bk2)
 
-            prnt('obj: ' + str(obj))
-            sale_timeout = randint(1, 3)
-            if obj.get('fonbet_err') != 'ok' and obj.get('olimp_err') == 'ok':
-                cnt_fail = cnt_fail + 1
-                prnt('Ошибка при проставлении ставки в фонбет, делаю выкуп ставки в олимпе, через '
-                     + str(sale_timeout) + ' сек.')
-                try:
-                    obj['olimp'].sale_bet()
-                except Exception as e:
-                    prnts('Error sale_bet olimp: ' + str(e))
-                    obj['olimp_err'] = str(e)
-
-            if obj.get('olimp_err') != 'ok' and obj.get('fonbet_err') == 'ok':
-                cnt_fail = cnt_fail + 1
-                prnt('Ошибка при проставлении ставки в олимпе, делаю выкуп ставки в фонбет, через '
-                     + str(sale_timeout) + ' сек.')
-                try:
-                    obj['fonbet'].sale_bet()
-                except Exception as e:
-                    prnts('Error sale_bet fonbet: ' + str(e))
-                    obj['fonbet_err'] = str(e)
-
-            if obj.get('olimp_err') == 'ok' and obj.get('fonbet_err') == 'ok':
-                prnt('Ставки проставлены успешно!')
-                bal1 = bal1 - amount_olimp
-                prnt('bal1: ' + str(bal1))
-                bal2 = bal2 - amount_fonbet
-                prnt('bal2: ' + str(bal2))
-
-            # Добавим инфу о проставлении
-            success.append(key)
-
-            fork_info[fork_id]['olimp']['reg_id'] = obj['olimp'].get_reg_id()
-            fork_info[fork_id]['fonbet']['reg_id'] = obj['fonbet'].get_reg_id()
-
-            fork_info[fork_id]['olimp']['err'] = str(obj['olimp_err'])
-            fork_info[fork_id]['fonbet']['err'] = str(obj['fonbet_err'])
-
-            save_fork(fork_info)
-            prnt('Matchs exclude: ' + str(success))
-            sleep_post_work = 30
-            prnt('Ожидание ' + str(sleep_post_work) + ' сек.')
-            time.sleep(sleep_post_work)
-
-            max_fail = 5
-            if cnt_fail > max_fail:
-                err_str = 'Max fail > ' + str(max_fail) + ', script off'
-                raise MaxFail(err_str)
-
-            return True
+        # pid_olimp = Process(target=bet_olimp_cl, args=(obj,))
+        # pid_fonbet = Process(target=bet_fonbet_cl, args=(obj,))
+        #
+        # pid_olimp.start()
+        # pid_fonbet.start()
+        #
+        # pid_fonbet.join()
+        # pid_olimp.join()
+        #
+        # prnt('obj: ' + str(obj))
+        # sale_timeout = randint(1, 3)
+        # if obj.get('fonbet_err') != 'ok' and obj.get('olimp_err') == 'ok':
+        #     cnt_fail = cnt_fail + 1
+        #     prnt('Ошибка при проставлении ставки в фонбет, делаю выкуп ставки в олимпе, через '
+        #          + str(sale_timeout) + ' сек.')
+        #     try:
+        #         obj['olimp'].sale_bet()
+        #     except Exception as e:
+        #         prnts('Error sale_bet olimp: ' + str(e))
+        #         obj['olimp_err'] = str(e)
+        #
+        # if obj.get('olimp_err') != 'ok' and obj.get('fonbet_err') == 'ok':
+        #     cnt_fail = cnt_fail + 1
+        #     prnt('Ошибка при проставлении ставки в олимпе, делаю выкуп ставки в фонбет, через '
+        #          + str(sale_timeout) + ' сек.')
+        #     try:
+        #         obj['fonbet'].sale_bet()
+        #     except Exception as e:
+        #         prnts('Error sale_bet fonbet: ' + str(e))
+        #         obj['fonbet_err'] = str(e)
+        #
+        # if obj.get('olimp_err') == 'ok' and obj.get('fonbet_err') == 'ok':
+        #     prnt('Ставки проставлены успешно!')
+        #     bal1 = bal1 - amount_olimp
+        #     prnt('bal1: ' + str(bal1))
+        #     bal2 = bal2 - amount_fonbet
+        #     prnt('bal2: ' + str(bal2))
+        #
+        # # Добавим инфу о проставлении
+        # success.append(key)
+        #
+        # fork_info[fork_id]['olimp']['reg_id'] = obj['olimp'].get_reg_id()
+        # fork_info[fork_id]['fonbet']['reg_id'] = obj['fonbet'].get_reg_id()
+        #
+        # fork_info[fork_id]['olimp']['err'] = str(obj['olimp_err'])
+        # fork_info[fork_id]['fonbet']['err'] = str(obj['fonbet_err'])
+        #
+        # save_fork(fork_info)
+        # prnt('Matchs exclude: ' + str(success))
+        # sleep_post_work = 30
+        # prnt('Ожидание ' + str(sleep_post_work) + ' сек.')
+        # time.sleep(sleep_post_work)
+        #
+        # max_fail = 5
+        # if cnt_fail > max_fail:
+        #     err_str = 'Max fail > ' + str(max_fail) + ', script off'
+        #     raise MaxFail(err_str)
+        #
+        # return True
 
 
 def run_client():

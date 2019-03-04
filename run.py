@@ -15,8 +15,9 @@ import json
 import os.path
 import os
 from statistics import median
-from sys import exit
+import sys
 from datetime import datetime
+import traceback
 
 TIMEOUT_MATCHS = 10
 TIMEOUT_MATCH = 10
@@ -148,13 +149,13 @@ def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi
         except Exception as e:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             err_str = 'Exception: Олимп, ошибка при запросе матча ' + str(match_id_olimp) + ': ' + \
-                  str(e) + ' ' + ps.get_cur_proxy() + '. ' + \
-                str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
+                      str(e) + ' ' + ps.get_cur_proxy() + '. ' + \
+                      str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
             prnt(err_str)
             ps.rep_cur_proxy(gen_proxi_olimp.next())
             time_resp = TIMEOUT_MATCH
 
-        time_sleep = max(0, (TIMEOUT_MATCH - abs(TIMEOUT_MATCH_MINUS+time_resp)))
+        time_sleep = max(0, (TIMEOUT_MATCH - abs(TIMEOUT_MATCH_MINUS + time_resp)))
 
         if DEBUG:
             prnts('Олимп, матч ' + str(match_id_olimp) + '. Время ответа: ' + str(time_resp) +
@@ -190,17 +191,17 @@ def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_p
         except Exception as e:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             err_str = 'Exception: Фонбет, ошибка при запросе матча ' + str(match_id_fonbet) + ': ' + \
-                  str(e) + ' ' + ps.get_cur_proxy() + '. ' + \
-                str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
+                      str(e) + ' ' + ps.get_cur_proxy() + '. ' + \
+                      str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
             prnt(err_str)
             ps.rep_cur_proxy(gen_proxi_fonbet.next())
             time_resp = TIMEOUT_MATCH
-            
+
             prnts()
             ps.rep_cur_proxy(gen_proxi_fonbet.next())
             time_resp = TIMEOUT_MATCH
 
-        time_sleep = max(0, (TIMEOUT_MATCH - (TIMEOUT_MATCH_MINUS+time_resp)))
+        time_sleep = max(0, (TIMEOUT_MATCH - (TIMEOUT_MATCH_MINUS + time_resp)))
 
         if DEBUG:
             prnts(str('Фонбет, матч ' + str(match_id_fonbet) + '. Время ответа: ' + str(time_resp) +
@@ -261,9 +262,6 @@ def compare_teams(team1_bk1, team2_bk1, team1_bk2, team2_bk2):
 
 
 def start_compare_matches(pair_mathes, json_bk1, json_bk2):
-    if DEBUG:
-        x = 0
-
     while True:
         try:
             # Проверим какие матчи завершились
@@ -292,22 +290,26 @@ def start_compare_matches(pair_mathes, json_bk1, json_bk2):
                                             bk2_match_info.get('team2')
                                     ):
 
-                                        if DEBUG and x > 0:
-                                            return False
-                                        if DEBUG:
-                                            pass
-                                            x = 1
-
-                                        prnts(
-                                            'Матч добавлен: ' + str(bk1_match_id) + ' ' +
-                                            bk1_match_info.get('team1') + ' vs ' +
-                                            bk1_match_info.get('team2') + ' | ' +
-                                            str(bk2_match_id) + ' ' +
-                                            bk2_match_info.get('team1') + ' vs ' +
-                                            bk2_match_info.get('team2')
-                                        )
-
-                                        pair_mathes.append([bk1_match_id, bk2_match_id])
+                                        if DEBUG and (str(bk2_match_id) == '13473618'):
+                                            prnts(
+                                                'Матч добавлен: ' + str(bk1_match_id) + ' ' +
+                                                bk1_match_info.get('team1') + ' vs ' +
+                                                bk1_match_info.get('team2') + ' | ' +
+                                                str(bk2_match_id) + ' ' +
+                                                bk2_match_info.get('team1') + ' vs ' +
+                                                bk2_match_info.get('team2')
+                                            )
+                                            pair_mathes.append([bk1_match_id, bk2_match_id])
+                                        elif not DEBUG:
+                                            prnts(
+                                                'Матч добавлен: ' + str(bk1_match_id) + ' ' +
+                                                bk1_match_info.get('team1') + ' vs ' +
+                                                bk1_match_info.get('team2') + ' | ' +
+                                                str(bk2_match_id) + ' ' +
+                                                bk2_match_info.get('team1') + ' vs ' +
+                                                bk2_match_info.get('team2')
+                                            )
+                                            pair_mathes.append([bk1_match_id, bk2_match_id])
 
             time.sleep(15)
         except Exception as e:
@@ -316,6 +318,7 @@ def start_compare_matches(pair_mathes, json_bk1, json_bk2):
 
 def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
     global opposition
+
     def forks_meta_upd(forks_meta, forks):
         # Перед удалением сохраним время жизни вылки
         live_fork_total = forks_meta.get(bet_key, {}).get('live_fork_total', 0) + \

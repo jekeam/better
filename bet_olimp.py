@@ -30,9 +30,6 @@ base_headers = {
 }
 
 
-
-
-
 class OlimpBot:
     """Use to place bets on olimp site."""
 
