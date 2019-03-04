@@ -154,7 +154,7 @@ def get_dumped_payload(payload):
 def get_urls(mirror, proxies):
     global fb_browser_head
     url = "https://" + mirror + "/urls.json?{}".format(random())
-    resp = requests.get(
+    resp = requests_retry_session().get(
         url,
         headers=fb_browser_head,
         verify=False,
@@ -176,7 +176,7 @@ def get_new_bets_fonbet(match_id, proxies, time_out):
     key_id = str(match_id)
     bets_fonbet = {}
     try:
-        resp = requests.get(
+        resp = requests_retry_session().get(
             url_fonbet_match + str(match_id) + "&lang=en",
             headers=fonbet_header,
             timeout=time_out,
