@@ -444,7 +444,7 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
                                                 'time_req': round(time.time()),
                                                 'value': d.get('v', ''),
                                                 'apid': d.get('apid', ''),
-                                                'factor': d.get('v', ''),  # d.get('p', ''),
+                                                'factor': d.get('v', ''),
                                                 'sport_id': skId,
                                                 'event': match_id,
                                                 'vector': get_vector(coef, sc1, sc2),
@@ -486,6 +486,7 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
                 if round(float(time.time() - float(j.get('time_req', 0)))) > 4:
                     try:
                         bets_olimp[key_id]['kofs'][i]['value'] = 0
+                        bets_olimp[key_id]['kofs'][i]['factor'] = 0
                         prnts(
                             'Олимп, данные по котировке из БК не получены более 4 сек., знач. выставил в 0: ' +
                             key_id + ' ' + str(i) + ' ' + str(j), 'hide'
