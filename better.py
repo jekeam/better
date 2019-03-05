@@ -252,59 +252,49 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max, vect1, vect2, s
         if DEBUG:
             amount_olimp = 30
             amount_fonbet = 30
-            #return False
+            # return False
 
         # with Manager() as manager:
-        bk1 = dict()
-        bk1['name'] = 'olimp'
-        bk1['amount'] = amount_olimp
-        bk1['wager'] = wager_olimp
-        bk1['bet_type'] = olimp_bet_type
+        bks = dict()
 
-        bk2 = dict()
-        bk2['name'] = 'fonbet'
-        bk2['amount'] = amount_fonbet
-        bk2['wager'] = wager_fonbet
-        bk2['bet_type'] = fonbet_bet_type
+        bks['olimp'] = {
+            'opposite': 'fonbet',
+            'amount': amount_olimp,
+            'wager': wager_olimp,
+            'bet_type': olimp_bet_type,
+            'vect': vect1,
+            'sc1': sc1,
+            'sc2': sc2,
+            'cur_total': (sc1 + sc2)
+        }
 
-        bk1['vect'] = vect1
-        bk2['vect'] = vect2
-
-        bk1['sc1'] = sc1
-        bk1['sc2'] = sc2
-        bk1['cur_total'] = sc1 + sc2
-
-        bk2['sc1'] = sc1
-        bk2['sc2'] = sc2
-        bk2['cur_total'] = sc1 + sc2
+        bks['fonbet'] = {
+            'opposite': 'olimp',
+            'amount': amount_fonbet,
+            'wager': wager_fonbet,
+            'bet_type': fonbet_bet_type,
+            'vect': vect2,
+            'sc1': sc1,
+            'sc2': sc2,
+            'cur_total': (sc1 + sc2)
+        }
 
         if '(' in fonbet_bet_type:
-            bk1['bet_total'] = re.findall('\((.*)\)', fonbet_bet_type)[0]
-            bk2['bet_total'] = re.findall('\((.*)\)', fonbet_bet_type)[0]
+            bks['olimp']['bet_total'] = re.findall('\((.*)\)', fonbet_bet_type)[0]
+            bks['fonbet']['bet_total'] = re.findall('\((.*)\)', fonbet_bet_type)[0]
 
-        prnt(
-            'BK1 - bet_total:{}, cur_total:{}, sc1:{}, sc2:{}, v:{}'.format(
-                bk1.get('bet_total', ''),
-                bk1.get('cur_total', ''),
-                bk1.get('sc1', ''),
-                bk1.get('sc2', ''),
-                bk1.get('vect', '')
-            )
-        )
-
-        prnt(
-            'BK2 - bet_total:{}, cur_total:{}, sc1:{}, sc2:{}, v:{}'.format(
-                bk2.get('bet_total', ''),
-                bk2.get('cur_total', ''),
-                bk2.get('sc1', ''),
-                bk2.get('sc2', ''),
-                bk2.get('vect', '')
-            )
-        )
+        for key, val in bks.items():
+            prnt('BK ' + str(key) + ' - bet_total:{}, cur_total:{}, sc1:{}, sc2:{}, v:{}, wager:{}'.format(
+                val.get('bet_total', ''),
+                val.get('cur_total', ''),
+                val.get('sc1', ''),
+                val.get('sc2', ''),
+                val.get('vect', ''),
+                val.get('wager', '')
+            ))
 
         from bet_manager import run_bets
-
-        run_bets(bk1, bk2)
+        run_bets(bks)
 
         # pid_olimp = Process(target=bet_olimp_cl, args=(obj,))
         # pid_fonbet = Process(target=bet_fonbet_cl, args=(obj,))
@@ -365,7 +355,7 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max, vect1, vect2, s
         #     raise MaxFail(err_str)
         #
         # return True
-        time.sleep(30)
+        time.sleep(600)
 
 
 def run_client():
@@ -493,7 +483,7 @@ if __name__ == '__main__':
                     sc1 = int(bk2_score.split(':')[0])
                 except:
                     pass
-                
+
                 try:
                     sc2 = int(bk2_score.split(':')[1])
                 except:

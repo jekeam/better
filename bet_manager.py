@@ -32,22 +32,23 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 package_dir = path.dirname(path.abspath(__file__))
 
-def run_bets(wag1: dict, wag2: dict) -> None:
+
+def run_bets(bks: dict) -> None:
     holder = {}
 
-    bk1 = Thread(target=BetManager, args=(holder, wag1['name'], wag2['name']))
-    bk2 = Thread(target=BetManager, args=(holder, wag2['name'], wag1['name']))
-    bk1.start()
-    bk2.start()
-    bk1.join()
-    bk2.join()
+    for bk, info in bks.items():
+        bk = Thread(target=BetManager, args=(holder, bk, info))
+        bk.start()
+    bk.join()
+
 
 class BetManager:
 
-    def __init__(self, holder: dict, bk1: str, bk2: str) -> None:
-        self.bk = bk1
-        self.bk_opposite = bk2
-        self.wager = {}
+    def __init__(self, holder: dict, bk: str, info: dict) -> None:
+        self.bk = bk
+        self.info = info
+        self.wager = info['wager']
+        self.bk_opposite = info['opposite']
         self.account = self.get_account_info()
         self.timeout = 50
         self.match_id = None
@@ -55,7 +56,6 @@ class BetManager:
         self.reqId = None
         self.reqIdSale = None
         self.payload = None
-        self.wager = None
         self.sum_bet = None
         self.sum_sell = None
         self.attempt_login = 1
@@ -88,23 +88,18 @@ class BetManager:
             prnt(err_str)
             raise ValueError(err_str)
 
-        holder[self.bk] = self
-
         self.manager(holder)
 
     def manager(self, holder: dict) -> None:
         # holder['fonbet_err'] = 'bla bla bla'
         # holder['olimp_err'] = 'bla bla bla'
 
-        holder[self.bk].sign_in(holder)
-        sleep(5)
+        self.sign_in(holder)
         try:
             pass
-            holder[self.bk].place_bet(holder)
-            sleep(5)
-            # self.reg_id = 14665778876
-            holder[self.bk].sale_bet()
-            sleep(5)
+            #self.place_bet(holder)
+            self.reg_id = 14725077368
+            self.sale_bet(holder)
         except CouponBlocked as e:
             prnt(e)
         except BetIsLost as e:
@@ -119,7 +114,7 @@ class BetManager:
         except BetError as e:
             prnt(e)
             pass
-            # holder[self.bk].place_bet(holder)
+            # self.place_bet(holder)
         except Exception as e:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             err_msg = 'unknown err: ' + str(e) + '. ' + \
@@ -130,9 +125,8 @@ class BetManager:
             raise ValueError(err_str)
 
         # bk1.sale_bet()
-        
+
     def sign_in(self, holder: dict) -> None:
-        print('sign_in holder:'+str(type(holder))+' '+str(holder))
 
         try:
             if self.bk == 'olimp':
@@ -198,57 +192,45 @@ class BetManager:
                 self.session['currency'] = res.get('currency').get('currency')
 
             if not self.session.get('session'):
-                err_msg = 'session_id not defined'
-
-                err_str = self.msg_err.format(sys._getframe().f_code.co_name, err_msg)
+                err_str = self.msg_err.format(sys._getframe().f_code.co_name, 'session_id not defined')
                 raise SessionNotDefined(err_str)
 
             prnt(self.msg.format(sys._getframe().f_code.co_name, 'session: ' + str(self.session['session'])))
-            prnt(
-                self.msg.format(sys._getframe().f_code.co_name,
-                                'balance: ' + \
-                                str(self.session.get('balance')) + ' ' +
-                                str(self.session.get('currency')))
-            )
+            prnt(self.msg.format(
+                sys._getframe().f_code.co_name,
+                'balance: ' + str(self.session.get('balance')) + ' ' + str(self.session.get('currency'))
+            ))
             write_file(self.session_file, self.session['session'].strip())
-            self.wait_sign_in_opp()
+            self.wait_sign_in_opp(holder)
 
             if not self.session.get('session'):
-                err_msg = 'session_id not defined'
-
-                err_str = self.msg_err.format(sys._getframe().f_code.co_name, err_msg)
+                err_str = self.msg_err.format(sys._getframe().f_code.co_name, 'session_id not defined')
                 raise SessionNotDefined(err_str)
 
         except SessionNotDefined as e:
-            prnt(err_str)
+            prnt(e)
         except Exception as e:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             err_msg = 'unknown err: ' + str(e) + '. ' + \
                       str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
 
             err_str = self.msg_err.format(sys._getframe().f_code.co_name, err_msg)
-            prnt(err_str)
             raise ValueError(err_str)
-            
+
     def place_bet(self, holder: dict) -> None:
-        print('place_bet holder:'+str(type(holder))+' '+str(holder))
         self.set_session_state()
 
         self.get_opposite_stat(holder)
-
-        self.wager = holder.get('wager')
-        self.sum_bet = holder.get('amount')
+        self.sum_bet = self.info.get('amount')
 
         cur_bal = self.session.get('balance')
-        
-        print(holder)
-        print('self.sum_bet:'+str(self.sum_bet))
+
         if cur_bal:
             if cur_bal < self.sum_bet:
                 err_str = self.msg_err.format(
                     sys._getframe().f_code.co_name,
                     self.bk + ' balance ({}) < sum_bet({})'.format(str(cur_bal), str(self.sum_bet))
-                    )
+                )
                 raise NoMoney(err_str)
 
         if self.bk == 'olimp':
@@ -372,6 +354,8 @@ class BetManager:
             if cashout_allowed and self.sum_sell > 0:
                 payload = {}
                 payload['bet_id'] = self.reg_id
+                if self.bk == 'olimp':
+                    self.sum_bet = 0
                 payload['amount'] = self.sum_sell
                 payload['session'] = self.session['session']
                 payload.update(copy.deepcopy(ol_payload))
@@ -462,7 +446,7 @@ class BetManager:
                         sys._getframe().f_code.co_name,
                         'coupon regId ' + str(self.reg_id) + ' not found, retry, after sec: ' + str(timer_update)
                     )
-                    self.sale_bet()
+                    self.sale_bet(holder)
 
                 # step2 get rqid for sell coupn
                 payload = copy.deepcopy(payload_coupon_sum)
@@ -547,29 +531,28 @@ class BetManager:
             account = load(file)
         return account.get(self.bk, {})
 
-    def wait_sign_in_opp(self):
+    def wait_sign_in_opp(self, holder):
+        # if not DEBUG:
+        msg_push = True
+        holder['sign_in_' + self.bk] = 'ok'
 
-        if not DEBUG:
-
-            msg_push = True
-
-            holder['sign_in_' + self.bk] = 'ok'
-
-            while holder.get('sign_in_' + self.bk_opposite) != 'ok':
-                if msg_push:
-                    err_str = self.msg_err.format(
-                        sys._getframe().f_code.co_name, self.bk + ' wait sign in from ' + self.bk_opposite
-                    )
-                    prnt(err_str)
-                    msg_push = False
+        while holder.get('sign_in_' + self.bk_opposite) != 'ok':
+            if msg_push:
+                err_str = self.msg_err.format(
+                    sys._getframe().f_code.co_name,
+                    self.bk + ' wait sign in from ' + self.bk_opposite
+                )
+                prnt(err_str)
+                msg_push = False
 
     def get_opposite_stat(self, holder):
 
         opposite_stat = str(holder.get(self.bk_opposite + '_err', 'ok'))
         if opposite_stat != 'ok':
-            err_str = self.msg_err.format(sys._getframe().f_code.co_name,
-                                          self.bk + ' get error from ' + self.bk_opposite + ': ' + opposite_stat
-                                          )
+            err_str = self.msg_err.format(
+                sys._getframe().f_code.co_name,
+                self.bk + ' get error from ' + self.bk_opposite + ': ' + opposite_stat
+            )
             raise BkOppBetError(err_str)
 
     def check_max_bet(self, holder):
@@ -696,7 +679,7 @@ class BetManager:
                             'Изменилась ИД ставки: old: ' + str(self.wager) + ', new: ' + str(new_wager))
                         )
                         self.wager.update(new_wager)
-                        return self.place_bet(holder=holder)
+                        return self.place_bet(holder)
 
                     elif str(new_wager.get('param', '')) != str(self.wager.get('param', '')) and \
                             int(self.wager.get('factor', 0)) == int(new_wager.get('factor', 0)):
@@ -705,17 +688,17 @@ class BetManager:
                                                  'Изменилась тотал ставки, param не совпадает: ' + \
                                                  'new_wager: ' + str(new_wager) + ', old_wager: ' + str(self.wager)))
 
-                        if holder.get('fonbet_bet_type'):
+                        if self.wager.get('bet_type'):
                             self.msg.format(sys._getframe().f_code.co_name,
-                                            'поиск нового id тотала: ' + holder.get('fonbet_bet_type'))
+                                            'поиск нового id тотала: ' + self.wager.get('bet_type'))
                             match_id = self.wager.get('event')
                             new_wager = get_new_bets_fonbet(match_id, self.proxies, self.timeout)
                             new_wager = new_wager.get(str(match_id), {}).get('kofs', {}).get(
-                                holder.get('fonbet_bet_type'))
+                                self.wager.get('bet_type'))
                             if new_wager:
                                 self.msg.format(sys._getframe().f_code.co_name, 'Тотал найден: ' + str(new_wager))
                                 self.wager.update(new_wager)
-                                return self.place_bet(holder=holder)
+                                return self.place_bet(holder)
                             else:
                                 err_str = self.msg_err.format(sys._getframe().f_code.co_name,
                                                               'Тотал не найден' + str(new_wager))
@@ -833,7 +816,7 @@ class BetManager:
             else:
                 prnt(self.msg.format(sys._getframe().f_code.co_name,
                                      'new actualSellSum: ' + str(res.get('actualSellSum') / 10)))
-                return self.sale_bet()
+                return self.sale_bet(holder)
 
         elif result == 'couponCompletelySold':
             sold_sum = res.get('soldSum')
