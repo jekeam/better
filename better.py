@@ -252,7 +252,7 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max, vect1, vect2, s
         if DEBUG:
             amount_olimp = 30
             amount_fonbet = 30
-            return False
+            #return False
 
         # with Manager() as manager:
         bk1 = dict()
@@ -288,7 +288,7 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max, vect1, vect2, s
                 bk1.get('cur_total', ''),
                 bk1.get('sc1', ''),
                 bk1.get('sc2', ''),
-                bk1.get('ol_vect', '')
+                bk1.get('vect', '')
             )
         )
 
@@ -365,6 +365,7 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max, vect1, vect2, s
         #     raise MaxFail(err_str)
         #
         # return True
+        time.sleep(30)
 
 
 def run_client():
@@ -492,6 +493,7 @@ if __name__ == '__main__':
                     sc1 = int(bk2_score.split(':')[0])
                 except:
                     pass
+                
                 try:
                     sc2 = int(bk2_score.split(':')[1])
                 except:

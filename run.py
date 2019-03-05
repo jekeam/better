@@ -290,7 +290,7 @@ def start_compare_matches(pair_mathes, json_bk1, json_bk2):
                                             bk2_match_info.get('team2')
                                     ):
 
-                                        if DEBUG and (str(bk2_match_id) == '13473618'):
+                                        if DEBUG and (str(bk2_match_id) == '13574814'):
                                             prnts(
                                                 'Матч добавлен: ' + str(bk1_match_id) + ' ' +
                                                 bk1_match_info.get('team1') + ' vs ' +
