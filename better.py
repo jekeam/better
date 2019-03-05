@@ -11,11 +11,13 @@ from math import floor, ceil
 import time
 from random import randint
 import platform
-from sys import exit
+import sys
 from exceptions import Shutdown, FonbetBetError, OlimpBetError, MaxFail
 import http.client
 import json
 import re
+import traceback
+
 
 shutdown = False
 
@@ -160,7 +162,11 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max, vect1, vect2, s
     try:
         amount_olimp, amount_fonbet = get_sum_bets(wager_olimp['factor'], wager_fonbet['value'], total_bet, False)
     except Exception as e:
-        prnt(e)
+        prnt('wager_olimp:{}, wager_fonbet:{}, total_bet:{}'.format(wager_olimp, wager_fonbet, total_bet))
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        err_str = str(e) + ' ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
+        prnt(err_str)
+        return False
 
     if __name__ == '__main__':
         wait_sec = 0  # max(0, (3.5 - deff_max))
