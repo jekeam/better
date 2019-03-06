@@ -411,119 +411,119 @@ cnt_fail = 0
 # wager_fonbet:{'apid': '1144260386:45874030:1:3:-9999:3:NULL:NULL:1', 'factor': '1.66', 'sport_id': 1, 'event': '45874030'}
 
 if __name__ == '__main__':
-    prnt('DEBUG: ' + str(DEBUG))
-
-    time_get_balance = datetime.datetime.now()
-    time_live = datetime.datetime.now()
-
-    if DEBUG:
-        bal1 = 20000
-        bal2 = 20000
-        total_bet = round(0.10 * (bal1 + bal2))  # Общая масксимальная сумма ставки
-    else:
-        bal1 = OlimpBot(OLIMP_USER).get_balance()  # Баланс в БК1
-        bal2 = FonbetBot(FONBET_USER).get_balance()  # Баланс в БК2
-        total_bet = get_account_summ()  # round(0.10 * (bal1 + bal2))  # Общая масксимальная сумма ставки
-    balance_line = (bal1 + bal2) / 2 / 100 * 30
-
-    prnt('bal1: ' + str(bal1) + ' руб.')
-    prnt('bal2: ' + str(bal2) + ' руб.')
-    prnt('total bet: ' + str(total_bet) + ' руб.')
-    prnt('balance line: ' + str(balance_line))
-    prnt('fork life time: ' + str(get_param('fork_life_time')))
-
-    server_forks = dict()
-    success = []
-    start_see_fork = threading.Thread(target=run_client)  # , args=(server_forks,))
-    start_see_fork.start()
-
-    while True:
-
-        balance_line = (bal1 + bal2) / 2 / 100 * 30
-
-        shutdown_minutes = 60 * (60 * 8)  # секунды * на кол-во (60*1) - это час
-        if (datetime.datetime.now() - time_live).total_seconds() > (shutdown_minutes):
-            err_str = 'Прошло ' + str(shutdown_minutes / 60 / 60) + ' ч., я выключился...'
-            prnt(err_str)
-            shutdown = True
-            raise ValueError(err_str)
-
-        # Обновление баланса каждые 35-45 минут
-        ref_balace = randint(35, 45)
-        if (datetime.datetime.now() - time_get_balance).total_seconds() > (60 * ref_balace):
-            prnt('It took more than ' + str(ref_balace) + ' minutes, the refresh balances:')
-            time_get_balance = datetime.datetime.now()
+    try:
+        prnt('DEBUG: ' + str(DEBUG))
+    
+        time_get_balance = datetime.datetime.now()
+        time_live = datetime.datetime.now()
+    
+        if DEBUG:
+            bal1 = 20000
+            bal2 = 20000
+            total_bet = round(0.10 * (bal1 + bal2))  # Общая масксимальная сумма ставки
+        else:
             bal1 = OlimpBot(OLIMP_USER).get_balance()  # Баланс в БК1
             bal2 = FonbetBot(FONBET_USER).get_balance()  # Баланс в БК2
-
-        if server_forks:
-            go_bet_key = ''
-            l = 0.0
-            go_bet_json = {}
-            for key, val_json in server_forks.items():
-                # print(json.dumps(val_json, ensure_ascii=False))
-                l_temp = val_json.get('l', 0.0)
-
-                k1_type = key.split('@')[-1]
-                k2_type = key.split('@')[-2]
-
-                name = val_json.get('name', 'name')
-                pair_math = val_json.get('pair_math', 'pair_math')
-
-                bk1_score = str(val_json.get('bk1_score', 'bk1_score'))
-                bk2_score = str(val_json.get('bk2_score', 'bk2_score'))
-                score = '[' + bk1_score + '|' + bk2_score + ']'
-
-                sc1 = 0
-                sc2 = 0
-                try:
-                    sc1 = int(bk2_score.split(':')[0])
-                except:
-                    pass
-                try:
-                    sc2 = int(bk2_score.split(':')[1])
-                except:
-                    pass
-
-                v_time = val_json.get('time', 'v_time')
-                minute = val_json.get('minute', 0)
-                time_break_fonbet = val_json.get('time_break_fonbet')
-                period = val_json.get('period')
-                time_last_upd = val_json.get('time_last_upd', 1)
-                live_fork_total = val_json.get('live_fork_total', 0)
-                live_fork = val_json.get('live_fork', 0)
-
-                deff_olimp = round(float(time.time() - float(val_json.get('time_req_olimp', 0))))
-                deff_fonbet = round(float(time.time() - float(val_json.get('time_req_fonbet', 0))))
-                deff_max = max(0, deff_olimp, deff_fonbet)
-
-                bk1_bet_json = val_json.get('kof_olimp')
-                bk2_bet_json = val_json.get('kof_fonbet')
-
-                bk1_hist = bk1_bet_json.get('hist', {})
-                bk2_hist = bk2_bet_json.get('hist', {})
-
-                k1 = bk1_bet_json.get('factor', 0)
-                k2 = bk2_bet_json.get('value', 0)
-
-                vect1 = bk1_bet_json.get('vector')
-                vect2 = bk2_bet_json.get('vector')
-
-                try:
-                    info = key + ': ' + name + \
-                           ' ' + k1_type + '=' + str(k1) + '/' + k2_type + '=' + str(k2) + ', ' + \
-                           v_time + ' (' + str(minute) + ') ' + \
-                           score + ' ' + str(pair_math) + \
-                           ', live_fork: ' + str(live_fork) + \
-                           ', live_fork_total: ' + str(live_fork_total) + \
-                           ', max deff: ' + str(deff_max)
-                except Exception as e:
-                    prnts('error: ' + str(e))
-                    info = ''
-
-                if vect1 and vect2:
-                    if 0.0 <= l < l_temp and deff_max < 10 or DEBUG:
-                        try:
+            total_bet = get_account_summ()  # round(0.10 * (bal1 + bal2))  # Общая масксимальная сумма ставки
+        balance_line = (bal1 + bal2) / 2 / 100 * 30
+    
+        prnt('bal1: ' + str(bal1) + ' руб.')
+        prnt('bal2: ' + str(bal2) + ' руб.')
+        prnt('total bet: ' + str(total_bet) + ' руб.')
+        prnt('balance line: ' + str(balance_line))
+        prnt('fork life time: ' + str(get_param('fork_life_time')))
+    
+        server_forks = dict()
+        success = []
+        start_see_fork = threading.Thread(target=run_client)  # , args=(server_forks,))
+        start_see_fork.start()
+    
+        while True:
+    
+            balance_line = (bal1 + bal2) / 2 / 100 * 30
+    
+            shutdown_minutes = 60 * (60 * 8)  # секунды * на кол-во (60*1) - это час
+            if (datetime.datetime.now() - time_live).total_seconds() > (shutdown_minutes):
+                err_str = 'Прошло ' + str(shutdown_minutes / 60 / 60) + ' ч., я выключился...'
+                prnt(err_str)
+                shutdown = True
+                raise ValueError(err_str)
+    
+            # Обновление баланса каждые 35-45 минут
+            ref_balace = randint(35, 45)
+            if (datetime.datetime.now() - time_get_balance).total_seconds() > (60 * ref_balace):
+                prnt('It took more than ' + str(ref_balace) + ' minutes, the refresh balances:')
+                time_get_balance = datetime.datetime.now()
+                bal1 = OlimpBot(OLIMP_USER).get_balance()  # Баланс в БК1
+                bal2 = FonbetBot(FONBET_USER).get_balance()  # Баланс в БК2
+    
+            if server_forks:
+                go_bet_key = ''
+                l = 0.0
+                go_bet_json = {}
+                for key, val_json in server_forks.items():
+                    # print(json.dumps(val_json, ensure_ascii=False))
+                    l_temp = val_json.get('l', 0.0)
+    
+                    k1_type = key.split('@')[-1]
+                    k2_type = key.split('@')[-2]
+    
+                    name = val_json.get('name', 'name')
+                    pair_math = val_json.get('pair_math', 'pair_math')
+    
+                    bk1_score = str(val_json.get('bk1_score', 'bk1_score'))
+                    bk2_score = str(val_json.get('bk2_score', 'bk2_score'))
+                    score = '[' + bk1_score + '|' + bk2_score + ']'
+    
+                    sc1 = 0
+                    sc2 = 0
+                    try:
+                        sc1 = int(bk2_score.split(':')[0])
+                    except:
+                        pass
+                    try:
+                        sc2 = int(bk2_score.split(':')[1])
+                    except:
+                        pass
+    
+                    v_time = val_json.get('time', 'v_time')
+                    minute = val_json.get('minute', 0)
+                    time_break_fonbet = val_json.get('time_break_fonbet')
+                    period = val_json.get('period')
+                    time_last_upd = val_json.get('time_last_upd', 1)
+                    live_fork_total = val_json.get('live_fork_total', 0)
+                    live_fork = val_json.get('live_fork', 0)
+    
+                    deff_olimp = round(float(time.time() - float(val_json.get('time_req_olimp', 0))))
+                    deff_fonbet = round(float(time.time() - float(val_json.get('time_req_fonbet', 0))))
+                    deff_max = max(0, deff_olimp, deff_fonbet)
+    
+                    bk1_bet_json = val_json.get('kof_olimp')
+                    bk2_bet_json = val_json.get('kof_fonbet')
+    
+                    bk1_hist = bk1_bet_json.get('hist', {})
+                    bk2_hist = bk2_bet_json.get('hist', {})
+    
+                    k1 = bk1_bet_json.get('factor', 0)
+                    k2 = bk2_bet_json.get('value', 0)
+    
+                    vect1 = bk1_bet_json.get('vector')
+                    vect2 = bk2_bet_json.get('vector')
+    
+                    try:
+                        info = key + ': ' + name + \
+                               ' ' + k1_type + '=' + str(k1) + '/' + k2_type + '=' + str(k2) + ', ' + \
+                               v_time + ' (' + str(minute) + ') ' + \
+                               score + ' ' + str(pair_math) + \
+                               ', live_fork: ' + str(live_fork) + \
+                               ', live_fork_total: ' + str(live_fork_total) + \
+                               ', max deff: ' + str(deff_max)
+                    except Exception as e:
+                        prnts('error: ' + str(e))
+                        info = ''
+    
+                    if vect1 and vect2:
+                        if 0.0 <= l < l_temp and deff_max < 10 and k1 > 0 < k2 or DEBUG:
                             bet1, bet2 = get_sum_bets(k1, k2, total_bet)
                             # Проверим вилку на исключения
                             if check_fork(
@@ -533,31 +533,30 @@ if __name__ == '__main__':
                                 go_bet_key = key
                                 l = l_temp
                                 go_bet_json = val_json
-                        except Exception as e:
-                            prnt('k1:{}, k2:{}, total_bet:{}'.format(k1, k2, total_bet))
-                            exc_type, exc_value, exc_traceback = sys.exc_info()
-                            err_str = str(e) + ' ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
-                            prnt(err_str)
-                    elif deff_max >= 10:
-                        pass
+                        elif deff_max >= 10:
+                            pass
+                    else:
+                        prnt('Вектор направления коф-та не определен: VECT1=' + str(vect1) + ', VECT2=' + str(vect2))
+                if go_bet_key:
+                    prnt(' ')
+                    prnt('Go bets: ' + info)
+                    fork_success = go_bets(
+                        go_bet_json.get('kof_olimp'),
+                        go_bet_json.get('kof_fonbet'),
+                        total_bet,
+                        go_bet_key,
+                        deff_max,
+                        vect1,
+                        vect2,
+                        sc1,
+                        sc2
+                    )
                 else:
-                    prnt('Вектор направления коф-та не определен: VECT1=' + str(vect1) + ', VECT2=' + str(vect2))
-            if go_bet_key:
-                prnt(' ')
-                prnt('Go bets: ' + info)
-                fork_success = go_bets(
-                    go_bet_json.get('kof_olimp'),
-                    go_bet_json.get('kof_fonbet'),
-                    total_bet,
-                    go_bet_key,
-                    deff_max,
-                    vect1,
-                    vect2,
-                    sc1,
-                    sc2
-                )
+                    pass
             else:
                 pass
-        else:
-            pass
-        time.sleep(0.25)
+            time.sleep(0.25)
+    except Exception as e:
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        err_str = str(e) + ' ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
+        prnt(err_str)
