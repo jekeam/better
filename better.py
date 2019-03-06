@@ -11,11 +11,12 @@ from math import floor, ceil
 import time
 from random import randint
 import platform
-from sys import exit
+import sys
 from exceptions import Shutdown, FonbetBetError, OlimpBetError, MaxFail
 import http.client
 import json
 import re
+import traceback
 
 shutdown = False
 
@@ -157,10 +158,14 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max, vect1, vect2, s
     L = ((1 / float(wager_olimp['factor'])) + (1 / float(wager_fonbet['value'])))
     cur_proc = round((1 - L) * 100, 2)
 
-    try:
+      try:
         amount_olimp, amount_fonbet = get_sum_bets(wager_olimp['factor'], wager_fonbet['value'], total_bet, False)
     except Exception as e:
-        prnt(e)
+        prnt('wager_olimp:{}, wager_fonbet:{}, total_bet:{}'.format(wager_olimp, wager_fonbet, total_bet))
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        err_str = str(e) + ' ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
+        prnt(err_str)
+        return False
 
     if __name__ == '__main__':
         wait_sec = 0  # max(0, (3.5 - deff_max))
@@ -518,15 +523,21 @@ if __name__ == '__main__':
 
                 if vect1 and vect2:
                     if 0.0 <= l < l_temp and deff_max < 10 or DEBUG:
-                        bet1, bet2 = get_sum_bets(k1, k2, total_bet)
-                        # Проверим вилку на исключения
-                        if check_fork(
-                                key, l_temp, k1, k2, live_fork_total, bk1_score, bk2_score,
-                                minute, time_break_fonbet, period, info
-                        ) or DEBUG:
-                            go_bet_key = key
-                            l = l_temp
-                            go_bet_json = val_json
+                        try:
+                            bet1, bet2 = get_sum_bets(k1, k2, total_bet)
+                            # Проверим вилку на исключения
+                            if check_fork(
+                                    key, l_temp, k1, k2, live_fork_total, bk1_score, bk2_score,
+                                    minute, time_break_fonbet, period, info
+                            ) or DEBUG:
+                                go_bet_key = key
+                                l = l_temp
+                                go_bet_json = val_json
+                        except Exception as e:
+                            prnt('k1:{}, k2:{}, total_bet:{}'.format(k1, k2, total_bet))
+                            exc_type, exc_value, exc_traceback = sys.exc_info()
+                            err_str = str(e) + ' ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
+                            prnt(err_str)
                     elif deff_max >= 10:
                         pass
                 else:
