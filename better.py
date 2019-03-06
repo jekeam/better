@@ -521,21 +521,19 @@ if __name__ == '__main__':
                     if 0.0 <= l < l_temp and deff_max < 10 or DEBUG:
                         try:
                             bet1, bet2 = get_sum_bets(k1, k2, total_bet)
+                            # Проверим вилку на исключения
+                            if check_fork(
+                                    key, l_temp, k1, k2, live_fork, bk1_score, bk2_score,
+                                    minute, time_break_fonbet, period, info
+                            ) or DEBUG:
+                                go_bet_key = key
+                                l = l_temp
+                                go_bet_json = val_json
                         except Exception as e:
                             prnt('wager_olimp:{}, wager_fonbet:{}, total_bet:{}'.format(wager_olimp, wager_fonbet, total_bet))
                             exc_type, exc_value, exc_traceback = sys.exc_info()
                             err_str = str(e) + ' ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
                             prnt(err_str)
-                            return False
-                                
-                        # Проверим вилку на исключения
-                        if check_fork(
-                                key, l_temp, k1, k2, live_fork, bk1_score, bk2_score,
-                                minute, time_break_fonbet, period, info
-                        ) or DEBUG:
-                            go_bet_key = key
-                            l = l_temp
-                            go_bet_json = val_json
                     elif deff_max >= 10:
                         pass
                 else:
