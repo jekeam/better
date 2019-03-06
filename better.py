@@ -307,7 +307,7 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max, vect1, vect2, s
                 try:
                     obj['olimp'].sale_bet()
                 except Exception as e:
-                    prnts('Error sale_bet olimp: ' + str(e))
+                    prnt('Error sale_bet olimp: ' + str(e))
                     obj['olimp_err'] = str(e)
 
             if obj.get('olimp_err') != 'ok' and obj.get('fonbet_err') == 'ok':
@@ -317,7 +317,7 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max, vect1, vect2, s
                 try:
                     obj['fonbet'].sale_bet()
                 except Exception as e:
-                    prnts('Error sale_bet fonbet: ' + str(e))
+                    prnt('Error sale_bet fonbet: ' + str(e))
                     obj['fonbet_err'] = str(e)
 
             if obj.get('olimp_err') == 'ok' and obj.get('fonbet_err') == 'ok':
@@ -514,7 +514,7 @@ if __name__ == '__main__':
                            ', live_fork_total: ' + str(live_fork_total) + \
                            ', max deff: ' + str(deff_max)
                 except Exception as e:
-                    prnts('error: ' + str(e))
+                    prnt('error: ' + str(e))
                     info = ''
 
                 if vect1 and vect2:
