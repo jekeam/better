@@ -519,7 +519,15 @@ if __name__ == '__main__':
 
                 if vect1 and vect2:
                     if 0.0 <= l < l_temp and deff_max < 10 or DEBUG:
-                        bet1, bet2 = get_sum_bets(k1, k2, total_bet)
+                        try:
+                            bet1, bet2 = get_sum_bets(k1, k2, total_bet)
+                        except Exception as e:
+                            prnt('wager_olimp:{}, wager_fonbet:{}, total_bet:{}'.format(wager_olimp, wager_fonbet, total_bet))
+                            exc_type, exc_value, exc_traceback = sys.exc_info()
+                            err_str = str(e) + ' ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
+                            prnt(err_str)
+                            return False
+                                
                         # Проверим вилку на исключения
                         if check_fork(
                                 key, l_temp, k1, k2, live_fork, bk1_score, bk2_score,
