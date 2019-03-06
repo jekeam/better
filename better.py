@@ -158,7 +158,7 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max, vect1, vect2, s
     L = ((1 / float(wager_olimp['factor'])) + (1 / float(wager_fonbet['value'])))
     cur_proc = round((1 - L) * 100, 2)
 
-      try:
+    try:
         amount_olimp, amount_fonbet = get_sum_bets(wager_olimp['factor'], wager_fonbet['value'], total_bet, False)
     except Exception as e:
         prnt('wager_olimp:{}, wager_fonbet:{}, total_bet:{}'.format(wager_olimp, wager_fonbet, total_bet))
