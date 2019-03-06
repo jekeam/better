@@ -530,7 +530,7 @@ if __name__ == '__main__':
                                 l = l_temp
                                 go_bet_json = val_json
                         except Exception as e:
-                            prnt('wager_olimp:{}, wager_fonbet:{}, total_bet:{}'.format(wager_olimp, wager_fonbet, total_bet))
+                            prnt('k1:{}, k2:{}, total_bet:{}'.format(k1, k2, total_bet))
                             exc_type, exc_value, exc_traceback = sys.exc_info()
                             err_str = str(e) + ' ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
                             prnt(err_str)
