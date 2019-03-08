@@ -531,21 +531,21 @@ class FonbetBot:
                                   str(err_str) + ', new_wager: ' + str(new_wager) + ', old_wager: ' + str(self.wager)
                         prnt(err_str)
                         if self.fonbet_bet_type:
-                            prnts('BET_FONBET.PY: поиск нового ИД тотала: ' + str(self.fonbet_bet_type))
+                            prnt('BET_FONBET.PY: поиск нового ИД тотала: ' + str(self.fonbet_bet_type))
                             match_id = self.wager.get('event')
                             new_wager = get_new_bets_fonbet(match_id, self.proxies, self.timeout)
                             new_wager = new_wager.get(str(match_id), {}).get('kofs', {}).get(self.fonbet_bet_type)
                             if new_wager:
-                                prnts('BET_FONBET.PY: Тотал найден: ' + str(new_wager))
+                                prnt('BET_FONBET.PY: Тотал найден: ' + str(new_wager))
                                 self.wager.update(new_wager)
                                 return self.place_bet(obj=obj)
                             else:
                                 err_str = 'BET_FONBET.PY: Тотал не найден'
-                                prnts(err_str)
+                                prnt(err_str)
                                 raise LoadException(err_str)
                         else:
                             err_str = 'BET_FONBET.PY: Тип ставки, например 1ТМ(2.5) - не задан, выдаю ошибку.'
-                            prnts(err_str)
+                            prnt(err_str)
                             raise LoadException(err_str)
                     else:
                         err_str = "BET_FONBET.PY: error неизвестная ошибка: " + \
@@ -831,7 +831,7 @@ def get_new_bets_fonbet(match_id, proxies, time_out):
             TT.extend(bet)
 
         for event in resp.get("events"):
-            # prnts(jsondumps(event, ensure_ascii=False))
+            # prnt(jsondumps(event, ensure_ascii=False))
             # exit()
 
             score = event.get('score', '0:0').replace('-', ':')
@@ -877,7 +877,7 @@ def get_new_bets_fonbet(match_id, proxies, time_out):
                             'kofs': {}
                         }
 
-                # prnts('event_name', event.get('name'))
+                # prnt('event_name', event.get('name'))
 
                 half = ''
                 if event.get('name') == '1st half':
@@ -888,7 +888,7 @@ def get_new_bets_fonbet(match_id, proxies, time_out):
                 for cat in event.get('subcategories'):
 
                     cat_name = cat.get('name')
-                    # prnts('cat_name', cat_name)
+                    # prnt('cat_name', cat_name)
                     if cat_name in (
                             '1X2 (90 min)',
                             '1X2',
@@ -940,7 +940,7 @@ def get_new_bets_fonbet(match_id, proxies, time_out):
                                     )
         return bets_fonbet
     except Exception as e:
-        prnts(e)
+        prnt(e)
         raise ValueError(e)
 
 
