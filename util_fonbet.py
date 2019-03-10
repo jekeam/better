@@ -141,24 +141,13 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out):
     key_id = str(match_id)
     try:
         resp, time_resp = get_match_fonbet(match_id, proxies_fonbet, proxy, time_out)
-        # Очистим дстарые данные
-        # if bets_fonbet.get(key_id):
-        # bets_fonbet[key_id] = dict()
         time_start_proc = time.time()
-
-        # if key_id in (str(12879839), str(12801238), str(12801237), str(12801241)):
-        #     f = open('fonbet.txt', 'a+')
-        #     f.write(json.dumps(resp, ensure_ascii=False))
-        #     f.write('\n')
-        #     # prnts('fonbet: '+str(json.dumps(resp, ensure_ascii=False)))
 
         TT = []
         for bet in [TTO, TTU, TT1O, TT1U, TT2O, TT2U]:
             TT.extend(bet)
 
         for event in resp.get("events"):
-            # prnts(jsondumps(event, ensure_ascii=False))
-            # exit()
 
             score = event.get('score', '0:0').replace('-', ':')
             sc1 = 0
@@ -225,9 +214,7 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out):
                     half = '1'
                 elif event.get('name') == '2nd half':
                     half = '2'
-
-                for cat in event.get('subcategories'):
-
+                for cat in event.get('subcategories', {}):
                     cat_name = cat.get('name')
                     # prnts('cat_name', cat_name)
                     if cat_name in (
