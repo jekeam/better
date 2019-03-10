@@ -253,7 +253,7 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
                     elif event.get('name') == '2nd half':
                         half = '2'
 
-                    for cat in event.get('subcategories'):
+                    for cat in event.get('subcategories', {}):
 
                         cat_name = cat.get('name')
 
