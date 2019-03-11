@@ -29,7 +29,8 @@ def get_sum_bets(k1, k2, total_bet, print_hide=True):
         # Округление проставления в БК1 происходит по правилам математики
         bet_1 = round(total_bet / (k1 * l) / 5) * 5
         bet_2 = total_bet - bet_1
-        prnt('L: ' + str(round((1 - l) * 100, 2)) + '% (' + str(l) + ') ', print_hide)
+        prnt('L: ' + str(round((1 - l) * 100, 2)) +
+             '% (' + str(l) + ') ', print_hide)
         prnt(
             'bet1: ' + str(bet_1) + ' руб, bet2: ' + str(bet_2) + ' руб.|' +
             ' bet_sum: ' + str(bet_1 + bet_2) + ' руб.', print_hide
@@ -75,10 +76,10 @@ def check_l(L):
     l_exclude_text = ''
     if L <= 0.90:
         l_exclude_text = l_exclude_text + 'Вилка ' + str(L) + ' (' + str(round((1 - L) * 100, 2)) + \
-                         '%), вилка исключена т.к. доходноть высокая >= 10%\n'
+            '%), вилка исключена т.к. доходноть высокая >= 10%\n'
     if L > 0.995:
-        l_exclude_text = l_exclude_text + 'Вилка ' + str(L) + ' (' + str(round((1 - L) * 100, 3)) + \
-                         '%), беру вилки только >= 0.5%\n'
+        l_exclude_text = l_exclude_text + 'Вилка ' + \
+            str(L) + ' (' + str(round((1 - L) * 100, 3)) + '%), беру вилки только >= 0.5%\n'
 
     if l_exclude_text != '':
         return l_exclude_text
@@ -86,13 +87,25 @@ def check_l(L):
         return ''
 
 
-def check_fork(key, L, k1, k2, live_fork, bk1_score, bk2_score, minute, time_break_fonbet, period, info=''):
+def check_fork(
+        key,
+        L,
+        k1,
+        k2,
+        live_fork,
+        bk1_score,
+        bk2_score,
+        minute,
+        time_break_fonbet,
+        period,
+        info=''):
     fork_exclude_text = ''
     v = True
     global bal1, bal2, balance_line
 
     if success.count(key) >= 1:
-        fork_exclude_text = fork_exclude_text + 'Вилка не проставлена, т.к. уже проставляли на эту вилку: ' + key + '\n'
+        fork_exclude_text = fork_exclude_text + \
+            'Вилка не проставлена, т.к. уже проставляли на эту вилку: ' + key + '\n'
 
     # Проверяем корректная ли сумма
     if bet1 < 30 or bet2 < 30:
@@ -101,22 +114,22 @@ def check_fork(key, L, k1, k2, live_fork, bk1_score, bk2_score, minute, time_bre
     # Проверяем хватить денег для ставки
     if (bal1 < bet1) or (bal2 < bet2):
         fork_exclude_text = fork_exclude_text + 'Для проставления вилки ' + str(round((1 - L) * 100, 2)) \
-                            + '% недостаточно средств, bal1=' \
-                            + str(bal1) + ', bet1=' + str(bet1) \
-                            + ', bal2=' + str(bal2) + ', bet2=' + str(bet2) + '\n'
+            + '% недостаточно средств, bal1=' \
+            + str(bal1) + ', bet1=' + str(bet1) \
+            + ', bal2=' + str(bal2) + ', bet2=' + str(bet2) + '\n'
 
     # Если баланс меньше 30% то берем плече только с коэф-м меньше 1,5
     if bal1 <= balance_line and k1 >= 1.3:
         fork_exclude_text = fork_exclude_text + 'Вилка ' + str(round((1 - L) * 100, 2)) \
-                            + '% исключена: баланс БК Олимп меньше 30%, а коэф-т >= 1.3 (' + str(k1) + ')\n'
+            + '% исключена: баланс БК Олимп меньше 30%, а коэф-т >= 1.3 (' + str(k1) + ')\n'
     elif bal2 <= balance_line and k2 >= 1.3:
         fork_exclude_text = fork_exclude_text + 'Вилка ' + str(round((1 - L) * 100, 2)) \
-                            + '% исключена: баланс БК фонбет меньше 30%, а коэф-т >= 1.3 (' + str(k2) + ')\n'
+            + '% исключена: баланс БК фонбет меньше 30%, а коэф-т >= 1.3 (' + str(k2) + ')\n'
 
     if bk1_score != bk2_score:
         fork_exclude_text = fork_exclude_text + 'Вилка ' \
-                            + str(round((1 - L) * 100, 2)) \
-                            + '% исключена т.к. счет не совпадает: olimp(' + bk1_score + ') fonbet(' + bk2_score + ')\n'
+            + str(round((1 - L) * 100, 2)) \
+            + '% исключена т.к. счет не совпадает: olimp(' + bk1_score + ') fonbet(' + bk2_score + ')\n'
 
     # Больше 43 минуты и не идет перерыв и это 1 период
     if 43.0 < float(minute) and not time_break_fonbet and period == 1:
@@ -132,9 +145,8 @@ def check_fork(key, L, k1, k2, live_fork, bk1_score, bk2_score, minute, time_bre
     # Вилка живет достаточно
     long_livers = 10
     if live_fork < long_livers:
-        fork_exclude_text = \
-            fork_exclude_text + 'Вилка ' + str(round((1 - L) * 100, 2)) + '% исключена т.к. живет меньше ' \
-            + str(long_livers) + ' сек. \n'
+        fork_exclude_text = fork_exclude_text + 'Вилка ' + \
+            str(round((1 - L) * 100, 2)) + '% исключена т.к. живет меньше ' + str(long_livers) + ' сек. \n'
 
     fork_exclude_text = fork_exclude_text + check_l(L)
 
@@ -144,7 +156,7 @@ def check_fork(key, L, k1, k2, live_fork, bk1_score, bk2_score, minute, time_bre
     return v
 
 
-def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
+def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
     global bal1
     global bal2
     global cnt_fail
@@ -153,10 +165,12 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max, vect1, vect2, s
     fonbet_bet_type = str(go_bet_key.split('@')[-1])
     # Проверяем ставили ли мы на этот матч, пока в ручную
 
-    L = ((1 / float(wager_olimp['factor'])) + (1 / float(wager_fonbet['value'])))
+    L = ((1 / float(wag_ol['factor'])) +
+         (1 / float(wag_fb['value'])))
     cur_proc = round((1 - L) * 100, 2)
 
-    amount_olimp, amount_fonbet = get_sum_bets(wager_olimp['factor'], wager_fonbet['value'], total_bet, False)
+    amount_olimp, amount_fonbet = get_sum_bets(
+        wag_ol['factor'], wag_fb['value'], total_bet, False)
 
     if __name__ == '__main__':
         wait_sec = 0  # max(0, (3.5 - deff_max))
@@ -172,14 +186,16 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max, vect1, vect2, s
         with Manager() as manager:
             obj = manager.dict()
 
-            recheck_o = Process(target=get_kof_olimp, args=(obj, wager_olimp['event'], olimp_bet_type,))
+            recheck_o = Process(
+                target=get_kof_olimp, args=(
+                    obj, wag_ol['event'], olimp_bet_type,))
             recheck_fb = Process(
                 target=get_kof_fonbet,
                 args=(
                     obj,
-                    wager_fonbet['event'],
-                    int(wager_fonbet['factor']),
-                    wager_fonbet['param']
+                    wag_fb['event'],
+                    int(wag_fb['factor']),
+                    wag_fb['param']
                 )
             )
 
@@ -191,26 +207,34 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max, vect1, vect2, s
 
             deff_max = max(obj['olimp_time_req'], obj['fonbet_time_req'])
 
-            prnt('deff_max: ' + str(deff_max) + ', O ' + olimp_bet_type + ': ' + str(wager_olimp['factor']) + ' -> ' +
-                 str(obj['olimp']) + '| F ' + fonbet_bet_type + ': ' + str(wager_fonbet['value']) + ' -> ' + str(
+            prnt('deff_max: ' + str(deff_max) + ', O ' + olimp_bet_type + ': ' + str(wag_ol['factor']) + ' -> ' +
+                 str(obj['olimp']) + '| F ' + fonbet_bet_type + ': ' + str(wag_fb['value']) + ' -> ' + str(
                 obj['fonbet']))
 
-            wager_fonbet['value'] = obj['fonbet']
-            wager_olimp['value'] = obj['olimp']
-            wager_olimp['factor'] = obj['olimp']
+            wag_fb['value'] = obj['fonbet']
+            wag_ol['value'] = obj['olimp']
+            wag_ol['factor'] = obj['olimp']
 
             # Проверяем что полученный коэфициент больше 1
             if float(obj['olimp']) > 1 < float(obj['fonbet']):
 
                 # пересчетаем суммы ставок
-                amount_olimp, amount_fonbet = get_sum_bets(float(obj['olimp']), float(obj['fonbet']), total_bet, False)
+                amount_olimp, amount_fonbet = get_sum_bets(
+                    float(
+                        obj['olimp']), float(
+                        obj['fonbet']), total_bet, False)
 
                 # Выведем текую доходность вилки
                 prnt('cur proc: ' + str(cur_proc) + '%')
                 L = (1 / float(obj['olimp'])) + (1 / float(obj['fonbet']))
                 new_proc = round((1 - L) * 100, 2)
                 change_proc = round(new_proc - cur_proc, 2)
-                prnt('new proc: ' + str(new_proc) + '%, change: ' + str(change_proc))
+                prnt(
+                    'new proc: ' +
+                    str(new_proc) +
+                    '%, change: ' +
+                    str(change_proc)
+                )
 
                 if check_l(L) == '' or DEBUG:
 
@@ -219,8 +243,8 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max, vect1, vect2, s
                     fork_info = {
                         fork_id: {
                             "olimp": {
-                                "id": wager_olimp["event"],
-                                "kof": wager_olimp["factor"],
+                                "id": wag_ol["event"],
+                                "kof": wag_ol["factor"],
                                 "amount": amount_olimp,
                                 "reg_id": 0,
                                 "bet_type": olimp_bet_type,
@@ -228,8 +252,8 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max, vect1, vect2, s
                                 "err": 'ok'
                             },
                             "fonbet": {
-                                "id": wager_fonbet["event"],
-                                "kof": wager_fonbet["value"],
+                                "id": wag_fb["event"],
+                                "kof": wag_fb["value"],
                                 "amount": amount_fonbet,
                                 "reg_id": 0,
                                 "bet_type": fonbet_bet_type,
@@ -255,12 +279,12 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max, vect1, vect2, s
             # return False
 
         # with Manager() as manager:
-        shared_dict = dict()
+        shared = dict()
 
-        shared_dict['olimp'] = {
+        shared['olimp'] = {
             'opposite': 'fonbet',
             'amount': amount_olimp,
-            'wager': wager_olimp,
+            'wager': wag_ol,
             'bet_type': olimp_bet_type,
             'vect': vect1,
             'sc1': sc1,
@@ -268,10 +292,10 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max, vect1, vect2, s
             'cur_total': (sc1 + sc2)
         }
 
-        shared_dict['fonbet'] = {
+        shared['fonbet'] = {
             'opposite': 'olimp',
             'amount': amount_fonbet,
-            'wager': wager_fonbet,
+            'wager': wag_fb,
             'bet_type': fonbet_bet_type,
             'vect': vect2,
             'sc1': sc1,
@@ -280,39 +304,40 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max, vect1, vect2, s
         }
 
         if '(' in fonbet_bet_type:
-            shared_dict['olimp']['bet_total'] = re.findall('\((.*)\)', fonbet_bet_type)[0]
-            shared_dict['fonbet']['bet_total'] = re.findall('\((.*)\)', fonbet_bet_type)[0]
+            shared['olimp']['bet_total'] = re.findall(
+                r'\((.*)\)', fonbet_bet_type)[0]
+            shared['fonbet']['bet_total'] = re.findall(
+                r'\((.*)\)', fonbet_bet_type)[0]
 
-        for key, val in shared_dict.items():
-            prnt('BK ' + str(key) + ' - bet_total:{}, cur_total:{}, sc1:{}, sc2:{}, v:{}, wager:{}'.format(
-                val.get('bet_total', ''),
-                val.get('cur_total', ''),
-                val.get('sc1', ''),
-                val.get('sc2', ''),
-                val.get('vect', ''),
-                val.get('wager', '')
-            ))
+        for bk_name, val in shared.items():
+            prnt('BK ' + str(bk_name) + 
+                ': bet_total:{}, cur_total:{}, sc1:{}, sc2:{}, v:{}. ({})'.format(
+                    val.get('bet_total', ''), 
+                    val.get('cur_total', ''), 
+                    val.get('sc1', ''), 
+                    val.get('sc2', ''), 
+                    val.get('vect', ''), 
+                    val.get('wager', '')))
 
         from bet_manager import run_bets
-        run_bets(shared_dict)
-        
-        prnt('shared_dict: ' + str(shared_dict))
-        
+        run_bets(shared)
+
+        prnt('shared: ' + str(shared))
+
         # Добавим инфу о проставлении
         success.append(key)
-        
-        fork_info[fork_id]['olimp']['reg_id'] = shared_dict['olimp'].get('reg_id')
-        fork_info[fork_id]['fonbet']['reg_id'] = shared_dict['fonbet'].get('reg_id')
-        
-        fork_info[fork_id]['olimp']['err'] = str(shared_dict['olimp_err'])
-        fork_info[fork_id]['fonbet']['err'] = str(shared_dict['fonbet_err'])
-        
+
+        fork_info[fork_id]['olimp']['reg_id'] = shared['olimp'].get('reg_id')
+        fork_info[fork_id]['fonbet']['reg_id'] = shared['fonbet'].get('reg_id')
+
+        fork_info[fork_id]['olimp']['err'] = str(shared.get('olimp_err', 'ok'))
+        fork_info[fork_id]['fonbet']['err'] = str(shared.get('fonbet_err', 'ok'))
+
         save_fork(fork_info)
         prnt('Matchs exclude: ' + str(success))
         sleep_post_work = 30
         prnt('Ожидание ' + str(sleep_post_work) + ' сек.')
         time.sleep(sleep_post_work)
-        
         return True
 
 
@@ -347,8 +372,14 @@ def run_client():
         return run_client()
 
 
-FONBET_USER = {"login": get_account_info('fonbet', 'login'), "password": get_account_info('fonbet', 'password')}
-OLIMP_USER = {"login": get_account_info('olimp', 'login'), "password": get_account_info('olimp', 'password')}
+FONBET_USER = {
+    "login": get_account_info(
+        'fonbet', 'login'), "password": get_account_info(
+            'fonbet', 'password')}
+OLIMP_USER = {
+    "login": get_account_info(
+        'olimp', 'login'), "password": get_account_info(
+            'olimp', 'password')}
 
 bet1 = 0.  # Сумма ставки в БК1
 bet2 = 0.  # Сумма ставки в БК2
@@ -369,8 +400,8 @@ time_get_balance = datetime.datetime.now()
 time_live = datetime.datetime.now()
 cnt_fail = 0
 
-# wager_fonbet:{'event': '12797479', 'factor': '921', 'param': '', 'score': '0:0', 'value': '2.35'}
-# wager_fonbet:{'apid': '1144260386:45874030:1:3:-9999:3:NULL:NULL:1', 'factor': '1.66', 'sport_id': 1, 'event': '45874030'}
+# wag_fb:{'event': '12797479', 'factor': '921', 'param': '', 'score': '0:0', 'value': '2.35'}
+# wag_fb:{'apid': '1144260386:45874030:1:3:-9999:3:NULL:NULL:1', 'factor': '1.66', 'sport_id': 1, 'event': '45874030'}
 
 if __name__ == '__main__':
     prnt('DEBUG: ' + str(DEBUG))
@@ -381,38 +412,49 @@ if __name__ == '__main__':
     if DEBUG:
         bal1 = 20000
         bal2 = 20000
-        total_bet = round(0.10 * (bal1 + bal2))  # Общая масксимальная сумма ставки
+        # Общая масксимальная сумма ставки
+        total_bet = round(0.10 * (bal1 + bal2))
     else:
         bal1 = OlimpBot(OLIMP_USER).get_balance()  # Баланс в БК1
         bal2 = FonbetBot(FONBET_USER).get_balance()  # Баланс в БК2
-        total_bet = get_account_summ()  # round(0.10 * (bal1 + bal2))  # Общая масксимальная сумма ставки
+        # round(0.10 * (bal1 + bal2))  # Общая масксимальная сумма ставки
+        total_bet = get_account_summ()
     balance_line = (bal1 + bal2) / 2 / 100 * 30
 
     prnt('bal1: ' + str(bal1) + ' руб.')
     prnt('bal2: ' + str(bal2) + ' руб.')
-    prnt('total bet: ' + str(total_bet) + ' руб.')
+    prnt('total_bet bet: ' + str(total_bet) + ' руб.')
     prnt('balance line: ' + str(balance_line))
 
     server_forks = dict()
     success = []
-    start_see_fork = threading.Thread(target=run_client)  # , args=(server_forks,))
+    start_see_fork = threading.Thread(
+        target=run_client)  # , args=(server_forks,))
     start_see_fork.start()
 
     while True:
 
         balance_line = (bal1 + bal2) / 2 / 100 * 30
 
-        shutdown_minutes = 60 * (60 * 8)  # секунды * на кол-во (60*1) - это час
-        if (datetime.datetime.now() - time_live).total_seconds() > (shutdown_minutes):
-            err_str = 'Прошло ' + str(shutdown_minutes / 60 / 60) + ' ч., я выключился...'
+        # секунды * на кол-во (60*1) - это час
+        shutdown_minutes = 60 * (60 * 8)
+        if (datetime.datetime.now() -
+                time_live).total_seconds() > (shutdown_minutes):
+            err_str = 'Прошло ' + \
+                str(shutdown_minutes / 60 / 60) + ' ч., я выключился...'
             prnt(err_str)
             shutdown = True
             raise ValueError(err_str)
 
         # Обновление баланса каждые 35-45 минут
         ref_balace = randint(35, 45)
-        if (datetime.datetime.now() - time_get_balance).total_seconds() > (60 * ref_balace):
-            prnt('It took more than ' + str(ref_balace) + ' minutes, the refresh balances:')
+        if (datetime.datetime.now() -
+            time_get_balance).total_seconds() > (60 *
+                                                 ref_balace):
+            prnt(
+                'It took more than ' +
+                str(ref_balace) +
+                ' minutes, the refresh balances:')
             time_get_balance = datetime.datetime.now()
             bal1 = OlimpBot(OLIMP_USER).get_balance()  # Баланс в БК1
             bal2 = FonbetBot(FONBET_USER).get_balance()  # Баланс в БК2
@@ -439,12 +481,12 @@ if __name__ == '__main__':
                 sc2 = 0
                 try:
                     sc1 = int(bk2_score.split(':')[0])
-                except:
+                except BaseException:
                     pass
 
                 try:
                     sc2 = int(bk2_score.split(':')[1])
-                except:
+                except BaseException:
                     pass
 
                 v_time = val_json.get('time', 'v_time')
@@ -455,8 +497,20 @@ if __name__ == '__main__':
                 live_fork_total = val_json.get('live_fork_total', 0)
                 live_fork = val_json.get('live_fork', 0)
 
-                deff_olimp = round(float(time.time() - float(val_json.get('time_req_olimp', 0))))
-                deff_fonbet = round(float(time.time() - float(val_json.get('time_req_fonbet', 0))))
+                deff_olimp = round(
+                    float(
+                        time.time() -
+                        float(
+                            val_json.get(
+                                'time_req_olimp',
+                                0))))
+                deff_fonbet = round(
+                    float(
+                        time.time() -
+                        float(
+                            val_json.get(
+                                'time_req_fonbet',
+                                0))))
                 deff_max = max(0, deff_olimp, deff_fonbet)
 
                 bk1_bet_json = val_json.get('kof_olimp')
@@ -473,12 +527,12 @@ if __name__ == '__main__':
 
                 try:
                     info = key + ': ' + name + \
-                           ' ' + k1_type + '=' + str(k1) + '/' + k2_type + '=' + str(k2) + ', ' + \
-                           v_time + ' (' + str(minute) + ') ' + \
-                           score + ' ' + str(pair_math) + \
-                           ', live_fork: ' + str(live_fork) + \
-                           ', live_fork_total: ' + str(live_fork_total) + \
-                           ', max deff: ' + str(deff_max)
+                        ' ' + k1_type + '=' + str(k1) + '/' + k2_type + '=' + str(k2) + ', ' + \
+                        v_time + ' (' + str(minute) + ') ' + \
+                        score + ' ' + str(pair_math) + \
+                        ', live_fork: ' + str(live_fork) + \
+                        ', live_fork_total: ' + str(live_fork_total) + \
+                        ', max deff: ' + str(deff_max)
                 except Exception as e:
                     prnts('error: ' + str(e))
                     info = ''
@@ -488,16 +542,28 @@ if __name__ == '__main__':
                         bet1, bet2 = get_sum_bets(k1, k2, total_bet)
                         # Проверим вилку на исключения
                         if check_fork(
-                                key, l_temp, k1, k2, live_fork, bk1_score, bk2_score,
-                                minute, time_break_fonbet, period, info
-                        ) or DEBUG:
+                                key,
+                                l_temp,
+                                k1,
+                                k2,
+                                live_fork,
+                                bk1_score,
+                                bk2_score,
+                                minute,
+                                time_break_fonbet,
+                                period,
+                                info) or DEBUG:
                             go_bet_key = key
                             l = l_temp
                             go_bet_json = val_json
                     elif deff_max >= 10:
                         pass
                 else:
-                    prnt('Вектор направления коф-та не определен: VECT1=' + str(vect1) + ', VECT2=' + str(vect2))
+                    prnt(
+                        'Вектор направления коф-та не определен: VECT1=' +
+                        str(vect1) +
+                        ', VECT2=' +
+                        str(vect2))
             if go_bet_key:
                 prnt(' ')
                 prnt('Go bets: ' + info)

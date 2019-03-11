@@ -290,7 +290,8 @@ def start_compare_matches(pair_mathes, json_bk1, json_bk2):
                                             bk2_match_info.get('team2')
                                     ):
 
-                                        if DEBUG and (str(bk2_match_id) == '13559930'):
+                                        #if DEBUG :
+                                        if 1==0 or (str(bk2_match_id) == '13676571'):
                                             prnts(
                                                 'Матч добавлен: ' + str(bk1_match_id) + ' ' +
                                                 bk1_match_info.get('team1') + ' vs ' +
@@ -300,7 +301,8 @@ def start_compare_matches(pair_mathes, json_bk1, json_bk2):
                                                 bk2_match_info.get('team2')
                                             )
                                             pair_mathes.append([bk1_match_id, bk2_match_id])
-                                        elif not DEBUG:
+                                        elif 1==0:
+                                        #elif not DEBUG:
                                             prnts(
                                                 'Матч добавлен: ' + str(bk1_match_id) + ' ' +
                                                 bk1_match_info.get('team1') + ' vs ' +
