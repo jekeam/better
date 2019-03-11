@@ -370,20 +370,14 @@ class BetManager:
 
                 self.get_cur_max_bet_id()
                 
-                shared_dict[self.bk_name]['reg_id'] = self.reg_id
+                shared[self.bk_name]['reg_id'] = self.reg_id
+                
                 prnt(
                     self.msg.format(
                         sys._getframe().f_code.co_name,
                         'bet successful, reg_id: ' + str(self.reg_id)
                     )
                 )
-
-                shared[self.bk_name]['reg_id'] = self.reg_id
-                
-                prnt(self.msg.format(
-                        sys._getframe().f_code.co_name,
-                        'bet successful, reg_id: ' + str(self.reg_id)
-                ))
 
             elif 'Такой исход не существует' in err_msg:
                 raise BetIsLost(err_msg)
