@@ -7,8 +7,8 @@ import requests
 import datetime
 import statistics
 
-DEBUG = True
-# DEBUG = False
+DEBUG = False
+MINUTE_COMPLITE = 88
 
 package_dir = os.path.dirname(__file__)
 dtOld = datetime.datetime.now()
@@ -61,6 +61,7 @@ opposition = {
     'ННД': 'ННН',
     'ННН': 'ННД'
 }
+
 
 def get_vector(bet_type, sc1=None, sc2=None):
     def raise_err(VECT, sc1, sc2):
@@ -166,6 +167,12 @@ def get_account_summ():
     with open(os.path.join(package_dir, "account.json")) as file:
         json = load(file)
     return json.get('summ', None)
+
+
+def get_param(param):
+    with open(os.path.join(package_dir, "account.json")) as file:
+        json = load(file)
+    return json.get(param)
 
 
 def rq_log(vstr: str):

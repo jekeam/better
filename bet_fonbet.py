@@ -58,7 +58,7 @@ class FonbetBot:
         self.sleep = 4
         self.cnt_test = 0
         self.add_sleep = 0
-        self.timeout = 50
+        self.timeout = 15
         self.fonbet_bet_type = None
 
         with open(os.path.join(package_dir, "proxies.json")) as file:
@@ -193,7 +193,7 @@ class FonbetBot:
         if url == '':
             url = 'www.fonbet.com'
         url = "https://" + url + "/urls.json?{}".format(random())
-        resp = requests.get(
+        resp = requests_retry_session().get(
             url,
             headers=browser_headers,
             verify=False,
@@ -236,7 +236,7 @@ class FonbetBot:
             sign = hmac.new(key=self.account['password'].encode(), msg=msg.encode(), digestmod=sha512).hexdigest()
             payload["sign"] = sign
             data = get_dumped_payload(payload)
-            resp = requests.post(
+            resp = requests_retry_session().post(
                 self.common_url.format("login"),
                 headers=self.fonbet_headers,
                 data=data,
@@ -296,7 +296,7 @@ class FonbetBot:
         payload['clientId'] = self.base_payload["clientId"]
 
         prnt('BET_FONBET.PY: check bet to bk fonbet, time: ' + str(datetime.datetime.now()))
-        resp = requests.post(
+        resp = requests_retry_session().post(
             url,
             headers=headers,
             json=payload,
@@ -331,7 +331,7 @@ class FonbetBot:
         payload_req['clientId'] = self.base_payload["clientId"]
         payload_req['client']['id'] = self.base_payload["clientId"]
 
-        resp = requests.post(url, headers=headers, json=payload_req, verify=False, timeout=self.timeout)
+        resp = requests_retry_session().post(url, headers=headers, json=payload_req, verify=False, timeout=self.timeout)
         check_status_with_resp(resp)
         res = resp.json()
         if "requestId" not in res:
@@ -388,15 +388,21 @@ class FonbetBot:
         payload["coupon"]["amount"] = self.amount
 
         prnt('BET_FONBET.PY: send bet to bk fonbet, time: ' + str(datetime.datetime.now()))
-        resp = requests.post(
-            url,
-            headers=headers,
-            json=payload,
-            verify=False,
-            timeout=self.timeout,
-            proxies=self.proxies
-        )
+        try:
+            resp = requests_retry_session().post(
+                url,
+                headers=headers,
+                json=payload,
+                verify=False,
+                timeout=15,
+                proxies=self.proxies
+            )
+        except Exception as e:
+            prnt('BET_FONBET.PY: rs timeout: ' + str(e))
+            self.place_bet(obj=obj)
+
         prnt('BET_FONBET.PY: response fonbet: ' + str(resp.text), 'hide')
+
         check_status_with_resp(resp)
         res = resp.json()
         prnt(res, 'hide')
@@ -439,7 +445,7 @@ class FonbetBot:
         '''
 
         headers = self.fonbet_headers
-        resp = requests.post(
+        resp = requests_retry_session().post(
             url,
             headers=headers,
             json=payload,
@@ -525,21 +531,21 @@ class FonbetBot:
                                   str(err_str) + ', new_wager: ' + str(new_wager) + ', old_wager: ' + str(self.wager)
                         prnt(err_str)
                         if self.fonbet_bet_type:
-                            prnts('BET_FONBET.PY: поиск нового ИД тотала: ' + str(self.fonbet_bet_type))
+                            prnt('BET_FONBET.PY: поиск нового ИД тотала: ' + str(self.fonbet_bet_type))
                             match_id = self.wager.get('event')
                             new_wager = get_new_bets_fonbet(match_id, self.proxies, self.timeout)
                             new_wager = new_wager.get(str(match_id), {}).get('kofs', {}).get(self.fonbet_bet_type)
                             if new_wager:
-                                prnts('BET_FONBET.PY: Тотал найден: ' + str(new_wager))
+                                prnt('BET_FONBET.PY: Тотал найден: ' + str(new_wager))
                                 self.wager.update(new_wager)
                                 return self.place_bet(obj=obj)
                             else:
                                 err_str = 'BET_FONBET.PY: Тотал не найден'
-                                prnts(err_str)
+                                prnt(err_str)
                                 raise LoadException(err_str)
                         else:
                             err_str = 'BET_FONBET.PY: Тип ставки, например 1ТМ(2.5) - не задан, выдаю ошибку.'
-                            prnts(err_str)
+                            prnt(err_str)
                             raise LoadException(err_str)
                     else:
                         err_str = "BET_FONBET.PY: error неизвестная ошибка: " + \
@@ -576,7 +582,7 @@ class FonbetBot:
             payload['clientId'] = self.base_payload["clientId"]
             payload['fsid'] = self.payload['fsid']
             prnt('BET_FONBET.PY - sale_bet rq 1: ' + str(payload), 'hide')
-            resp = requests.post(
+            resp = requests_retry_session().post(
                 url,
                 headers=headers,
                 json=payload,
@@ -632,7 +638,7 @@ class FonbetBot:
             payload['clientId'] = self.base_payload["clientId"]
             payload['fsid'] = self.payload['fsid']
             prnt('BET_FONBET.PY - sale_bet rq 2: ' + str(payload), 'hide')
-            resp = requests.post(
+            resp = requests_retry_session().post(
                 url,
                 headers=headers,
                 json=payload,
@@ -659,7 +665,7 @@ class FonbetBot:
             payload['clientId'] = self.base_payload["clientId"]
             payload['fsid'] = self.payload['fsid']
             prnt('BET_FONBET.PY - sale_bet rq 3: ' + str(payload), 'hide')
-            resp = requests.post(
+            resp = requests_retry_session().post(
                 url,
                 headers=headers,
                 json=payload,
@@ -697,7 +703,7 @@ class FonbetBot:
         payload['clientId'] = self.base_payload["clientId"]
         payload['fsid'] = self.payload['fsid']
         prnt('BET_FONBET.PY - _check_sell_result rq: ' + str(payload), 'hide')
-        resp = requests.post(
+        resp = requests_retry_session().post(
             url,
             headers=headers,
             json=payload,
@@ -756,7 +762,7 @@ class FonbetBot:
         payload['clientId'] = self.base_payload["clientId"]
         payload['fsid'] = self.payload['fsid']
 
-        resp = requests.post(
+        resp = requests_retry_session().post(
             url,
             headers=headers,
             json=payload,
@@ -788,7 +794,7 @@ class FonbetBot:
         sign = hmac.new(key=self.account['password'].encode(), msg=msg.encode(), digestmod=sha512).hexdigest()
         payload["sign"] = sign
         data = get_dumped_payload(payload)
-        resp = requests.post(
+        resp = requests_retry_session().post(
             url,
             headers=self.fonbet_headers,
             data=data,
@@ -811,7 +817,7 @@ def get_new_bets_fonbet(match_id, proxies, time_out):
     key_id = str(match_id)
     bets_fonbet = {}
     try:
-        resp = requests.get(
+        resp = requests_retry_session().get(
             url_fonbet_match + str(match_id) + "&lang=en",
             headers=fonbet_header,
             timeout=time_out,
@@ -825,7 +831,7 @@ def get_new_bets_fonbet(match_id, proxies, time_out):
             TT.extend(bet)
 
         for event in resp.get("events"):
-            # prnts(jsondumps(event, ensure_ascii=False))
+            # prnt(jsondumps(event, ensure_ascii=False))
             # exit()
 
             score = event.get('score', '0:0').replace('-', ':')
@@ -871,7 +877,7 @@ def get_new_bets_fonbet(match_id, proxies, time_out):
                             'kofs': {}
                         }
 
-                # prnts('event_name', event.get('name'))
+                # prnt('event_name', event.get('name'))
 
                 half = ''
                 if event.get('name') == '1st half':
@@ -882,7 +888,7 @@ def get_new_bets_fonbet(match_id, proxies, time_out):
                 for cat in event.get('subcategories'):
 
                     cat_name = cat.get('name')
-                    # prnts('cat_name', cat_name)
+                    # prnt('cat_name', cat_name)
                     if cat_name in (
                             '1X2 (90 min)',
                             '1X2',
@@ -934,7 +940,7 @@ def get_new_bets_fonbet(match_id, proxies, time_out):
                                     )
         return bets_fonbet
     except Exception as e:
-        prnts(e)
+        prnt(e)
         raise ValueError(e)
 
 

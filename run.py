@@ -9,19 +9,25 @@ from difflib import SequenceMatcher
 import re
 from exceptions import *
 from server import run_server
-from utils import prnts, DEBUG, find_max_mode, opposition
+from utils import prnts, DEBUG, find_max_mode, opposition, MINUTE_COMPLITE
 from proxy_switcher import ProxySwitcher
 import json
 import os.path
 import os
 from statistics import median
-import sys
 from datetime import datetime
+
+import sys
 import traceback
 
 TIMEOUT_MATCHS = 10
 TIMEOUT_MATCH = 10
 TIMEOUT_MATCH_MINUS = 9
+
+prnts('TIMEOUT_MATCHS: ' + str(TIMEOUT_MATCHS))
+prnts('TIMEOUT_MATCH: ' + str(TIMEOUT_MATCH))
+prnts('TIMEOUT_MATCH_MINUS: ' + str(TIMEOUT_MATCH_MINUS))
+prnts('MINUTE_COMPLITE: ' + str(MINUTE_COMPLITE))
 
 
 def get_olimp(resp, arr_matchs):
@@ -116,7 +122,8 @@ def start_seeker_matchs_fonbet(proxies, gen_proxi_fonbet, arr_matchs):
         time.sleep(time_sleep)
 
 
-def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi_olimp, pair_mathes, stat_req_ol):
+def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi_olimp,
+                            pair_mathes, mathes_complite, stat_req_ol):
     global TIMEOUT_MATCH, TIMEOUT_MATCH_MINUS
 
     proxy_size = 10
@@ -130,28 +137,23 @@ def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi
     while True:
         try:
             time_resp = get_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp,
-                                       ps.get_next_proxy(), TIMEOUT_MATCH)
+                                       ps.get_next_proxy(), TIMEOUT_MATCH, pair_mathes)
             stat_req_ol.append(round(time_resp, 2))
-        except TimeOut as e:
-            ps.rep_cur_proxy(gen_proxi_olimp.next())
-            err_str = 'Timeout: Олимп, ошибка при запросе матча ' + str(match_id_olimp)
-            prnts(err_str)
-            time_resp = TIMEOUT_MATCH
         except OlimpMatchСompleted as e:
             cnt = 0
             for pair_match in pair_mathes:
-                if pair_match[0] == str(match_id_olimp):
+                if match_id_olimp in pair_match:
+                    prnts('Olimp, pair mathes remove: ' + str(pair_mathes[cnt]))
                     pair_mathes.remove(pair_mathes[cnt])
+                    mathes_complite.append(match_id_olimp)
                 cnt += 1
-            print(e)
             prnts(e)
-            raise ValueError(e)
+            raise ValueError('start_seeker_bets_olimp:' + str(e))
         except Exception as e:
             exc_type, exc_value, exc_traceback = sys.exc_info()
-            err_str = 'Exception: Олимп, ошибка при запросе матча ' + str(match_id_olimp) + ': ' + \
-                      str(e) + ' ' + ps.get_cur_proxy() + '. ' + \
-                      str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
-            prnts(err_str)
+            prnts('Exception: Олимп, ошибка при запросе матча ' + str(match_id_olimp) + ': ' +
+                  str(e) + ' ' + ps.get_cur_proxy() + ' ' +
+                  str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
             ps.rep_cur_proxy(gen_proxi_olimp.next())
             time_resp = TIMEOUT_MATCH
 
@@ -164,7 +166,8 @@ def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi
         time.sleep(time_sleep)
 
 
-def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_proxi_fonbet, pair_mathes, stat_req_fb):
+def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_proxi_fonbet,
+                             pair_mathes, mathes_complite, stat_req_fb):
     global TIMEOUT_MATCH, TIMEOUT_MATCH_MINUS
 
     proxy_size = 5
@@ -178,26 +181,23 @@ def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_p
     while True:
         try:
             time_resp = get_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet,
-                                        ps.get_next_proxy(), TIMEOUT_MATCH)
+                                        ps.get_next_proxy(), TIMEOUT_MATCH, pair_mathes)
             stat_req_fb.append(round(time_resp, 2))
         except FonbetMatchСompleted as e:
             cnt = 0
             for pair_match in pair_mathes:
-                if pair_match[1] == str(match_id_fonbet):
+                if match_id_fonbet in pair_match:
+                    prnts('Fonbet, pair mathes remove: ' + str(pair_mathes[cnt]))
                     pair_mathes.remove(pair_mathes[cnt])
+                    mathes_complite.append(match_id_fonbet)
                 cnt += 1
             prnts(e)
             raise ValueError('start_seeker_bets_fonbet:' + str(e))
         except Exception as e:
             exc_type, exc_value, exc_traceback = sys.exc_info()
-            err_str = 'Exception: Фонбет, ошибка при запросе матча ' + str(match_id_fonbet) + ': ' + \
-                      str(e) + ' ' + ps.get_cur_proxy() + '. ' + \
-                      str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
-            prnts(err_str)
-            ps.rep_cur_proxy(gen_proxi_fonbet.next())
-            time_resp = TIMEOUT_MATCH
-
-            prnts()
+            prnts('Exception: Фонбет, ошибка при запросе матча ' + str(match_id_fonbet) + ': ' +
+                  str(e) + ' ' + ps.get_cur_proxy() + ' ' +
+                  str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
             ps.rep_cur_proxy(gen_proxi_fonbet.next())
             time_resp = TIMEOUT_MATCH
 
@@ -214,6 +214,7 @@ def starter_bets(
         bets_olimp,
         bets_fonbet,
         pair_mathes,
+        mathes_complite,
         mathes_id_is_work,
         proxies_olimp,
         gen_proxi_olimp,
@@ -231,7 +232,8 @@ def starter_bets(
 
                 start_seeker_olimp_bets_by_id = threading.Thread(
                     target=start_seeker_bets_olimp,
-                    args=(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi_olimp, pair_mathes, stat_req_olimp)
+                    args=(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi_olimp,
+                          pair_mathes, mathes_complite, stat_req_olimp)
                 )
                 start_seeker_olimp_bets_by_id.start()
 
@@ -240,7 +242,8 @@ def starter_bets(
 
                 start_seeker_fonbet_bets_by_id = threading.Thread(
                     target=start_seeker_bets_fonbet,
-                    args=(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_proxi_fonbet, pair_mathes, stat_req_fonbet)
+                    args=(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_proxi_fonbet,
+                          pair_mathes, mathes_complite, stat_req_fonbet)
                 )
                 start_seeker_fonbet_bets_by_id.start()
 
@@ -261,18 +264,9 @@ def compare_teams(team1_bk1, team2_bk1, team1_bk2, team2_bk2):
         return False
 
 
-def start_compare_matches(pair_mathes, json_bk1, json_bk2):
+def start_compare_matches(pair_mathes, json_bk1, json_bk2, mathes_complite):
     while True:
         try:
-            # Проверим какие матчи завершились
-            cnt = 0
-            for bk1_match_id, bk2_match_id in pair_mathes:
-                if bk1_match_id not in json_bk1.keys() or \
-                        bk2_match_id not in json_bk2.keys():
-                    prnts('Матч исключен: [' + str(bk1_match_id) + ', ' + str(bk2_match_id) + ']')
-                    pair_mathes.remove(pair_mathes[cnt])
-                cnt = cnt + 1
-
             prnts('Найдено матчей: ' + str(len(pair_mathes)) + ' ' + str(pair_mathes))
             for bk1_match_id, bk1_match_info in json_bk1.items():
                 if bk1_match_info:
@@ -283,35 +277,37 @@ def start_compare_matches(pair_mathes, json_bk1, json_bk2):
                                 # Проверим что ид матча 2 нет в списке
                                 if 'yes' not in list(
                                         map(lambda id: 'yes' if bk2_match_id in id else 'no', pair_mathes)):
-                                    if compare_teams(
-                                            bk1_match_info.get('team1'),
-                                            bk1_match_info.get('team2'),
-                                            bk2_match_info.get('team1'),
-                                            bk2_match_info.get('team2')
-                                    ):
-
-                                        #if DEBUG :
-                                        if 1==0 or (str(bk2_match_id) == '13674342'):
-                                            prnts(
-                                                'Матч добавлен: ' + str(bk1_match_id) + ' ' +
-                                                bk1_match_info.get('team1') + ' vs ' +
-                                                bk1_match_info.get('team2') + ' | ' +
-                                                str(bk2_match_id) + ' ' +
-                                                bk2_match_info.get('team1') + ' vs ' +
+                                    # Проверим что матч не завершен:
+                                    if bk1_match_id in mathes_complite or bk2_match_id in mathes_complite:
+                                        # prnts('Матчи завершены: ' + str(bk1_match_id) + '-' + str(bk2_match_id))
+                                        pass
+                                    else:
+                                        if compare_teams(
+                                                bk1_match_info.get('team1'),
+                                                bk1_match_info.get('team2'),
+                                                bk2_match_info.get('team1'),
                                                 bk2_match_info.get('team2')
-                                            )
-                                            pair_mathes.append([bk1_match_id, bk2_match_id])
-                                        elif 1==0:
-                                        #elif not DEBUG:
-                                            prnts(
-                                                'Матч добавлен: ' + str(bk1_match_id) + ' ' +
-                                                bk1_match_info.get('team1') + ' vs ' +
-                                                bk1_match_info.get('team2') + ' | ' +
-                                                str(bk2_match_id) + ' ' +
-                                                bk2_match_info.get('team1') + ' vs ' +
-                                                bk2_match_info.get('team2')
-                                            )
-                                            pair_mathes.append([bk1_match_id, bk2_match_id])
+                                        ):
+                                            if DEBUG and str(bk2_match_id) == '13473895':
+                                                prnts(
+                                                    'Матч добавлен: ' + str(bk1_match_id) + ' ' +
+                                                    bk1_match_info.get('team1') + ' vs ' +
+                                                    bk1_match_info.get('team2') + ' | ' +
+                                                    str(bk2_match_id) + ' ' +
+                                                    bk2_match_info.get('team1') + ' vs ' +
+                                                    bk2_match_info.get('team2')
+                                                )
+                                                pair_mathes.append([bk1_match_id, bk2_match_id])
+                                            elif not DEBUG:
+                                                prnts(
+                                                    'Матч добавлен: ' + str(bk1_match_id) + ' ' +
+                                                    bk1_match_info.get('team1') + ' vs ' +
+                                                    bk1_match_info.get('team2') + ' | ' +
+                                                    str(bk2_match_id) + ' ' +
+                                                    bk2_match_info.get('team1') + ' vs ' +
+                                                    bk2_match_info.get('team2')
+                                                )
+                                                pair_mathes.append([bk1_match_id, bk2_match_id])
 
             time.sleep(15)
         except Exception as e:
@@ -565,7 +561,7 @@ if __name__ == '__main__':
 
     olimp_seeker_matchs = threading.Thread(
         target=start_seeker_matchs_olimp,
-        args=(proxies_olimp, gen_proxi_olimp, arr_olimp_matchs,)
+        args=(proxies_olimp, gen_proxi_olimp, arr_olimp_matchs)
     )
     olimp_seeker_matchs.start()
 
@@ -578,7 +574,7 @@ if __name__ == '__main__':
     pair_mathes = []
     compare_matches = threading.Thread(
         target=start_compare_matches,
-        args=(pair_mathes, arr_olimp_matchs, arr_fonbet_matchs)
+        args=(pair_mathes, arr_olimp_matchs, arr_fonbet_matchs, mathes_complite)
     )
     compare_matches.start()
 
@@ -589,6 +585,7 @@ if __name__ == '__main__':
             bets_olimp,
             bets_fonbet,
             pair_mathes,
+            mathes_complite,
             mathes_id_is_work,
             proxies_olimp,
             gen_proxi_olimp,

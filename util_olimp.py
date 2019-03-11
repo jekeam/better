@@ -1,12 +1,11 @@
 # coding: utf-8
 from hashlib import md5
 import requests
-# if __name__=='__main__':
 from proxy_worker import del_proxy
 import re
 import time
 from exceptions import OlimpMatchСompleted, TimeOut
-from utils import prnts, get_vector
+from utils import prnts, get_vector, MINUTE_COMPLITE
 
 url_autorize = "https://{}.olimp-proxy.ru/api/{}"
 payload = {"lang_id": "0", "platforma": "ANDROID1"}
@@ -17,14 +16,15 @@ head = {
     'User-Agent': 'okhttp/3.9.1'
 }
 
+
 def get_xtoken_bet(payload):
     sorted_values = [str(payload[key]) for key in sorted(payload.keys())]
     to_encode = ";".join(sorted_values + [olimp_secret_key])
     return {"X-TOKEN": md5(to_encode.encode()).hexdigest()}
 
 
-olimp_url = 'http://12.olimp-proxy.ru:10600'
-olimp_url_https = 'https://12.olimp-proxy.ru'
+olimp_url = 'http://10.olimp-proxy.ru:10600'
+olimp_url_https = 'https://10.olimp-proxy.ru'
 olimp_url_random = 'https://{}.olimp-proxy.ru'  # c 10 по 18й
 
 olimp_secret_key = 'b2c59ba4-7702-4b12-bef5-0908391851d9'
@@ -180,10 +180,19 @@ def to_abb(sbet):
     return abr
 
 
-def get_match_olimp(match_id, proxi_list, proxy, time_out):
+def get_match_olimp(match_id, proxi_list, proxy, time_out, pair_mathes):
     global olimp_url
     global olimp_url_https
     global olimp_data
+
+    match_exists = False
+    for pair_match in pair_mathes:
+        if match_id in pair_match:
+            match_exists = True
+    if match_exists is False:
+        err_str = 'Олимп: матч ' + str(match_id) + ' не найден в спике активных, поток get_match_olimp завершен.'
+        raise OlimpMatchСompleted(err_str)
+
     olimp_data_m = olimp_data.copy()
 
     olimp_data_m.update({'id': match_id})
@@ -192,7 +201,6 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out):
     olimp_stake_head = olimp_head.copy()
 
     token = get_xtoken(olimp_data_m, olimp_secret_key)
-    # prnts(str(time.time()) + ' ' + proxy + ' ' + str(olimp_data_m) + ' ' + str(token), 'hide')
 
     olimp_stake_head.update(token)
     olimp_stake_head.pop('Accept-Language', None)
@@ -265,10 +273,20 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out):
         raise ValueError(err_str)
 
 
-def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out):
+def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_mathes):
+    global MINUTE_COMPLITE
     key_id = str(match_id)
+
+    match_exists = False
+    for pair_match in pair_mathes:
+        if match_id in pair_match:
+            match_exists = True
+    if match_exists is False:
+        err_str = 'Олимп: матч ' + str(match_id) + ' не найден в спике активных, поток get_bets_olimp завершен.'
+        raise OlimpMatchСompleted(err_str)
+
     try:
-        resp, time_resp = get_match_olimp(match_id, proxies_olimp, proxy, time_out)
+        resp, time_resp = get_match_olimp(match_id, proxies_olimp, proxy, time_out, pair_mathes)
         # Очистим дстарые данные
         # if bets_olimp.get(key_id):
         # bets_olimp[key_id] = dict()
@@ -276,12 +294,11 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out):
         time_start_proc = time.time()
 
         # print(resp)
-        # if key_id == '46088996':
-        # prnts(json.dumps(resp, ensure_ascii=False))
-        #     f = open('olimp.txt', 'a+')
-        #     f.write(json.dumps(resp, ensure_ascii=False))
-        #     f.write('\n')
-        #     # prnts('olimp: '+json.dumps(resp, ensure_ascii=False))
+        # if key_id == '46953789':
+        #     import json
+        #     prnts(json.dumps(resp, ensure_ascii=False))
+        # f = open('olimp.txt', 'a+')
+        # f.write(json.dumps(resp, ensure_ascii=False))
 
         # prnts(json.dumps(resp, ensure_ascii=False, indent=4))
         # prnts(json.dumps(resp, ensure_ascii=False))
@@ -299,12 +316,13 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out):
 
             minute = -1
             try:
-                minute = re.findall(
-                    '\d{1,2}\"',
-                    resp.get('scd', '')
-                )[0].replace('"', '')
+                minute = int(re.findall('\d{1,2}\\"', resp.get('sc', ''))[0].replace('"', ''))
             except:
                 pass
+
+            if minute >= MINUTE_COMPLITE:
+                err_str = 'Олимп: матч ' + str(match_id) + ' завершен, т.к. больше 88 минуты прошло.'
+                raise OlimpMatchСompleted(err_str)
 
             skId = resp.get('sport_id')
             skName = resp.get('sn')
@@ -425,7 +443,7 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out):
                                                 'time_req': round(time.time()),
                                                 'value': d.get('v', ''),
                                                 'apid': d.get('apid', ''),
-                                                'factor': d.get('v', ''),  # d.get('p', ''),
+                                                'factor': d.get('v', ''),
                                                 'sport_id': skId,
                                                 'event': match_id,
                                                 'vector': get_vector(coef, sc1, sc2),
@@ -464,12 +482,13 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out):
 
         try:
             for i, j in bets_olimp.get(key_id, {}).get('kofs', {}).copy().items():
-                if round(float(time.time() - float(j.get('time_req', 0)))) > 8:
+                if round(float(time.time() - float(j.get('time_req', 0)))) > 7 and j.get('value', 0) > 0:
                     try:
-                        bets_olimp[key_id]['kofs'].pop(i)
+                        bets_olimp[key_id]['kofs'][i]['value'] = 0
+                        bets_olimp[key_id]['kofs'][i]['factor'] = 0
                         prnts(
-                            'Олимп, данные по котировке из БК не получены более 8 сек., котировка удалена: ' +
-                            key_id + ' ' + str(i) + ' ' + str(j), 'hide'
+                            'Олимп, данные по котировке из БК не получены более 7 сек., знач. выставил в 0: ' +
+                            key_id + ' ' + str(i), 'hide'
                         )
                     except Exception as e:
                         prnts('Олимп, ошибка 1 при удалении старой котирофки: ' + str(e))
