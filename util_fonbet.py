@@ -14,6 +14,13 @@ fonbet_header = {
     'Connection': 'Keep-Alive',
     'Accept-Encoding': 'gzip'
 }
+base_payload = {
+    "appVersion": "5.1.3b",
+    "lang": "ru",
+    "rooted": "false",
+    "sdkVersion": 21,
+    "sysId": 4
+}
 
 # VICTORIES
 VICTS = [['П1', 921], ['Н', 922], ['П2', 923], ['П1Н', 924], ['12', 1571], ['П2Н', 925],
@@ -157,12 +164,17 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
 
     key_id = str(match_id)
     try:
-        resp, time_resp = get_match_fonbet(match_id, proxies_fonbet, proxy, time_out)
         resp, time_resp = get_match_fonbet(match_id, proxies_fonbet, proxy, time_out, pair_mathes)
         # Очистим дстарые данные
         # if bets_fonbet.get(key_id):
         # bets_fonbet[key_id] = dict()
         time_start_proc = time.time()
+
+        # if key_id in (str(12879839), str(12801238), str(12801237), str(12801241)):
+        #     f = open('fonbet.txt', 'a+')
+        #     f.write(json.dumps(resp, ensure_ascii=False))
+        #     f.write('\n')
+        #     # prnts('fonbet: '+str(json.dumps(resp, ensure_ascii=False)))
 
         TT = []
         for bet in [TTO, TTU, TT1O, TT1U, TT2O, TT2U]:
@@ -241,7 +253,7 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
                     elif event.get('name') == '2nd half':
                         half = '2'
 
-                    for cat in event.get('subcategories', {}):
+                    for cat in event.get('subcategories'):
 
                         cat_name = cat.get('name')
 
