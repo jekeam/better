@@ -109,7 +109,7 @@ class BetManager:
             shared[self.bk_name + '_err'] = excp_name + ': ' + str(e)
             self.sale_bet(shared)
 
-        def end_bet():
+        def all_end_bet():
             shared[self.bk_name + '_err'] = 'ok'
             shared[self.bk_name_opposite + '_err'] = 'ok'
 
@@ -128,7 +128,7 @@ class BetManager:
             sale(e.__class__.__name__)
         except BkOppBetError as e:
             prnt(e)
-            end_bet()
+            all_end_bet()
         except SessionExpired as e:
             prnt(e)
             sale(e.__class__.__name__)
@@ -157,6 +157,7 @@ class BetManager:
                 prnt(e)
                 self.sign_in(shared)
 
+            # todo по идее надо понимать сделили ли мы проставление, если нет то продажу запускать на оппозиционной бк, если там прошло проставление
             self.place_bet(shared)
         except CouponBlocked as e:
             prnt(e)
@@ -175,6 +176,10 @@ class BetManager:
             pass
             # self.place_bet(shared)
         except Exception as e:
+            
+            #todo сначала проверить была ли ставка в оппозите
+            self.place_bet(shared)
+            
             exc_type, exc_value, exc_traceback = sys.exc_info()
             err_msg = 'unknown err: ' + str(e) + '. ' + \
                 str(repr(traceback.format_exception(
@@ -302,8 +307,8 @@ class BetManager:
 
     def place_bet(self, shared: dict):
         self.set_session_state()
-
         self.get_opposite_stat(shared)
+        
         self.sum_bet = self.bk_container.get('amount')
 
         cur_bal = self.session.get('balance')
@@ -319,6 +324,11 @@ class BetManager:
                 raise NoMoney(err_str)
 
         if self.bk_name == 'olimp':
+            sleep(15)
+            try:
+                1/0
+            except Exception as e:
+                raise BetIsLost(e)
 
             payload = copy.deepcopy(ol_payload)
 
@@ -454,6 +464,7 @@ class BetManager:
 
     def sale_bet(self, shared: dict):
         self.set_session_state()
+        self.get_opposite_stat(shared)
 
         if self.bk_name == 'olimp':
 
@@ -716,14 +727,15 @@ class BetManager:
     def get_opposite_stat(self, shared: dict):
 
         opposite_stat = str(
-            shared.get(
-                self.bk_name_opposite +
-                '_err',
-                'ok'))
+            shared.get(self.bk_name_opposite + '_err', 'ok')
+        )
+        
         if opposite_stat != 'ok':
             err_str = self.msg_err.format(
                 sys._getframe().f_code.co_name,
-                self.bk_name + ' get error from ' + self.bk_name_opposite + ': ' + opposite_stat)
+                self.bk_name + ' get error from ' + 
+                self.bk_name_opposite + ': ' + opposite_stat
+            )
             raise BkOppBetError(err_str)
 
     def check_max_bet(self, shared: dict):
