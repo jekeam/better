@@ -372,12 +372,10 @@ class BetManager:
                 
                 shared[self.bk_name]['reg_id'] = self.reg_id
                 
-                prnt(
-                    self.msg.format(
+                prnt(self.msg.format(
                         sys._getframe().f_code.co_name,
                         'bet successful, reg_id: ' + str(self.reg_id)
-                    )
-                )
+                ))
 
             elif 'Такой исход не существует' in err_msg:
                 raise BetIsLost(err_msg)
