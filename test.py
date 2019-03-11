@@ -1,2 +1,4 @@
-import sys
-print('DOMINO TILE HORIZONTAL-00-00', file=sys.stderr)
+try:
+    print(0/0)
+except Exception as e:
+    print(e.__class__.__name__)
