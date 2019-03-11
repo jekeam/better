@@ -364,8 +364,8 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
                 v_fonbet = k_fonbet.get('value', 0.0)
 
                 if DEBUG:
-                    v_olimp = v_olimp + 1
-                    v_fonbet = v_fonbet + 1
+                    v_olimp = v_olimp - 1
+                    v_fonbet = v_fonbet - 1
 
                 if v_olimp > 0.0 and v_fonbet > 0.0:
                     L = (1 / float(v_olimp)) + (1 / float(v_fonbet))
@@ -548,6 +548,7 @@ if __name__ == '__main__':
     # json by mathes
     arr_olimp_matchs = dict()
     arr_fonbet_matchs = dict()
+    mathes_complite = []
 
     # json by bets math
     bets_fonbet = dict()
