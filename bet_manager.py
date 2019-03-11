@@ -33,22 +33,21 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 package_dir = path.dirname(path.abspath(__file__))
 
 
-def run_bets(bks: dict) -> None:
-    holder = {}
+def run_bets(shared_dict: dict) -> None:
 
-    for bk, info in bks.items():
-        bk = Thread(target=BetManager, args=(holder, bk, info))
+    for bk_name, bk_container in shared_dict.items():
+        bk = Thread(target=BetManager, args=(shared_dict, bk_name, bk_container))
         bk.start()
     bk.join()
 
 
 class BetManager:
 
-    def __init__(self, holder: dict, bk: str, info: dict) -> None:
-        self.bk = bk
-        self.info = info
-        self.wager = info['wager']
-        self.bk_opposite = info['opposite']
+    def __init__(self, shared_dict: dict, bk_name: str, bk_container: dict) -> None:
+        self.bk = bk_name
+        self.bk_container = bk_container
+        self.wager = bk_container['wager']
+        self.bk_opposite = bk_container['opposite']
         self.account = self.get_account_info()
         self.timeout = 50
         self.match_id = None
@@ -88,18 +87,18 @@ class BetManager:
             prnt(err_str)
             raise ValueError(err_str)
 
-        self.manager(holder)
+        self.manager(shared_dict)
 
-    def manager(self, holder: dict) -> None:
-        # holder['fonbet_err'] = 'bla bla bla'
-        # holder['olimp_err'] = 'bla bla bla'
+    def manager(self, shared_dict: dict) -> None:
+        # shared_dict['fonbet_err'] = 'bla bla bla'
+        # shared_dict['olimp_err'] = 'bla bla bla'
 
-        self.sign_in(holder)
+        self.sign_in(shared_dict)
         try:
             pass
-            #self.place_bet(holder)
+            #self.place_bet(shared_dict)
             self.reg_id = 14725077368
-            self.sale_bet(holder)
+            self.sale_bet(shared_dict)
         except CouponBlocked as e:
             prnt(e)
         except BetIsLost as e:
@@ -110,11 +109,11 @@ class BetManager:
             prnt(e)
         except SessionExpired as e:
             prnt(e)
-            self.sign_in(holder)
+            self.sign_in(shared_dict)
         except BetError as e:
             prnt(e)
             pass
-            # self.place_bet(holder)
+            # self.place_bet(shared_dict)
         except Exception as e:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             err_msg = 'unknown err: ' + str(e) + '. ' + \
@@ -126,7 +125,7 @@ class BetManager:
 
         # bk1.sale_bet()
 
-    def sign_in(self, holder: dict) -> None:
+    def sign_in(self, shared_dict: dict) -> None:
 
         try:
             if self.bk == 'olimp':
@@ -201,7 +200,7 @@ class BetManager:
                 'balance: ' + str(self.session.get('balance')) + ' ' + str(self.session.get('currency'))
             ))
             write_file(self.session_file, self.session['session'].strip())
-            self.wait_sign_in_opp(holder)
+            self.wait_sign_in_opp(shared_dict)
 
             if not self.session.get('session'):
                 err_str = self.msg_err.format(sys._getframe().f_code.co_name, 'session_id not defined')
@@ -217,11 +216,11 @@ class BetManager:
             err_str = self.msg_err.format(sys._getframe().f_code.co_name, err_msg)
             raise ValueError(err_str)
 
-    def place_bet(self, holder: dict) -> None:
+    def place_bet(self, shared_dict: dict) -> None:
         self.set_session_state()
 
-        self.get_opposite_stat(holder)
-        self.sum_bet = self.info.get('amount')
+        self.get_opposite_stat(shared_dict)
+        self.sum_bet = self.bk_container.get('amount')
 
         cur_bal = self.session.get('balance')
 
@@ -312,7 +311,7 @@ class BetManager:
 
             self.payload = copy.deepcopy(payload)
 
-            self.check_max_bet(holder)
+            self.check_max_bet(shared_dict)
             self.get_request_id()
             self.payload['requestId'] = self.reqId
 
@@ -337,9 +336,9 @@ class BetManager:
                 prnt(self.msg.format(sys._getframe().f_code.co_name, 'bet_delay: ' + str(bet_delay_sec) + ' sec.'))
                 sleep(bet_delay_sec)
 
-            self.check_result(holder)
+            self.check_result(shared_dict)
 
-    def sale_bet(self, holder: dict) -> None:
+    def sale_bet(self, shared_dict: dict) -> None:
         self.set_session_state()
 
         if self.bk == 'olimp':
@@ -446,7 +445,7 @@ class BetManager:
                         sys._getframe().f_code.co_name,
                         'coupon regId ' + str(self.reg_id) + ' not found, retry, after sec: ' + str(timer_update)
                     )
-                    self.sale_bet(holder)
+                    self.sale_bet(shared_dict)
 
                 # step2 get rqid for sell coupn
                 payload = copy.deepcopy(payload_coupon_sum)
@@ -531,12 +530,12 @@ class BetManager:
             account = load(file)
         return account.get(self.bk, {})
 
-    def wait_sign_in_opp(self, holder):
+    def wait_sign_in_opp(self, shared_dict: dict) -> None:
         # if not DEBUG:
         msg_push = True
-        holder['sign_in_' + self.bk] = 'ok'
+        shared_dict['sign_in_' + self.bk] = 'ok'
 
-        while holder.get('sign_in_' + self.bk_opposite) != 'ok':
+        while shared_dict.get('sign_in_' + self.bk_opposite) != 'ok':
             if msg_push:
                 err_str = self.msg_err.format(
                     sys._getframe().f_code.co_name,
@@ -545,9 +544,9 @@ class BetManager:
                 prnt(err_str)
                 msg_push = False
 
-    def get_opposite_stat(self, holder):
+    def get_opposite_stat(self, shared_dict: dict) -> None:
 
-        opposite_stat = str(holder.get(self.bk_opposite + '_err', 'ok'))
+        opposite_stat = str(shared_dict.get(self.bk_opposite + '_err', 'ok'))
         if opposite_stat != 'ok':
             err_str = self.msg_err.format(
                 sys._getframe().f_code.co_name,
@@ -555,8 +554,8 @@ class BetManager:
             )
             raise BkOppBetError(err_str)
 
-    def check_max_bet(self, holder):
-        self.get_opposite_stat(holder)
+    def check_max_bet(self, shared_dict: dict) -> None:
+        self.get_opposite_stat(shared_dict)
 
         url, timeout = get_common_url(self.server_fb)
         payload = copy.deepcopy(fb_payload_bet)
@@ -612,8 +611,8 @@ class BetManager:
             err_str = self.msg_err.format(sys._getframe().f_code.co_name, 'mo money')
             raise NoMoney(err_str)
 
-    def check_result(self, holder) -> None:
-        self.get_opposite_stat(holder)
+    def check_result(self, shared_dict: dict) -> None:
+        self.get_opposite_stat(shared_dict)
 
         payload = copy.deepcopy(self.payload)
 
@@ -679,7 +678,7 @@ class BetManager:
                             'Изменилась ИД ставки: old: ' + str(self.wager) + ', new: ' + str(new_wager))
                         )
                         self.wager.update(new_wager)
-                        return self.place_bet(holder)
+                        return self.place_bet(shared_dict)
 
                     elif str(new_wager.get('param', '')) != str(self.wager.get('param', '')) and \
                             int(self.wager.get('factor', 0)) == int(new_wager.get('factor', 0)):
@@ -698,7 +697,7 @@ class BetManager:
                             if new_wager:
                                 self.msg.format(sys._getframe().f_code.co_name, 'Тотал найден: ' + str(new_wager))
                                 self.wager.update(new_wager)
-                                return self.place_bet(holder)
+                                return self.place_bet(shared_dict)
                             else:
                                 err_str = self.msg_err.format(sys._getframe().f_code.co_name,
                                                               'Тотал не найден' + str(new_wager))
@@ -719,12 +718,12 @@ class BetManager:
         elif result == 'error' and 'temporary unknown result' in msg_str:
             err_str = 'Get temporary unknown result: ' + str(msg_str)
             prnt(self.msg.format(sys._getframe().f_code.co_name, err_str))
-            return self.check_result(holder)
+            return self.check_result(shared_dict)
         else:
             err_str = self.msg_err.format(sys._getframe().f_code.co_name, err_msg)
             raise BetError(err_str)
 
-    def set_session_state(self):
+    def set_session_state(self)->None:
 
         if not self.session.get('session'):
             self.session['session'] = read_file(self.session_file)
@@ -816,7 +815,7 @@ class BetManager:
             else:
                 prnt(self.msg.format(sys._getframe().f_code.co_name,
                                      'new actualSellSum: ' + str(res.get('actualSellSum') / 10)))
-                return self.sale_bet(holder)
+                return self.sale_bet(shared_dict)
 
         elif result == 'couponCompletelySold':
             sold_sum = res.get('soldSum')
@@ -824,7 +823,7 @@ class BetManager:
         else:
             raise BetIsLost
 
-    def finishing(self, holder: dict, vector: str, sc1: int, sc2: int, cur_total: float) -> None:
+    def finishing(self, shared_dict: dict, vector: str, sc1: int, sc2: int, cur_total: float) -> None:
 
         self.vector = vector
         self.sc1 = int(sc1)
@@ -958,7 +957,7 @@ class BetManager:
 
 
 if __name__ == '__main__':
-    holder = {}
+    shared_dict = {}
 
     OLIMP_USER = {'login': 'mursalimov.ilmir10@gmail.com', 'passw': 'qqQQAA112'}
     wager_olimp = {'apid': '1174307310:46807570:1:3:-9999:2:0:0:1', 'factor': '1.06', 'sport_id': 1,
@@ -967,16 +966,16 @@ if __name__ == '__main__':
     FONBET_USER = {"login": 5447708, "password": "tStseFuY"}
     wager_fonbet = {'event': '13446124', 'factor': '922', 'param': '', 'score': '1:0', 'value': '5'}
 
-    holder = {}
-    holder['wager'] = wager_olimp  # wager_olimp
-    holder['amount'] = 30
-    bk1 = Thread(target=BetManager, args=(holder, 'olimp', 'fonbet'))
+    shared_dict = {}
+    shared_dict['wager'] = wager_olimp  # wager_olimp
+    shared_dict['amount'] = 30
+    bk1 = Thread(target=BetManager, args=(shared_dict, 'olimp', 'fonbet'))
     bk1.start()
 
-    holder = {}
-    holder['wager'] = wager_fonbet  # wager_olimp
-    holder['amount'] = 45
-    bk2 = Thread(target=BetManager, args=(holder, 'fonbet', 'olimp'))
+    shared_dict = {}
+    shared_dict['wager'] = wager_fonbet  # wager_olimp
+    shared_dict['amount'] = 45
+    bk2 = Thread(target=BetManager, args=(shared_dict, 'fonbet', 'olimp'))
     bk2.start()
 
     bk1.join()
