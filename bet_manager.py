@@ -101,13 +101,15 @@ class BetManager:
             raise ValueError(err_str)
 
         # self.manager(shared)
+        shared[self.bk_name]['self'] = self
         self.simple_bet(shared)
 
     def simple_bet(self, shared: dict):
 
         def sale(excp_name):
             shared[self.bk_name + '_err'] = excp_name + ': ' + str(e)
-            self.sale_bet(shared)
+            self_opp = shared[self.bk_name_opposite].get('self', {})
+            self_opp.sale_bet(shared)
 
         def all_end_bet():
             shared[self.bk_name + '_err'] = 'ok'
@@ -190,7 +192,7 @@ class BetManager:
             prnt(err_str)
             raise ValueError(err_str)
 
-        # bk1.sale_bet()
+        # bk1.sale_bet(shared)
 
     def sign_in(self, shared: dict):
 
@@ -324,11 +326,6 @@ class BetManager:
                 raise NoMoney(err_str)
 
         if self.bk_name == 'olimp':
-            sleep(15)
-            try:
-                1/0
-            except Exception as e:
-                raise BetIsLost(e)
 
             payload = copy.deepcopy(ol_payload)
 
@@ -399,6 +396,14 @@ class BetManager:
                 raise BetError(err_str)
 
         elif self.bk_name == 'fonbet':
+            
+            # for test
+            # sleep(15)
+            # try:
+            #     1/0
+            # except Exception as e:
+            #     raise BetIsLost(e)
+            
             if not self.server_fb:
                 self.server_fb = get_urls(self.mirror, self.proxies)
 
@@ -464,7 +469,8 @@ class BetManager:
 
     def sale_bet(self, shared: dict):
         self.set_session_state()
-        self.get_opposite_stat(shared)
+        # кажется это не нужно
+        # self.get_opposite_stat(shared)
 
         if self.bk_name == 'olimp':
 
