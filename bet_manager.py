@@ -105,7 +105,7 @@ class BetManager:
         def sale(excp_name):
             shared_dict[self.bk_name + '_err'] = excp_name + ': ' + str(e)
             self.sale_bet(shared_dict)
-            
+
         def end_bet():
             shared_dict[self.bk_name + '_err'] = 'ok'
             shared_dict[self.bk_name_opposite + '_err'] = 'ok'
@@ -706,7 +706,11 @@ class BetManager:
 
     def get_opposite_stat(self, shared_dict: dict):
 
-        opposite_stat = str(shared_dict.get(self.bk_name_opposite + '_err', 'ok'))
+        opposite_stat = str(
+            shared_dict.get(
+                self.bk_name_opposite +
+                '_err',
+                'ok'))
         if opposite_stat != 'ok':
             err_str = self.msg_err.format(
                 sys._getframe().f_code.co_name,
