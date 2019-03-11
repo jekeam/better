@@ -364,9 +364,14 @@ class BetManager:
                 self.match_id = self.wager['event']
 
                 self.get_cur_max_bet_id()
-
-                prnt(self.msg.format(sys._getframe().f_code.co_name,
-                                     'bet successful, reg_id: ' + str(self.reg_id)))
+                
+                shared_dict[self.bk_name]['reg_id'] = self.reg_id
+                prnt(
+                    self.msg.format(
+                        sys._getframe().f_code.co_name,
+                        'bet successful, reg_id: ' + str(self.reg_id)
+                    )
+                )
 
             elif 'Такой исход не существует' in err_msg:
                 raise BetIsLost(err_msg)
@@ -833,8 +838,13 @@ class BetManager:
         if result == 'couponResult':
             if err_code == 0:
                 self.reg_id = res.get('coupon').get('regId')
-                prnt(self.msg.format(sys._getframe().f_code.co_name,
-                                     'bet successful, reg_id: ' + str(self.reg_id)))
+                shared_dict[self.bk_name]['reg_id'] = self.reg_id
+                prnt(
+                    self.msg.format(
+                        sys._getframe().f_code.co_name,
+                        'bet successful, reg_id: ' + str(self.reg_id)
+                    )
+                )
                 # prnt(self.msg.format(sys._getframe().f_code.co_name, 'time sleep 3 sec.'))
                 # sleep(3)
             if err_code == 1:
@@ -1067,8 +1077,12 @@ class BetManager:
 
         elif result == 'couponCompletelySold':
             sold_sum = res.get('soldSum')
-            prnt(self.msg.format(sys._getframe().f_code.co_name,
-                                 'sell successful, sum sold: ' + str(sold_sum / 100)))
+            prnt(
+                self.msg.format(
+                    sys._getframe().f_code.co_name,
+                    'sell successful, sum sold: ' + str(sold_sum / 100)
+                )
+            )
         else:
             raise BetIsLost
 

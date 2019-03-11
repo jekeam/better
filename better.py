@@ -255,9 +255,9 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max, vect1, vect2, s
             # return False
 
         # with Manager() as manager:
-        bks = dict()
+        shared_dict = dict()
 
-        bks['olimp'] = {
+        shared_dict['olimp'] = {
             'opposite': 'fonbet',
             'amount': amount_olimp,
             'wager': wager_olimp,
@@ -268,7 +268,7 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max, vect1, vect2, s
             'cur_total': (sc1 + sc2)
         }
 
-        bks['fonbet'] = {
+        shared_dict['fonbet'] = {
             'opposite': 'olimp',
             'amount': amount_fonbet,
             'wager': wager_fonbet,
@@ -280,10 +280,10 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max, vect1, vect2, s
         }
 
         if '(' in fonbet_bet_type:
-            bks['olimp']['bet_total'] = re.findall('\((.*)\)', fonbet_bet_type)[0]
-            bks['fonbet']['bet_total'] = re.findall('\((.*)\)', fonbet_bet_type)[0]
+            shared_dict['olimp']['bet_total'] = re.findall('\((.*)\)', fonbet_bet_type)[0]
+            shared_dict['fonbet']['bet_total'] = re.findall('\((.*)\)', fonbet_bet_type)[0]
 
-        for key, val in bks.items():
+        for key, val in shared_dict.items():
             prnt('BK ' + str(key) + ' - bet_total:{}, cur_total:{}, sc1:{}, sc2:{}, v:{}, wager:{}'.format(
                 val.get('bet_total', ''),
                 val.get('cur_total', ''),
@@ -294,68 +294,26 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max, vect1, vect2, s
             ))
 
         from bet_manager import run_bets
-        run_bets(bks)
-
-        # pid_olimp = Process(target=bet_olimp_cl, args=(obj,))
-        # pid_fonbet = Process(target=bet_fonbet_cl, args=(obj,))
-        #
-        # pid_olimp.start()
-        # pid_fonbet.start()
-        #
-        # pid_fonbet.join()
-        # pid_olimp.join()
-        #
-        # prnt('obj: ' + str(obj))
-        # sale_timeout = randint(1, 3)
-        # if obj.get('fonbet_err') != 'ok' and obj.get('olimp_err') == 'ok':
-        #     cnt_fail = cnt_fail + 1
-        #     prnt('Ошибка при проставлении ставки в фонбет, делаю выкуп ставки в олимпе, через '
-        #          + str(sale_timeout) + ' сек.')
-        #     try:
-        #         obj['olimp'].sale_bet()
-        #     except Exception as e:
-        #         prnts('Error sale_bet olimp: ' + str(e))
-        #         obj['olimp_err'] = str(e)
-        #
-        # if obj.get('olimp_err') != 'ok' and obj.get('fonbet_err') == 'ok':
-        #     cnt_fail = cnt_fail + 1
-        #     prnt('Ошибка при проставлении ставки в олимпе, делаю выкуп ставки в фонбет, через '
-        #          + str(sale_timeout) + ' сек.')
-        #     try:
-        #         obj['fonbet'].sale_bet()
-        #     except Exception as e:
-        #         prnts('Error sale_bet fonbet: ' + str(e))
-        #         obj['fonbet_err'] = str(e)
-        #
-        # if obj.get('olimp_err') == 'ok' and obj.get('fonbet_err') == 'ok':
-        #     prnt('Ставки проставлены успешно!')
-        #     bal1 = bal1 - amount_olimp
-        #     prnt('bal1: ' + str(bal1))
-        #     bal2 = bal2 - amount_fonbet
-        #     prnt('bal2: ' + str(bal2))
-        #
-        # # Добавим инфу о проставлении
-        # success.append(key)
-        #
-        # fork_info[fork_id]['olimp']['reg_id'] = obj['olimp'].get_reg_id()
-        # fork_info[fork_id]['fonbet']['reg_id'] = obj['fonbet'].get_reg_id()
-        #
-        # fork_info[fork_id]['olimp']['err'] = str(obj['olimp_err'])
-        # fork_info[fork_id]['fonbet']['err'] = str(obj['fonbet_err'])
-        #
-        # save_fork(fork_info)
-        # prnt('Matchs exclude: ' + str(success))
-        # sleep_post_work = 30
-        # prnt('Ожидание ' + str(sleep_post_work) + ' сек.')
-        # time.sleep(sleep_post_work)
-        #
-        # max_fail = 5
-        # if cnt_fail > max_fail:
-        #     err_str = 'Max fail > ' + str(max_fail) + ', script off'
-        #     raise MaxFail(err_str)
-        #
-        # return True
-        time.sleep(600)
+        run_bets(shared_dict)
+        
+        prnt('shared_dict: ' + str(shared_dict))
+        
+        # Добавим инфу о проставлении
+        success.append(key)
+        
+        fork_info[fork_id]['olimp']['reg_id'] = shared_dict['olimp'].get('reg_id')
+        fork_info[fork_id]['fonbet']['reg_id'] = shared_dict['fonbet'].get('reg_id')
+        
+        fork_info[fork_id]['olimp']['err'] = str(shared_dict['olimp_err'])
+        fork_info[fork_id]['fonbet']['err'] = str(shared_dict['fonbet_err'])
+        
+        save_fork(fork_info)
+        prnt('Matchs exclude: ' + str(success))
+        sleep_post_work = 30
+        prnt('Ожидание ' + str(sleep_post_work) + ' сек.')
+        time.sleep(sleep_post_work)
+        
+        return True
 
 
 def run_client():
