@@ -77,9 +77,9 @@ def check_l(L):
     if L <= 0.90:
         l_exclude_text = l_exclude_text + 'Вилка ' + str(L) + ' (' + str(round((1 - L) * 100, 2)) + \
             '%), вилка исключена т.к. доходноть высокая >= 10%\n'
-    if L > 0.995:
-        l_exclude_text = l_exclude_text + 'Вилка ' + \
-            str(L) + ' (' + str(round((1 - L) * 100, 3)) + '%), беру вилки только >= 0.5%\n'
+    # if L > 0.995:
+    #     l_exclude_text = l_exclude_text + 'Вилка ' + \
+    #         str(L) + ' (' + str(round((1 - L) * 100, 3)) + '%), беру вилки только >= 0.5%\n'
 
     if l_exclude_text != '':
         return l_exclude_text
