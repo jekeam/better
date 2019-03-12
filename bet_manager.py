@@ -1196,14 +1196,7 @@ class BetManager:
         headers.update(get_xtoken_bet(payload))
         headers.update({'X-XERPC': '1'})
 
-        prnt(
-            self.msg.format(
-                sys._getframe().f_code.co_name,
-                'rq: ' +
-                str(payload) +
-                ' ' +
-                str(headers)),
-            'hide')
+        prnt(self.msg.format(sys._getframe().f_code.co_name, 'rq: ' + str(payload) + ' ' + str(headers)), 'hide')
         resp = requests_retry_session().post(
             req_url,
             headers=headers,
@@ -1239,9 +1232,7 @@ class BetManager:
         # Мы не знаем reg_id и берем последний по матчу
         elif self.match_id:
             for bet_list in res.get('data').get('bet_list', []):
-                if str(
-                        bet_list.get('events')[0].get('matchid')) == str(
-                    self.match_id):
+                if str(bet_list.get('events')[0].get('matchid')) == str(self.match_id):
                     cur_bet_id = bet_list.get('bet_id')
                     if cur_bet_id > max_bet_id:
                         max_bet_id = cur_bet_id
