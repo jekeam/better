@@ -878,7 +878,7 @@ class BetManager:
                 raise BetIsLost(err_str)
             elif err_code == 100:
                 self.get_opposite_stat(shared)
-                if 'Слишком частые ставки на событие'.lower() 
+                if 'Слишком частые ставки на событие'.lower() \
                     in err_msg.lower() \
                     or \
                     'Превышена cуммарная ставка для события'.lower() \
