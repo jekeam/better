@@ -60,7 +60,7 @@ class BetManager:
         self.wager = bk_container['wager']
         self.bk_name_opposite = bk_container['opposite']
         self.account = self.get_account_info()
-        self.timeout = 15
+        self.timeout = 50
         self.match_id = None
         self.reg_id = None
         self.reqId = None
