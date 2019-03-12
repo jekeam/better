@@ -47,7 +47,7 @@ def run_bets(shared: dict):
         )
         ps.append(bk)
         bk.start()
-        
+
     for bk in ps:
         bk.join()
 
@@ -118,8 +118,8 @@ class BetManager:
         try:
             self.sign_in(shared)
             self.place_bet(shared)
-            #sleep(3)
-            #self.sale_bet(shared)
+            # sleep(3)
+            # self.sale_bet(shared)
         except CouponBlocked as e:
             prnt(e)
         except (BetIsLost, NoMoney, SessionExpired, BetError) as e:
@@ -137,6 +137,7 @@ class BetManager:
             err_str = self.msg_err.format(
                 sys._getframe().f_code.co_name, err_msg)
             prnt(err_str)
+            sale(e.__class__.__name__)
             raise ValueError(err_str)
 
     def manager(self, shared: dict):
@@ -150,7 +151,9 @@ class BetManager:
                 prnt(e)
                 self.sign_in(shared)
 
-            # todo по идее надо понимать сделили ли мы проставление, если нет то продажу запускать на оппозиционной бк, если там прошло проставление
+            # todo по идее надо понимать сделили ли мы проставление, если нет
+            # то продажу запускать на оппозиционной бк, если там прошло
+            # проставление
             self.place_bet(shared)
         except CouponBlocked as e:
             prnt(e)
@@ -169,10 +172,10 @@ class BetManager:
             pass
             # self.place_bet(shared)
         except Exception as e:
-            
-            #todo сначала проверить была ли ставка в оппозите
+
+            # todo сначала проверить была ли ставка в оппозите
             self.place_bet(shared)
-            
+
             exc_type, exc_value, exc_traceback = sys.exc_info()
             err_msg = 'unknown err: ' + str(e) + '. ' + \
                 str(repr(traceback.format_exception(
@@ -300,13 +303,13 @@ class BetManager:
 
     def place_bet(self, shared: dict):
         self.set_session_state()
-        
+
         # # for test
         # if self.bk_name == 'fonbet':
         #     sleep(15)
-        
+
         self.get_opposite_stat(shared)
-        
+
         self.sum_bet = self.bk_container.get('amount')
 
         cur_bal = self.session.get('balance')
@@ -322,7 +325,7 @@ class BetManager:
                 raise NoMoney(err_str)
 
         if self.bk_name == 'olimp':
-            
+
             # # for test
             # sleep(15)
             # try:
@@ -379,12 +382,12 @@ class BetManager:
                 self.match_id = self.wager['event']
 
                 self.get_cur_max_bet_id()
-                
+
                 shared[self.bk_name]['reg_id'] = self.reg_id
-                
+
                 prnt(self.msg.format(
-                        sys._getframe().f_code.co_name,
-                        'bet successful, reg_id: ' + str(self.reg_id)
+                    sys._getframe().f_code.co_name,
+                    'bet successful, reg_id: ' + str(self.reg_id)
                 ))
 
             elif 'акой исход не существует'.lower() in err_msg.lower():
@@ -399,14 +402,14 @@ class BetManager:
                 raise BetError(err_str)
 
         elif self.bk_name == 'fonbet':
-            
+
             # # for test
             # sleep(15)
             # try:
             #     1/0
             # except Exception as e:
             #     raise BetIsLost(e)
-            
+
             if not self.server_fb:
                 self.server_fb = get_urls(self.mirror, self.proxies)
 
@@ -481,13 +484,15 @@ class BetManager:
 
             cashout_allowed = coupon.get('cashout_allowed', False)
             self.sum_sell = coupon.get('cashout_amount', 0)
-            prnt(
-                self.msg.format(
-                    sys._getframe().f_code.co_name,
-                    'coupon cashout_allowed: ' +
-                    str(cashout_allowed)))
-            prnt(self.msg.format(sys._getframe().f_code.co_name,
-                                 'coupon amount: ' + str(self.sum_sell)))
+
+            prnt(self.msg.format(
+                sys._getframe().f_code.co_name,
+                'coupon cashout_allowed: ' +
+                str(cashout_allowed)))
+
+            prnt(self.msg.format(
+                sys._getframe().f_code.co_name,
+                'coupon amount: ' + str(self.sum_sell)))
 
             if cashout_allowed and self.sum_sell > 0:
                 payload = {}
@@ -503,14 +508,10 @@ class BetManager:
                 headers.update(get_xtoken_bet(payload))
                 headers.update({'X-XERPC': '1'})
 
-                prnt(
-                    self.msg.format(
-                        sys._getframe().f_code.co_name,
-                        'rq: ' +
-                        str(payload) +
-                        ' ' +
-                        str(headers)),
-                    'hide')
+                prnt(self.msg.format(
+                    sys._getframe().f_code.co_name, 'rq: ' + str(payload) +
+                    ' ' + str(headers)), 'hide')
+
                 resp = requests_retry_session().post(
                     ol_url_api.format(str(self.server_olimp), 'user/cashout'),
                     headers=headers,
@@ -527,17 +528,12 @@ class BetManager:
                 err_msg = res.get('error', {}).get('err_desc')
                 self.check_responce(err_msg)
 
-                if res.get('data') and res.get(
-                        'data').get('status', 'err') == 'ok':
-                    prnt(
-                        self.msg.format(
-                            sys._getframe().f_code.co_name,
-                            'code: ' +
-                            str(err_code) +
-                            ', ' +
-                            res.get(
-                                'data',
-                                {}).get('msg')))
+                if res.get('data') and \
+                   res.get('data').get('status', 'err') == 'ok':
+                    prnt(self.msg.format(
+                        sys._getframe().f_code.co_name,
+                        'code: ' + str(err_code) + ', ' +
+                        res.get('data', {}).get('msg')))
                 else:
                     raise SaleError(err_msg)
 
@@ -738,11 +734,11 @@ class BetManager:
         opposite_stat = str(
             shared.get(self.bk_name_opposite + '_err', 'ok')
         )
-        
+
         if opposite_stat != 'ok':
             err_str = self.msg_err.format(
                 sys._getframe().f_code.co_name,
-                self.bk_name + ' get error from ' + 
+                self.bk_name + ' get error from ' +
                 self.bk_name_opposite + ': ' + opposite_stat
             )
             raise BkOppBetError(err_str)
@@ -862,12 +858,12 @@ class BetManager:
         if result == 'couponResult':
             if err_code == 0:
                 self.reg_id = res.get('coupon').get('regId')
-                
+
                 shared[self.bk_name]['reg_id'] = self.reg_id
-                
+
                 prnt(self.msg.format(
-                        sys._getframe().f_code.co_name,
-                        'bet successful, reg_id: ' + str(self.reg_id)
+                    sys._getframe().f_code.co_name,
+                    'bet successful, reg_id: ' + str(self.reg_id)
                 ))
                 # prnt(self.msg.format(sys._getframe().f_code.co_name, 'time sleep 3 sec.'))
                 # sleep(3)
@@ -882,7 +878,7 @@ class BetManager:
                     in err_msg.lower() \
                     or \
                     'Превышена cуммарная ставка для события'.lower() \
-                    in err_msg.lower():
+                        in err_msg.lower():
                     err_str = self.msg_err.format(
                         sys._getframe().f_code.co_name, err_msg)
                     raise BetIsLost(err_str)
