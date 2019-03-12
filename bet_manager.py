@@ -137,6 +137,7 @@ class BetManager:
             err_str = self.msg_err.format(
                 sys._getframe().f_code.co_name, err_msg)
             prnt(err_str)
+            sale(e.__class__.__name__)
             raise ValueError(err_str)
 
     def manager(self, shared: dict):
