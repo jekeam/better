@@ -387,10 +387,10 @@ class BetManager:
                         'bet successful, reg_id: ' + str(self.reg_id)
                 ))
 
-            elif 'Такой исход не существует' in err_msg:
+            elif 'акой исход не существует'.lower() in err_msg.lower():
                 raise BetIsLost(err_msg)
 
-            elif 'максимальная ставка' in err_msg:
+            elif 'аксимальная ставка'.lower() in err_msg.lower():
                 raise BetIsLost(err_msg)
 
             elif res.get('data') is None:
@@ -698,9 +698,9 @@ class BetManager:
     def check_responce(self, err_msg):
 
         if err_msg:
-            if 'не вошли в систему' in err_msg or \
-                    'Not token access' in err_msg or \
-                    'invalid session id' in err_msg:
+            if 'не вошли в систему'.lower() in err_msg.lower() or \
+                    'Not token access'.lower() in err_msg.lower() or \
+                    'invalid session id'.lower() in err_msg.lower():
                 err_str = self.msg_err.format(
                     sys._getframe().f_code.co_name,
                     'session expired: ' + self.session['session'])
@@ -878,7 +878,11 @@ class BetManager:
                 raise BetIsLost(err_str)
             elif err_code == 100:
                 self.get_opposite_stat(shared)
-                if 'Слишком частые ставки на событие' in err_msg:
+                if 'Слишком частые ставки на событие'.lower() 
+                    in err_msg.lower() \
+                    or \
+                    'Превышена cуммарная ставка для события'.lower() \
+                    in err_msg.lower():
                     err_str = self.msg_err.format(
                         sys._getframe().f_code.co_name, err_msg)
                     raise BetIsLost(err_str)
