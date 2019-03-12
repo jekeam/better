@@ -1113,39 +1113,39 @@ class BetManager:
             sc1: int,
             sc2: int,
             cur_total: float):
+                
+        timeout_up = 60 * 10
+        timeout_down = 60 * 2.5
+        
+        # update state
+        new_obj = {}
 
         self.vector = vector
         self.sc1 = int(sc1)
         self.sc2 = int(sc2)
         self.new_sc1 = None
         self.new_sc2 = None
-        self.cur_total = cur_total
+        self.bet_total = cur_total
         self.time_start = time()
 
-        if self.cur_total:
-            self.diff_total = max(
-                0, floor(self.cur_total - (self.sc1 + self.sc2)))
-
-        if self.diff_total:
-            prnt('cur diff_total: ' + str(self.diff_total))
-
-        # update param
-        new_obj = {}
-
-        timeout_up = 60 * 10
-        timeout_down = 60 * 2.5
+        if self.bet_total:
+            self.diff_total = max(0, floor(self.bet_total - (self.sc1 + self.sc2)))
+            prnt(self.msg.format(
+                sys._getframe().f_code.co_name,
+                'cur diff_total: ' + str(self.diff_total)
+            ))
 
         try:
             new_sc1 = int(new_obj['sc1'])
         except Exception as e:
-            err_str = 'sc1 not not defined, {} - {}'.format(
+            err_str = 'sc1 not defined, {} - {}'.format(
                 str(new_obj), str(e))
             prnt(err_str)
             raise ValueError(err_str)
         try:
             new_sc2 = int(new_obj['sc2'])
         except Exception as e:
-            err_str = 'sc2 not not defined, {} - {}'.format(
+            err_str = 'sc2 not defined, {} - {}'.format(
                 str(new_obj), str(e))
             prnt(err_str)
             raise ValueError(err_str)
@@ -1153,9 +1153,9 @@ class BetManager:
         # check: score changed?
         if self.sc1 == new_sc1 and self.sc2 == new_sc2 and self.diff_total == 0:
             if self.vector == 'UP':
-                if self.cur_total < new_sc1 + new_sc2:
+                if self.bet_total < new_sc1 + new_sc2:
                     err_str = ' cur_total:{}, new_sc1:{}, new_sc2: {}. Current bet lost... Im sorry...' \
-                        .format(str(self.cur_total), str(new_sc1), str(new_sc2))
+                        .format(str(self.bet_total), str(new_sc1), str(new_sc2))
                     prnt(err_str)
                     BetIsLost(err_str)
                 else:
@@ -1163,9 +1163,9 @@ class BetManager:
                     # go bets
                     pass
             elif self.vector == 'DOWN':
-                if self.cur_total <= new_sc1 + new_sc2:
+                if self.bet_total <= new_sc1 + new_sc2:
                     err_str = ' cur_total:{}, new_sc1:{}, new_sc2: {}. Current bet lost... Im sorry...' \
-                        .format(str(self.cur_total), str(new_sc1), str(new_sc2))
+                        .format(str(self.bet_total), str(new_sc1), str(new_sc2))
                     prnt(err_str)
                     BetIsLost(err_str)
                 else:
