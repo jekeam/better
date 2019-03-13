@@ -212,9 +212,8 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
 
                 # пересчетаем суммы ставок
                 amount_olimp, amount_fonbet = get_sum_bets(
-                    float(
-                        obj['olimp']), float(
-                        obj['fonbet']), total_bet, False)
+                    float(obj['olimp']), float(obj['fonbet']), total_bet, False
+                )
 
                 # Выведем текую доходность вилки
                 prnt('cur proc: ' + str(cur_proc) + '%')
