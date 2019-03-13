@@ -306,7 +306,7 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
         from bet_manager import run_bets
         run_bets(shared)
 
-        prnt('shared: ' + str(shared))
+        prnt('shared: ' + str(shared), 'hide')
 
         # Добавим инфу о проставлении
         success.append(key)

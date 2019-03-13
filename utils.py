@@ -184,16 +184,17 @@ def rq_log(vstr: str):
 def prnt(vstr=None, hide=None):
     if vstr:
         global dtOld
-        dtDeff = round((datetime.datetime.now() - dtOld).total_seconds())
-        strLog = datetime.datetime.now().strftime('%d %H:%M:%S.%f ') + '[' + str(dtDeff).rjust(2, '0') + ']    ' + \
-                 str(vstr)
-        dtOld = datetime.datetime.now()
         if not hide:
+            dtDeff = round((datetime.datetime.now() - dtOld).total_seconds())
+            strLog = datetime.datetime.now().strftime('%d %H:%M:%S.%f ') + \
+                '[' + str(dtDeff).rjust(2, '0') + ']    ' + str(vstr)
             print(strLog)
+            dtOld = datetime.datetime.now()
             Outfile = open('client.log', "a+", encoding='utf-8')
             Outfile.write(strLog + '\n')
             Outfile.close()
         else:
+            strLog = datetime.datetime.now().strftime('%d %H:%M:%S.%f ') +'    ' + str(vstr)
             Outfile = open('client_hide.log', "a+", encoding='utf-8')
             Outfile.write(strLog + '\n')
             Outfile.close()
