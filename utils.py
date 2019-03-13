@@ -187,13 +187,17 @@ def prnt(vstr=None, hide=None):
         dtDeff = round((datetime.datetime.now() - dtOld).total_seconds())
         strLog = datetime.datetime.now().strftime('%d %H:%M:%S.%f ') + '[' + str(dtDeff).rjust(2, '0') + ']    ' + \
                  str(vstr)
+        dtOld = datetime.datetime.now()
         if not hide:
-            dtOld = datetime.datetime.now()
             print(strLog)
-
-        Outfile = open('client.log', "a+", encoding='utf-8')
-        Outfile.write(strLog + '\n')
-        Outfile.close()
+            Outfile = open('client.log', "a+", encoding='utf-8')
+            Outfile.write(strLog + '\n')
+            Outfile.close()
+        else:
+            Outfile = open('client_hide.log', "a+", encoding='utf-8')
+            Outfile.write(strLog + '\n')
+            Outfile.close()
+            
 
 
 def prnts(vstr=None, hide=None):

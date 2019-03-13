@@ -1026,7 +1026,7 @@ class BetManager:
         else:
             self.reqId = res["requestId"]
             prnt(self.msg.format(sys._getframe().f_code.co_name,
-                                 'success get requestId=' + str(self.reqId)))
+                                 'get requestId=' + str(self.reqId)))
             return self.reqId
 
     def check_sell_result(self):
