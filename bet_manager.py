@@ -150,8 +150,7 @@ class BetManager:
         self.bet_total = float(self_bk.bk_container.get('bet_total'))
         self.diff_total = float(self.bet_total - self.cur_total)
 
-        self.new_sc1 = None
-        self.new_sc2 = None
+        self.new_cur_total = self.cur_total
 
         self.time_start = round(int(time()))
         
@@ -172,66 +171,53 @@ class BetManager:
         # update params
         if self_bk.bk_name == 'olimp':
             k_val, sc, rime_req = get_olimp_info(match_id, bet_type)
-            self.cur_total = sum(map(int, sc.split(':')))
+            self.new_cur_total = sum(map(int, sc.split(':')))
         elif self_bk.bk_name == 'fonbet':
             k_val, sc, rime_req = get_fonbet_info(match_id, bet_id, param)
-            self.cur_total = sum(map(int, sc.split(':')))
+            self.new_cur_total = sum(map(int, sc.split(':')))
         else:
             err_msg = self.msg_err.format(sys._getframe().f_code.co_name, 'bk:{' + self_bk.bk_name + '} is not defined!')
             prnt(err_msg)
             raise ValueError(err_msg)
-
-        prnt(self.msg.format(
-            sys._getframe().f_code.co_name,
-            'Обновил данные из {}: match_id:{}, bet_type:{}, bet_total:{}, cur_total:{}, cur_total_fb:{}, rime_req:{}'.
-             format(self_bk.bk_name, match_id, bet_type, self.bet_total, self.cur_total, self.cur_total, rime_req)))
-        print('xxx')
-        sleep(360)
-
-        try:
-            new_sc1 = int(new_stat['sc1'])
-        except Exception as e:
-            err_str = 'sc1 not not defined, {} - {}'.format(str(new_stat), str(e))
-            prnt(err_str)
-            raise ValueError(err_str)
-        try:
-            new_sc2 = int(new_stat['sc2'])
-        except Exception as e:
-            err_str = 'sc2 not not defined, {} - {}'.format(str(new_stat), str(e))
-            prnt(err_str)
-            raise ValueError(err_str)
-
-        # check: score changed?
-        if self.sc1 == new_sc1 and self.sc2 == new_sc2 and self.diff_total == 0:
-            if self.vector == 'UP':
-                if self.cur_total < new_sc1 + new_sc2:
-                    err_str = ' cur_total:{}, new_sc1:{}, new_sc2: {}. Current bet lost... Im sorry...' \
-                        .format(str(self.cur_total), str(new_sc1), str(new_sc2))
-                    prnt(err_str)
-                    BetIsLost(err_str)
-                else:
-                    # recalc sum
-                    # go bets
-                    pass
-            elif self.vector == 'DOWN':
-                if self.cur_total <= new_sc1 + new_sc2:
-                    err_str = ' cur_total:{}, new_sc1:{}, new_sc2: {}. Current bet lost... Im sorry...' \
-                        .format(str(self.cur_total), str(new_sc1), str(new_sc2))
-                    prnt(err_str)
-                    BetIsLost(err_str)
-                else:
+            
+        while True:
+    
+            prnt(self.msg.format(
+                sys._getframe().f_code.co_name,
+                'Обновил данные из {}: match_id:{}, bet_type:{}, bet_total:{}, cur_total:{}, new_cur_total_fb:{}, rime_req:{}'.
+                 format(self_bk.bk_name, match_id, bet_type, self.bet_total, self.cur_total, self.new_cur_total, rime_req)))
+    
+            # check: score changed?
+            if self.cur_total != self.new_cur_total:
+                if self.vector == 'UP':
+                    if self.bet_total < self.new_cur_total:
+                        err_str = ' new_cur_total:{}, bet_total:{}. Current bet lost... Im sorry...'. \
+                            format(self.new_cur_total, self.bet_total)
+                        prnt(err_str)
+                        BetIsLost(err_str)
+                    elif self.new_cur_total <= self.bet_total:
+                        # recalc sum
+                        # go bets
+                        pass
+                elif self.vector == 'DOWN':
+                    if self.new_cur_total < self.bet_total:
+                        err_str = ' new_cur_total:{}, bet_total:{}. Current bet lost... Im sorry...'. \
+                            format(self.new_cur_total, self.bet_total)
+                        prnt(err_str)
+                        BetIsLost(err_str)
+                    elif self.bet_total <= self.new_cur_total:
+                        prnt(self.msg.format(
+                            sys._getframe().f_code.co_name, 'Greetings! You won, brain!!!'
+                        ))
+            else:
+                if self.vector == 'UP':
                     pass
                     # recalc sum
                     # go bets
-        else:
-            if self.vector == 'UP':
-                pass
-                # recalc sum
-                # go bets
-            elif self.vector == 'DOWN':
-                pass
-                # recalc sum
-                # go bets
+                elif self.vector == 'DOWN':
+                    pass
+                    # recalc sum
+                    # go bets
 
     def manager(self, shared: dict):
         pass

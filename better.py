@@ -20,20 +20,21 @@ import re
 shutdown = False
 
 
-def get_sum_bets(k1, k2, total_bet, hide=True):
-    if k1 > 0 and k2 > 0:
-        k1 = float(k1)
-        k2 = float(k2)
-        l = (1 / k1) + (1 / k2)
+def get_sum_bets(k1, k2, total_bet):
+    
+    k1 = float(k1)
+    k2 = float(k2)
+    prnt('k1:{}, k2:{}'.format(k1, k2))
+    l = (1 / k1) + (1 / k2)
 
-        # Округление проставления в БК1 происходит по правилам математики
-        bet_1 = round(total_bet / (k1 * l) / 5) * 5
-        bet_2 = total_bet - bet_1
-        if not hide:
-            prnt('L: ' + str(round((1 - l) * 100, 2)) + '% (' + str(l) + ') ')
-            prnt('bet1: ' + str(bet_1) + ', bet2: ' + str(bet_2) + '|' + ' bet_sum: ' + str(bet_1 + bet_2))
+    # Округление проставления в БК1 происходит по правилам математики
+    bet_1 = round(total_bet / (k1 * l) / 5) * 5
+    bet_2 = total_bet - bet_1
+    
+    prnt('L: ' + str(round((1 - l) * 100, 2)) + '% (' + str(l) + ') ')
+    prnt('bet1: ' + str(bet_1) + ', bet2: ' + str(bet_2) + '|' + ' bet_sum: ' + str(bet_1 + bet_2))
 
-        return bet_1, bet_2
+    return bet_1, bet_2
 
 
 def bet_fonbet_cl(obj):
@@ -163,8 +164,7 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
          (1 / float(wag_fb['value'])))
     cur_proc = round((1 - L) * 100, 2)
 
-    amount_olimp, amount_fonbet = get_sum_bets(
-        wag_ol['factor'], wag_fb['value'], total_bet, False)
+    amount_olimp, amount_fonbet = get_sum_bets(wag_ol['factor'], wag_fb['value'], total_bet)
 
     if __name__ == '__main__':
         wait_sec = 0  # max(0, (3.5 - deff_max))
@@ -204,9 +204,7 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
             if float(obj['olimp']) > 1 < float(obj['fonbet']):
 
                 # пересчетаем суммы ставок
-                amount_olimp, amount_fonbet = get_sum_bets(
-                    float(obj['olimp']), float(obj['fonbet']), total_bet, False
-                )
+                amount_olimp, amount_fonbet = get_sum_bets(float(obj['olimp']), float(obj['fonbet']), total_bet)
 
                 # Выведем текую доходность вилки
                 prnt('cur proc: ' + str(cur_proc) + '%')
@@ -495,7 +493,7 @@ if __name__ == '__main__':
                     info = ''
 
                 if vect1 and vect2:
-                    if 0.0 <= l < l_temp and deff_max < 10 or DEBUG:
+                    if (0.0 <= l < l_temp or DEBUG) and deff_max < 10 and k1 > 0 < k2:
                         bet1, bet2 = get_sum_bets(k1, k2, total_bet)
                         # Проверим вилку на исключения
                         if check_fork(key, l_temp, k1, k2, live_fork, bk1_score, bk2_score,
