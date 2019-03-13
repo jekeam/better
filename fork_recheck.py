@@ -6,6 +6,7 @@ from meta_fb import fb_headers
 import re
 from utils import prnt
 import copy
+from retry_requests import requests_retry_session
 
 
 def get_olimp_info(id_matche, olimp_k):
@@ -22,7 +23,7 @@ def get_olimp_info(id_matche, olimp_k):
     olimp_stake_head.pop('Accept-Language', None)
 
     prnt('FORK_RECHECK.PY: get_olimp_info rq: ' + str(olimp_data), 'hide')
-    res = requests.post(
+    res = requests_retry_session().post(
         ol_url_api.format('10', 'stakes/'),
         data=olimp_data,
         headers=olimp_stake_head,
@@ -102,7 +103,7 @@ def get_fonbet_info(match_id, factor_id, param):
     header = copy.deepcopy(fb_headers)
     url = "https://23.111.80.222/line/eventView?eventId=" + str(match_id) + "&lang=ru"
     prnt('FORK_RECHECK.PY: get_fonbet_info rq: ' + url + ' ' + str(header), 'hide')
-    res = requests.get(
+    res = requests_retry_session().get(
         url,
         headers=header,
         timeout=10,

@@ -288,8 +288,8 @@ def start_compare_matches(pair_mathes, json_bk1, json_bk2, mathes_complite):
                                                 bk2_match_info.get('team1'),
                                                 bk2_match_info.get('team2')
                                         ):
-                                            #if DEBUG and str(bk2_match_id) == '13473895':
-                                            if 1==0:
+                                            if DEBUG and str(bk2_match_id) == '13708646':
+                                            #if 1==0:
                                                 prnts(
                                                     'Матч добавлен: ' + str(bk1_match_id) + ' ' +
                                                     bk1_match_info.get('team1') + ' vs ' +
@@ -300,7 +300,7 @@ def start_compare_matches(pair_mathes, json_bk1, json_bk2, mathes_complite):
                                                 )
                                                 pair_mathes.append([bk1_match_id, bk2_match_id])
                                             #elif not DEBUG:
-                                            elif 1==1:
+                                            elif 1==0:
                                                 prnts(
                                                     'Матч добавлен: ' + str(bk1_match_id) + ' ' +
                                                     bk1_match_info.get('team1') + ' vs ' +
@@ -510,7 +510,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
                         forks.pop(bet_key)
                     except:
                         pass
-        time.sleep(0.1)
+        time.sleep(3)
 
 
 def stat_req(stat_req_olimp, stat_req_fonbet):

@@ -145,8 +145,8 @@ class BetManager:
 
         self_bk = shared[self.bk_name_opposite].get('self', {})
 
-        self.vector = self_bk.bk_container.get('vector')
-        self.cur_total = float(self_bk.bk_container.get('cur_total'))
+        self.vector = self_bk.bk_container.get('wager', {})['vector']
+        self.cur_total = float(self_bk.bk_container['cur_total'])
         self.bet_total = float(self_bk.bk_container.get('bet_total'))
         self.diff_total = float(self.bet_total - self.cur_total)
 
@@ -154,43 +154,39 @@ class BetManager:
         self.new_sc2 = None
 
         self.time_start = round(int(time()))
+        
+        match_id = self_bk.bk_container.get('wager', {})['event']
+        bet_type = self_bk.bk_container.get('bet_type')
+        bet_id = int(self_bk.bk_container.get('wager', {}).get('factor'))
+        param = self_bk.bk_container.get('wager', {}).get('param')
 
         prnt(self.msg.format(
             sys._getframe().f_code.co_name,
-            '{}: Завершающий принял работу: vector:{}, bet_total:{}, cur_total:{}, '
-            'diff_total:{}, timeout_up:{}, timeout_down:{}'.format(
-                self.time_start, self.vector, self.bet_total, self.cur_total,
-                self.diff_total, timeout_up, timeout_down
+            '{}: Завершающий принял работу: bet_type:{}, vector:{}, bet_total:{}, cur_total:{}, '
+            'diff_total:{}, timeout_up:{}, timeout_down:{}, match_id:{}, bet_id:{}, param:{}'.format(
+                self.time_start, bet_type, self.vector, self.bet_total, self.cur_total,
+                self.diff_total, timeout_up, timeout_down, match_id, bet_id, param
             )
         ))
 
         # update params
         if self_bk.bk_name == 'olimp':
-            k_val, sc, rime_req = get_olimp_info(
-                self_bk.wager['event'], self_bk.get['bet_type']
-            )
+            k_val, sc, rime_req = get_olimp_info(match_id, bet_type)
             self.cur_total = sum(map(int, sc.split(':')))
         elif self_bk.bk_name == 'fonbet':
-            k_val, sc, rime_req = get_fonbet_info(
-                self_bk.wager['event'],
-                int(self_bk.wager['factor']),
-                self_bk.wager['param']
-            )
+            k_val, sc, rime_req = get_fonbet_info(match_id, bet_id, param)
             self.cur_total = sum(map(int, sc.split(':')))
         else:
-            err_msg = self.msg_err.format(
-                sys._getframe().f_code.co_name,
-                'bk:{' + self_bk.bk_name + '} is not defined!')
+            err_msg = self.msg_err.format(sys._getframe().f_code.co_name, 'bk:{' + self_bk.bk_name + '} is not defined!')
             prnt(err_msg)
             raise ValueError(err_msg)
 
-        prnt(sys._getframe().f_code.co_name,
-             'Обновил данные из {}: match_id:{}, bet_type:{}, bet_total:{}, cur_total:{}, cur_total_fb:{}, rime_req:{}'.
-             format(
-            self_bk.bk_name, self_bk.wager['event'], self_bk.get['bet_type'],
-            self.bet_total, self.cur_total, self.cur_total, rime_req
-        ))
-        sleep(60)
+        prnt(self.msg.format(
+            sys._getframe().f_code.co_name,
+            'Обновил данные из {}: match_id:{}, bet_type:{}, bet_total:{}, cur_total:{}, cur_total_fb:{}, rime_req:{}'.
+             format(self_bk.bk_name, match_id, bet_type, self.bet_total, self.cur_total, self.cur_total, rime_req)))
+        print('xxx')
+        sleep(360)
 
         try:
             new_sc1 = int(new_stat['sc1'])
@@ -364,7 +360,7 @@ class BetManager:
         if self.bk_name == 'olimp':
 
             # # for test
-            # sleep(15)
+            # sleep(5)
             # try:
             #     1/0
             # except Exception as e:
@@ -436,12 +432,12 @@ class BetManager:
 
         elif self.bk_name == 'fonbet':
 
-            # # for test
-            # sleep(15)
-            # try:
-            #     1/0
-            # except Exception as e:
-            #     raise BetIsLost(e)
+            # for test
+            sleep(2)
+            try:
+                1/0
+            except Exception as e:
+                raise BetIsLost(e)
 
             if not self.server_fb:
                 self.server_fb = get_urls(self.mirror, self.proxies)
@@ -741,8 +737,9 @@ class BetManager:
         # if not DEBUG:
         msg_push = True
 
-        opposite_stat = None
-        while opposite_stat is None:
+        opp_stat = None
+        opp_stat_old = None
+        while opp_stat is None:
             if msg_push:
                 prnt(self.msg.format(
                     sys._getframe().f_code.co_name,
@@ -750,7 +747,7 @@ class BetManager:
                     self.bk_name_opposite
                 ))
                 msg_push = False
-            opposite_stat = str(shared.get(self.bk_name_opposite + '_err'))
+            opp_stat = shared.get(self.bk_name_opposite + '_err')
 
     def check_max_bet(self, shared: dict):
         self.opposite_stat_get(shared)

@@ -422,13 +422,8 @@ if __name__ == '__main__':
 
         # Обновление баланса каждые 35-45 минут
         ref_balace = randint(35, 45)
-        if (datetime.datetime.now() -
-            time_get_balance).total_seconds() > (60 *
-                                                 ref_balace):
-            prnt(
-                'It took more than ' +
-                str(ref_balace) +
-                ' minutes, the refresh balances:')
+        if (datetime.datetime.now() -time_get_balance).total_seconds() > (60 *ref_balace):
+            prnt('It took more than ' + str(ref_balace) + ' minutes, the refresh balances:')
             time_get_balance = datetime.datetime.now()
             bal1 = OlimpBot(OLIMP_USER).get_balance()  # Баланс в БК1
             bal2 = FonbetBot(FONBET_USER).get_balance()  # Баланс в БК2
