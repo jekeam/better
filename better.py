@@ -532,6 +532,7 @@ if __name__ == '__main__':
                                 minute,
                                 time_break_fonbet,
                                 period,
+                                deff_max,
                                 info) or DEBUG:
                             go_bet_key = key
                             l = l_temp
