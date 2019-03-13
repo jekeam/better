@@ -426,10 +426,12 @@ class BetManager:
             self.payload = copy.deepcopy(payload)
 
             self.check_max_bet(shared)
+            
             try:
                 self.get_request_id()
             except:
                 self.get_request_id()
+                
             self.payload['requestId'] = self.reqId
 
             prnt(self.msg.format(sys._getframe().f_code.co_name, 'rq: ' +
