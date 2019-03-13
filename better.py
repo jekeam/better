@@ -76,7 +76,7 @@ def check_l(L):
     l_exclude_text = ''
     if L <= 0.90:
         l_exclude_text = l_exclude_text + 'Вилка ' + str(L) + ' (' + str(round((1 - L) * 100, 2)) + \
-                         '%), вилка исключена т.к. доходноть высокая >= 10%\n'
+            '%), вилка исключена т.к. доходноть высокая >= 10%\n'
     # if L > 0.995:
     #     l_exclude_text = l_exclude_text + 'Вилка ' + \
     #         str(L) + ' (' + str(round((1 - L) * 100, 3)) + '%), беру вилки только >= 0.5%\n'
@@ -87,25 +87,21 @@ def check_l(L):
         return ''
 
 
-def check_fork(
-        key,
-        L,
-        k1,
-        k2,
-        live_fork,
-        bk1_score,
-        bk2_score,
-        minute,
-        time_break_fonbet,
-        period,
-        info=''):
+def check_fork(key, L, k1, k2, live_fork, bk1_score, bk2_score, minute,
+               time_break_fonbet, period, deff_max, info=''):
+    global bal1, bal2, balance_line
+
     fork_exclude_text = ''
     v = True
-    global bal1, bal2, balance_line
+
+    deff_max_maximum = 3
+    if deff_max > deff_max_maximum:
+        fork_exclude_text = fork_exclude_text + \
+            'Вилка исключена, т.к. deff_max(' + str(deff_max) + ') > ' + deff_max_maximum + '\n'
 
     if success.count(key) >= 1:
         fork_exclude_text = fork_exclude_text + \
-                            'Вилка не проставлена, т.к. уже проставляли на эту вилку: ' + key + '\n'
+            'Вилка не проставлена, т.к. уже проставляли на эту вилку: ' + key + '\n'
 
     # Проверяем корректная ли сумма
     if bet1 < 30 or bet2 < 30:
@@ -114,22 +110,22 @@ def check_fork(
     # Проверяем хватить денег для ставки
     if (bal1 < bet1) or (bal2 < bet2):
         fork_exclude_text = fork_exclude_text + 'Для проставления вилки ' + str(round((1 - L) * 100, 2)) \
-                            + '% недостаточно средств, bal1=' \
-                            + str(bal1) + ', bet1=' + str(bet1) \
-                            + ', bal2=' + str(bal2) + ', bet2=' + str(bet2) + '\n'
+            + '% недостаточно средств, bal1=' \
+            + str(bal1) + ', bet1=' + str(bet1) \
+            + ', bal2=' + str(bal2) + ', bet2=' + str(bet2) + '\n'
 
     # Если баланс меньше 30% то берем плече только с коэф-м меньше 1,5
     if bal1 <= balance_line and k1 >= 1.3:
         fork_exclude_text = fork_exclude_text + 'Вилка ' + str(round((1 - L) * 100, 2)) \
-                            + '% исключена: баланс БК Олимп меньше 30%, а коэф-т >= 1.3 (' + str(k1) + ')\n'
+            + '% исключена: баланс БК Олимп меньше 30%, а коэф-т >= 1.3 (' + str(k1) + ')\n'
     elif bal2 <= balance_line and k2 >= 1.3:
         fork_exclude_text = fork_exclude_text + 'Вилка ' + str(round((1 - L) * 100, 2)) \
-                            + '% исключена: баланс БК фонбет меньше 30%, а коэф-т >= 1.3 (' + str(k2) + ')\n'
+            + '% исключена: баланс БК фонбет меньше 30%, а коэф-т >= 1.3 (' + str(k2) + ')\n'
 
     if bk1_score != bk2_score:
         fork_exclude_text = fork_exclude_text + 'Вилка ' \
-                            + str(round((1 - L) * 100, 2)) \
-                            + '% исключена т.к. счет не совпадает: olimp(' + bk1_score + ') fonbet(' + bk2_score + ')\n'
+            + str(round((1 - L) * 100, 2)) \
+            + '% исключена т.к. счет не совпадает: olimp(' + bk1_score + ') fonbet(' + bk2_score + ')\n'
 
     # Больше 43 минуты и не идет перерыв и это 1 период
     if 43.0 < float(minute) and not time_break_fonbet and period == 1:
@@ -146,8 +142,8 @@ def check_fork(
     long_livers = 10
     if live_fork < long_livers:
         fork_exclude_text = fork_exclude_text + 'Вилка ' + \
-                            str(round((1 - L) * 100, 2)) + '% исключена т.к. живет меньше ' + str(
-            long_livers) + ' сек. \n'
+            str(round((1 - L) * 100, 2)) + '% исключена т.к. живет меньше ' + str(
+                long_livers) + ' сек. \n'
 
     fork_exclude_text = fork_exclude_text + check_l(L)
 
@@ -196,7 +192,7 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
 
             recheck_fb.join()
             recheck_o.join()
-            
+
             deff_max = max(obj['olimp_time_req'], obj['fonbet_time_req'])
 
             prnt('deff_max: ' + str(deff_max) + ', O ' +
@@ -423,7 +419,7 @@ if __name__ == '__main__':
         # секунды * на кол-во (60*1) - это час
         shutdown_minutes = 60 * (60 * 3)
         if (datetime.datetime.now() -
-            time_live).total_seconds() > (shutdown_minutes):
+                time_live).total_seconds() > (shutdown_minutes):
             err_str = 'Прошло ' + \
                       str(shutdown_minutes / 60 / 60) + ' ч., я выключился...'
             prnt(err_str)
@@ -511,12 +507,12 @@ if __name__ == '__main__':
 
                 try:
                     info = key + ': ' + name + \
-                           ' ' + k1_type + '=' + str(k1) + '/' + k2_type + '=' + str(k2) + ', ' + \
-                           v_time + ' (' + str(minute) + ') ' + \
-                           score + ' ' + str(pair_math) + \
-                           ', live_fork: ' + str(live_fork) + \
-                           ', live_fork_total: ' + str(live_fork_total) + \
-                           ', max deff: ' + str(deff_max)
+                        ' ' + k1_type + '=' + str(k1) + '/' + k2_type + '=' + str(k2) + ', ' + \
+                        v_time + ' (' + str(minute) + ') ' + \
+                        score + ' ' + str(pair_math) + \
+                        ', live_fork: ' + str(live_fork) + \
+                        ', live_fork_total: ' + str(live_fork_total) + \
+                        ', max deff: ' + str(deff_max)
                 except Exception as e:
                     prnts('error: ' + str(e))
                     info = ''
