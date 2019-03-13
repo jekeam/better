@@ -104,10 +104,6 @@ class BetManager:
             self_opp = shared[self.bk_name_opposite].get('self', {})
             self_opp.sale_bet(shared)
 
-        def all_end_bet():
-            shared[self.bk_name + '_err'] = 'ok'
-            shared[self.bk_name_opposite + '_err'] = 'ok'
-
         try:
             self.sign_in(shared)
             self.place_bet(shared)
@@ -119,8 +115,8 @@ class BetManager:
             prnt(e)
             sale(e.__class__.__name__)
         except BkOppBetError as e:
+            # В обоих БК ошибки, выкидываем вилку
             prnt(e)
-            all_end_bet()
         except Exception as e:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             err_msg = 'unknown err: ' + str(e) + '. ' + \
@@ -165,7 +161,6 @@ class BetManager:
         except Exception as e:
 
             # todo сначала проверить была ли ставка в оппозите
-            self.place_bet(shared)
 
             exc_type, exc_value, exc_traceback = sys.exc_info()
             err_msg = 'unknown err: ' + str(e) + '. ' + \
@@ -288,8 +283,7 @@ class BetManager:
                       str(repr(traceback.format_exception(
                           exc_type, exc_value, exc_traceback)))
 
-            err_str = self.msg_err.format(
-                sys._getframe().f_code.co_name, err_msg)
+            err_str = self.msg_err.format(sys._getframe().f_code.co_name, err_msg)
             raise ValueError(err_str)
 
     def place_bet(self, shared: dict):
@@ -926,13 +920,9 @@ class BetManager:
                     else:
                         err_str = self.msg_err.format(
                             sys._getframe().f_code.co_name,
-                            "неизвестная ошибка: " +
-                            str(err_msg) +
-                            ', new_wager: ' +
-                            str(new_wager) +
-                            ', old_wager: ' +
-                            str(
-                                self.wager))
+                            "неизвестная ошибка: " + str(err_msg) + ', new_wager: ' +
+                            str(new_wager) + ', old_wager: ' + str(self.wager)
+                        )
                         prnt(err_str)
                         raise BetIsLost(err_str)
         elif result == 'error' and 'temporary unknown result' in msg_str:
