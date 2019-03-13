@@ -989,8 +989,7 @@ class BetManager:
         self.time_start = time()
 
         if self.cur_total:
-            self.diff_total = max(
-                0, floor(self.cur_total - (self.sc1 + self.sc2)))
+            self.diff_total = max(0, floor(self.cur_total - (self.sc1 + self.sc2)))
 
         if self.diff_total:
             prnt('cur diff_total: ' + str(self.diff_total))
