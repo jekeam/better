@@ -29,12 +29,10 @@ def get_sum_bets(k1, k2, total_bet, print_hide=True):
         # Округление проставления в БК1 происходит по правилам математики
         bet_1 = round(total_bet / (k1 * l) / 5) * 5
         bet_2 = total_bet - bet_1
-        prnt('L: ' + str(round((1 - l) * 100, 2)) +
-             '% (' + str(l) + ') ', print_hide)
-        prnt(
-            'bet1: ' + str(bet_1) + ' руб, bet2: ' + str(bet_2) + ' руб.|' +
-            ' bet_sum: ' + str(bet_1 + bet_2) + ' руб.', print_hide
-        )
+        if not print_hide:
+            prnt('L: ' + str(round((1 - l) * 100, 2)) + '% (' + str(l) + ') ')
+            prnt('bet1: ' + str(bet_1) + ', bet2: ' + str(bet_2) + '|' +
+                ' bet_sum: ' + str(bet_1 + bet_2) + '')
 
         return bet_1, bet_2
 
@@ -97,7 +95,7 @@ def check_fork(key, L, k1, k2, live_fork, bk1_score, bk2_score, minute,
     deff_limit = 3
     if deff_max > deff_limit:
         fork_exclude_text = fork_exclude_text + \
-            'Вилка исключена, т.к. deff_max(' + str(deff_max) + ') > ' + str(deff_limit) + '\n'
+            'Вилка исключена, т.к. deff_max (' + str(deff_max) + ' > ' + str(deff_limit) + ')\n'
 
     if success.count(key) >= 1:
         fork_exclude_text = fork_exclude_text + \
