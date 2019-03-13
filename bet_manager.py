@@ -88,8 +88,7 @@ class BetManager:
             err_msg = 'mirror not defined: {}'.format(self.mirror)
 
         if err_msg != '':
-            err_str = self.msg_err.format(
-                sys._getframe().f_code.co_name, err_msg)
+            err_str = self.msg_err.format(sys._getframe().f_code.co_name, err_msg)
             prnt(err_str)
             raise ValueError(err_str)
 
@@ -100,10 +99,14 @@ class BetManager:
     def simple_bet(self, shared: dict):
         def sale(excp_name, e):
             shared[self.bk_name + '_err'] = excp_name + ': ' + str(e)
-            # тут нужно дождаться чтоб в той БК все уже проставилось
             self.opposite_stat_wait(shared)
             self.opposite_stat_get(shared)
             self_opp = shared[self.bk_name_opposite].get('self', {})
+            
+            prnt(self.msg.format(sys._getframe().f_code.co_name,
+              'Ошибка при проставлении ставки в '+ self.bk_name_opposite \
+              ', делаю выкуп ставки в '+ self.bk_name))
+            
             self_opp.sale_bet(shared)
 
         try:
