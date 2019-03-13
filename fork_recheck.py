@@ -18,7 +18,7 @@ def get_olimp_info(id_matche, olimp_k):
     olimp_data.update({'id': id_matche})
 
     olimp_stake_head = copy.deepcopy(ol_headers)
-    olimp_stake_head.update(get_xtoken_bet(olimp_data, olimp_secret_key))
+    olimp_stake_head.update(get_xtoken_bet(olimp_data))
     olimp_stake_head.pop('Accept-Language', None)
 
     prnt('FORK_RECHECK.PY: get_olimp_info rq: ' + str(olimp_data), 'hide')
@@ -32,7 +32,6 @@ def get_olimp_info(id_matche, olimp_k):
     prnt('FORK_RECHECK.PY: get_olimp_info rs: ' + str(res.text), 'hide')
 
     stake = res.json()
-    prnt('FORK_RECHECK.PY: get_olimp_info rs js: ' + str(stake), 'hide')
     if not stake.get('error', {}).get('err_code', 0):
         bet_into['ID'] = id_matche
 
@@ -56,7 +55,6 @@ def get_olimp_info(id_matche, olimp_k):
 
         # minuts
         bet_into['SCORE'] = stake.get('sc', '0:0')  # .get('sc', '0:0').split(' ')[0]
-        prnt('olimp score: ' + stake.get('data').get('sc'))
         for c in stake.get('data', {}).get('it', []):
             # if c.get('n','') in ['Main Bets', 'Goals', 'Corners', 'Individual total', 'Additional total']:
             if c.get('n', '') in ['Основные', 'Голы', 'Угловые', 'Инд.тотал', 'Доп.тотал', 'Исходы по таймам']:
@@ -95,6 +93,7 @@ def get_olimp_info(id_matche, olimp_k):
         raise ValueError(stake)
     k = bet_into.get(olimp_k, 0)
     sc = bet_into.get('SCORE', '0:0').split(' ')[0]
+    prnt('olimp score: ' + sc)
     prnt('FORK_RECHECK.PY: get_olimp_info end work', 'hide')
     return k, sc, round(res.elapsed.total_seconds(), 2)
 
@@ -111,14 +110,12 @@ def get_fonbet_info(match_id, factor_id, param):
     )
     prnt('FORK_RECHECK.PY: get_fonbet_info rs: ' + str(res.text), 'hide')
     resp = res.json()
-    prnt('FORK_RECHECK.PY: get_fonbet_info rs jq: ' + str(resp), 'hide')
     if resp.get("result") == "error":
         raise ValueError(resp.get("errorMessage"))
 
     for event in resp.get("events"):
         if event.get('id') == match_id:
             sc = event.get('score', '0:0').replace('-', ':')
-            prnt('fonbet score: ' + sc)
             for cat in event.get('subcategories'):
                 for kof in cat.get('quotes'):
                     if kof.get('factorId') == factor_id:
@@ -131,6 +128,7 @@ def get_fonbet_info(match_id, factor_id, param):
                                 raise ValueError('type kof is change: ' + str(kof))
 
                         k = kof.get('value')
+                        prnt('fonbet score: ' + sc)
                         prnt('FORK_RECHECK.PY: get_olimp_info end work', 'hide')
                         return k, sc, round(res.elapsed.total_seconds(), 2)
     return None, None, None

@@ -196,7 +196,7 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
 
             recheck_fb.join()
             recheck_o.join()
-
+            
             deff_max = max(obj['olimp_time_req'], obj['fonbet_time_req'])
 
             prnt('deff_max: ' + str(deff_max) + ', O ' +
@@ -263,7 +263,7 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
         if DEBUG:
             amount_olimp = 30
             amount_fonbet = 30
-            # return False
+            return False
 
         # with Manager() as manager:
         shared = dict()
