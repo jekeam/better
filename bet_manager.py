@@ -104,7 +104,7 @@ class BetManager:
             self_opp = shared[self.bk_name_opposite].get('self', {})
             
             prnt(self.msg.format(sys._getframe().f_code.co_name,
-              'Ошибка при проставлении ставки в '+ self.bk_name_opposite \
+              'Ошибка при проставлении ставки в '+ self.bk_name_opposite + 
               ', делаю выкуп ставки в '+ self.bk_name))
             
             self_opp.sale_bet(shared)
