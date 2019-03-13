@@ -151,14 +151,9 @@ class BetManager:
                 headers.update(get_xtoken_bet(payload))
                 headers.update({'X-XERPC': '1'})
 
-                prnt(
-                    self.msg.format(
-                        sys._getframe().f_code.co_name,
-                        'rq: ' +
-                        str(payload) +
-                        ' ' +
-                        str(headers)),
-                    'hide')
+                prnt(self.msg.format(
+                    sys._getframe().f_code.co_name, 'rq: ' + 
+                    str(payload) + ' ' + str(headers)), 'hide')
                 resp = requests_retry_session().post(
                     ol_url_api.format(str(self.server_olimp), 'autorize'),
                     headers=headers,
@@ -218,16 +213,13 @@ class BetManager:
                 self.session['currency'] = res.get('currency').get('currency')
 
             if not self.session.get('session'):
-                err_str = self.msg_err.format(
-                    sys._getframe().f_code.co_name,
-                    'session_id not defined')
+                err_str = self.msg_err.format(sys._getframe().f_code.co_name,'session_id not defined')
                 raise SessionNotDefined(err_str)
 
             prnt(self.msg.format(sys._getframe().f_code.co_name,
                                  'session: ' + str(self.session['session'])))
             prnt(self.msg.format(sys._getframe().f_code.co_name, 'balance: ' +
-                                 str(self.session.get('balance')) +
-                                 ' ' +
+                                 str(self.session.get('balance')) + ' ' +
                                  str(self.session.get('currency'))))
             write_file(self.session_file, self.session['session'].strip())
             self.wait_sign_in_opp(shared)
@@ -264,10 +256,8 @@ class BetManager:
         if cur_bal:
             if cur_bal < self.sum_bet:
                 err_str = self.msg_err.format(
-                    sys._getframe().f_code.co_name,
-                    self.bk_name +
-                    ' balance ({}) < sum_bet({})'.format(
-                        str(cur_bal), str(self.sum_bet))
+                    sys._getframe().f_code.co_name, self.bk_name + 
+                    ' balance ({}) < sum_bet({})'.format(str(cur_bal), str(self.sum_bet))
                 )
                 raise NoMoney(err_str)
 
@@ -665,12 +655,12 @@ class BetManager:
 
         while shared.get('sign_in_' + self.bk_name_opposite) != 'ok':
             if msg_push:
-                err_str = self.msg_err.format(
+                msg_str = self.msg.format(
                     sys._getframe().f_code.co_name,
                     self.bk_name + ' wait sign in from ' +
                     self.bk_name_opposite
                 )
-                prnt(err_str)
+                prnt(msg_str)
                 msg_push = False
 
     def opposite_stat_get(self, shared: dict):
@@ -686,8 +676,19 @@ class BetManager:
             raise BkOppBetError(err_str)
 
     def opposite_stat_wait(self, shared: dict):
+        # if not DEBUG:
+        msg_push = True
+                
         opposite_stat = None
         while opposite_stat is None:
+            if msg_push:
+                msg_str = self.msg.format(
+                    sys._getframe().f_code.co_name,
+                    self.bk_name + ' wait status bet in from ' +
+                    self.bk_name_opposite
+                )
+                prnt(msg_str)
+                msg_push = False
             opposite_stat = str(shared.get(self.bk_name_opposite + '_err'))
 
     def check_max_bet(self, shared: dict):
@@ -715,14 +716,8 @@ class BetManager:
 
         data = get_dumped_payload(payload)
 
-        prnt(
-            self.msg.format(
-                sys._getframe().f_code.co_name,
-                'rq: ' +
-                str(payload) +
-                ' ' +
-                str(headers)),
-            'hide')
+        prnt(self.msg.format(sys._getframe().f_code.co_name, 'rq: ' +
+                str(payload) + ' ' + str(headers)), 'hide')
         resp = requests_retry_session().post(
             'https://23.111.80.252/session/coupon/getMinMax',
             headers=headers,
@@ -759,8 +754,7 @@ class BetManager:
             err_str = self.msg_err.format(
                 sys._getframe().f_code.co_name, 'max or min bet')
             raise BetIsLost(err_str)
-        if self.session.get(
-                'balance') and self.session['balance'] < self.sum_bet:
+        if self.session.get('balance') and self.session['balance'] < self.sum_bet:
             err_str = self.msg_err.format(
                 sys._getframe().f_code.co_name, 'mo money')
             raise NoMoney(err_str)
