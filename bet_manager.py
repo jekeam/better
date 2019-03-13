@@ -191,11 +191,8 @@ class BetManager:
                 self.server_fb = get_urls(self.mirror, self.proxies)
                 url, self.timeout = get_common_url(self.server_fb)
 
-                prnt(
-                    self.msg.format(
-                        sys._getframe().f_code.co_name,
-                        'rq: ' + str(data)),
-                    'hide')
+                prnt(self.msg.format(sys._getframe().f_code.co_name, 'rq: ' + str(data)), 'hide')
+                    
                 resp = requests_retry_session().post(
                     url.format('login'),
                     headers=fb_headers,
@@ -396,12 +393,8 @@ class BetManager:
 
             if result == 'betDelay':
                 bet_delay_sec = (float(res.get('betDelay')) / 1000)
-                prnt(
-                    self.msg.format(
-                        sys._getframe().f_code.co_name,
-                        'bet_delay: ' +
-                        str(bet_delay_sec) +
-                        ' sec.'))
+                prnt(self.msg.format(
+                    sys._getframe().f_code.co_name, 'bet_delay: ' + str(bet_delay_sec) + ' sec.'))
                 sleep(bet_delay_sec)
 
             self.check_result(shared)
@@ -417,8 +410,7 @@ class BetManager:
 
             cashout_allowed = coupon.get('cashout_allowed', False)
             self.sum_sell = coupon.get('cashout_amount', 0)
-            prnt(
-                self.msg.format(
+            prnt(self.msg.format(
                     sys._getframe().f_code.co_name,
                     'coupon cashout_allowed: ' +
                     str(cashout_allowed)))
@@ -439,14 +431,9 @@ class BetManager:
                 headers.update(get_xtoken_bet(payload))
                 headers.update({'X-XERPC': '1'})
 
-                prnt(
-                    self.msg.format(
-                        sys._getframe().f_code.co_name,
-                        'rq: ' +
-                        str(payload) +
-                        ' ' +
-                        str(headers)),
-                    'hide')
+                prnt(self.msg.format(
+                        sys._getframe().f_code.co_name, 'rq: ' +
+                        str(payload) + ' ' + str(headers)), 'hide')
                 resp = requests_retry_session().post(
                     ol_url_api.format(str(self.server_olimp), 'user/cashout'),
                     headers=headers,
@@ -465,15 +452,8 @@ class BetManager:
 
                 if res.get('data') and res.get(
                         'data').get('status', 'err') == 'ok':
-                    prnt(
-                        self.msg.format(
-                            sys._getframe().f_code.co_name,
-                            'code: ' +
-                            str(err_code) +
-                            ', ' +
-                            res.get(
-                                'data',
-                                {}).get('msg')))
+                    prnt(self.msg.format(sys._getframe().f_code.co_name,
+                        'code: ' + str(err_code) + ', ' + res.get( 'data',{}).get('msg')))
                 else:
                     raise SaleError(err_msg)
 
@@ -498,14 +478,8 @@ class BetManager:
                 payload['clientId'] = self.account['login']
                 payload['fsid'] = self.session['session']
 
-                prnt(
-                    self.msg.format(
-                        sys._getframe().f_code.co_name,
-                        'rq: ' +
-                        str(payload) +
-                        ' ' +
-                        str(headers)),
-                    'hide')
+                prnt(self.msg.format(sys._getframe().f_code.co_name,
+                        'rq: ' + str(payload) + ' ' + str(headers)),'hide')
                 resp = requests_retry_session().post(
                     url.format('coupon/sell/conditions/getFromVersion'),
                     headers=headers,
@@ -560,14 +534,8 @@ class BetManager:
                 payload['clientId'] = self.account['login']
                 payload['fsid'] = self.session['session']
 
-                prnt(
-                    self.msg.format(
-                        sys._getframe().f_code.co_name,
-                        'rq: ' +
-                        str(payload) +
-                        ' ' +
-                        str(headers)),
-                    'hide')
+                prnt(self.msg.format(sys._getframe().f_code.co_name,
+                        'rq: ' + str(payload) + ' ' + str(headers)),'hide')
                 resp = requests_retry_session().post(
                     url.format('coupon/sell/requestId'),
                     headers=headers,
@@ -615,12 +583,8 @@ class BetManager:
 
                 if result == 'sellDelay':
                     sell_delay_sec = (float(res.get('sellDelay')) / 1000)
-                    prnt(
-                        self.msg.format(
-                            sys._getframe().f_code.co_name,
-                            'sell, delay: ' +
-                            str(sell_delay_sec) +
-                            ' sec.'))
+                    prnt(self.msg.format(sys._getframe().f_code.co_name,
+                            'sell, delay: ' + str(sell_delay_sec) +' sec.'))
                     sleep(sell_delay_sec)
 
                 return self.check_sell_result()
@@ -655,12 +619,11 @@ class BetManager:
 
         while shared.get('sign_in_' + self.bk_name_opposite) != 'ok':
             if msg_push:
-                msg_str = self.msg.format(
+                prnt(self.msg.format(
                     sys._getframe().f_code.co_name,
                     self.bk_name + ' wait sign in from ' +
                     self.bk_name_opposite
-                )
-                prnt(msg_str)
+                ))
                 msg_push = False
 
     def opposite_stat_get(self, shared: dict):
@@ -682,12 +645,11 @@ class BetManager:
         opposite_stat = None
         while opposite_stat is None:
             if msg_push:
-                msg_str = self.msg.format(
+                prnt(self.msg.format(
                     sys._getframe().f_code.co_name,
                     self.bk_name + ' wait status bet in from ' +
                     self.bk_name_opposite
-                )
-                prnt(msg_str)
+                ))
                 msg_push = False
             opposite_stat = str(shared.get(self.bk_name_opposite + '_err'))
 
@@ -743,13 +705,8 @@ class BetManager:
 
         prnt(self.msg.format(sys._getframe().f_code.co_name,
                              'sum bet=' + str(self.sum_bet)))
-        prnt(
-            self.msg.format(
-                sys._getframe().f_code.co_name,
-                'min_amount=' +
-                str(min_amount) +
-                ', max_amount=' +
-                str(max_amount)))
+        prnt(self.msg.format(sys._getframe().f_code.co_name,
+                'min_amount=' + str(min_amount) + ', max_amount=' +str(max_amount)))
         if (self.sum_bet < min_amount) or (max_amount < self.sum_bet):
             err_str = self.msg_err.format(
                 sys._getframe().f_code.co_name, 'max or min bet')
