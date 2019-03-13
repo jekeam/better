@@ -37,14 +37,7 @@ package_dir = path.dirname(path.abspath(__file__))
 def run_bets(shared: dict):
     ps = []
     for bk_name, bk_container in shared.items():
-        bk = Thread(
-            target=BetManager,
-            args=(
-                shared,
-                bk_name,
-                bk_container
-            )
-        )
+        bk = Thread(target=BetManager, args=(shared, bk_name, bk_container))
         ps.append(bk)
         bk.start()
 
@@ -350,9 +343,9 @@ class BetManager:
 
             headers = copy.deepcopy(ol_headers)
             headers.update(get_xtoken_bet(payload))
-        
+
             prnt(self.msg.format(sys._getframe().f_code.co_name, 'rq: ' +
-                 str(payload) + ' ' + str(headers)), 'hide')
+                                 str(payload) + ' ' + str(headers)), 'hide')
             self.get_opposite_stat(shared)
             resp = requests_retry_session().post(
                 ol_url_api.format(str(self.server_olimp), 'basket/fast'),
@@ -426,16 +419,16 @@ class BetManager:
             self.payload = copy.deepcopy(payload)
 
             self.check_max_bet(shared)
-            
+
             try:
                 self.get_request_id()
-            except:
+            except BaseException:
                 self.get_request_id()
-                
+
             self.payload['requestId'] = self.reqId
 
             prnt(self.msg.format(sys._getframe().f_code.co_name, 'rq: ' +
-                 str(payload) + ' ' + str(headers)), 'hide')
+                                 str(payload) + ' ' + str(headers)), 'hide')
             self.get_opposite_stat(shared)
             resp = requests_retry_session().post(
                 url.format('coupon/register'),
@@ -593,7 +586,7 @@ class BetManager:
                                 'canSell',
                                 True) and not coupon.get(
                             'tempBlock',
-                            False):
+                                False):
                             self.sell_sum = float(
                                 coupon.get('completeSellSum'))
                         else:
@@ -830,12 +823,7 @@ class BetManager:
 
         headers = copy.deepcopy(fb_headers)
 
-        prnt(
-            self.msg.format(
-                sys._getframe().f_code.co_name,
-                'rs: ' +
-                str(payload)),
-            'hide')
+        prnt(self.msg.format(sys._getframe().f_code.co_name, 'rs: ' + str(payload)), 'hide')
         resp = requests_retry_session().post(
             url.format("coupon/result"),
             headers=headers,
@@ -843,8 +831,7 @@ class BetManager:
             verify=False,
             timeout=self.timeout
         )
-        prnt(self.msg.format(sys._getframe().f_code.co_name,
-                             'rs: ' + str(resp.text.strip())), 'hide')
+        prnt(self.msg.format(sys._getframe().f_code.co_name, 'rs: ' + str(resp.text.strip())), 'hide')
         res = resp.json()
 
         result = res.get('result')
@@ -879,8 +866,8 @@ class BetManager:
                     raise BetIsLost(err_str)
                 else:
                     err_str = err_msg + ', новая котировка:' + \
-                              str(res.get('coupon', {}).get(
-                                  'bets')[0].get('value', 0))
+                        str(res.get('coupon', {}).get(
+                            'bets')[0].get('value', 0))
                     sleep(self.sleep_bet)
                     err_str = self.msg_err.format(
                         sys._getframe().f_code.co_name, err_msg)
@@ -895,19 +882,8 @@ class BetManager:
                 else:
                     new_wager = res.get('coupon').get('bets')[0]
 
-                    if str(
-                            new_wager.get(
-                                'param',
-                                '')) == str(
-                        self.wager.get(
-                            'param',
-                            '')) and int(
-                        self.wager.get(
-                            'factor',
-                            0)) != int(
-                        new_wager.get(
-                            'factor',
-                            0)):
+                    if str(new_wager.get('param', '')) == str(self.wager.get('param', '')) and \
+                       int(self.wager.get('factor', 0)) != int(new_wager.get('factor', 0)):
 
                         prnt(self.msg.format(
                             sys._getframe().f_code.co_name,
@@ -919,44 +895,33 @@ class BetManager:
                     elif str(new_wager.get('param', '')) != str(self.wager.get('param', '')) and \
                             int(self.wager.get('factor', 0)) == int(new_wager.get('factor', 0)):
 
-                        prnt(
-                            self.msg_err.format(
-                                sys._getframe().f_code.co_name,
-                                'Изменилась тотал ставки, param не совпадает: ' +
-                                'new_wager: ' +
-                                str(new_wager) +
-                                ', old_wager: ' +
-                                str(
-                                    self.wager)))
+                        prnt(self.msg_err.format(sys._getframe().f_code.co_name,
+                                                 'Изменилась тотал ставки, param не совпадает: ' +
+                                                 'new_wager: ' + str(new_wager) + ', old_wager: ' + str(self.wager)))
 
-                        if self.wager.get('bet_type'):
-                            self.msg.format(
-                                sys._getframe().f_code.co_name,
-                                'поиск нового id тотала: ' +
-                                self.wager.get('bet_type'))
+                        if self.bk_container.get('bet_type'):
+
+                            self.msg.format(sys._getframe().f_code.co_name, 'поиск нового id тотала: ' +
+                                            self.bk_container.get('bet_type'))
+
                             match_id = self.wager.get('event')
-                            new_wager = get_new_bets_fonbet(
-                                match_id, self.proxies, self.timeout)
-                            new_wager = new_wager.get(
-                                str(match_id),
-                                {}).get(
-                                'kofs',
-                                {}).get(
-                                self.wager.get('bet_type'))
+                            new_wager = get_new_bets_fonbet(match_id, self.proxies, self.timeout)
+                            new_wager = new_wager.get(str(match_id), {}).get('kofs', {}).get(self.bk_container.get('bet_type'))
                             if new_wager:
-                                self.msg.format(
-                                    sys._getframe().f_code.co_name,
-                                    'Тотал найден: ' + str(new_wager))
+                                self.msg.format(sys._getframe().f_code.co_name, 'Тотал найден: ' + str(new_wager))
                                 self.wager.update(new_wager)
                                 return self.place_bet(shared)
                             else:
                                 err_str = self.msg_err.format(
-                                    sys._getframe().f_code.co_name, 'Тотал не найден' + str(new_wager))
+                                    sys._getframe().f_code.co_name, 'Тотал не найден' + str(new_wager)
+                                )
                                 raise BetIsLost(err_str)
                         else:
                             err_str = self.msg_err.format(
                                 sys._getframe().f_code.co_name,
-                                'Тип ставки, например 1ТМ(2.5) - не задан, выдаю ошибку.')
+                                'Тип ставки, например 1ТМ(2.5) - не задан, выдаю ошибку: bet_type:' +
+                                self.bk_container.get('bet_type') + ', bk_container:' + str(self.bk_container)
+                            )
                             raise BetIsLost(err_str)
                     else:
                         err_str = self.msg_err.format(
