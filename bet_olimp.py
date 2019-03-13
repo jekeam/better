@@ -424,7 +424,11 @@ class OlimpBot:
 
 
 if __name__ == '__main__':
-    OLIMP_USER = {"login": "eva.yushkova.81@mail.ru", "passw": "qvF3BwrNcRcJtB6"}
+    OLIMP_USER = {
+    "login": get_account_info(
+        'olimp', 'login'), "password": get_account_info(
+        'olimp', 'password')}
+
     wager_olimp = {'apid': '1162886444:46453134:1:3:-9999:2:0:0:1', 'factor': '1.06', 'sport_id': 1,
                    'event': '46453134'}
     obj = {}

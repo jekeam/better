@@ -31,7 +31,7 @@ def get_sum_bets(k1, k2, total_bet, hide=True):
         bet_2 = total_bet - bet_1
         if not hide:
             prnt('L: ' + str(round((1 - l) * 100, 2)) + '% (' + str(l) + ') ')
-            prnt('bet1: ' + str(bet_1) + ', bet2: ' + str(bet_2) + '|' +' bet_sum: ' + str(bet_1 + bet_2))
+            prnt('bet1: ' + str(bet_1) + ', bet2: ' + str(bet_2) + '|' + ' bet_sum: ' + str(bet_1 + bet_2))
 
         return bet_1, bet_2
 
@@ -255,7 +255,7 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
         if DEBUG:
             amount_olimp = 30
             amount_fonbet = 30
-            return False
+            # return False
 
         # with Manager() as manager:
         shared = dict()
@@ -289,12 +289,9 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
         for bk_name, val in shared.items():
             prnt('BK ' + str(bk_name) +
                  ': bet_total:{}, cur_total:{}, sc1:{}, sc2:{}, v:{}. ({})'.format(
-                     val.get('bet_total', ''),
-                     val.get('cur_total', ''),
-                     val.get('sc1', ''),
-                     val.get('sc2', ''),
-                     val.get('vect', ''),
-                     val.get('wager', '')))
+                     val.get('bet_total', ''), val.get('cur_total', ''),
+                     val.get('sc1', ''), val.get('sc2', ''),
+                     val.get('vect', ''),val.get('wager', '')))
 
         from bet_manager import run_bets
         run_bets(shared)
@@ -474,20 +471,8 @@ if __name__ == '__main__':
                 live_fork_total = val_json.get('live_fork_total', 0)
                 live_fork = val_json.get('live_fork', 0)
 
-                deff_olimp = round(
-                    float(
-                        time.time() -
-                        float(
-                            val_json.get(
-                                'time_req_olimp',
-                                0))))
-                deff_fonbet = round(
-                    float(
-                        time.time() -
-                        float(
-                            val_json.get(
-                                'time_req_fonbet',
-                                0))))
+                deff_olimp = round(float(time.time() - float(val_json.get('time_req_olimp', 0))))
+                deff_fonbet = round(float(time.time() - float(val_json.get('time_req_fonbet', 0))))
                 deff_max = max(0, deff_olimp, deff_fonbet)
 
                 bk1_bet_json = val_json.get('kof_olimp')
@@ -518,30 +503,16 @@ if __name__ == '__main__':
                     if 0.0 <= l < l_temp and deff_max < 10 or DEBUG:
                         bet1, bet2 = get_sum_bets(k1, k2, total_bet)
                         # Проверим вилку на исключения
-                        if check_fork(
-                                key,
-                                l_temp,
-                                k1,
-                                k2,
-                                live_fork,
-                                bk1_score,
-                                bk2_score,
-                                minute,
-                                time_break_fonbet,
-                                period,
-                                deff_max,
-                                info) or DEBUG:
+                        if check_fork(key, l_temp, k1, k2, live_fork, bk1_score, bk2_score,
+                                      minute, time_break_fonbet, period, deff_max, info) or DEBUG:
                             go_bet_key = key
                             l = l_temp
                             go_bet_json = val_json
                     elif deff_max >= 10:
                         pass
                 else:
-                    prnt(
-                        'Вектор направления коф-та не определен: VECT1=' +
-                        str(vect1) +
-                        ', VECT2=' +
-                        str(vect2))
+                    prnt('Вектор направления коф-та не определен: VECT1=' +
+                         str(vect1) + ', VECT2=' + str(vect2))
             if go_bet_key:
                 prnt(' ')
                 prnt('Go bets: ' + info)
