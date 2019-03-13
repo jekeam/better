@@ -187,7 +187,7 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
         with Manager() as manager:
             obj = manager.dict()
 
-            recheck_o = Process(target=get_kof_olimp, args=(obj, wag_ol['event'], olimp_bet_type,))
+            recheck_o = Process(target=get_kof_olimp, args=(obj, wag_ol['event'], olimp_bet_type))
             recheck_fb = Process(target=get_kof_fonbet,
                                  args=(obj, wag_fb['event'], int(wag_fb['factor']), wag_fb['param']))
 

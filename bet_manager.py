@@ -305,7 +305,6 @@ class BetManager:
         # # for test
         # if self.bk_name == 'fonbet':
         #     sleep(15)
-
         self.get_opposite_stat(shared)
 
         self.sum_bet = self.bk_container.get('amount')
@@ -351,15 +350,10 @@ class BetManager:
 
             headers = copy.deepcopy(ol_headers)
             headers.update(get_xtoken_bet(payload))
-
-            prnt(
-                self.msg.format(
-                    sys._getframe().f_code.co_name,
-                    'rq: ' +
-                    str(payload) +
-                    ' ' +
-                    str(headers)),
-                'hide')
+        
+            prnt(self.msg.format(sys._getframe().f_code.co_name, 'rq: ' +
+                 str(payload) + ' ' + str(headers)), 'hide')
+            self.get_opposite_stat(shared)
             resp = requests_retry_session().post(
                 ol_url_api.format(str(self.server_olimp), 'basket/fast'),
                 headers=headers,
@@ -432,17 +426,15 @@ class BetManager:
             self.payload = copy.deepcopy(payload)
 
             self.check_max_bet(shared)
-            self.get_request_id()
+            try:
+                self.get_request_id()
+            except:
+                self.get_request_id()
             self.payload['requestId'] = self.reqId
 
-            prnt(
-                self.msg.format(
-                    sys._getframe().f_code.co_name,
-                    'rq: ' +
-                    str(payload) +
-                    ' ' +
-                    str(headers)),
-                'hide')
+            prnt(self.msg.format(sys._getframe().f_code.co_name, 'rq: ' +
+                 str(payload) + ' ' + str(headers)), 'hide')
+            self.get_opposite_stat(shared)
             resp = requests_retry_session().post(
                 url.format('coupon/register'),
                 headers=headers,
