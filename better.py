@@ -94,10 +94,10 @@ def check_fork(key, L, k1, k2, live_fork, bk1_score, bk2_score, minute,
     fork_exclude_text = ''
     v = True
 
-    deff_max_maximum = 3
-    if deff_max > deff_max_maximum:
+    deff_limit = 3
+    if deff_max > deff_limit:
         fork_exclude_text = fork_exclude_text + \
-            'Вилка исключена, т.к. deff_max(' + str(deff_max) + ') > ' + deff_max_maximum + '\n'
+            'Вилка исключена, т.к. deff_max(' + str(deff_max) + ') > ' + str(deff_limit) + '\n'
 
     if success.count(key) >= 1:
         fork_exclude_text = fork_exclude_text + \
