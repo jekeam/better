@@ -97,13 +97,16 @@ def check_fork(
         
     fork_exclude_text = ''
     v = True
-    
     if get_param('junior_team_exclude'):
+        print(name)
+        print(name_rus)
         if re.search('(u\d{2}|\(жен\)|\(ж\)|\(р\)|\(рез\)|\(.*\d{2}\)|\(-студ.\))', name_rus.lower()):
             fork_exclude_text = fork_exclude_text + 'Вилка исключена по названию команд: ' + name_rus + '\n'
         
         if re.search('(u\d{2}|\(w\)|\(r\)|\(res\)|\(Reserves\)|\(-stud\.\))', name.lower()):
             fork_exclude_text = fork_exclude_text + 'Вилка исключена по названию команд: ' + name + '\n'
+            
+    exit()
 
     if success.count(key) >= 1:
         fork_exclude_text = fork_exclude_text + 'Вилка не проставлена, т.к. уже проставляли на эту вилку: ' + key + '\n'
@@ -439,7 +442,7 @@ if __name__ == '__main__':
         prnt('total bet: ' + str(total_bet) + ' руб.')
         prnt('balance line: ' + str(balance_line))
         prnt('fork life time: ' + str(get_param('fork_life_time')))
-        prnt('junior_team: ' + str(get_param('junior_team')))
+        prnt('junior team exclude: ' + str(get_param('junior_team_exclude')))
     
         server_forks = dict()
         success = []
