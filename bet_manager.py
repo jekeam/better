@@ -648,8 +648,8 @@ class BetManager:
         # if not DEBUG:
         msg_push = True
                 
-        opposite_stat = None
-        while opposite_stat is None:
+        opp_stat = None
+        while opp_stat is None:
             if msg_push:
                 prnt(self.msg.format(
                     sys._getframe().f_code.co_name,
@@ -657,7 +657,13 @@ class BetManager:
                     self.bk_name_opposite
                 ))
                 msg_push = False
-            opposite_stat = str(shared.get(self.bk_name_opposite + '_err'))
+            opp_stat = str(shared.get(self.bk_name_opposite + '_err'))
+            
+        prnt(self.msg.format(
+            sys._getframe().f_code.co_name,
+            self.bk_name + ' get status bet in from ' +
+            self.bk_name_opposite + ': ' + str(opp_stat)
+        ))
 
     def check_max_bet(self, shared: dict):
         self.opposite_stat_get(shared)
