@@ -383,7 +383,8 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
 
                             forks[bet_key].update({
                                 'time_last_upd': round(time.time()),
-                                'name': math_json_olimp.get('name', ''),
+                                'name': math_json_fonbet.get('name', ''),
+                                'name_rus': math_json_olimp.get('name', ''),
                                 'time_req_olimp': math_json_olimp.get('time_req', 0),
                                 'time_req_fonbet': math_json_fonbet.get('time_req', 0),
                                 'l': L,
@@ -474,7 +475,8 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
 
                             forks[bet_key] = {
                                 'time_last_upd': round(time.time()),
-                                'name': math_json_olimp.get('name', ''),
+                                'name': math_json_fonbet.get('name', ''),
+                                'name_rus': math_json_olimp.get('name', ''),
                                 'time_req_olimp': ol_time_req,
                                 'time_req_fonbet': fb_time_req,
                                 'l': L,

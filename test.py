@@ -1,43 +1,39 @@
 import re
 
 under_list = [
-    'Milan U19 — Spezia U19',
-    'Chelsea U19 — Montpellier U19',
-    'Vasco da Gama U20 — CS Paraibano U20',
-    'AC Milan (w) — Juvenrus (w)',
-    'Roma (w) — Fiorentina (w)',
-    'Serbia U17 (w) — Russia U17 (w)',
-    'Emmen (r)-Twente (r)',
-    'Shanghai Shenhua (r)-Hebei China Fortune (r)',
-    'Kingston City (U20) - Oakleigh Cannons (U20)',
-    'Zbrojovka Brno (U21) - Sigma Olomouc (U21)',
-    'Arsenal LFC (W) - Bristol Academy (W)',
-    'Lobos BUAP (W) - Puebla (W)',
-    'Antwerpen (res) - Standard Liège (res)',
-    'Shanghai Shenhua (R) - Hebei China Fortun (R)',
-    'Silkeborg IF (R) - Vendsyssel FF (Reserves)']
+    'Ньюкасл Юн U23 - Астон Вилла U23',
+    'Болонья U19 - Брюгге U19',
+    'Качин Юн U20 - Чин Юн U20',
+    'Веракрус (ж) - Пумас-УНАМ (ж)',
+    'Монтеррей (ж) - Монаркас Морелия (ж)',
+    'Хиберниан (р) - Куин оф Саут (р)',
+    'Эйдрионианс (р) - Райт Роверс (р)',
+    'Эвертон (до 23) - Арсенал (до 23)',
+    'Сао Пауло (до 20) - Ораторио (до 20)',
+    'Сонглам Нгеан (до 19) - Ха Ной Т-Т (до 19)',
+    'Буллин Лайонс (жен) - Саут Мельбурн (жен)',
+    'ФК Константин (жен) - АС Интиссар Оран (жен)',
+    'Аргентинос Хуниорс (рез) - Велес Сарсфилд (рез)']
 
 lower_list = [
-'Milan — Spezia',
-    'Chelsea — Montpellier',
-    'Vasco da Gama — CS Paraibano',
-    'AC Milan — Juvenrus',
-    'Roma — Fiorentina',
-    'Serbia — Russia ',
-    'Emmen -Twente',
-    'Shanghai Shenhua -Hebei China Fortune',
-    'Kingston City - Oakleigh Cannons',
-    'Zbrojovka Brno - Sigma Olomouc',
-    'Arsenal LFC - Bristol Academy',
-    'Lobos BUAP - Puebla',
-    'Antwerpen - Standard Liège',
-    'Shanghai Shenhua - Hebei China Fortun',
-    'Silkeborg I - Vendsyssel FF'    
+    'Ньюкасл Юн - Астон Вилла',
+    'Болонья - Брюгге',
+    'Качин Юн - Чин Юн',
+    'Веракрус - Пумас-УНАМ',
+    'Монтеррей - Монаркас Морелия',
+    'Хиберниан - Куин оф Саут',
+    'Эйдрионианс - Райт Роверс',
+    'Эвертон - Арсенал',
+    'Сао Пауло - Ораторио',
+    'Сонглам Нгеан - Ха Ной Т-Т',
+    'Буллин Лайонс - Саут Мельбурн',
+    'ФК Константин - АС Интиссар Оран',
+    'Аргентинос Хуниорс - Велес Сарсфилд'
 ]    
     
-# for u in under_list:
 for u in lower_list:
-    if re.search('(u\d{2}|\(w\)|\(r\)|\(res\)|\(Reserves\))', u.lower()):
+# for u in under_list:
+    if re.search('(u\d{2}|\(жен\)|\(ж\)|\(р\)|\(рез\)|\(.*\d{2}\))', u.lower()):
         print('del: ' + u)
     else:
         print('add: ' + u)

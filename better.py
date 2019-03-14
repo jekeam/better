@@ -89,10 +89,18 @@ def check_l(L):
         return ''
 
 
-def check_fork(key, L, k1, k2, live_fork, bk1_score, bk2_score, minute, time_break_fonbet, period, info=''):
+def check_fork(
+    key, L, k1, k2, live_fork, bk1_score, bk2_score, 
+    minute, time_break_fonbet, period, name, info=''
+    ):
+    global bal1, bal2, balance_line
+        
     fork_exclude_text = ''
     v = True
-    global bal1, bal2, balance_line
+    
+    if get_param('junior_team') or get_param('junior_team') is None:
+        if re.search('(u\d{2}|\(жен\)|\(ж\)|\(р\)|\(рез\)|\(.*\d{2}\)|\(-студ.\))', name.lower()):
+            fork_exclude_text = fork_exclude_text + 'Вилка исключена по названию команд: ' + name + '\n'
 
     if success.count(key) >= 1:
         fork_exclude_text = fork_exclude_text + 'Вилка не проставлена, т.к. уже проставляли на эту вилку: ' + key + '\n'
@@ -428,6 +436,7 @@ if __name__ == '__main__':
         prnt('total bet: ' + str(total_bet) + ' руб.')
         prnt('balance line: ' + str(balance_line))
         prnt('fork life time: ' + str(get_param('fork_life_time')))
+        prnt('junior_team: ' + str(get_param('junior_team')))
     
         server_forks = dict()
         success = []
@@ -524,7 +533,7 @@ if __name__ == '__main__':
                             # Проверим вилку на исключения
                             if check_fork(
                                     key, l_temp, k1, k2, live_fork, bk1_score, bk2_score,
-                                    minute, time_break_fonbet, period, info
+                                    minute, time_break_fonbet, period, name, info
                             ) or DEBUG:
                                 go_bet_key = key
                                 l = l_temp
