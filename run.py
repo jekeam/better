@@ -9,7 +9,7 @@ from difflib import SequenceMatcher
 import re
 from exceptions import *
 from server import run_server
-from utils import prnts, DEBUG, find_max_mode, opposition, MINUTE_COMPLITE
+from utils import prnts, DEBUG, find_max_mode, opposition, MINUTE_COMPLITE, serv_log
 from proxy_switcher import ProxySwitcher
 import json
 import os.path
@@ -275,8 +275,7 @@ def start_compare_matches(pair_mathes, json_bk1, json_bk2, mathes_complite):
                         for bk2_match_id, bk2_match_info in json_bk2.items():
                             if bk2_match_info:
                                 # Проверим что ид матча 2 нет в списке
-                                if 'yes' not in list(
-                                        map(lambda id: 'yes' if bk2_match_id in id else 'no', pair_mathes)):
+                                if 'yes' not in list(map(lambda id: 'yes' if bk2_match_id in id else 'no', pair_mathes)):
                                     # Проверим что матч не завершен:
                                     if bk1_match_id in mathes_complite or bk2_match_id in mathes_complite:
                                         # prnts('Матчи завершены: ' + str(bk1_match_id) + '-' + str(bk2_match_id))
@@ -289,7 +288,8 @@ def start_compare_matches(pair_mathes, json_bk1, json_bk2, mathes_complite):
                                                 bk2_match_info.get('team2')
                                         ):
                                             if DEBUG and str(bk2_match_id) == '13473895':
-                                                prnts(
+                                                serv_log(
+                                                    'matches list',
                                                     'Матч добавлен: ' + str(bk1_match_id) + ' ' +
                                                     bk1_match_info.get('team1') + ' vs ' +
                                                     bk1_match_info.get('team2') + ' | ' +
@@ -299,7 +299,8 @@ def start_compare_matches(pair_mathes, json_bk1, json_bk2, mathes_complite):
                                                 )
                                                 pair_mathes.append([bk1_match_id, bk2_match_id])
                                             elif not DEBUG:
-                                                prnts(
+                                                serv_log(
+                                                    'matches list',
                                                     'Матч добавлен: ' + str(bk1_match_id) + ' ' +
                                                     bk1_match_info.get('team1') + ' vs ' +
                                                     bk1_match_info.get('team2') + ' | ' +
