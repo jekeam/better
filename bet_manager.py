@@ -18,12 +18,17 @@ from meta_ol import ol_url_api, ol_payload, ol_headers, get_xtoken_bet
 from meta_fb import fb_payload, fb_payload_bet, get_random_str, get_dumped_payload, get_urls, get_common_url
 from meta_fb import fb_headers, get_new_bets_fonbet, payload_req, payload_coupon_sum, payload_coupon_sell
 from meta_fb import payload_sell_check_result
-from utils import prnt, package_dir, write_file, read_file, DEBUG, get_account_info
+from utils import prnt, package_dir, write_file, read_file, get_account_info, get_param
 from fork_recheck import get_olimp_info, get_fonbet_info
 
 from exceptions import BetIsLost, SessionNotDefined, BkOppBetError, NoMoney, BetError, SessionExpired, SaleError
 from exceptions import CouponBlocked, BetIsLost
 
+
+if get_param('debug'):
+    DEBUG = True
+else:
+    DEBUG = False
 prnt('DEBUG: ' + str(DEBUG))
 
 # disable: InsecureRequestWarning: Unverified HTTPS request is being made.
@@ -617,6 +622,14 @@ class BetManager:
 
         elif self.bk_name == 'fonbet':
             if self.reg_id:
+                
+                # for test
+                sleep(5)
+                try:
+                    1/0
+                except Exception as e:
+                    raise CouponBlocked(e)
+
 
                 # step1 get from version and sell sum
                 if not self.server_fb:

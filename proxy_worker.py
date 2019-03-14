@@ -7,7 +7,7 @@ import os
 import time
 import urllib3
 from random import choice
-from utils import prnts, DEBUG
+from utils import prnts, get_param
 from hashlib import md5
 import threading
 import platform
@@ -16,6 +16,12 @@ from utils import DEBUG
 
 # disable warning
 urllib3.disable_warnings()
+
+
+if get_param('debug'):
+    DEBUG = True
+else:
+    DEBUG = False
 
 TIME_OUT = 2
 

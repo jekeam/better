@@ -9,7 +9,7 @@ from difflib import SequenceMatcher
 import re
 from exceptions import *
 from server import run_server
-from utils import prnts, DEBUG, find_max_mode, opposition, MINUTE_COMPLITE
+from utils import prnts, get_param, find_max_mode, opposition, MINUTE_COMPLITE
 from proxy_switcher import ProxySwitcher
 import json
 import os.path
@@ -19,6 +19,11 @@ from datetime import datetime
 
 import sys
 import traceback
+
+if get_param('debug'):
+    DEBUG = True
+else:
+    DEBUG = False
 
 TIMEOUT_MATCHS = 10
 TIMEOUT_MATCH = 10

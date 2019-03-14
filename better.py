@@ -3,7 +3,7 @@ from bet_fonbet import *
 from bet_olimp import *
 import datetime
 from fork_recheck import get_kof_olimp, get_kof_fonbet
-from utils import prnt, get_account_info, DEBUG, get_account_summ
+from utils import prnt, get_account_info, get_param, get_account_summ
 # from client import run_client
 import threading
 from multiprocessing import Manager, Process, Pipe
@@ -18,6 +18,10 @@ import json
 import re
 
 shutdown = False
+if get_param('debug'):
+    DEBUG = True
+else:
+    DEBUG = False
 
 
 def get_sum_bets(k1, k2, total_bet):
