@@ -221,7 +221,7 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
                 change_proc = round(new_proc - cur_proc, 2)
                 prnt('new proc: ' + str(new_proc) + '%, change: ' + str(change_proc))
 
-                if check_l(L) == '' or DEBUG:
+                if (check_l(L) == '' or DEBUG) and ('(' in key or ')' in key):
 
                     is_recheck = True
                     fork_id = int(time.time())

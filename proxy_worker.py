@@ -1,6 +1,4 @@
 # coding: utf-8
-import asyncio
-from proxybroker import Broker
 import requests
 import multiprocessing as mp
 import os
@@ -189,6 +187,9 @@ def save_list(proxies, filename=None):
 
 def get_proxies(n):
     global proxy_list, TIME_OUT
+    import asyncio
+    from proxybroker import Broker
+    
     proxies = asyncio.Queue()
     broker = Broker(proxies, timeout=TIME_OUT)
     tasks = asyncio.gather(
