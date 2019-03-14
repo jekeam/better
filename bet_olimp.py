@@ -424,7 +424,11 @@ class OlimpBot:
 
 
 if __name__ == '__main__':
-    OLIMP_USER = {"login": "3318188", "passw": "6ya8y4eK"}
+    OLIMP_USER = {
+    "login": get_account_info(
+        'olimp', 'login'), "password": get_account_info(
+        'olimp', 'password')}
+
     wager_olimp = {'apid': '1162886444:46453134:1:3:-9999:2:0:0:1', 'factor': '1.06', 'sport_id': 1,
                    'event': '46453134'}
     obj = {}
@@ -434,4 +438,5 @@ if __name__ == '__main__':
     olimp = OlimpBot(OLIMP_USER)
     olimp.sign_in()
     #olimp.place_bet(obj)
-    olimp.sale_bet(872)
+    olimp.sale_bet(35)
+    #olimp.sale_bet(29)

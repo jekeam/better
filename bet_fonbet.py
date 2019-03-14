@@ -945,7 +945,11 @@ def get_new_bets_fonbet(match_id, proxies, time_out):
 
 
 if __name__ == '__main__':
-    FONBET_USER = {"login": 5447708, "password": "tStseFuY"}
+    
+    FONBET_USER = {
+        "login": get_account_info(
+            'fonbet', 'login'), "password": get_account_info(
+            'fonbet', 'password')}
     wager_fonbet = {'event': '13538626', 'factor': '1809', 'param': '250', 'score': '0:0', 'value': '1.42'}
 
     obj = {}
@@ -957,6 +961,6 @@ if __name__ == '__main__':
     fonbet.sign_in()
     #fonbet.place_bet(obj)
     #time.sleep(3)
-    fonbet.sale_bet(14859958889)
+    fonbet.sale_bet(14928907420)
     # fonbet_reg_id = fonbet.place_bet(amount_fonbet, wager_fonbet)
     # {'e': 12264423, 'f': 931, 'v': 1.4, 'p': 250, 'pt': '2.5', 'isLive': True}

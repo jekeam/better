@@ -9,7 +9,7 @@ from difflib import SequenceMatcher
 import re
 from exceptions import *
 from server import run_server
-from utils import prnts, DEBUG, find_max_mode, opposition, MINUTE_COMPLITE
+from utils import prnts, get_param, find_max_mode, opposition, MINUTE_COMPLITE
 from proxy_switcher import ProxySwitcher
 import json
 import os.path
@@ -19,6 +19,11 @@ from datetime import datetime
 
 import sys
 import traceback
+
+if get_param('debug'):
+    DEBUG = True
+else:
+    DEBUG = False
 
 TIMEOUT_MATCHS = 10
 TIMEOUT_MATCH = 10
@@ -288,8 +293,8 @@ def start_compare_matches(pair_mathes, json_bk1, json_bk2, mathes_complite):
                                                 bk2_match_info.get('team1'),
                                                 bk2_match_info.get('team2')
                                         ):
-                                            #if DEBUG and str(bk2_match_id) == '13473895':
-                                            if 1==0:
+                                            if DEBUG: # and str(bk2_match_id) == '13706718':
+                                            #if 1==0:
                                                 prnts(
                                                     'Матч добавлен: ' + str(bk1_match_id) + ' ' +
                                                     bk1_match_info.get('team1') + ' vs ' +
@@ -300,7 +305,7 @@ def start_compare_matches(pair_mathes, json_bk1, json_bk2, mathes_complite):
                                                 )
                                                 pair_mathes.append([bk1_match_id, bk2_match_id])
                                             #elif not DEBUG:
-                                            elif 1==1:
+                                            elif 1==0:
                                                 prnts(
                                                     'Матч добавлен: ' + str(bk1_match_id) + ' ' +
                                                     bk1_match_info.get('team1') + ' vs ' +
@@ -510,6 +515,8 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
                         forks.pop(bet_key)
                     except:
                         pass
+        if DEBUG:
+            time.sleep(5)
         time.sleep(0.1)
 
 

@@ -3,7 +3,14 @@ from functools import partial
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 import platform
-from utils import DEBUG
+from utils import get_param
+
+shutdown = False
+if get_param('debug'):
+    DEBUG = True
+else:
+    DEBUG = False
+
 
 def run_server(data_json):
     class HttpProcessor(BaseHTTPRequestHandler):

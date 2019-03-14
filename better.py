@@ -3,7 +3,7 @@ from bet_fonbet import *
 from bet_olimp import *
 import datetime
 from fork_recheck import get_kof_olimp, get_kof_fonbet
-from utils import prnt, get_account_info, DEBUG, get_account_summ
+from utils import prnt, get_account_info, get_param, get_account_summ
 # from client import run_client
 import threading
 from multiprocessing import Manager, Process, Pipe
@@ -18,22 +18,27 @@ import json
 import re
 
 shutdown = False
+if get_param('debug'):
+    DEBUG = True
+else:
+    DEBUG = False
 
 
-def get_sum_bets(k1, k2, total_bet, hide=True):
-    if k1 > 0 and k2 > 0:
-        k1 = float(k1)
-        k2 = float(k2)
-        l = (1 / k1) + (1 / k2)
+def get_sum_bets(k1, k2, total_bet):
+    
+    k1 = float(k1)
+    k2 = float(k2)
+    prnt('k1:{}, k2:{}'.format(k1, k2))
+    l = (1 / k1) + (1 / k2)
 
-        # Округление проставления в БК1 происходит по правилам математики
-        bet_1 = round(total_bet / (k1 * l) / 5) * 5
-        bet_2 = total_bet - bet_1
-        if not hide:
-            prnt('L: ' + str(round((1 - l) * 100, 2)) + '% (' + str(l) + ') ')
-            prnt('bet1: ' + str(bet_1) + ', bet2: ' + str(bet_2) + '|' +' bet_sum: ' + str(bet_1 + bet_2))
+    # Округление проставления в БК1 происходит по правилам математики
+    bet_1 = round(total_bet / (k1 * l) / 5) * 5
+    bet_2 = total_bet - bet_1
+    
+    prnt('L: ' + str(round((1 - l) * 100, 2)) + '% (' + str(l) + ') ')
+    prnt('bet1: ' + str(bet_1) + ', bet2: ' + str(bet_2) + '|' + ' bet_sum: ' + str(bet_1 + bet_2))
 
-        return bet_1, bet_2
+    return bet_1, bet_2
 
 
 def bet_fonbet_cl(obj):
@@ -90,6 +95,10 @@ def check_fork(key, L, k1, k2, live_fork, bk1_score, bk2_score, minute,
 
     fork_exclude_text = ''
     v = True
+    
+    if '(' not in key and ')' not in key:
+        fork_exclude_text = fork_exclude_text + \
+            'Вилка исключена, т.к. я еще не умею работать с этой ставкой: ' + str(key) + ')\n'
 
     deff_limit = 3
     if deff_max > deff_limit:
@@ -163,8 +172,7 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
          (1 / float(wag_fb['value'])))
     cur_proc = round((1 - L) * 100, 2)
 
-    amount_olimp, amount_fonbet = get_sum_bets(
-        wag_ol['factor'], wag_fb['value'], total_bet, False)
+    amount_olimp, amount_fonbet = get_sum_bets(wag_ol['factor'], wag_fb['value'], total_bet)
 
     if __name__ == '__main__':
         wait_sec = 0  # max(0, (3.5 - deff_max))
@@ -204,9 +212,7 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
             if float(obj['olimp']) > 1 < float(obj['fonbet']):
 
                 # пересчетаем суммы ставок
-                amount_olimp, amount_fonbet = get_sum_bets(
-                    float(obj['olimp']), float(obj['fonbet']), total_bet, False
-                )
+                amount_olimp, amount_fonbet = get_sum_bets(float(obj['olimp']), float(obj['fonbet']), total_bet)
 
                 # Выведем текую доходность вилки
                 prnt('cur proc: ' + str(cur_proc) + '%')
@@ -215,7 +221,7 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
                 change_proc = round(new_proc - cur_proc, 2)
                 prnt('new proc: ' + str(new_proc) + '%, change: ' + str(change_proc))
 
-                if check_l(L) == '' or DEBUG:
+                if (check_l(L) == '' or DEBUG) and ('(' in key or ')' in key):
 
                     is_recheck = True
                     fork_id = int(time.time())
@@ -255,7 +261,7 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
         if DEBUG:
             amount_olimp = 30
             amount_fonbet = 30
-            return False
+            # return False
 
         # with Manager() as manager:
         shared = dict()
@@ -289,12 +295,9 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
         for bk_name, val in shared.items():
             prnt('BK ' + str(bk_name) +
                  ': bet_total:{}, cur_total:{}, sc1:{}, sc2:{}, v:{}. ({})'.format(
-                     val.get('bet_total', ''),
-                     val.get('cur_total', ''),
-                     val.get('sc1', ''),
-                     val.get('sc2', ''),
-                     val.get('vect', ''),
-                     val.get('wager', '')))
+                     val.get('bet_total', ''), val.get('cur_total', ''),
+                     val.get('sc1', ''), val.get('sc2', ''),
+                     val.get('vect', ''),val.get('wager', '')))
 
         from bet_manager import run_bets
         run_bets(shared)
@@ -425,13 +428,8 @@ if __name__ == '__main__':
 
         # Обновление баланса каждые 35-45 минут
         ref_balace = randint(35, 45)
-        if (datetime.datetime.now() -
-            time_get_balance).total_seconds() > (60 *
-                                                 ref_balace):
-            prnt(
-                'It took more than ' +
-                str(ref_balace) +
-                ' minutes, the refresh balances:')
+        if (datetime.datetime.now() -time_get_balance).total_seconds() > (60 *ref_balace):
+            prnt('It took more than ' + str(ref_balace) + ' minutes, the refresh balances:')
             time_get_balance = datetime.datetime.now()
             bal1 = OlimpBot(OLIMP_USER).get_balance()  # Баланс в БК1
             bal2 = FonbetBot(FONBET_USER).get_balance()  # Баланс в БК2
@@ -474,20 +472,8 @@ if __name__ == '__main__':
                 live_fork_total = val_json.get('live_fork_total', 0)
                 live_fork = val_json.get('live_fork', 0)
 
-                deff_olimp = round(
-                    float(
-                        time.time() -
-                        float(
-                            val_json.get(
-                                'time_req_olimp',
-                                0))))
-                deff_fonbet = round(
-                    float(
-                        time.time() -
-                        float(
-                            val_json.get(
-                                'time_req_fonbet',
-                                0))))
+                deff_olimp = round(float(time.time() - float(val_json.get('time_req_olimp', 0))))
+                deff_fonbet = round(float(time.time() - float(val_json.get('time_req_fonbet', 0))))
                 deff_max = max(0, deff_olimp, deff_fonbet)
 
                 bk1_bet_json = val_json.get('kof_olimp')
@@ -515,33 +501,19 @@ if __name__ == '__main__':
                     info = ''
 
                 if vect1 and vect2:
-                    if 0.0 <= l < l_temp and deff_max < 10 or DEBUG:
+                    if (0.0 <= l < l_temp or DEBUG) and deff_max < 10 and k1 > 0 < k2:
                         bet1, bet2 = get_sum_bets(k1, k2, total_bet)
                         # Проверим вилку на исключения
-                        if check_fork(
-                                key,
-                                l_temp,
-                                k1,
-                                k2,
-                                live_fork,
-                                bk1_score,
-                                bk2_score,
-                                minute,
-                                time_break_fonbet,
-                                period,
-                                deff_max,
-                                info) or DEBUG:
+                        if check_fork(key, l_temp, k1, k2, live_fork, bk1_score, bk2_score,
+                                      minute, time_break_fonbet, period, deff_max, info) or DEBUG:
                             go_bet_key = key
                             l = l_temp
                             go_bet_json = val_json
                     elif deff_max >= 10:
                         pass
                 else:
-                    prnt(
-                        'Вектор направления коф-та не определен: VECT1=' +
-                        str(vect1) +
-                        ', VECT2=' +
-                        str(vect2))
+                    prnt('Вектор направления коф-та не определен: VECT1=' +
+                         str(vect1) + ', VECT2=' + str(vect2))
             if go_bet_key:
                 prnt(' ')
                 prnt('Go bets: ' + info)

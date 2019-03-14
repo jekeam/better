@@ -1,13 +1,11 @@
 # coding: utf-8
-import asyncio
-from proxybroker import Broker
 import requests
 import multiprocessing as mp
 import os
 import time
 import urllib3
 from random import choice
-from utils import prnts, DEBUG
+from utils import prnts, get_param
 from hashlib import md5
 import threading
 import platform
@@ -16,6 +14,12 @@ from utils import DEBUG
 
 # disable warning
 urllib3.disable_warnings()
+
+
+if get_param('debug'):
+    DEBUG = True
+else:
+    DEBUG = False
 
 TIME_OUT = 2
 
@@ -183,6 +187,9 @@ def save_list(proxies, filename=None):
 
 def get_proxies(n):
     global proxy_list, TIME_OUT
+    import asyncio
+    from proxybroker import Broker
+    
     proxies = asyncio.Queue()
     broker = Broker(proxies, timeout=TIME_OUT)
     tasks = asyncio.gather(
