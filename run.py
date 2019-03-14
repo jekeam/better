@@ -289,7 +289,7 @@ def start_compare_matches(pair_mathes, json_bk1, json_bk2, mathes_complite):
                                         ):
                                             if DEBUG and str(bk2_match_id) == '13473895':
                                                 serv_log(
-                                                    'matches list',
+                                                    'match_list',
                                                     'Матч добавлен: ' + str(bk1_match_id) + ' ' +
                                                     bk1_match_info.get('team1') + ' vs ' +
                                                     bk1_match_info.get('team2') + ' | ' +
@@ -300,7 +300,7 @@ def start_compare_matches(pair_mathes, json_bk1, json_bk2, mathes_complite):
                                                 pair_mathes.append([bk1_match_id, bk2_match_id])
                                             elif not DEBUG:
                                                 serv_log(
-                                                    'matches list',
+                                                    'match_list',
                                                     'Матч добавлен: ' + str(bk1_match_id) + ' ' +
                                                     bk1_match_info.get('team1') + ' vs ' +
                                                     bk1_match_info.get('team2') + ' | ' +
