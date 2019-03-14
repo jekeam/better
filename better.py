@@ -474,6 +474,7 @@ if __name__ == '__main__':
                     k2_type = key.split('@')[-2]
     
                     name = val_json.get('name', 'name')
+                    name = val_json.get('name_rus', 'name_rus')
                     pair_math = val_json.get('pair_math', 'pair_math')
     
                     bk1_score = str(val_json.get('bk1_score', 'bk1_score'))
