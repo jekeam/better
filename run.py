@@ -281,33 +281,28 @@ def start_compare_matches(pair_mathes, json_bk1, json_bk2, mathes_complite):
                                         # prnts('Матчи завершены: ' + str(bk1_match_id) + '-' + str(bk2_match_id))
                                         pass
                                     else:
+                                        
+                                        match_name = str(bk1_match_id) + ' ' + \
+                                        bk1_match_info.get('team1') + ' vs ' + \
+                                        bk1_match_info.get('team2') + ' | ' + \
+                                        str(bk2_match_id) + ' ' + \
+                                        bk2_match_info.get('team1') + ' vs ' + \
+                                        bk2_match_info.get('team2')
+                                        
                                         if compare_teams(
                                                 bk1_match_info.get('team1'),
                                                 bk1_match_info.get('team2'),
                                                 bk2_match_info.get('team1'),
                                                 bk2_match_info.get('team2')
                                         ):
-                                            if DEBUG and str(bk2_match_id) == '13473895':
-                                                serv_log(
-                                                    'match_list',
-                                                    'Матч добавлен: ' + str(bk1_match_id) + ' ' +
-                                                    bk1_match_info.get('team1') + ' vs ' +
-                                                    bk1_match_info.get('team2') + ' | ' +
-                                                    str(bk2_match_id) + ' ' +
-                                                    bk2_match_info.get('team1') + ' vs ' +
-                                                    bk2_match_info.get('team2')
-                                                )
+                                            if re.search('(u\d{2}|\(w\)|\(r\)|\(res\)|\(Reserves\))', match_name.lower()):
+                                                serv_log('match_list', 'Матч исключен: ' + match_name)
+                                                pass
+                                            elif DEBUG and str(bk2_match_id) == '13473895':
+                                                serv_log('match_list', 'Матч добавлен: ' + match_name)
                                                 pair_mathes.append([bk1_match_id, bk2_match_id])
                                             elif not DEBUG:
-                                                serv_log(
-                                                    'match_list',
-                                                    'Матч добавлен: ' + str(bk1_match_id) + ' ' +
-                                                    bk1_match_info.get('team1') + ' vs ' +
-                                                    bk1_match_info.get('team2') + ' | ' +
-                                                    str(bk2_match_id) + ' ' +
-                                                    bk2_match_info.get('team1') + ' vs ' +
-                                                    bk2_match_info.get('team2')
-                                                )
+                                                serv_log('match_list', 'Матч добавлен: ' + match_name)
                                                 pair_mathes.append([bk1_match_id, bk2_match_id])
 
             time.sleep(15)
