@@ -278,7 +278,7 @@ class BetManager:
                 is_sale_lock = True
                 prnt(self.msg.format(
                     sys._getframe().f_code.co_name, 
-                    'Ошибка: (' + e.__class__.__name__ + ') ' + str(e) +
+                    'Ошибка: ' + e.__class__.__name__ + ' - ' + str(e) +
                     '. Пробую проставить и пробую выкупить еще!'
                 ))
                     
@@ -412,12 +412,12 @@ class BetManager:
 
         if self.bk_name == 'olimp':
 
-            # # for test
-            # sleep(5)
-            # try:
-            #     1/0
-            # except Exception as e:
-            #     raise BetIsLost(e)
+            # for test
+            sleep(5)
+            try:
+                1/0
+            except Exception as e:
+                raise BetError(e)
 
             payload = copy.deepcopy(ol_payload)
 
@@ -485,12 +485,12 @@ class BetManager:
 
         elif self.bk_name == 'fonbet':
 
-            # for test
-            sleep(2)
-            try:
-                1/0
-            except Exception as e:
-                raise BetError(e)
+            # # for test
+            # sleep(2)
+            # try:
+            #     1/0
+            # except Exception as e:
+            #     raise BetError(e)
 
             if not self.server_fb:
                 self.server_fb = get_urls(self.mirror, self.proxies)
