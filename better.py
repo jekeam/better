@@ -92,7 +92,7 @@ def check_fork(key, L, k1, k2, live_fork, bk1_score, bk2_score, minute,
     fork_exclude_text = ''
     v = True
     
-    if 'ТМ' not in key and 'ТБ' not in key:
+    if '(' not in key and ')' not in key:
         fork_exclude_text = fork_exclude_text + \
             'Вилка исключена, т.к. я еще не умею работать с этой ставкой: ' + str(key) + ')\n'
 
