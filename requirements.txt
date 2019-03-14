@@ -6,3 +6,4 @@ proxybroker==0.3.1
 pandas==0.23.4
 pytz==2018.7
 beautifulsoup4==4.7.1
+asyncio
