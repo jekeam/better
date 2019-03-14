@@ -294,10 +294,10 @@ def start_compare_matches(pair_mathes, json_bk1, json_bk2, mathes_complite):
                                                 bk2_match_info.get('team1'),
                                                 bk2_match_info.get('team2')
                                         ):
-                                            if re.search('(u\d{2}|\(w\)|\(r\)|\(res\)|\(Reserves\))', match_name.lower()):
-                                                serv_log('match_list', 'Матч исключен: ' + match_name)
-                                                pass
-                                            elif DEBUG and str(bk2_match_id) == '13473895':
+                                            # if re.search('(u\d{2}|\(w\)|\(r\)|\(res\)|\(Reserves\))', match_name.lower()):
+                                            #     serv_log('match_list', 'Матч исключен: ' + match_name)
+                                            #     pass
+                                            if DEBUG and str(bk2_match_id) == '13473895':
                                                 serv_log('match_list', 'Матч добавлен: ' + match_name)
                                                 pair_mathes.append([bk1_match_id, bk2_match_id])
                                             elif not DEBUG:
