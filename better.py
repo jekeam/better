@@ -98,15 +98,15 @@ def check_fork(
     fork_exclude_text = ''
     v = True
     if get_param('junior_team_exclude'):
-        print(name)
-        print(name_rus)
+        print(name_rus + str(re.search('(u\d{2}|\(жен\)|\(ж\)|\(р\)|\(рез\)|\(.*\d{2}\)|-студ.)', name_rus.lower())))
+        print(name + str(re.search('(u\d{2}|\(w\)|\(r\)|\(res\)|\(Reserves\)|-stud\.)', name.lower())))
         if re.search('(u\d{2}|\(жен\)|\(ж\)|\(р\)|\(рез\)|\(.*\d{2}\)|\(-студ.\))', name_rus.lower()):
             fork_exclude_text = fork_exclude_text + 'Вилка исключена по названию команд: ' + name_rus + '\n'
         
         if re.search('(u\d{2}|\(w\)|\(r\)|\(res\)|\(Reserves\)|\(-stud\.\))', name.lower()):
             fork_exclude_text = fork_exclude_text + 'Вилка исключена по названию команд: ' + name + '\n'
             
-    exit()
+    return False
 
     if success.count(key) >= 1:
         fork_exclude_text = fork_exclude_text + 'Вилка не проставлена, т.к. уже проставляли на эту вилку: ' + key + '\n'

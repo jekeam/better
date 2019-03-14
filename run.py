@@ -294,10 +294,10 @@ def start_compare_matches(pair_mathes, json_bk1, json_bk2, mathes_complite):
                                                 bk2_match_info.get('team1'),
                                                 bk2_match_info.get('team2')
                                         ):
-                                            # if re.search('(u\d{2}|\(w\)|\(r\)|\(res\)|\(Reserves\))', match_name.lower()):
+                                            # if re.search('(u\d{2}|\(w\)|\(r\)|\(res\)|\(Reserves\)|-stud\.), match_name.lower()):
                                             #     serv_log('match_list', 'Матч исключен: ' + match_name)
                                             #     pass
-                                            if DEBUG and str(bk2_match_id) == '13473895':
+                                            if DEBUG and str(bk2_match_id) == '13706641':
                                                 serv_log('match_list', 'Матч добавлен: ' + match_name)
                                                 pair_mathes.append([bk1_match_id, bk2_match_id])
                                             elif not DEBUG:
@@ -359,8 +359,8 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
                 v_fonbet = k_fonbet.get('value', 0.0)
 
                 if DEBUG:
-                    v_olimp = v_olimp - 1
-                    v_fonbet = v_fonbet - 1
+                    v_olimp = v_olimp + 1
+                    v_fonbet = v_fonbet + 1
 
                 if v_olimp > 0.0 and v_fonbet > 0.0:
                     L = (1 / float(v_olimp)) + (1 / float(v_fonbet))
@@ -505,6 +505,8 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
                         forks.pop(bet_key)
                     except:
                         pass
+        if DEBUG:
+            time.sleep(5)
         time.sleep(0.1)
 
 
