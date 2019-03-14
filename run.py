@@ -281,7 +281,6 @@ def start_compare_matches(pair_mathes, json_bk1, json_bk2, mathes_complite):
                                         # prnts('Матчи завершены: ' + str(bk1_match_id) + '-' + str(bk2_match_id))
                                         pass
                                     else:
-                                        
                                         match_name = str(bk1_match_id) + ' ' + \
                                         bk1_match_info.get('team1') + ' vs ' + \
                                         bk1_match_info.get('team2') + ' | ' + \

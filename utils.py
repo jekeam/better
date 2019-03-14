@@ -190,13 +190,13 @@ def prnt(vstr=None, hide=None):
 
 
 def serv_log(filename: str, vstr: str):
-    prnts(prnt)
+    prnts(vstr)
     Outfile = open(filename + '.log', "a+", encoding='utf-8')
     Outfile.write(vstr + '\n')
     Outfile.close()
     
 def client_log(filename: str, vstr: str):
-    prnt(prnt)
+    prnt(vstr)
     Outfile = open(filename + '.log', "a+", encoding='utf-8')
     Outfile.write(vstr + '\n')
     Outfile.close()    
