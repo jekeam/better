@@ -103,24 +103,39 @@ class BetManager:
             shared[self.bk_name + '_err'] = excp_name + ': ' + str(e)
             self.opposite_stat_wait(shared)
             self.opposite_stat_get(shared)
-
-            prnt(self.msg.format(
-                sys._getframe().f_code.co_name,
-                'Ошибка при проставлении ставки в ' + self.bk_name +
-                ', передаю ' + self.bk_name_opposite + ' завершающему'
-            ))
-
-            self.bet_safe(shared)
+            self_opp = shared[self.bk_name_opposite].get('self', {})
+            
+            prnt(self.msg.format(sys._getframe().f_code.co_name,
+              'Ошибка при проставлении ставки в '+ self.bk_name + 
+              ', делаю выкуп ставки в '+ self.bk_name_opposite))
+            
+            try:
+                self_opp.sale_bet(shared)
+            except SaleError:
+                self_opp.sale_bet(shared)
 
         try:
             try:
                 self.sign_in(shared)
-                self.place_bet(shared)
+                self.bet_place(shared)
             except CouponBlocked as e:
+                # todo loop
                 prnt(e)
-            except (BetIsLost, NoMoney, SessionExpired, BetError) as e:
+            except (BetIsLost, NoMoney, SessionExpired) as e:
                 prnt(e)
                 sale(e.__class__.__name__, e, shared)
+                
+            except BetError as e:
+                prnt(e)
+                shared[self.bk_name + '_err'] = e.__class__.__name__ + ': ' + str(e)
+                self.opposite_stat_wait(shared)
+                self.opposite_stat_get(shared)
+                prnt(self.msg.format(
+                    sys._getframe().f_code.co_name,
+                    'Ошибка при проставлении ставки в ' + self.bk_name + ', передаю его завершающему'
+                ))
+                self.bet_safe(shared)
+                
             except BkOppBetError as e:
                 raise BkOppBetError(e)
             except Exception as e:
@@ -138,89 +153,141 @@ class BetManager:
             prnt(e)
 
     def bet_safe(self, shared: dict):
-
-        timeout_up = float(60 * 10)
-        timeout_down = float(60 * 2.5)
         new_stat = {}
 
-        self_bk = shared[self.bk_name_opposite].get('self', {})
-
-        self.vector = self_bk.bk_container.get('wager', {})['vector']
-        self.cur_total = float(self_bk.bk_container['cur_total'])
-        self.bet_total = float(self_bk.bk_container.get('bet_total'))
+        self.vector = self.bk_container.get('wager', {})['vector']
+        
+        self.time_start = round(int(time()))
+        self.time_left = -1
+        if self.vector == 'UP':
+            # timeout = float(60 * 10)
+            timeout = float(60 * 0.5)
+            self.time_left = (self.time_start + timeout) - round(int(time()))
+        elif self.vector == 'DOWN':
+            # timeout = round(float(60 * 2.5))
+            timeout = round(float(60 * 0.25))
+            self.time_left = (self.time_start + timeout) - round(int(time()))
+        
+        self.cur_total = float(self.bk_container['cur_total'])
+        self.bet_total = float(self.bk_container.get('bet_total'))
         self.diff_total = float(self.bet_total - self.cur_total)
 
         self.new_cur_total = self.cur_total
-
-        self.time_start = round(int(time()))
         
-        match_id = self_bk.bk_container.get('wager', {})['event']
-        bet_type = self_bk.bk_container.get('bet_type')
-        bet_id = int(self_bk.bk_container.get('wager', {}).get('factor'))
-        param = self_bk.bk_container.get('wager', {}).get('param')
+        match_id = self.bk_container.get('wager', {})['event']
+        bet_type = self.bk_container.get('bet_type')
+        bet_id = int(self.bk_container.get('wager', {}).get('factor'))
+        param = self.bk_container.get('wager', {}).get('param')
 
         prnt(self.msg.format(
             sys._getframe().f_code.co_name,
             '{}: Завершающий принял работу: bet_type:{}, vector:{}, bet_total:{}, cur_total:{}, '
-            'diff_total:{}, timeout_up:{}, timeout_down:{}, match_id:{}, bet_id:{}, param:{}'.format(
+            'diff_total:{}, self.time_left:{}, match_id:{}, bet_id:{}, param:{}'.format(
                 self.time_start, bet_type, self.vector, self.bet_total, self.cur_total,
-                self.diff_total, timeout_up, timeout_down, match_id, bet_id, param
+                self.diff_total, self.time_left, match_id, bet_id, param
             )
         ))
-
-        # update params
-        if self_bk.bk_name == 'olimp':
-            k_val, sc, rime_req = get_olimp_info(match_id, bet_type)
-            self.new_cur_total = sum(map(int, sc.split(':')))
-        elif self_bk.bk_name == 'fonbet':
-            k_val, sc, rime_req = get_fonbet_info(match_id, bet_id, param)
-            self.new_cur_total = sum(map(int, sc.split(':')))
-        else:
-            err_msg = self.msg_err.format(sys._getframe().f_code.co_name, 'bk:{' + self_bk.bk_name + '} is not defined!')
-            prnt(err_msg)
-            raise ValueError(err_msg)
-            
-        while True:
-    
-            prnt(self.msg.format(
-                sys._getframe().f_code.co_name,
-                'Обновил данные из {}: match_id:{}, bet_type:{}, bet_total:{}, cur_total:{}, new_cur_total_fb:{}, rime_req:{}'.
-                 format(self_bk.bk_name, match_id, bet_type, self.bet_total, self.cur_total, self.new_cur_total, rime_req)))
-    
-            # check: score changed?
-            if self.cur_total != self.new_cur_total:
-                if self.vector == 'UP':
-                    if self.bet_total < self.new_cur_total:
-                        err_str = ' new_cur_total:{}, bet_total:{}. Current bet lost... Im sorry...'. \
-                            format(self.new_cur_total, self.bet_total)
-                        prnt(err_str)
-                        BetIsLost(err_str)
-                    elif self.new_cur_total <= self.bet_total:
+        
+        is_go = True
+        while is_go:
+            try:
+                # update params
+                if self.bk_name == 'olimp':
+                    
+                    try:
+                        k_val, sc, rime_req = get_olimp_info(match_id, bet_type)
+                        self.new_cur_total = sum(map(int, sc.split(':')))
+                    except Exception as e:
+                        err_msg = self.msg_err.format(sys._getframe().f_code.co_name, 'recheck err')
+                        raise BetError(err_msg)
+                        
+                elif self.bk_name == 'fonbet':
+                    
+                    try:
+                        k_val, sc, rime_req = get_fonbet_info(match_id, bet_id, param)
+                        self.new_cur_total = sum(map(int, sc.split(':')))
+                    except Exception as e:
+                        err_msg = self.msg_err.format(sys._getframe().f_code.co_name, 'recheck err')
+                        raise BetError(err_msg)
+                        
+                else:
+                    err_msg = self.msg_err.format(sys._getframe().f_code.co_name, 'bk:{' + self.bk_name + '} is not defined!')
+                    prnt(err_msg)
+                    raise BetError(err_msg)
+        
+                prnt(self.msg.format(
+                    sys._getframe().f_code.co_name,
+                    'Обновил данные из {}: match_id:{}, bet_type:{}, bet_total:{}, cur_total:{}, new_cur_total_fb:{}, rime_req:{}'.
+                     format(self.bk_name, match_id, bet_type, self.bet_total, self.cur_total, self.new_cur_total, rime_req)))
+        
+                # check: score changed?
+                if self.cur_total != self.new_cur_total:
+                    if self.vector == 'UP':
+                        if self.bet_total <= self.new_cur_total:
+                            #  SC1 + SC2 >= Х
+                            err_str = ' new_cur_total:{}, bet_total:{}. bet lost, im sorry...'. \
+                                format(self.new_cur_total, self.bet_total)
+                            prnt(err_str)
+                            raise BetIsLost(err_str)
+                        elif self.new_cur_total < self.bet_total:
+                            # SC1 + SC2 < Х
+                            # recalc sum
+                            self.bet_place(shared)
+                    elif self.vector == 'DOWN':
+                        if self.new_cur_total < self.bet_total:
+                            # SC1 + SC2 < Х
+                            # recalc sum
+                            self.bet_place(shared)
+                        elif self.bet_total <= self.new_cur_total:
+                            #  SC1 + SC2 >= Х
+                            prnt(self.msg.format(sys._getframe().f_code.co_name, 'Greetings! You won, brain!'))
+                            is_go = False
+                else:
+                    cur_time = round(int(time()))
+                    self.time_left = (self.time_start + timeout) - cur_time
+                    
+                    if self.vector == 'UP':
+                        
+                        if self.time_left < 0:
+                            err_str = 'timeout: time_start:{}, time_left:{}, cur_time:{}'. \
+                                format(self.time_start, self.time_left, cur_time)
+                            raise BetIsLost(err_str)
                         # recalc sum
-                        # go bets
-                        pass
-                elif self.vector == 'DOWN':
-                    if self.new_cur_total < self.bet_total:
-                        err_str = ' new_cur_total:{}, bet_total:{}. Current bet lost... Im sorry...'. \
-                            format(self.new_cur_total, self.bet_total)
-                        prnt(err_str)
-                        BetIsLost(err_str)
-                    elif self.bet_total <= self.new_cur_total:
-                        prnt(self.msg.format(
-                            sys._getframe().f_code.co_name, 'Greetings! You won, brain!!!'
-                        ))
-            else:
-                if self.vector == 'UP':
-                    pass
-                    # recalc sum
-                    # go bets
-                elif self.vector == 'DOWN':
-                    pass
-                    # recalc sum
-                    # go bets
-
-    def manager(self, shared: dict):
-        pass
+                        self.bet_place(shared)
+                        
+                    elif self.vector == 'DOWN':
+                        if self.time_left < 0:
+                            err_str = 'timeout: time_start:{}, time_left:{}, cur_time:{}'. \
+                                format(self.time_start, self.time_left, cur_time)
+                            raise BetIsLost(err_str)
+                        # recalc sum
+                        self.bet_place(shared)
+                        
+            except BetIsLost as e:
+                shared[self.bk_name + '_err'] = e.__class__.__name__ + ': ' + str(e)
+                self_opp = shared[self.bk_name_opposite].get('self', {})
+                
+                prnt(self.msg.format(sys._getframe().f_code.co_name,
+                  'Ошибка при проставлении ставки в '+ self.bk_name + 
+                  ', делаю выкуп ставки в '+ self.bk_name_opposite))
+                #TODO REFACT - loop
+                self_opp.sale_bet(shared)
+                is_go = False
+                
+            except CouponBlocked as e:
+                is_sale_lock = True
+                prnt(self.msg.format(
+                    sys._getframe().f_code.co_name, 
+                    'Ошибка: (' + e.__class__.__name__ + ') ' + str(e) +
+                    '. Пробую проставить и пробую выкупить еще!'
+                ))
+                    
+            except Exception as e:
+                prnt(self.msg.format(
+                    sys._getframe().f_code.co_name, 
+                    'Ошибка: (' + e.__class__.__name__ + ') ' + str(e) +
+                    '. Работаю еще: '+ str(self.time_left) + ' сек'
+                ))
 
     def sign_in(self, shared: dict):
 
@@ -323,7 +390,7 @@ class BetManager:
             err_str = self.msg_err.format(sys._getframe().f_code.co_name, err_msg)
             raise ValueError(err_str)
 
-    def place_bet(self, shared: dict):
+    def bet_place(self, shared: dict):
         self.set_session_state()
 
         # # for test
@@ -423,7 +490,7 @@ class BetManager:
             try:
                 1/0
             except Exception as e:
-                raise BetIsLost(e)
+                raise BetError(e)
 
             if not self.server_fb:
                 self.server_fb = get_urls(self.mirror, self.proxies)
@@ -485,6 +552,8 @@ class BetManager:
             self.check_result(shared)
 
     def sale_bet(self, shared: dict):
+        # добвить возможность перед выкупом еще раз попробовать проставить второе плечо, если оно было упущено по времени а не потерено
+        
         self.set_session_state()
         # кажется это не нужно
         # self.opposite_stat_get(shared)
@@ -879,7 +948,7 @@ class BetManager:
                             'Изменилась ИД ставки: old: ' + str(self.wager) + ', new: ' + str(new_wager))
                         )
                         self.wager.update(new_wager)
-                        return self.place_bet(shared)
+                        return self.bet_place(shared)
 
                     elif str(new_wager.get('param', '')) != str(self.wager.get('param', '')) and \
                             int(self.wager.get('factor', 0)) == int(new_wager.get('factor', 0)):
@@ -899,7 +968,7 @@ class BetManager:
                             if new_wager:
                                 self.msg.format(sys._getframe().f_code.co_name, 'Тотал найден: ' + str(new_wager))
                                 self.wager.update(new_wager)
-                                return self.place_bet(shared)
+                                return self.bet_place(shared)
                             else:
                                 err_str = self.msg_err.format(
                                     sys._getframe().f_code.co_name, 'Тотал не найден' + str(new_wager)
@@ -1095,7 +1164,7 @@ class BetManager:
                     coupon_data = bet_list
             if not coupon_found:
                 err_str = 'coupon reg_id: ' + str(self.reg_id) + ', not found'
-                raise BetIsLost(err_str)
+                raise BetError(err_str)
 
         # Мы не знаем reg_id и берем последний по матчу
         elif self.match_id:
