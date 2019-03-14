@@ -281,33 +281,27 @@ def start_compare_matches(pair_mathes, json_bk1, json_bk2, mathes_complite):
                                         # prnts('Матчи завершены: ' + str(bk1_match_id) + '-' + str(bk2_match_id))
                                         pass
                                     else:
+                                        match_name = str(bk1_match_id) + ' ' + \
+                                        bk1_match_info.get('team1') + ' vs ' + \
+                                        bk1_match_info.get('team2') + ' | ' + \
+                                        str(bk2_match_id) + ' ' + \
+                                        bk2_match_info.get('team1') + ' vs ' + \
+                                        bk2_match_info.get('team2')
+                                        
                                         if compare_teams(
                                                 bk1_match_info.get('team1'),
                                                 bk1_match_info.get('team2'),
                                                 bk2_match_info.get('team1'),
                                                 bk2_match_info.get('team2')
                                         ):
-                                            if DEBUG and str(bk2_match_id) == '13473895':
-                                                serv_log(
-                                                    'match_list',
-                                                    'Матч добавлен: ' + str(bk1_match_id) + ' ' +
-                                                    bk1_match_info.get('team1') + ' vs ' +
-                                                    bk1_match_info.get('team2') + ' | ' +
-                                                    str(bk2_match_id) + ' ' +
-                                                    bk2_match_info.get('team1') + ' vs ' +
-                                                    bk2_match_info.get('team2')
-                                                )
+                                            # if re.search('(u\d{2}|\(w\)|\(r\)|\(res\)|\(Reserves\)|-stud\.), match_name.lower()):
+                                            #     serv_log('match_list', 'Матч исключен: ' + match_name)
+                                            #     pass
+                                            if DEBUG and str(bk2_match_id) == '13706641':
+                                                serv_log('match_list', 'Матч добавлен: ' + match_name)
                                                 pair_mathes.append([bk1_match_id, bk2_match_id])
                                             elif not DEBUG:
-                                                serv_log(
-                                                    'match_list',
-                                                    'Матч добавлен: ' + str(bk1_match_id) + ' ' +
-                                                    bk1_match_info.get('team1') + ' vs ' +
-                                                    bk1_match_info.get('team2') + ' | ' +
-                                                    str(bk2_match_id) + ' ' +
-                                                    bk2_match_info.get('team1') + ' vs ' +
-                                                    bk2_match_info.get('team2')
-                                                )
+                                                serv_log('match_list', 'Матч добавлен: ' + match_name)
                                                 pair_mathes.append([bk1_match_id, bk2_match_id])
 
             time.sleep(15)
@@ -365,8 +359,8 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
                 v_fonbet = k_fonbet.get('value', 0.0)
 
                 if DEBUG:
-                    v_olimp = v_olimp - 1
-                    v_fonbet = v_fonbet - 1
+                    v_olimp = v_olimp + 1
+                    v_fonbet = v_fonbet + 1
 
                 if v_olimp > 0.0 and v_fonbet > 0.0:
                     L = (1 / float(v_olimp)) + (1 / float(v_fonbet))
@@ -389,7 +383,8 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
 
                             forks[bet_key].update({
                                 'time_last_upd': round(time.time()),
-                                'name': math_json_olimp.get('name', ''),
+                                'name': math_json_fonbet.get('name', ''),
+                                'name_rus': math_json_olimp.get('name', ''),
                                 'time_req_olimp': math_json_olimp.get('time_req', 0),
                                 'time_req_fonbet': math_json_fonbet.get('time_req', 0),
                                 'l': L,
@@ -480,7 +475,8 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
 
                             forks[bet_key] = {
                                 'time_last_upd': round(time.time()),
-                                'name': math_json_olimp.get('name', ''),
+                                'name': math_json_fonbet.get('name', ''),
+                                'name_rus': math_json_olimp.get('name', ''),
                                 'time_req_olimp': ol_time_req,
                                 'time_req_fonbet': fb_time_req,
                                 'l': L,
@@ -509,6 +505,8 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
                         forks.pop(bet_key)
                     except:
                         pass
+        if DEBUG:
+            time.sleep(5)
         time.sleep(0.1)
 
 

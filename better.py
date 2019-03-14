@@ -89,10 +89,20 @@ def check_l(L):
         return ''
 
 
-def check_fork(key, L, k1, k2, live_fork, bk1_score, bk2_score, minute, time_break_fonbet, period, info=''):
+def check_fork(
+    key, L, k1, k2, live_fork, bk1_score, bk2_score, 
+    minute, time_break_fonbet, period, name, name_rus, info=''
+    ):
+    global bal1, bal2, balance_line
+        
     fork_exclude_text = ''
     v = True
-    global bal1, bal2, balance_line
+    if get_param('junior_team_exclude'):
+        if re.search('(u\d{2}|\(жен\)|\(ж\)|\(р\)|\(рез\)|\(.*\d{2}\)|-студ.)', name_rus.lower()):
+            fork_exclude_text = fork_exclude_text + 'Вилка исключена по названию команд: ' + name_rus + '\n'
+        
+        if re.search('(u\d{2}|\(w\)|\(r\)|\(res\)|\(Reserves\)|-stud\.)', name.lower()):
+            fork_exclude_text = fork_exclude_text + 'Вилка исключена по названию команд: ' + name + '\n'
 
     if success.count(key) >= 1:
         fork_exclude_text = fork_exclude_text + 'Вилка не проставлена, т.к. уже проставляли на эту вилку: ' + key + '\n'
@@ -428,6 +438,7 @@ if __name__ == '__main__':
         prnt('total bet: ' + str(total_bet) + ' руб.')
         prnt('balance line: ' + str(balance_line))
         prnt('fork life time: ' + str(get_param('fork_life_time')))
+        prnt('junior team exclude: ' + str(get_param('junior_team_exclude')))
     
         server_forks = dict()
         success = []
@@ -465,6 +476,7 @@ if __name__ == '__main__':
                     k2_type = key.split('@')[-2]
     
                     name = val_json.get('name', 'name')
+                    name_rus = val_json.get('name_rus', 'name_rus')
                     pair_math = val_json.get('pair_math', 'pair_math')
     
                     bk1_score = str(val_json.get('bk1_score', 'bk1_score'))
@@ -524,7 +536,7 @@ if __name__ == '__main__':
                             # Проверим вилку на исключения
                             if check_fork(
                                     key, l_temp, k1, k2, live_fork, bk1_score, bk2_score,
-                                    minute, time_break_fonbet, period, info
+                                    minute, time_break_fonbet, period, name, name_rus, info
                             ) or DEBUG:
                                 go_bet_key = key
                                 l = l_temp
