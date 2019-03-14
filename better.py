@@ -91,7 +91,7 @@ def check_l(L):
 
 def check_fork(
     key, L, k1, k2, live_fork, bk1_score, bk2_score, 
-    minute, time_break_fonbet, period, name, info=''
+    minute, time_break_fonbet, period, name, name_rus, info=''
     ):
     global bal1, bal2, balance_line
         
@@ -99,7 +99,10 @@ def check_fork(
     v = True
     
     if get_param('junior_team') or get_param('junior_team') is None:
-        if re.search('(u\d{2}|\(жен\)|\(ж\)|\(р\)|\(рез\)|\(.*\d{2}\)|\(-студ.\))', name.lower()):
+        if re.search('(u\d{2}|\(жен\)|\(ж\)|\(р\)|\(рез\)|\(.*\d{2}\)|\(-студ.\))', name_rus.lower()):
+            fork_exclude_text = fork_exclude_text + 'Вилка исключена по названию команд: ' + name_rus + '\n'
+        
+        if re.search('(u\d{2}|\(w\)|\(r\)|\(res\)|\(Reserves\)|\(-stud\.\))', name.lower()):
             fork_exclude_text = fork_exclude_text + 'Вилка исключена по названию команд: ' + name + '\n'
 
     if success.count(key) >= 1:
@@ -474,7 +477,7 @@ if __name__ == '__main__':
                     k2_type = key.split('@')[-2]
     
                     name = val_json.get('name', 'name')
-                    name = val_json.get('name_rus', 'name_rus')
+                    name_rus = val_json.get('name_rus', 'name_rus')
                     pair_math = val_json.get('pair_math', 'pair_math')
     
                     bk1_score = str(val_json.get('bk1_score', 'bk1_score'))
@@ -534,7 +537,7 @@ if __name__ == '__main__':
                             # Проверим вилку на исключения
                             if check_fork(
                                     key, l_temp, k1, k2, live_fork, bk1_score, bk2_score,
-                                    minute, time_break_fonbet, period, name, info
+                                    minute, time_break_fonbet, period, name, name_rus, info
                             ) or DEBUG:
                                 go_bet_key = key
                                 l = l_temp
