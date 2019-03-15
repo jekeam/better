@@ -497,7 +497,7 @@ if __name__ == '__main__':
                         ', live_fork_total: ' + str(live_fork_total) + \
                         ', max deff: ' + str(deff_max)
                 except Exception as e:
-                    prnts('error: ' + str(e))
+                    prnt('error: ' + str(e))
                     info = ''
 
                 if vect1 and vect2:

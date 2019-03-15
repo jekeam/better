@@ -103,8 +103,8 @@ class BetManager:
 
     def bet_simple(self, shared: dict):
 
-        def sale(excp_name, e, shared):
-            shared[self.bk_name + '_err'] = excp_name + ': ' + str(e)
+        def sale(e, shared):
+            shared[self.bk_name + '_err'] = str(e.__class__.__name__) + ': ' + str(e)
             self.opposite_stat_wait(shared)
             self.opposite_stat_get(shared)
             self_opp = shared[self.bk_name_opposite].get('self', {})
@@ -127,11 +127,11 @@ class BetManager:
                 prnt(e)
             except (BetIsLost, NoMoney, SessionExpired) as e:
                 prnt(e)
-                sale(e.__class__.__name__, e, shared)
+                sale(e, shared)
 
             except BetError as e:
                 prnt(e)
-                shared[self.bk_name + '_err'] = e.__class__.__name__ + ': ' + str(e)
+                shared[self.bk_name + '_err'] = str(e.__class__.__name__) + ': ' + str(e)
                 self.opposite_stat_wait(shared)
                 self.opposite_stat_get(shared)
                 prnt(self.msg.format(
@@ -149,7 +149,7 @@ class BetManager:
                 err_str = self.msg_err.format(sys._getframe().f_code.co_name, err_msg)
                 prnt(err_str)
 
-                sale(e.__class__.__name__, e, shared)
+                sale(e, shared)
 
                 raise ValueError(err_str)
         except BkOppBetError as e:
@@ -277,7 +277,7 @@ class BetManager:
                         is_go = False
 
             except BetIsLost as e:
-                shared[self.bk_name + '_err'] = e.__class__.__name__ + ': ' + str(e)
+                shared[self.bk_name + '_err'] = str(e.__class__.__name__) + ': ' + str(e)
                 self_opp = shared[self.bk_name_opposite].get('self', {})
 
                 prnt(self.msg.format(sys._getframe().f_code.co_name,
@@ -823,7 +823,7 @@ class BetManager:
         prnt(self.msg.format(
             sys._getframe().f_code.co_name,
             self.bk_name + ' get status bet in from ' +
-            self.bk_name_opposite + ': ' + str(opp_stat)
+            self.bk_name_opposite + ': ' + str(opp_stat) + '(' + str(type(opp_stat)) + ')'
         ))
 
     def check_max_bet(self, shared: dict):
