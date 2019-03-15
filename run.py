@@ -269,11 +269,11 @@ def start_compare_matches(pair_mathes, json_bk1, json_bk2, mathes_complite):
         try:
             prnts('Найдено матчей: ' + str(len(pair_mathes)) + ' ' + str(pair_mathes))
             for bk1_match_id, bk1_match_info in json_bk1.items():
-                if bk1_match_info:
+                if [bk1_name for bk1_name in bk1_match_info.values() if bk1_name is not None]:
                     # Проверим что ид матча 1 нет в списке
                     if 'yes' not in list(map(lambda id: 'yes' if bk1_match_id in id else 'no', pair_mathes)):
                         for bk2_match_id, bk2_match_info in json_bk2.items():
-                            if bk2_match_info:
+                            if [bk2_name for bk2_name in bk2_match_info.values() if bk2_name is not None]:
                                 # Проверим что ид матча 2 нет в списке
                                 if 'yes' not in list(map(lambda id: 'yes' if bk2_match_id in id else 'no', pair_mathes)):
                                     # Проверим что матч не завершен:
@@ -306,7 +306,9 @@ def start_compare_matches(pair_mathes, json_bk1, json_bk2, mathes_complite):
 
             time.sleep(15)
         except Exception as e:
-            prnts('Error start_compare_matches: ' + str(e))
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            prnts('Error start_compare_matches: ' +
+                  str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
 
 
 def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
