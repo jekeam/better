@@ -7,7 +7,7 @@ import requests
 import datetime
 import statistics
 
-DEBUG = False
+DEBUG = False1
 MINUTE_COMPLITE = 88
 
 package_dir = os.path.dirname(__file__)
