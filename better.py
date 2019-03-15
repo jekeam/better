@@ -328,7 +328,7 @@ def run_client():
         if 'Windows' == platform.system() or DEBUG:
             conn = http.client.HTTPConnection("localhost", 80, timeout=3.51)
         else:
-            conn = http.client.HTTPConnection("149.154.70.53", 80, timeout=60)
+            conn = http.client.HTTPConnection(get_param('server_ip'), 80, timeout=6)
 
         while True:
             if shutdown:
@@ -401,6 +401,7 @@ if __name__ == '__main__':
         total_bet = get_account_summ()
     balance_line = (bal1 + bal2) / 2 / 100 * 30
 
+    prnt('server: ' + get_param('server_ip') + ':80')
     prnt('bal1: ' + str(bal1) + ' руб.')
     prnt('bal2: ' + str(bal2) + ' руб.')
     prnt('total_bet bet: ' + str(total_bet) + ' руб.')
