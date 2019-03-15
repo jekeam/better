@@ -274,7 +274,7 @@ def proxy_push(ol_fl, fb_fl):
 
 def cd():
     if platform.system() != 'Windows' and not DEBUG:
-        os.chdir('/home/autobro/')
+        os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 
 ol_fl = 'proxy_by_olimp.txt'
