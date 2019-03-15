@@ -159,6 +159,7 @@ class BetManager:
     def bet_safe(self, shared: dict):
         new_stat = {}
 
+        self_opp = shared[self.bk_name_opposite].get('self', {})
         self.vector = self.bk_container.get('wager', {})['vector']
 
         self.time_start = round(int(time()))
@@ -184,7 +185,7 @@ class BetManager:
         param = self.bk_container.get('wager', {}).get('param')
 
         if self.bk_name_opposite == 'fonbet':
-            self_opp = shared[self.bk_name_opposite].get('self', {})
+            
 
             match_id_opp = self_opp.bk_container.get('wager', {})['event']
             bet_type_opp = self_opp.bk_container.get('bet_type')
@@ -792,7 +793,9 @@ class BetManager:
         msg_push = True
         shared['sign_in_' + self.bk_name] = 'ok'
 
-        while shared.get('sign_in_' + self.bk_name_opposite) != 'ok':
+        sign_stat = None
+        while sign_stat != 'ok':
+            sign_stat = shared.get('sign_in_' + self.bk_name_opposite)
             if msg_push:
                 prnt(self.msg.format(
                     sys._getframe().f_code.co_name,
@@ -800,6 +803,13 @@ class BetManager:
                     self.bk_name_opposite
                 ))
                 msg_push = False
+        
+        prnt(self.msg.format(
+            sys._getframe().f_code.co_name,
+            self.bk_name + ' get sign in from ' +
+            self.bk_name_opposite + ': ' + str(sign_stat) +  '(' + str(type(sign_stat)) + ')'
+        ))
+
 
     def opposite_stat_get(self, shared: dict):
 

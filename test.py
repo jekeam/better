@@ -1,2 +1,2 @@
-print(type(None))
-print(type('None'))
+if None != 'ok':
+    print('x')
