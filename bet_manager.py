@@ -121,6 +121,7 @@ class BetManager:
         try:
             try:
                 self.sign_in(shared)
+                sleep(60)
                 self.bet_place(shared)
             except CouponBlocked as e:
                 # todo loop
@@ -794,7 +795,7 @@ class BetManager:
         shared['sign_in_' + self.bk_name] = 'ok'
 
         sign_stat = None
-        while sign_stat != 'ok':
+        while sign_stat is None:
             sign_stat = shared.get('sign_in_' + self.bk_name_opposite)
             if msg_push:
                 prnt(self.msg.format(
