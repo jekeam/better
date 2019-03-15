@@ -3,7 +3,7 @@ from functools import partial
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 import platform
-from utils import DEBUG
+from utils import DEBUG, get_param
 
 def run_server(data_json):
     class HttpProcessor(BaseHTTPRequestHandler):
@@ -24,9 +24,10 @@ def run_server(data_json):
 
     handler = partial(HttpProcessor, data_json, 0, 0)
     if 'Windows' == platform.system() or DEBUG:
-        serv = HTTPServer(("localhost", 80), handler)
+        # serv = HTTPServer(('server_ip_test', 80), handler)
+        serv = HTTPServer(('localhost', 80), handler)
     else:
-        serv = HTTPServer(("149.154.70.53", 80), handler)
+        serv = HTTPServer((get_param('server_ip'), 80), handler)
     serv.serve_forever()
 
 if __name__=='__main__':
