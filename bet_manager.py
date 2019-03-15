@@ -230,6 +230,15 @@ class BetManager:
 
                 # check: score changed?
                 if self.cur_total != self.new_cur_total:
+                    
+                    self.cur_total = self.new_cur_total
+                    self.diff_total = float(self.bet_total - self.cur_total)
+                    if self.diff_total < 0:
+                        err_str = ' cur_total:{}, bet_total:{}. bet lost, im sorry...'. \
+                        format(self.cur_total, self.bet_total)
+                        prnt(err_str)
+                        raise BetIsLost(err_str)
+                    
                     prnt(self.msg.format(sys._getframe().f_code.co_name, 'score changed!'))
                     if self.vector == 'UP':
                         if self.bet_total <= self.new_cur_total:
@@ -253,7 +262,6 @@ class BetManager:
                             #  SC1 + SC2 >= Х
                             prnt(self.msg.format(sys._getframe().f_code.co_name, 'Greetings! You won, brain!'))
                             is_go = False
-                    self.cur_total = self.new_cur_total
                 else:
                     cur_time = round(int(time()))
                     self.time_left = (self.time_start + timeout) - cur_time
