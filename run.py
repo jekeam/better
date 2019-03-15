@@ -9,7 +9,7 @@ from difflib import SequenceMatcher
 import re
 from exceptions import *
 from server import run_server
-from utils import prnts, DEBUG, find_max_mode, opposition, MINUTE_COMPLITE, serv_log
+from utils import prnts, DEBUG, find_max_mode, opposition, MINUTE_COMPLITE, serv_log, get_param
 from proxy_switcher import ProxySwitcher
 import json
 import os.path
@@ -28,6 +28,7 @@ prnts('TIMEOUT_MATCHS: ' + str(TIMEOUT_MATCHS))
 prnts('TIMEOUT_MATCH: ' + str(TIMEOUT_MATCH))
 prnts('TIMEOUT_MATCH_MINUS: ' + str(TIMEOUT_MATCH_MINUS))
 prnts('MINUTE_COMPLITE: ' + str(MINUTE_COMPLITE))
+prnts('SERVER_IP: ' + str(get_param('server_ip')))
 
 
 def get_olimp(resp, arr_matchs):
