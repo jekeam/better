@@ -5,9 +5,8 @@ venv
 *.txt
 *.csv
 *.proxy
-*.csv#
 *.csv
-*.json
+*.csv
 *.session
 *.json_old
 *.zip
