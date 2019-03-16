@@ -142,6 +142,7 @@ class BetManager:
                 self.bet_safe(shared)
 
             except BkOppBetError as e:
+                prnt(e)
                 raise BkOppBetError(e)
             except Exception as e:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
@@ -819,9 +820,10 @@ class BetManager:
         if opposite_stat != 'ok':
             err_str = self.msg_err.format(
                 sys._getframe().f_code.co_name,
-                self.bk_name + ' get error from ' +
+                self.bk_name + ' get errget_request_idor from ' +
                 self.bk_name_opposite + ': ' + opposite_stat
             )
+            prnt(err_str)
             raise BkOppBetError(err_str)
         
         prnt(self.msg.format(
