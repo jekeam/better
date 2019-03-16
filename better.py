@@ -145,7 +145,7 @@ def check_fork(key, L, k1, k2, live_fork, bk1_score, bk2_score, minute,
             + str(minute) + ' минута матча \n'
 
     # Вилка живет достаточно
-    long_livers = 10
+    long_livers = get_param('fork_life_time')
     if live_fork < long_livers:
         fork_exclude_text = fork_exclude_text + 'Вилка ' + \
             str(round((1 - L) * 100, 2)) + '% исключена т.к. живет меньше ' + str(
@@ -404,8 +404,11 @@ if __name__ == '__main__':
     prnt('server: ' + get_param('server_ip') + ':80')
     prnt('bal1: ' + str(bal1) + ' руб.')
     prnt('bal2: ' + str(bal2) + ' руб.')
-    prnt('total_bet bet: ' + str(total_bet) + ' руб.')
+    prnt('total bet: ' + str(total_bet) + ' руб.')
     prnt('balance line: ' + str(balance_line))
+    prnt('fork life time: ' + str(get_param('fork_life_time')))
+    prnt('junior team exclude: ' + str(get_param('junior_team_exclude')))
+
 
     server_forks = dict()
     success = []
