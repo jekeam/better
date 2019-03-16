@@ -104,14 +104,14 @@ class BetManager:
     def bet_simple(self, shared: dict):
 
         def sale(e, shared):
-            shared[self.bk_name + '_err'] = str(e.__class__.__name__) + ': ' + str(e)
-            self.opposite_stat_wait(shared)
-            self.opposite_stat_get(shared)
-            self_opp = shared[self.bk_name_opposite].get('self', {})
-
             prnt(self.msg.format(sys._getframe().f_code.co_name,
                                  'Ошибка при проставлении ставки в ' + self.bk_name +
                                  ', делаю выкуп ставки в ' + self.bk_name_opposite))
+            
+            shared[self.bk_name + '_err'] = str(e.__class__.__name__) + ': ' + str(e)
+            self.opposite_stat_get(shared)
+            self.opposite_stat_wait(shared)
+            self_opp = shared[self.bk_name_opposite].get('self', {})
 
             try:
                 self_opp.sale_bet(shared)
@@ -131,12 +131,14 @@ class BetManager:
 
             except BetError as e:
                 prnt(e)
-                shared[self.bk_name + '_err'] = str(e.__class__.__name__) + ': ' + str(e)
-                self.opposite_stat_get(shared)
                 prnt(self.msg.format(
                     sys._getframe().f_code.co_name,
                     'Ошибка при проставлении ставки в ' + self.bk_name + ', передаю его завершающему'
                 ))
+                
+                shared[self.bk_name + '_err'] = str(e.__class__.__name__) + ': ' + str(e)
+                self.opposite_stat_get(shared)
+                self.opposite_stat_wait(shared)
                 self.bet_safe(shared)
 
             except BkOppBetError as e:

@@ -950,17 +950,17 @@ if __name__ == '__main__':
         "login": get_account_info(
             'fonbet', 'login'), "password": get_account_info(
             'fonbet', 'password')}
-    wager_fonbet = {'event': '13538626', 'factor': '1809', 'param': '250', 'score': '0:0', 'value': '1.42'}
+    wager_fonbet = {'time_req': 1552746519, 'fonbet_bet_type':"ТБ1(2.5)", 'event': 13759645, 'value': 2.6, 'param': 250, 'factor': '1815', 'score': '0:0', 'vector': 'UP', 'hist': {'time_change': 1552746510, 'avg_change': [0, 39, 31, 1, 9, 33, 27, 92, 31, 27, 93, 1, 78, 31, 179, 15, 39], '1': 2.6, '2': 2.6, '3': 2.6, '4': 2.6, '5': 2.6}}
 
     obj = {}
     obj['wager_fonbet'] = wager_fonbet
-    obj['amount_fonbet'] = 45
+    obj['amount_fonbet'] = 110
     obj['fonbet_bet_type'] = None  # 'ТМ(2.5)'
 
     fonbet = FonbetBot(FONBET_USER)
     fonbet.sign_in()
-    #fonbet.place_bet(obj)
+    fonbet.place_bet(obj)
     #time.sleep(3)
-    fonbet.sale_bet(14928907420)
+    #fonbet.sale_bet(14928907420)
     # fonbet_reg_id = fonbet.place_bet(amount_fonbet, wager_fonbet)
     # {'e': 12264423, 'f': 931, 'v': 1.4, 'p': 250, 'pt': '2.5', 'isLive': True}
