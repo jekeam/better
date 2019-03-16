@@ -132,7 +132,6 @@ class BetManager:
             except BetError as e:
                 prnt(e)
                 shared[self.bk_name + '_err'] = str(e.__class__.__name__) + ': ' + str(e)
-                self.opposite_stat_wait(shared)
                 self.opposite_stat_get(shared)
                 prnt(self.msg.format(
                     sys._getframe().f_code.co_name,
@@ -822,6 +821,12 @@ class BetManager:
                 self.bk_name_opposite + ': ' + opposite_stat
             )
             raise BkOppBetError(err_str)
+        
+        prnt(self.msg.format(
+            sys._getframe().f_code.co_name,
+            self.bk_name + ' get status bet in from ' +
+            self.bk_name_opposite + ': ' + str(opposite_stat) + '(' + str(type(opposite_stat)) + ')'
+        ))
 
     def opposite_stat_wait(self, shared: dict):
         # if not DEBUG:
@@ -836,7 +841,7 @@ class BetManager:
                     self.bk_name_opposite
                 ))
                 msg_push = False
-            opp_stat = str(shared.get(self.bk_name_opposite + '_err'))
+            opp_stat = shared.get(self.bk_name_opposite + '_err')
 
         prnt(self.msg.format(
             sys._getframe().f_code.co_name,
