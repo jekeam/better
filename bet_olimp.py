@@ -429,10 +429,10 @@ if __name__ == '__main__':
         'olimp', 'login'), "password": get_account_info(
         'olimp', 'password')}
 
-    wager_olimp = {'time_req': 1552750343, 'value': 1.7, 'apid': '1190126168:47272136:3:8:1.5:1:0:0:1', 'factor': 1.7, 'sport_id': 1, 'event': '47272136', 'vector': 'UP', 'hist': {'time_change': 1552750339, 'avg_change': [0], '1': 1.7, '2': 1.7, '3': 1.7, '4': 1.7, '5': 0}}
+    wager_olimp = {'time_req': 1552752123, 'value': 1.75, 'apid': '1184611441:47027634:3:5:6.5:1:0:0:1', 'factor': 1.75, 'sport_id': 1, 'event': '47027634', 'vector': 'UP', 'hist': {'time_change': 1552752115, 'avg_change': [0], '1': 1.75, '2': 1.75, '3': 1.75, '4': 1.75, '5': 0}}
     obj = {}
     obj['wager_olimp'] = wager_olimp
-    obj['amount_olimp'] = 115
+    obj['amount_olimp'] = 160
 
     olimp = OlimpBot(OLIMP_USER)
     olimp.sign_in()

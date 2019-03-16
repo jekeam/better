@@ -145,7 +145,7 @@ class BetManager:
                 raise BkOppBetError(e)
             except Exception as e:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
-                err_msg = 'unknown err: ' + str(e) + '. ' + \
+                err_msg = 'unknown err(' + str(e.__class__.__name__) + '): ' + str(e) + '. ' + \
                           str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
                 err_str = self.msg_err.format(sys._getframe().f_code.co_name, err_msg)
                 prnt(err_str)
