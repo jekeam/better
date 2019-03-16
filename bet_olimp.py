@@ -429,14 +429,13 @@ if __name__ == '__main__':
         'olimp', 'login'), "password": get_account_info(
         'olimp', 'password')}
 
-    wager_olimp = {'apid': '1162886444:46453134:1:3:-9999:2:0:0:1', 'factor': '1.06', 'sport_id': 1,
-                   'event': '46453134'}
+    wager_olimp = {'time_req': 1552750343, 'value': 1.7, 'apid': '1190126168:47272136:3:8:1.5:1:0:0:1', 'factor': 1.7, 'sport_id': 1, 'event': '47272136', 'vector': 'UP', 'hist': {'time_change': 1552750339, 'avg_change': [0], '1': 1.7, '2': 1.7, '3': 1.7, '4': 1.7, '5': 0}}
     obj = {}
     obj['wager_olimp'] = wager_olimp
-    obj['amount_olimp'] = 30
+    obj['amount_olimp'] = 115
 
     olimp = OlimpBot(OLIMP_USER)
     olimp.sign_in()
-    #olimp.place_bet(obj)
-    olimp.sale_bet(1758)
+    olimp.place_bet(obj)
+    #olimp.sale_bet(1758)
     #olimp.sale_bet(29)

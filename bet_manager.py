@@ -543,7 +543,7 @@ class BetManager:
 
             try:
                 self.get_request_id()
-            except BaseException:
+            except BetError:
                 self.get_request_id()
 
             self.payload['requestId'] = self.reqId
@@ -922,7 +922,7 @@ class BetManager:
 
         try:
             del payload['coupon']
-        except BaseException:
+        except:
             pass
 
         headers = copy.deepcopy(fb_headers)
