@@ -404,6 +404,7 @@ if __name__ == '__main__':
         prnt('balance line: ' + str(balance_line))
         prnt('fork life time: ' + str(get_param('fork_life_time')))
         prnt('junior team exclude: ' + str(get_param('junior_team_exclude')))
+        prnt('working hours: ' + str(get_param('work_hours')))
 
         server_forks = dict()
         success = []
