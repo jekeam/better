@@ -8,21 +8,22 @@ from datetime import datetime
 import time, random
 import json
 import os
+from utils import DEBUG
 
 file_name = 'id_forks.txt'
-olimp_bet_min = 1000000
+olimp_bet_min = 1000000000
 fonbet_bet_min = 999999999999999999999
 
-f = open(file_name, encoding='utf-8')
-for line in f.readlines():
-    fork = json.loads(line)
-    for id, info in fork.items():
-        if info['fonbet'].get('reg_id', fonbet_bet_min):
-            if int(info['fonbet'].get('reg_id', fonbet_bet_min)) < fonbet_bet_min:
-                fonbet_bet_min = info['fonbet'].get('reg_id', '')
-        if info['olimp'].get('reg_id', olimp_bet_min):
-            if int(info['olimp'].get('reg_id', olimp_bet_min)) < olimp_bet_min:
-                olimp_bet_min = info['olimp'].get('reg_id', '')
+with open(file_name, encoding='utf-8') as f:
+    for line in f.readlines():
+        fork = json.loads(line)
+        for id, info in fork.items():
+            if info['fonbet'].get('reg_id', fonbet_bet_min):
+                if int(info['fonbet'].get('reg_id', fonbet_bet_min)) < fonbet_bet_min:
+                    fonbet_bet_min = info['fonbet'].get('reg_id', '')
+            if info['olimp'].get('reg_id', olimp_bet_min):
+                if int(info['olimp'].get('reg_id', olimp_bet_min)) < olimp_bet_min:
+                    olimp_bet_min = info['olimp'].get('reg_id', '')
 
 
 def olimp_get_hist(OLIMP_USER):
@@ -63,11 +64,10 @@ def olimp_get_hist(OLIMP_USER):
     olimp = OlimpBot(OLIMP_USER)
     data = olimp.get_history_bet(filter="0011", offset=0)
     count = data.get('count')
-    offset = ceil(count / 10)
-    # prnt('HISTORY.PY: Olimp get cnt wareg:' + str(count) + ', offset(count/10)=' + str(offset))
+    offset = ceil(count / 10) + 1
 
-    for n in range(0, ceil(offset / 3)):
-        coupot_list.update(get_chank(n))
+    for n in range(0, offset):
+    №;coupot_list.update(get_chank(n))
         time.sleep(random.randint(2, 3))
     return coupot_list
 

@@ -17,7 +17,9 @@ import http.client
 import json
 import re
 import traceback
-from history import export_hist
+
+if __name__ == '__main__':
+    from history import export_hist
 
 shutdown = False
 

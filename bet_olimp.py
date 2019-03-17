@@ -325,7 +325,7 @@ class OlimpBot:
         headers = base_headers.copy()
         headers.update(get_xtoken_bet(payload))
         headers.update({'X-XERPC': '1'})
-        prnt('BET_OLIMP.PY - sale_bet rq hist: ' + str(payload), 'hide')
+        prnt('BET_OLIMP.PY - get_history_bet rq hist: ' + str(payload), 'hide')
         resp = requests_retry_session().post(
             req_url,
             headers=headers,
@@ -334,10 +334,10 @@ class OlimpBot:
             timeout=self.timeout,
             proxies=self.proxies
         )
-        prnt('BET_OLIMP.PY - sale_bet rs hist: ' + str(resp.text), 'hide')
+        prnt('BET_OLIMP.PY - get_history_bet rs hist: ' + str(resp.text), 'hide')
         check_status_with_resp(resp)
         res = resp.json()
-        prnt('BET_OLIMP.PY - sale_bet rs js hist: ' + str(res), 'hide')
+        prnt('BET_OLIMP.PY - get_history_bet rs js hist: ' + str(res), 'hide')
         if res.get('error').get('err_code') != 0:
             prnt('BET_OLIMP.PY: error get history: ' + str(res))
             raise LoadException("BET_OLIMP.PY: " + str(res.get('error').get('err_desc')))
