@@ -7,6 +7,7 @@ from math import ceil
 from datetime import datetime
 import time, random
 import json
+import os
 
 file_name = 'id_forks.txt'
 olimp_bet_min = 1000000
@@ -176,15 +177,18 @@ def export_hist(OLIMP_USER, FONBET_USER):
                   str(info['olimp'].get('balance', '')) + ';' + \
  \
                   str(info['fonbet'].get('err', '')) + ';' + \
-                  str(info['olimp'].get('err', '')) + ';' +  '\n'
+                  str(info['olimp'].get('err', '')) + ';' + '\n'
 
         header = 'ID;time;pre_fb_kof;pre_o_kof;pre_fb_sum;pre_o_sum;' \
                  'fb_id;o_id;fb_time;o_time;fb_kof;o_kof;fb_sum_bet;o_sum_bet;' \
                  'fb_profit;o_profit;fb_result;o_result;fb_name;o_name;fb_status;' \
                  'o_status;f_kof_type;o_kof_type;fb_bal;ol_bal;fb_err;ol_err;\n'
 
-        with open('statistics.csv', 'w', encoding='utf-8') as f:
+        with open(datetime.now().strftime("%d_%m_%Y") + '_statistics.csv', 'w', encoding='utf-8') as f:
             f.write(header + out)
 
+        os.rename(file_name, datetime.now().strftime("%d_%m_%Y") + '_' + file_name)
 
-export_hist(OLIMP_USER, FONBET_USER)
+
+if __name__ == "__main__":
+    export_hist(OLIMP_USER, FONBET_USER)

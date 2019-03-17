@@ -17,7 +17,7 @@ import http.client
 import json
 import re
 import traceback
-
+from history import export_hist
 
 shutdown = False
 
@@ -90,17 +90,17 @@ def check_l(L):
 
 
 def check_fork(
-    key, L, k1, k2, live_fork, bk1_score, bk2_score, 
-    minute, time_break_fonbet, period, name, name_rus, info=''
-    ):
+        key, L, k1, k2, live_fork, bk1_score, bk2_score,
+        minute, time_break_fonbet, period, name, name_rus, info=''
+):
     global bal1, bal2, balance_line
-        
+
     fork_exclude_text = ''
     v = True
     if get_param('junior_team_exclude'):
         if re.search('(u\d{2}|\(жен\)|\(ж\)|\(р\)|\(рез\)|\(.*\d{2}\)|-студ.)', name_rus.lower()):
             fork_exclude_text = fork_exclude_text + 'Вилка исключена по названию команд: ' + name_rus + '\n'
-        
+
         if re.search('(u\d{2}|\(w\)|\(r\)|\(res\)|\(Reserves\)|-stud\.)', name.lower()):
             fork_exclude_text = fork_exclude_text + 'Вилка исключена по названию команд: ' + name + '\n'
 
@@ -419,10 +419,10 @@ cnt_fail = 0
 if __name__ == '__main__':
     try:
         prnt('DEBUG: ' + str(DEBUG))
-    
+
         time_get_balance = datetime.datetime.now()
         time_live = datetime.datetime.now()
-    
+
         if DEBUG:
             bal1 = 20000
             bal2 = 20000
@@ -432,7 +432,7 @@ if __name__ == '__main__':
             bal2 = FonbetBot(FONBET_USER).get_balance()  # Баланс в БК2
             total_bet = get_account_summ()  # round(0.10 * (bal1 + bal2))  # Общая масксимальная сумма ставки
         balance_line = (bal1 + bal2) / 2 / 100 * 30
-    
+
         prnt('server: ' + get_param('server_id') + ':80')
         prnt('bal1: ' + str(bal1) + ' руб.')
         prnt('bal2: ' + str(bal2) + ' руб.')
@@ -440,23 +440,31 @@ if __name__ == '__main__':
         prnt('balance line: ' + str(balance_line))
         prnt('fork life time: ' + str(get_param('fork_life_time')))
         prnt('junior team exclude: ' + str(get_param('junior_team_exclude')))
-    
+        prnt('working hours: ' + str(get_param('work_hours')))
+
         server_forks = dict()
         success = []
         start_see_fork = threading.Thread(target=run_client)  # , args=(server_forks,))
         start_see_fork.start()
-    
+
         while True:
-    
+
             balance_line = (bal1 + bal2) / 2 / 100 * 30
-    
-            shutdown_minutes = 60 * (60 * 8)  # секунды * на кол-во (60*1) - это час
+
+            shutdown_minutes = 60 * (60 * get_param('work_hours'))  # секунды * на кол-во (60*1) - это час
             if (datetime.datetime.now() - time_live).total_seconds() > (shutdown_minutes):
                 err_str = 'Прошло ' + str(shutdown_minutes / 60 / 60) + ' ч., я выключился...'
                 prnt(err_str)
                 shutdown = True
+
+                wait_before_exp = 60 * 60 * 2
+                prnt('Ожидание ' + str(wait_before_exp / 60) + ' минут, до выгрузки')
+                time.sleep(wait_before_exp)
+
+                export_hist(OLIMP_USER, FONBET_USER)
+
                 raise ValueError(err_str)
-    
+
             # Обновление баланса каждые 35-45 минут
             ref_balace = randint(35, 45)
             if (datetime.datetime.now() - time_get_balance).total_seconds() > (60 * ref_balace):
@@ -464,7 +472,7 @@ if __name__ == '__main__':
                 time_get_balance = datetime.datetime.now()
                 bal1 = OlimpBot(OLIMP_USER).get_balance()  # Баланс в БК1
                 bal2 = FonbetBot(FONBET_USER).get_balance()  # Баланс в БК2
-    
+
             if server_forks:
                 go_bet_key = ''
                 l = 0.0
@@ -472,18 +480,18 @@ if __name__ == '__main__':
                 for key, val_json in server_forks.items():
                     # print(json.dumps(val_json, ensure_ascii=False))
                     l_temp = val_json.get('l', 0.0)
-    
+
                     k1_type = key.split('@')[-1]
                     k2_type = key.split('@')[-2]
-    
+
                     name = val_json.get('name', 'name')
                     name_rus = val_json.get('name_rus', 'name_rus')
                     pair_math = val_json.get('pair_math', 'pair_math')
-    
+
                     bk1_score = str(val_json.get('bk1_score', 'bk1_score'))
                     bk2_score = str(val_json.get('bk2_score', 'bk2_score'))
                     score = '[' + bk1_score + '|' + bk2_score + ']'
-    
+
                     sc1 = 0
                     sc2 = 0
                     try:
@@ -494,7 +502,7 @@ if __name__ == '__main__':
                         sc2 = int(bk2_score.split(':')[1])
                     except:
                         pass
-    
+
                     v_time = val_json.get('time', 'v_time')
                     minute = val_json.get('minute', 0)
                     time_break_fonbet = val_json.get('time_break_fonbet')
@@ -502,23 +510,23 @@ if __name__ == '__main__':
                     time_last_upd = val_json.get('time_last_upd', 1)
                     live_fork_total = val_json.get('live_fork_total', 0)
                     live_fork = val_json.get('live_fork', 0)
-    
+
                     deff_olimp = round(float(time.time() - float(val_json.get('time_req_olimp', 0))))
                     deff_fonbet = round(float(time.time() - float(val_json.get('time_req_fonbet', 0))))
                     deff_max = max(0, deff_olimp, deff_fonbet)
-    
+
                     bk1_bet_json = val_json.get('kof_olimp')
                     bk2_bet_json = val_json.get('kof_fonbet')
-    
+
                     bk1_hist = bk1_bet_json.get('hist', {})
                     bk2_hist = bk2_bet_json.get('hist', {})
-    
+
                     k1 = bk1_bet_json.get('factor', 0)
                     k2 = bk2_bet_json.get('value', 0)
-    
+
                     vect1 = bk1_bet_json.get('vector')
                     vect2 = bk2_bet_json.get('vector')
-    
+
                     try:
                         info = key + ': ' + name + \
                                ' ' + k1_type + '=' + str(k1) + '/' + k2_type + '=' + str(k2) + ', ' + \
@@ -530,7 +538,7 @@ if __name__ == '__main__':
                     except Exception as e:
                         prnt('error: ' + str(e))
                         info = ''
-    
+
                     if vect1 and vect2:
                         if 0.0 <= l < l_temp and deff_max < 10 and k1 > 0 < k2 or DEBUG:
                             bet1, bet2 = get_sum_bets(k1, k2, total_bet)
