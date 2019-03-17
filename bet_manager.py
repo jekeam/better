@@ -157,6 +157,7 @@ class BetManager:
         except BkOppBetError as e:
             # В обоих БК ошибки, выкидываем вилку
             prnt(e)
+            raise BkOppBetError(e)
 
     def bet_safe(self, shared: dict):
         new_stat = {}
