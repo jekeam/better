@@ -142,7 +142,6 @@ class BetManager:
                 self.bet_safe(shared)
 
             except BkOppBetError as e:
-                prnt(e)
                 raise BkOppBetError(e)
             except Exception as e:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
@@ -156,6 +155,8 @@ class BetManager:
                 raise ValueError(err_str)
         except BkOppBetError as e:
             # В обоих БК ошибки, выкидываем вилку
+            shared[self.bk_name + '_err'] = str(e.__class__.__name__) + ': ' + str(e)
+            shared[self.bk_name_opposite + '_err'] = str(e.__class__.__name__) + ': ' + str(e)
             prnt('exit: ' + str(e))
 
     def bet_safe(self, shared: dict):
@@ -821,7 +822,6 @@ class BetManager:
                 self.bk_name + ' get error from ' +
                 self.bk_name_opposite + ': ' + opposite_stat
             )
-            prnt(err_str)
             raise BkOppBetError(err_str)
         
         prnt(self.msg.format(
