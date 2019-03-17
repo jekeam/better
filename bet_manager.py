@@ -107,7 +107,7 @@ class BetManager:
             prnt(self.msg.format(sys._getframe().f_code.co_name,
                                  'Ошибка при проставлении ставки в ' + self.bk_name +
                                  ', делаю выкуп ставки в ' + self.bk_name_opposite))
-            
+
             shared[self.bk_name + '_err'] = str(e.__class__.__name__) + ': ' + str(e)
             self.opposite_stat_get(shared)
             self.opposite_stat_wait(shared)
@@ -135,7 +135,7 @@ class BetManager:
                     sys._getframe().f_code.co_name,
                     'Ошибка при проставлении ставки в ' + self.bk_name + ', передаю его завершающему'
                 ))
-                
+
                 shared[self.bk_name + '_err'] = str(e.__class__.__name__) + ': ' + str(e)
                 self.opposite_stat_get(shared)
                 self.opposite_stat_wait(shared)
@@ -232,15 +232,15 @@ class BetManager:
 
                 # check: score changed?
                 if self.cur_total != self.new_cur_total:
-                    
+
                     self.cur_total = self.new_cur_total
                     self.diff_total = float(self.bet_total - self.cur_total)
                     if self.diff_total < 0:
                         err_str = ' cur_total:{}, bet_total:{}. bet lost, im sorry...'. \
-                        format(self.cur_total, self.bet_total)
+                            format(self.cur_total, self.bet_total)
                         prnt(err_str)
                         raise BetIsLost(err_str)
-                    
+
                     prnt(self.msg.format(sys._getframe().f_code.co_name, 'score changed!'))
                     if self.vector == 'UP':
                         if self.bet_total <= self.new_cur_total:
@@ -326,9 +326,8 @@ class BetManager:
                 headers.update(get_xtoken_bet(payload))
                 headers.update({'X-XERPC': '1'})
 
-                prnt(self.msg.format(
-                    sys._getframe().f_code.co_name, 'rq: ' +
-                                                    str(payload) + ' ' + str(headers)), 'hide')
+                prnt(self.msg.format(sys._getframe().f_code.co_name,
+                                     'rq: ' + str(payload) + ' ' + str(headers)), 'hide')
                 resp = requests_retry_session().post(
                     ol_url_api.format(str(self.server_olimp), 'autorize'),
                     headers=headers,
@@ -338,7 +337,7 @@ class BetManager:
                     proxies=self.proxies
                 )
                 prnt(self.msg.format(sys._getframe().f_code.co_name,
-                                     'rs: ' + str(resp.text.strip())), 'hide')
+                                     'rs: ' + str(resp.status_code) + ' ' + str(resp.text.strip())), 'hide')
 
                 data = resp.json()['data']
 
@@ -377,7 +376,7 @@ class BetManager:
                     proxies=self.proxies
                 )
                 prnt(self.msg.format(sys._getframe().f_code.co_name,
-                                     'rs: ' + str(resp.text.strip())), 'hide')
+                                     'rs: ' + str(resp.status_code) + ' ' + str(resp.text.strip())), 'hide')
                 res = resp.json()
 
                 self.session['session'] = res.get('fsid')
@@ -464,8 +463,7 @@ class BetManager:
             headers = copy.deepcopy(ol_headers)
             headers.update(get_xtoken_bet(payload))
 
-            prnt(self.msg.format(sys._getframe().f_code.co_name, 'rq: ' +
-                                 str(payload) + ' ' + str(headers)), 'hide')
+            prnt(self.msg.format(sys._getframe().f_code.co_name, 'rq: ' + str(payload) + ' ' + str(headers)), 'hide')
             self.opposite_stat_get(shared)
             resp = requests_retry_session().post(
                 ol_url_api.format(str(self.server_olimp), 'basket/fast'),
@@ -476,7 +474,7 @@ class BetManager:
                 proxies=self.proxies
             )
             prnt(self.msg.format(sys._getframe().f_code.co_name,
-                                 'rs: ' + str(resp.text.strip())), 'hide')
+                                 'rs: ' + str(resp.status_code) + ' ' + str(resp.text.strip())), 'hide')
             res = resp.json()
 
             err_code = res.get('error', {}).get('err_code')
@@ -548,8 +546,7 @@ class BetManager:
 
             self.payload['requestId'] = self.reqId
 
-            prnt(self.msg.format(sys._getframe().f_code.co_name, 'rq: ' +
-                                 str(payload) + ' ' + str(headers)), 'hide')
+            prnt(self.msg.format(sys._getframe().f_code.co_name, 'rq: ' + str(payload) + ' ' + str(headers)), 'hide')
             self.opposite_stat_get(shared)
             resp = requests_retry_session().post(
                 url.format('coupon/register'),
@@ -560,7 +557,7 @@ class BetManager:
                 proxies=self.proxies
             )
             prnt(self.msg.format(sys._getframe().f_code.co_name,
-                                 'rs: ' + str(resp.text.strip())), 'hide')
+                                 'rs: ' + str(resp.status_code) + ' ' + str(resp.text.strip())), 'hide')
             res = resp.json()
 
             result = res.get('result')
@@ -610,8 +607,7 @@ class BetManager:
                 headers.update({'X-XERPC': '1'})
 
                 prnt(self.msg.format(
-                    sys._getframe().f_code.co_name, 'rq: ' +
-                                                    str(payload) + ' ' + str(headers)), 'hide')
+                    sys._getframe().f_code.co_name, 'rq: ' + str(payload) + ' ' + str(headers)), 'hide')
                 resp = requests_retry_session().post(
                     ol_url_api.format(str(self.server_olimp), 'user/cashout'),
                     headers=headers,
@@ -621,7 +617,7 @@ class BetManager:
                     proxies=self.proxies
                 )
                 prnt(self.msg.format(sys._getframe().f_code.co_name,
-                                     'rs: ' + str(resp.text.strip())), 'hide')
+                                     'rs: ' + str(resp.status_code) + ' ' + str(resp.text.strip())), 'hide')
                 res = resp.json()
 
                 err_code = res.get('error', {}).get('err_code')
@@ -667,7 +663,7 @@ class BetManager:
                     timeout=self.timeout
                 )
                 prnt(self.msg.format(sys._getframe().f_code.co_name,
-                                     'rs: ' + str(resp.text)), 'hide')
+                                     'rs: ' + str(resp.status_code) + ' ' + str(resp.text)), 'hide')
                 res = resp.json()
                 result = res.get('result')
                 msg_str = res.get('errorMessage')
@@ -720,7 +716,7 @@ class BetManager:
                     proxies=self.proxies
                 )
                 prnt(self.msg.format(sys._getframe().f_code.co_name,
-                                     'rs: ' + str(resp.text)), 'hide')
+                                     'rs: ' + str(resp.status_code) + ' ' + str(resp.text)), 'hide')
                 res = resp.json()
                 result = res.get('result')
                 msg_str = res.get('errorMessage')
@@ -739,8 +735,8 @@ class BetManager:
                 payload['clientId'] = self.account['login']
                 payload['fsid'] = self.session['session']
 
-                prnt(self.msg.format(sys._getframe().f_code.co_name, 'rq: ' +
-                                     str(payload) + ' ' + str(headers)), 'hide')
+                prnt(self.msg.format(sys._getframe().f_code.co_name,
+                                     'rq: ' + str(payload) + ' ' + str(headers)), 'hide')
                 resp = requests_retry_session().post(
                     url.format('coupon/sell/completeSell'),
                     headers=headers,
@@ -750,7 +746,7 @@ class BetManager:
                     proxies=self.proxies
                 )
                 prnt(self.msg.format(sys._getframe().f_code.co_name,
-                                     'rs: ' + str(resp.text)), 'hide')
+                                     'rs: ' + str(resp.status_code) + ' ' + str(resp.text)), 'hide')
                 res = resp.json()
                 result = res.get('result')
                 msg_str = res.get('errorMessage')
@@ -804,13 +800,12 @@ class BetManager:
                     self.bk_name_opposite
                 ))
                 msg_push = False
-        
+
         prnt(self.msg.format(
             sys._getframe().f_code.co_name,
             self.bk_name + ' get sign in from ' +
-            self.bk_name_opposite + ': ' + str(sign_stat) +  '(' + str(type(sign_stat)) + ')'
+            self.bk_name_opposite + ': ' + str(sign_stat) + '(' + str(type(sign_stat)) + ')'
         ))
-
 
     def opposite_stat_get(self, shared: dict):
 
@@ -823,7 +818,7 @@ class BetManager:
                 self.bk_name_opposite + ': ' + opposite_stat
             )
             raise BkOppBetError(err_str)
-        
+
         prnt(self.msg.format(
             sys._getframe().f_code.co_name,
             self.bk_name + ' get status bet in from ' +
@@ -876,8 +871,7 @@ class BetManager:
 
         data = get_dumped_payload(payload)
 
-        prnt(self.msg.format(sys._getframe().f_code.co_name, 'rq: ' +
-                             str(payload) + ' ' + str(headers)), 'hide')
+        prnt(self.msg.format(sys._getframe().f_code.co_name, 'rq: ' + str(payload) + ' ' + str(headers)), 'hide')
         resp = requests_retry_session().post(
             'https://23.111.80.252/session/coupon/getMinMax',
             headers=headers,
@@ -887,7 +881,7 @@ class BetManager:
             proxies=self.proxies
         )
         prnt(self.msg.format(sys._getframe().f_code.co_name,
-                             'rs: ' + str(resp.text.strip())), 'hide')
+                             'rs: ' + str(resp.status_code) + ' ' + str(resp.text.strip())), 'hide')
         res = resp.json()
 
         result = res.get('result')
@@ -935,7 +929,8 @@ class BetManager:
             verify=False,
             timeout=self.timeout
         )
-        prnt(self.msg.format(sys._getframe().f_code.co_name, 'rs: ' + str(resp.text.strip())), 'hide')
+        prnt(self.msg.format(sys._getframe().f_code.co_name,
+                             'rs: ' + str(resp.status_code) + ' ' + str(resp.text.strip())), 'hide')
         res = resp.json()
 
         result = res.get('result')
@@ -1066,9 +1061,8 @@ class BetManager:
         payload['clientId'] = self.account['login']
         payload['client']['id'] = self.account['login']
 
-        prnt(self.msg.format(
-            sys._getframe().f_code.co_name,
-            'rq: ' + str(payload) + ' ' + str(headers)), 'hide')
+        prnt(self.msg.format(sys._getframe().f_code.co_name,
+                             'rq: ' + str(payload) + ' ' + str(headers)), 'hide')
         resp = requests_retry_session().post(
             url.format('coupon/requestId'),
             headers=headers,
@@ -1078,7 +1072,7 @@ class BetManager:
             proxies=self.proxies
         )
         prnt(self.msg.format(sys._getframe().f_code.co_name,
-                             'rq: ' + str(resp.text)), 'hide')
+                             'rs: ' + str(resp.status_code) + ' ' + str(resp.text)), 'hide')
         res = resp.json()
 
         result = res.get('result')
@@ -1110,14 +1104,8 @@ class BetManager:
         payload['clientId'] = self.account['login']
         payload['fsid'] = self.session['session']
 
-        prnt(
-            self.msg.format(
-                sys._getframe().f_code.co_name,
-                'rq: ' +
-                str(payload) +
-                ' ' +
-                str(headers)),
-            'hide')
+        prnt(self.msg.format(sys._getframe().f_code.co_name,
+                             'rq: ' + str(payload) + ' ' + str(headers)), 'hide')
         resp = requests_retry_session().post(
             url.format('coupon/sell/result'),
             headers=headers,
@@ -1127,7 +1115,7 @@ class BetManager:
             proxies=self.proxies
         )
         prnt(self.msg.format(sys._getframe().f_code.co_name,
-                             'rs: ' + str(resp.text)), 'hide')
+                             'rs: ' + str(resp.status_code) + ' ' + str(resp.text)), 'hide')
         res = resp.json()
         result = res.get('result')
         msg_str = res.get('errorMessage')
@@ -1267,7 +1255,7 @@ class BetManager:
             proxies=self.proxies
         )
         prnt(self.msg.format(sys._getframe().f_code.co_name,
-                             'rs: ' + str(resp.text.strip())), 'hide')
+                             'rs: ' + str(resp.status_code) + ' ' + str(resp.text.strip())), 'hide')
         res = resp.json()
 
         err_code = res.get('error', {}).get('err_code')
