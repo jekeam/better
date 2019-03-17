@@ -18,6 +18,9 @@ import re
 import sys
 import traceback
 
+if __name__ == '__main__':
+    from history import export_hist
+
 shutdown = False
 if get_param('debug'):
     DEBUG = True
@@ -89,8 +92,7 @@ def check_l(L):
         return ''
 
 
-def check_fork(key, L, k1, k2, live_fork, bk1_score, bk2_score, minute,
-               time_break_fonbet, period, deff_max, info=''):
+def check_fork(key, L, k1, k2, live_fork, bk1_score, bk2_score, minute, time_break_fonbet, period, deff_max, info=''):
     global bal1, bal2, balance_line
 
     fork_exclude_text = ''
@@ -309,10 +311,20 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
         fork_info[fork_id]['fonbet']['err'] = str(shared.get('fonbet_err', 'ok'))
 
         save_fork(fork_info)
+
+        if shared.get('olimp_err') != 'ok' and shared.get('fonbet_err') == 'ok':
+            cnt_fail = cnt_fail + 1
+
+        max_fail = 5
+        if cnt_fail > max_fail:
+            err_str = 'Max fail > ' + str(max_fail) + ', script off'
+            raise MaxFail(err_str)
+
         prnt('Matchs exclude: ' + str(success))
         sleep_post_work = 30
         prnt('Ожидание ' + str(sleep_post_work) + ' сек.')
         time.sleep(sleep_post_work)
+
         return True
 
 
@@ -373,7 +385,7 @@ F = 0  # счетчик (количество, найденых вилок)
 balance_line = 0  # (bal1 + bal2) / 2 / 100 * 60
 time_get_balance = datetime.datetime.now()
 time_live = datetime.datetime.now()
-cnt_fail = 0
+cnt_fail = 5
 
 # wag_fb:{'event': '12797479', 'factor': '921', 'param': '', 'score': '0:0', 'value': '2.35'}
 # wag_fb:{'apid': '1144260386:45874030:1:3:-9999:3:NULL:NULL:1', 'factor': '1.66', 'sport_id': 1, 'event': '45874030'}
@@ -397,7 +409,7 @@ if __name__ == '__main__':
             total_bet = get_account_summ()
         balance_line = (bal1 + bal2) / 2 / 100 * 30
 
-        prnt('server: ' + get_param('server_ip') + ':80')
+        prnt('server: ' + get_param('server_id') + ':80')
         prnt('bal1: ' + str(bal1) + ' руб.')
         prnt('bal2: ' + str(bal2) + ' руб.')
         prnt('total bet: ' + str(total_bet) + ' руб.')
@@ -416,14 +428,18 @@ if __name__ == '__main__':
 
             balance_line = (bal1 + bal2) / 2 / 100 * 30
 
-            # секунды * на кол-во (60*1) - это час
-            shutdown_minutes = 60 * (60 * 8)
-            if (datetime.datetime.now() -
-                time_live).total_seconds() > (shutdown_minutes):
-                err_str = 'Прошло ' + \
-                          str(shutdown_minutes / 60 / 60) + ' ч., я выключился...'
+            shutdown_minutes = 60 * (60 * get_param('work_hours'))  # секунды * на кол-во (60*1) - это час
+            if (datetime.datetime.now() - time_live).total_seconds() > (shutdown_minutes):
+                err_str = 'Прошло ' + str(shutdown_minutes / 60 / 60) + ' ч., я выключился...'
                 prnt(err_str)
                 shutdown = True
+
+                wait_before_exp = 60 * 60 * 2
+                prnt('Ожидание ' + str(wait_before_exp / 60) + ' минут, до выгрузки')
+                time.sleep(wait_before_exp)
+
+                export_hist(OLIMP_USER, FONBET_USER)
+
                 raise ValueError(err_str)
 
             # Обновление баланса каждые 35-45 минут
