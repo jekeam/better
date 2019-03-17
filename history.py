@@ -195,7 +195,7 @@ def export_hist(OLIMP_USER, FONBET_USER):
         with open(datetime.now().strftime("%d_%m_%Y") + '_statistics.csv', 'w', encoding='utf-8') as f:
             f.write(header + out)
 
-        os.rename(file_name, datetime.now().strftime("%d_%m_%Y") + '_' + file_name)
+    os.rename(file_name, datetime.now().strftime("%d_%m_%Y") + '_' + file_name)
 
 
 if __name__ == "__main__":
