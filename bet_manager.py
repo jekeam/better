@@ -157,7 +157,7 @@ class BetManager:
         except BkOppBetError as e:
             # В обоих БК ошибки, выкидываем вилку
             prnt(e)
-            raise BkOppBetError(e)
+            raise ValueError(e)
 
     def bet_safe(self, shared: dict):
         new_stat = {}
@@ -188,21 +188,19 @@ class BetManager:
         param = self.bk_container.get('wager', {}).get('param')
 
         if self.bk_name_opposite == 'fonbet':
-            
+            prnt(self.msg.format(
+                sys._getframe().f_code.co_name,
+                '{}: Завершающий принял работу: bet_type:{}, vector:{}, bet_total:{}, cur_total:{}, '
+                'diff_total:{}, self.time_left:{}, match_id:{}, bet_id:{}, param:{}'.format(
+                    self.time_start, bet_type, self.vector, self.bet_total, self.cur_total,
+                    self.diff_total, self.time_left, match_id, bet_id, param
+                )
+            ))
 
             match_id_opp = self_opp.bk_container.get('wager', {})['event']
             bet_type_opp = self_opp.bk_container.get('bet_type')
             bet_id_opp = int(self_opp.bk_container.get('wager', {}).get('factor'))
             param_opp = self_opp.bk_container.get('wager', {}).get('param')
-
-        prnt(self.msg.format(
-            sys._getframe().f_code.co_name,
-            '{}: Завершающий принял работу: bet_type:{}, vector:{}, bet_total:{}, cur_total:{}, '
-            'diff_total:{}, self.time_left:{}, match_id:{}, bet_id:{}, param:{}'.format(
-                self.time_start, bet_type, self.vector, self.bet_total, self.cur_total,
-                self.diff_total, self.time_left, match_id, bet_id, param
-            )
-        ))
 
         is_go = True
         while is_go:
@@ -821,7 +819,7 @@ class BetManager:
         if opposite_stat != 'ok':
             err_str = self.msg_err.format(
                 sys._getframe().f_code.co_name,
-                self.bk_name + ' get errget_request_idor from ' +
+                self.bk_name + ' get error from ' +
                 self.bk_name_opposite + ': ' + opposite_stat
             )
             prnt(err_str)
