@@ -154,7 +154,7 @@ def check_fork(key, L, k1, k2, live_fork, bk1_score, bk2_score, minute,
     fork_exclude_text = fork_exclude_text + check_l(L)
 
     if fork_exclude_text != '':
-        prnt(info + '\n' + fork_exclude_text + '\n')
+        prnt(info + '\n' + fork_exclude_text + '\n', 'hide')
         v = False
     return v
 
