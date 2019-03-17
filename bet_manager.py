@@ -120,7 +120,13 @@ class BetManager:
 
         try:
             try:
-                self.sign_in(shared)
+                try:
+                    self.sign_in(shared)
+                except Exception as e:
+                    err_str = self.msg_err.format(sys._getframe().f_code.co_name, str(e.__class__.__name__) + ': ' + str(e))
+                    prnt(err_str)
+                    self.sign_in(shared)
+
                 self.bet_place(shared)
             except CouponBlocked as e:
                 # todo loop
@@ -317,10 +323,7 @@ class BetManager:
         try:
             if self.bk_name == 'olimp':
                 payload = copy.deepcopy(ol_payload)
-                payload.update({
-                    'login': self.account['login'],
-                    'password': self.account['password']
-                })
+                payload.update({'login': self.account['login'], 'password': self.account['password']})
 
                 headers = copy.deepcopy(ol_headers)
                 headers.update(get_xtoken_bet(payload))
@@ -353,10 +356,7 @@ class BetManager:
                 payload['sign'] = 'secret password'
 
                 msg = get_dumped_payload(payload)
-                sign = hmac.new(
-                    key=self.account['password'].encode(),
-                    msg=msg.encode(),
-                    digestmod=sha512).hexdigest()
+                sign = hmac.new(key=self.account['password'].encode(), msg=msg.encode(), digestmod=sha512).hexdigest()
                 payload['sign'] = sign
                 data = get_dumped_payload(payload)
 
@@ -384,8 +384,7 @@ class BetManager:
                 err_str = self.msg_err.format(sys._getframe().f_code.co_name, 'session_id not defined')
                 raise SessionNotDefined(err_str)
 
-            prnt(self.msg.format(sys._getframe().f_code.co_name,
-                                 'session: ' + str(self.session['session'])))
+            prnt(self.msg.format(sys._getframe().f_code.co_name, 'session: ' + str(self.session['session'])))
             prnt(self.msg.format(sys._getframe().f_code.co_name, 'balance: ' +
                                  str(self.session.get('balance')) + ' ' +
                                  str(self.session.get('currency'))))
@@ -393,13 +392,11 @@ class BetManager:
             self.wait_sign_in_opp(shared)
 
             if not self.session.get('session'):
-                err_str = self.msg_err.format(
-                    sys._getframe().f_code.co_name,
-                    'session_id not defined')
+                err_str = self.msg_err.format(sys._getframe().f_code.co_name, 'session_id not defined')
                 raise SessionNotDefined(err_str)
 
         except SessionNotDefined as e:
-            prnt(e)
+            raise SessionNotDefined(e)
         except Exception as e:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             err_msg = 'unknown err(' + str(e.__class__.__name__) + '): ' + str(e) + '. ' + \
@@ -423,9 +420,8 @@ class BetManager:
         if cur_bal:
             if cur_bal < self.sum_bet:
                 err_str = self.msg_err.format(
-                    sys._getframe().f_code.co_name, self.bk_name +
-                                                    ' balance ({}) < sum_bet({})'.format(str(cur_bal),
-                                                                                         str(self.sum_bet))
+                    sys._getframe().f_code.co_name,
+                    self.bk_name + ' balance ({}) < sum_bet({})'.format(str(cur_bal), str(self.sum_bet))
                 )
                 raise NoMoney(err_str)
 
