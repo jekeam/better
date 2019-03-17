@@ -27,7 +27,7 @@ else:
 def get_sum_bets(k1, k2, total_bet, hide=False):
     k1 = float(k1)
     k2 = float(k2)
-    prnt('k1:{}, k2:{}'.format(k1, k2))
+    prnt('k1:{}, k2:{}'.format(k1, k2), hide)
     l = (1 / k1) + (1 / k2)
 
     # Округление проставления в БК1 происходит по правилам математики
