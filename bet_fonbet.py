@@ -58,7 +58,7 @@ class FonbetBot:
         self.sleep = 4
         self.cnt_test = 0
         self.add_sleep = 0
-        self.timeout = 15
+        self.timeout = 50
         self.fonbet_bet_type = None
 
         with open(os.path.join(package_dir, "proxies.json")) as file:

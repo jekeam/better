@@ -5,12 +5,15 @@ venv
 *.txt
 *.csv
 *.proxy
-*.csv#
 *.csv
-*.json
+*.csv
 *.session
 *.json_old
 *.zip
 *.R
 *.fonbet
 *.olimp
+*.json
+test.py
+*.jsonS
+*.csv#

@@ -174,13 +174,6 @@ def get_param(param):
         json = load(file)
     return json.get(param)
 
-
-def rq_log(vstr: str):
-    Outfile = open('rq_log/log.txt', "a+", encoding='utf-8')
-    Outfile.write(vstr + '\n')
-    Outfile.close()
-
-
 def prnt(vstr=None, hide=None):
     if vstr:
         global dtOld
@@ -199,6 +192,19 @@ def prnt(vstr=None, hide=None):
             Outfile.write(strLog + '\n')
             Outfile.close()
             
+
+
+def serv_log(filename: str, vstr: str):
+    prnts(vstr)
+    Outfile = open(filename + '.log', "a+", encoding='utf-8')
+    Outfile.write(vstr + '\n')
+    Outfile.close()
+    
+def client_log(filename: str, vstr: str):
+    prnt(vstr)
+    Outfile = open(filename + '.log', "a+", encoding='utf-8')
+    Outfile.write(vstr + '\n')
+    Outfile.close()    
 
 
 def prnts(vstr=None, hide=None):
