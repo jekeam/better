@@ -753,11 +753,9 @@ class BetManager:
             if 'не вошли в систему'.lower() in err_msg.lower() or \
                     'Not token access'.lower() in err_msg.lower() or \
                     'invalid session id'.lower() in err_msg.lower():
-                err_str = self.msg_err.format(sys._getframe().f_code.co_name,
-                                              'session expired: ' + self.session['session'])
+                err_str = self.msg_err.format(sys._getframe().f_code.co_name, 'session expired: ' + self.session['session'])
                 raise SessionExpired(err_msg + ' ' + err_str)
-            elif 'Продажа ставки недоступна'.lower() in err_msg.lower() or \
-                    'Изменилась сумма продажи ставки'.lower() in err_msg.lower():
+            elif 'Продажа ставки недоступна'.lower() in err_msg.lower() or 'Изменилась сумма продажи ставки'.lower() in err_msg.lower():
                 raise CouponBlocked(err_msg)
 
     def get_proxy(self) -> str:
