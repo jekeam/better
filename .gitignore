@@ -16,3 +16,4 @@ venv
 *.json
 test.py
 *.jsonS
+*.csv#

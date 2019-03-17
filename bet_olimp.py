@@ -257,7 +257,7 @@ class OlimpBot:
             timeout=self.timeout,
             proxies=self.proxies
         )
-        prnt('BET_OLIMP.PY - get_cur_bet_id rs: ' + str(resp.text), 'hide')
+        prnt('BET_OLIMP.PY - get_cur_bet_id rs: ' + str(resp.status_code) + ' ' + str(resp.text), 'hide')
         check_status_with_resp(resp)
         res = resp.json()
         prnt('BET_OLIMP.PY - get_cur_bet_id rs js: ' + str(res), 'hide')
