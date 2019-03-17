@@ -402,9 +402,8 @@ class BetManager:
             prnt(e)
         except Exception as e:
             exc_type, exc_value, exc_traceback = sys.exc_info()
-            err_msg = 'unknown err: ' + str(e) + '. ' + \
-                      str(repr(traceback.format_exception(
-                          exc_type, exc_value, exc_traceback)))
+            err_msg = 'unknown err(' + str(e.__class__.__name__) + '): ' + str(e) + '. ' + \
+                      str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
 
             err_str = self.msg_err.format(sys._getframe().f_code.co_name, err_msg)
             raise ValueError(err_str)
@@ -815,17 +814,14 @@ class BetManager:
 
     def opposite_stat_wait(self, shared: dict):
         # if not DEBUG:
-        msg_push = True
+        prnt(self.msg.format(
+            sys._getframe().f_code.co_name,
+            self.bk_name + ' wait status bet in from ' +
+            self.bk_name_opposite
+        ))
 
         opp_stat = None
         while opp_stat is None:
-            if msg_push:
-                prnt(self.msg.format(
-                    sys._getframe().f_code.co_name,
-                    self.bk_name + ' wait status bet in from ' +
-                    self.bk_name_opposite
-                ))
-                msg_push = False
             opp_stat = shared.get(self.bk_name_opposite + '_err')
 
         prnt(self.msg.format(

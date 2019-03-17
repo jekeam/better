@@ -96,17 +96,14 @@ def check_fork(key, L, k1, k2, live_fork, bk1_score, bk2_score, minute,
     v = True
 
     if '(' not in key and ')' not in key:
-        fork_exclude_text = fork_exclude_text + \
-                            'Вилка исключена, т.к. я еще не умею работать с этой ставкой: ' + str(key) + ')\n'
+        fork_exclude_text = fork_exclude_text + 'Вилка исключена, т.к. я еще не умею работать с этой ставкой: ' + str(key) + ')\n'
 
     deff_limit = 3
     if deff_max > deff_limit:
-        fork_exclude_text = fork_exclude_text + \
-                            'Вилка исключена, т.к. deff_max (' + str(deff_max) + ' > ' + str(deff_limit) + ')\n'
+        fork_exclude_text = fork_exclude_text + 'Вилка исключена, т.к. deff_max (' + str(deff_max) + ' > ' + str(deff_limit) + ')\n'
 
     if success.count(key) >= 1:
-        fork_exclude_text = fork_exclude_text + \
-                            'Вилка не проставлена, т.к. уже проставляли на эту вилку: ' + key + '\n'
+        fork_exclude_text = fork_exclude_text + 'Вилка не проставлена, т.к. уже проставляли на эту вилку: ' + key + '\n'
 
     # Проверяем корректная ли сумма
     if bet1 < 30 or bet2 < 30:
@@ -135,20 +132,18 @@ def check_fork(key, L, k1, k2, live_fork, bk1_score, bk2_score, minute,
     # Больше 43 минуты и не идет перерыв и это 1 период
     if 43.0 < float(minute) and not time_break_fonbet and period == 1:
         fork_exclude_text = \
-            fork_exclude_text + 'Вилка ' + str(round((1 - L) * 100, 2)) + '% исключена т.к. идет ' \
-            + str(minute) + ' минута матча и это не перерыв и это не 2-й период \n'
+            fork_exclude_text + 'Вилка ' + str(round((1 - L) * 100, 2)) + '% исключена т.к. идет ' + str(
+                minute) + ' минута матча и это не перерыв и это не 2-й период \n'
 
     if float(minute) > 88.0:
         fork_exclude_text = \
-            fork_exclude_text + 'Вилка ' + str(round((1 - L) * 100, 2)) + '% исключена т.к. идет ' \
-            + str(minute) + ' минута матча \n'
+            fork_exclude_text + 'Вилка ' + str(round((1 - L) * 100, 2)) + '% исключена т.к. идет ' + str(minute) + ' минута матча \n'
 
     # Вилка живет достаточно
     long_livers = get_param('fork_life_time')
     if live_fork < long_livers:
-        fork_exclude_text = fork_exclude_text + 'Вилка ' + \
-                            str(round((1 - L) * 100, 2)) + '% исключена т.к. живет меньше ' + str(
-            long_livers) + ' сек. \n'
+        fork_exclude_text = fork_exclude_text + 'Вилка ' + str(round((1 - L) * 100, 2)) + \
+                            '% исключена т.к. живет меньше ' + str(long_livers) + ' сек. \n'
 
     fork_exclude_text = fork_exclude_text + check_l(L)
 
