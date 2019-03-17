@@ -115,8 +115,12 @@ def fonbet_get_hist(FONBET_USER):
 def export_hist(OLIMP_USER, FONBET_USER):
     global file_name
     out = ""
-    ol_list = olimp_get_hist(OLIMP_USER)
-    fb_list = fonbet_get_hist(FONBET_USER)
+    o_list = olimp_get_hist(OLIMP_USER)
+    f_list = fonbet_get_hist(FONBET_USER)
+
+    ol_list = json.loads(json.dumps(o_list, ensure_ascii=False))
+    fb_list = json.loads(json.dumps(f_list, ensure_ascii=False))
+
     # print(json.dumps(ol_list, ensure_ascii=False))
     # print(json.dumps(fb_list, ensure_ascii=False))
 
