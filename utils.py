@@ -7,16 +7,6 @@ import requests
 import datetime
 import statistics
 
-
-def get_param(param):
-    with open(os.path.join(package_dir, "account.json")) as file:
-        json = load(file)
-    return json.get(param)
-
-if get_param('debug'):
-    DEBUG = True
-else:
-    DEBUG = False
     
 MINUTE_COMPLITE = 88
 
@@ -71,6 +61,16 @@ opposition = {
     'ННД': 'ННН',
     'ННН': 'ННД'
 }
+
+def get_param(param):
+    with open(os.path.join(package_dir, "account.json")) as file:
+        json = load(file)
+    return json.get(param)
+
+if get_param('debug'):
+    DEBUG = True
+else:
+    DEBUG = False
 
 
 def get_vector(bet_type, sc1=None, sc2=None):
