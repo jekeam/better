@@ -66,6 +66,6 @@ def requests_retry_session_post(url: str, headers=None, data=None, json=None, ve
     global cnt_retry
     cnt_retry += 1
     prnt('execute requests_retry_session_post, retry: {}'.format(cnt_retry))
-    resp = requests_retry_session().post(url=url, headers=headers, data=data, json=json, verify=False, timeout=5, proxies=proxies)
+    resp = requests_retry_session().post(url=url, headers=headers, data=data, json=json, verify=False, timeout=15, proxies=proxies)
     cnt_retry = 0
     return resp
