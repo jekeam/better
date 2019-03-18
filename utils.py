@@ -7,6 +7,12 @@ import requests
 import datetime
 import statistics
 
+
+def get_param(param):
+    with open(os.path.join(package_dir, "account.json")) as file:
+        json = load(file)
+    return json.get(param)
+
 if get_param('debug'):
     DEBUG = True
 else:
@@ -171,12 +177,6 @@ def get_account_summ():
     with open(os.path.join(package_dir, "account.json")) as file:
         json = load(file)
     return json.get('summ', None)
-
-
-def get_param(param):
-    with open(os.path.join(package_dir, "account.json")) as file:
-        json = load(file)
-    return json.get(param)
 
 def prnt(vstr=None, hide=None):
     if vstr:
