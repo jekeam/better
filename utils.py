@@ -6,8 +6,12 @@ import cfscrape
 import requests
 import datetime
 import statistics
+from utils import get_param
 
-DEBUG = False
+if get_param('debug'):
+    DEBUG = True
+else:
+    DEBUG = False
 MINUTE_COMPLITE = 88
 
 package_dir = os.path.dirname(__file__)
