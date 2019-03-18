@@ -167,6 +167,7 @@ class BetManager:
 
     def bet_safe(self, shared: dict):
         new_stat = {}
+        rime_req = ''
 
         self_opp = shared[self.bk_name_opposite].get('self', {})
         self.vector = self.bk_container.get('wager', {})['vector']
@@ -215,9 +216,9 @@ class BetManager:
                 if self.bk_name == 'fonbet' or self.bk_name_opposite == 'fonbet':
                     try:
                         if self.bk_name_opposite == 'fonbet':
-                            k_val_opp, sc, rime_req_opp = get_fonbet_info(match_id_opp, bet_id_opp, param_opp)
+                            k_val_opp, sc, rime_req_opp = get_fonbet_info(match_id_opp, bet_id_opp, param_opp, bet_type_opp)
                         else:
-                            k_val, sc, rime_req = get_fonbet_info(match_id, bet_id, param)
+                            k_val, sc, rime_req = get_fonbet_info(match_id, bet_id, param, bet_type)
                         self.new_cur_total = sum(map(int, sc.split(':')))
                     except Exception as e:
                         err_msg = 'recheck err (' + str(e.__class__.__name__) + '): ' + str(e)

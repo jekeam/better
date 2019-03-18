@@ -331,11 +331,13 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
 def run_client():
     global server_forks
     global shutdown
+    global server_ip
+    
     try:
         if 'Windows' == platform.system() or DEBUG:
-            conn = http.client.HTTPConnection("localhost", 80, timeout=3.51)
+            conn = http.client.HTTPConnection(server_ip, 80, timeout=3.51)
         else:
-            conn = http.client.HTTPConnection(get_param('server_ip'), 80, timeout=6)
+            conn = http.client.HTTPConnection(server_ip, 80, timeout=6)
 
         while True:
             if shutdown:
@@ -408,8 +410,11 @@ if __name__ == '__main__':
             # round(0.10 * (bal1 + bal2))  # Общая масксимальная сумма ставки
             total_bet = get_account_summ()
         balance_line = (bal1 + bal2) / 2 / 100 * 30
-
-        prnt('server: ' + get_param('server_ip') + ':80')
+        if not DEBUG:
+            server_ip = get_param('server_ip')
+        else:
+            server_ip = get_param('server_ip_test')
+        prnt('server: ' + server_ip + ':80')
         prnt('bal1: ' + str(bal1) + ' руб.')
         prnt('bal2: ' + str(bal2) + ' руб.')
         prnt('total bet: ' + str(total_bet) + ' руб.')
@@ -538,7 +543,7 @@ if __name__ == '__main__':
                             bet1, bet2 = get_sum_bets(k1, k2, total_bet, 'hide')
                             # Проверим вилку на исключения
                             if check_fork(key, l_temp, k1, k2, live_fork, bk1_score, bk2_score,
-                                          minute, time_break_fonbet, period, deff_max, info) or DEBUG:
+                                          minute, time_break_fonbet, period, deff_max, info) or (DEBUG and ('(' in key or ')' in key)):
                                 go_bet_key = key
                                 l = l_temp
                                 go_bet_json = val_json

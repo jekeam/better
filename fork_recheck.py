@@ -101,76 +101,28 @@ def get_olimp_info(id_matche, olimp_k):
 
 
 def get_fonbet_info(match_id, factor_id, param, bet_tepe=None):
-    prnt('match_id:{}, factor_id:{}, param:{}, bet_tepe:{}',format(match_id, factor_id, param, bet_tepe))
+    prnt('match_id:{}, factor_id:{}, param:{}, bet_tepe:{}'.format(match_id, factor_id, param, bet_tepe))
     
     header = copy.deepcopy(fb_headers)
     url = "https://23.111.80.222/line/eventView?eventId=" + str(match_id) + "&lang=ru"
     prnt('FORK_RECHECK.PY: get_fonbet_info rq: ' + url + ' ' + str(header), 'hide')
-    res = requests_retry_session().get(
+    resp = requests_retry_session().get(
         url,
         headers=header,
         timeout=10,
         verify=False
     )
-    prnt('FORK_RECHECK.PY: get_fonbet_info rs: ' + str(res.text), 'hide')
-    resp = res.json()
+    prnt('FORK_RECHECK.PY: get_fonbet_info rs: ' + str(resp.text), 'hide')
+    res = resp.json()
     
     result = res.get('result')
-    err_code = res.get('coupon', {}).get('resultCode')
-    msg_str = res.get('errorMessage')
-    err_msg = res.get('coupon', {}).get('errorMessageRus')
     
     wager = {}
     
-    if err_code==2:
-        # Котировка вообще ушла
-        if res.get('coupon', {}).get('bets')[0]['value'] == 0:
-            err_str = 'current bet is lost: ' + str(err_msg)
-            raise BetIsLost(err_str)
-        # Изменился ИД тотола
-        else:
-            new_wager = res.get('coupon').get('bets')[0]
-
-            if str(new_wager.get('param', '')) == str(param) and \
-                    int(factor_id) != int(new_wager.get('factor', 0)):
-
-                prnt('Изменилась ИД ставки: old: ' + str(factor_id) + ', new: ' + str(new_wager))
-                wager.update(new_wager)
-
-            elif str(new_wager.get('param', '')) != str(param) and \
-                    int(factor_id) == int(new_wager.get('factor', 0)):
-
-                prnt('Изменилась тотал ставки, param не совпадает: ' +'new_wager: ' + str(new_wager) + ', old_wager: ' + str(wager))
-
-                if bet_tepe:
-
-                    prnt('поиск нового id тотала: ' + bet_tepe)
-
-                    match_id = wager.get('event')
-                    new_wager = get_new_bets_fonbet(match_id, proxies={})
-                    new_wager = new_wager.get(str(match_id), {}).get('kofs', {}).get(bet_tepe)
-                    if new_wager:
-                        print('Тотал найден: ' + str(new_wager))
-                        wager.update(new_wager)
-                    else:
-                        err_str = 'Тотал не найден' + str(new_wager)
-                        raise BetIsLost(err_str)
-                else:
-                    err_str = 'Тип ставки, например 1ТМ(2.5) - не задан, выдаю ошибку: bet_type:' + bet_tepe
-                    raise BetIsLost(err_str)
-            else:
-                err_str = 'неизвестная ошибка: ' + str(err_msg) + ', new_wager: ' + str(new_wager) + ', old_wager: ' + str(wager)
-                raise BetIsLost(err_str)
     if result == "error":
         raise ValueError(resp.get("errorMessage"))
         
-    if wager:
-        match_id = wager['event']
-        factor_id = wager['factor_id']
-        param = wager['param']
-        prnt('update: match_id:{}, factor_id:{}, param:{}',format(match_id, factor_id, param))
-
-    for event in resp.get("events"):
+    for event in res.get("events"):
         if event.get('id') == match_id:
             sc = event.get('score', '0:0').replace('-', ':')
             for cat in event.get('subcategories'):
@@ -182,13 +134,29 @@ def get_fonbet_info(match_id, factor_id, param, bet_tepe=None):
 
                         if param:
                             if kof.get('pValue') != param:
-                                raise ValueError('type kof is change: ' + str(kof))
+                                prnt('Изменилась тотал ставки, param не совпадает: ' +'new: ' + str(kof.get('pValue')) + ', old: ' + str(param))
+            
+                                if bet_tepe:
+                                    prnt('поиск нового id тотала: ' + bet_tepe)
+                                    new_wager = get_new_bets_fonbet(match_id, proxies={})
+                                    new_wager = new_wager.get(str(match_id), {}).get('kofs', {}).get(bet_tepe)
+                                    if new_wager:
+                                        print('Тотал найден: ' + str(new_wager))
+                                        k = new_wager.get('value', 0)
+                                        return k, sc, round(resp.elapsed.total_seconds(), 2)
+                                    else:
+                                        err_str = 'Тотал не найден' + str(new_wager)
+                                        raise BetIsLost(err_str)
+                                else:
+                                    err_str = 'Тип ставки, например 1ТМ(2.5) - не задан, выдаю ошибку: bet_type:' + bet_tepe
+                                    raise BetIsLost(err_str)
+                            if kof.get('blocked'):
+                                prnt('kof is blocked ' + str(kof))
 
                         k = kof.get('value', 0)
                         prnt('fonbet score: ' + sc)
                         prnt('FORK_RECHECK.PY: get_olimp_info end work', 'hide')
-                        return k, sc, round(res.elapsed.total_seconds(), 2)
-    return None, None, None
+                        return k, sc, round(resp.elapsed.total_seconds(), 2)
 
 
 def get_kof_fonbet(obj, match_id, factor_id, param):
@@ -228,7 +196,4 @@ def get_kof_olimp(obj, olimp_match, olimp_k):
 
 
 if __name__ == "__main__":
-    x, y, z = get_fonbet_info(13446502, 922, None)
-    print(x, y, z)
-    x, y, z = get_olimp_info(46979507, 'Н')
-    print(x, y, z)
+    x, y, z = get_fonbet_info(13778213, 1871, 50, 'ТМ2(1.5)')
