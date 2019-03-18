@@ -105,29 +105,35 @@ class BetManager:
         sign_stat = shared.get('sign_in_' + self.bk_name_opposite, 'wait')
         
         push_ok = False
-        if sign_stat != 'ok':
-            while sign_stat != 'ok':
-                if not push_ok:
-                    prnt(self.msg.format(
-                        sys._getframe().f_code.co_name,
-                        self.bk_name + ' wait stat sign in from ' +
-                        self.bk_name_opposite + ': ' + str(sign_stat) + '(' + str(type(sign_stat)) + ')'
-                    ))
-                    push_ok = True
-                sign_stat = shared.get('sign_in_' + self.bk_name_opposite, 'wait')
-    
-            prnt(self.msg.format(
+        while sign_stat == 'wait':
+            if not push_ok:
+                prnt(self.msg.format(
+                    sys._getframe().f_code.co_name,
+                    self.bk_name + ' wait stat sign in from ' +
+                    self.bk_name_opposite + ': ' + str(sign_stat) + '(' + str(type(sign_stat)) + ')'
+                ))
+                push_ok = True
+            sign_stat = shared.get('sign_in_' + self.bk_name_opposite, 'wait')
+        
+        if sign_stat not in ('ok', 'wait'):
+            err_str = self.msg_err.format(
                 sys._getframe().f_code.co_name,
-                self.bk_name + ' get sign in from ' +
-                self.bk_name_opposite + ': ' + str(sign_stat) + '(' + str(type(sign_stat)) + ')'
-            ))
+                self.bk_name + ' get error from ' +
+                self.bk_name_opposite + ': ' + sign_stat
+            )
+            raise BkOppBetError(err_str)
+
+        prnt(self.msg.format(
+            sys._getframe().f_code.co_name,
+            self.bk_name + ' get sign in from ' +
+            self.bk_name_opposite + ': ' + str(sign_stat) + '(' + str(type(sign_stat)) + ')'
+        ))
+        
+        
 
     def opposite_stat_get(self, shared: dict):
 
         opposite_stat = str(shared.get(self.bk_name_opposite + '_err', 'ok'))
-        if opposite_stat == 'ok':
-            if not shared[self.bk_name_opposite].get('self', {}).reg_id:
-                opposite_stat = 'login error'
 
         if opposite_stat != 'ok':
             err_str = self.msg_err.format(
@@ -183,6 +189,7 @@ class BetManager:
                 self.sign_in(shared)
                 self.wait_sign_in_opp(shared)
                 self.bet_place(shared)
+                self.sale_bet(shared)
             except CouponBlocked as e:
                 # todo loop
                 prnt(e)
@@ -378,7 +385,7 @@ class BetManager:
         try:
             if self.bk_name == 'olimp':
                 # # for test
-                # sleep(5)
+                # sleep(10)
                 # try:
                 #     1/0
                 # except Exception as e:
@@ -468,8 +475,11 @@ class BetManager:
             shared['sign_in_' + self.bk_name] = 'ok'
 
         except SessionNotDefined as e:
+            shared['sign_in_' + self.bk_name] = str(e.__class__.__name__) + ': ' + str(e)
             raise SessionNotDefined(e)
         except Exception as e:
+            shared['sign_in_' + self.bk_name] = str(e.__class__.__name__) + ': ' + str(e)
+            
             exc_type, exc_value, exc_traceback = sys.exc_info()
             err_msg = 'unknown err(' + str(e.__class__.__name__) + '): ' + str(e) + '. ' + \
                       str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
