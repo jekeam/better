@@ -28,7 +28,6 @@ if get_param('debug'):
     DEBUG = True
 else:
     DEBUG = False
-prnt('DEBUG: ' + str(DEBUG))
 
 # disable: InsecureRequestWarning: Unverified HTTPS request is being made.
 # See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warningsInsecureRequestWarning)
@@ -378,7 +377,6 @@ class BetManager:
 
         try:
             if self.bk_name == 'olimp':
-                
                 # # for test
                 # sleep(5)
                 # try:
@@ -462,11 +460,12 @@ class BetManager:
                                  str(self.session.get('balance')) + ' ' +
                                  str(self.session.get('currency'))))
             write_file(self.session_file, self.session['session'].strip())
-            shared['sign_in_' + self.bk_name] = 'ok'
 
             if not self.session.get('session'):
                 err_str = self.msg_err.format(sys._getframe().f_code.co_name, 'session_id not defined')
                 raise SessionNotDefined(err_str)
+                
+            shared['sign_in_' + self.bk_name] = 'ok'
 
         except SessionNotDefined as e:
             raise SessionNotDefined(e)
