@@ -2,7 +2,7 @@
 import requests
 from olimp import to_abb, abbreviations
 from meta_ol import get_xtoken_bet, olimp_secret_key, ol_url_api, ol_payload, ol_headers
-from meta_fb import fb_headers
+from meta_fb import fb_headers, get_new_bets_fonbet
 import re
 from utils import prnt
 import copy
@@ -100,7 +100,9 @@ def get_olimp_info(id_matche, olimp_k):
     return k, sc, round(res.elapsed.total_seconds(), 2)
 
 
-def get_fonbet_info(match_id, factor_id, param):
+def get_fonbet_info(match_id, factor_id, param, bet_tepe=None):
+    prnt('match_id:{}, factor_id:{}, param:{}, bet_tepe:{}',format(match_id, factor_id, param, bet_tepe))
+    
     header = copy.deepcopy(fb_headers)
     url = "https://23.111.80.222/line/eventView?eventId=" + str(match_id) + "&lang=ru"
     prnt('FORK_RECHECK.PY: get_fonbet_info rq: ' + url + ' ' + str(header), 'hide')
@@ -112,8 +114,61 @@ def get_fonbet_info(match_id, factor_id, param):
     )
     prnt('FORK_RECHECK.PY: get_fonbet_info rs: ' + str(res.text), 'hide')
     resp = res.json()
-    if resp.get("result") == "error":
+    
+    result = res.get('result')
+    err_code = res.get('coupon', {}).get('resultCode')
+    msg_str = res.get('errorMessage')
+    err_msg = res.get('coupon', {}).get('errorMessageRus')
+    
+    wager = {}
+    
+    if err_code==2:
+        # Котировка вообще ушла
+        if res.get('coupon', {}).get('bets')[0]['value'] == 0:
+            err_str = 'current bet is lost: ' + str(err_msg)
+            raise BetIsLost(err_str)
+        # Изменился ИД тотола
+        else:
+            new_wager = res.get('coupon').get('bets')[0]
+
+            if str(new_wager.get('param', '')) == str(param) and \
+                    int(factor_id) != int(new_wager.get('factor', 0)):
+
+                prnt('Изменилась ИД ставки: old: ' + str(factor_id) + ', new: ' + str(new_wager))
+                wager.update(new_wager)
+
+            elif str(new_wager.get('param', '')) != str(param) and \
+                    int(factor_id) == int(new_wager.get('factor', 0)):
+
+                prnt('Изменилась тотал ставки, param не совпадает: ' +'new_wager: ' + str(new_wager) + ', old_wager: ' + str(wager))
+
+                if bet_tepe:
+
+                    prnt('поиск нового id тотала: ' + bet_tepe)
+
+                    match_id = wager.get('event')
+                    new_wager = get_new_bets_fonbet(match_id, proxies={})
+                    new_wager = new_wager.get(str(match_id), {}).get('kofs', {}).get(bet_tepe)
+                    if new_wager:
+                        print('Тотал найден: ' + str(new_wager))
+                        wager.update(new_wager)
+                    else:
+                        err_str = 'Тотал не найден' + str(new_wager)
+                        raise BetIsLost(err_str)
+                else:
+                    err_str = 'Тип ставки, например 1ТМ(2.5) - не задан, выдаю ошибку: bet_type:' + bet_tepe
+                    raise BetIsLost(err_str)
+            else:
+                err_str = 'неизвестная ошибка: ' + str(err_msg) + ', new_wager: ' + str(new_wager) + ', old_wager: ' + str(wager)
+                raise BetIsLost(err_str)
+    if result == "error":
         raise ValueError(resp.get("errorMessage"))
+        
+    if wager:
+        match_id = wager['event']
+        factor_id = wager['factor_id']
+        param = wager['param']
+        prnt('update: match_id:{}, factor_id:{}, param:{}',format(match_id, factor_id, param))
 
     for event in resp.get("events"):
         if event.get('id') == match_id:

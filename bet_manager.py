@@ -191,7 +191,7 @@ class BetManager:
         match_id = self.bk_container.get('wager', {})['event']
         bet_type = self.bk_container.get('bet_type')
         bet_id = int(self.bk_container.get('wager', {}).get('factor'))
-        param = self.bk_container.get('wager', {}).get('param')
+        param = self.bk_container.get('wager', {}).get('param')-100
 
         if self.bk_name_opposite == 'fonbet':
             prnt(self.msg.format(
@@ -498,12 +498,12 @@ class BetManager:
 
         elif self.bk_name == 'fonbet':
 
-            # # for test
-            # sleep(2)
-            # try:
-            #     1/0
-            # except Exception as e:
-            #     raise BetError(e)
+            # for test
+            sleep(2)
+            try:
+                1/0
+            except Exception as e:
+                raise BetError(e)
 
             if not self.server_fb:
                 self.server_fb = get_urls(self.mirror, self.proxies)

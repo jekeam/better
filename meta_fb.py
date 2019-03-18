@@ -171,7 +171,7 @@ def get_common_url(data_urls):
     
 
 
-def get_new_bets_fonbet(match_id, proxies, time_out):
+def get_new_bets_fonbet(match_id, proxies, time_out=50):
     from util_fonbet import url_fonbet_match, fonbet_header, VICTS, TTO, TTU, TT1O, TT1U, TT2O, TT2U
     key_id = str(match_id)
     bets_fonbet = {}
