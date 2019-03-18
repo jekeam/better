@@ -183,7 +183,6 @@ class BetManager:
             try:
                 self.sign_in(shared)
                 self.wait_sign_in_opp(shared)
-                sleep(600)
                 self.bet_place(shared)
             except CouponBlocked as e:
                 # todo loop

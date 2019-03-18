@@ -2,7 +2,7 @@
 import requests
 from requests.exceptions import Timeout, ProxyError
 from requests.adapters import HTTPAdapter
-from urllib3.util import Retry
+from requests.packages.urllib3.util.retry import Retry
 import functools
 import time
 from utils import prnt
@@ -10,10 +10,10 @@ from utils import prnt
 cnt_retry = 0
 
 def requests_retry_session(
-        retries=3,
-        backoff_factor=0.3,
-        status_forcelist=(500, 502, 504),
-        session=None,
+    retries=3,
+    backoff_factor=0.3,
+    status_forcelist=(500, 501, 502, 504),
+    session=None,
 ):
     session = session or requests.Session()
     retry = Retry(
@@ -66,6 +66,7 @@ def requests_retry_session_post(url: str, headers=None, data=None, json=None, ve
     global cnt_retry
     cnt_retry += 1
     prnt('execute requests_retry_session_post, retry: {}'.format(cnt_retry))
-    resp = requests_retry_session().post(url=url, headers=headers, data=data, json=json, verify=False, timeout=15, proxies=proxies)
+    resp = requests_retry_session().post(url=url, headers=headers, data=data, json=json, verify=False, timeout=5, proxies=proxies)
+    print(resp.status_code)
     cnt_retry = 0
     return resp
