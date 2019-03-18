@@ -189,6 +189,7 @@ class BetManager:
                 self.sign_in(shared)
                 self.wait_sign_in_opp(shared)
                 self.bet_place(shared)
+                self.sale_bet(shared)
             except CouponBlocked as e:
                 # todo loop
                 prnt(e)
@@ -252,7 +253,7 @@ class BetManager:
         match_id = self.bk_container.get('wager', {})['event']
         bet_type = self.bk_container.get('bet_type')
         bet_id = int(self.bk_container.get('wager', {}).get('factor'))
-        param = self.bk_container.get('wager', {}).get('param')-100
+        param = self.bk_container.get('wager', {}).get('param')
 
         if self.bk_name_opposite == 'fonbet':
             prnt(self.msg.format(
