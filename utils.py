@@ -63,6 +63,7 @@ opposition = {
 }
 
 def get_param(param):
+    global package_dir
     with open(os.path.join(package_dir, "account.json")) as file:
         json = load(file)
     return json.get(param)
