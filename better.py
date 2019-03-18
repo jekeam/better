@@ -435,6 +435,7 @@ if __name__ == '__main__':
             total_bet = get_account_summ()  # round(0.10 * (bal1 + bal2))  # Общая масксимальная сумма ставки
         balance_line = (bal1 + bal2) / 2 / 100 * 30
 
+        prnt('account name: ' + get_param('account_name'))
         prnt('server: ' + get_param('server_ip') + ':80')
         prnt('bal1: ' + str(bal1) + ' руб.')
         prnt('bal2: ' + str(bal2) + ' руб.')
