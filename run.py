@@ -298,7 +298,7 @@ def start_compare_matches(pair_mathes, json_bk1, json_bk2, mathes_complite):
                                             # if re.search('(u\d{2}|\(w\)|\(r\)|\(res\)|\(Reserves\)|-stud\.), match_name.lower()):
                                             #     serv_log('match_list', 'Матч исключен: ' + match_name)
                                             #     pass
-                                            if DEBUG and str(bk2_match_id) == '13706641':
+                                            if DEBUG: # and str(bk2_match_id) == '13706641':
                                                 serv_log('match_list', 'Матч добавлен: ' + match_name)
                                                 pair_mathes.append([bk1_match_id, bk2_match_id])
                                             elif not DEBUG:
