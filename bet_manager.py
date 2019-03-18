@@ -100,6 +100,64 @@ class BetManager:
         # self.manager(shared)
         shared[self.bk_name]['self'] = self
         self.bet_simple(shared)
+        
+    
+    def wait_sign_in_opp(self, shared: dict):
+        # if not DEBUG:
+        prnt(self.msg.format(
+            sys._getframe().f_code.co_name,
+            self.bk_name + ' wait sign in from ' +
+            self.bk_name_opposite
+        ))
+
+        sign_stat = 'wait'
+        while sign_stat != 'wait':
+            sign_stat = shared.get('sign_in_' + self.bk_name_opposite, 'wait')
+
+        prnt(self.msg.format(
+            sys._getframe().f_code.co_name,
+            self.bk_name + ' get sign in from ' +
+            self.bk_name_opposite + ': ' + str(sign_stat) + '(' + str(type(sign_stat)) + ')'
+        ))
+
+    def opposite_stat_get(self, shared: dict):
+
+        opposite_stat = str(shared.get(self.bk_name_opposite + '_err', 'ok'))
+        if opposite_stat == 'ok':
+            if not shared[self.bk_name_opposite].get('self', {}).reg_id:
+                opposite_stat = 'login error'
+
+        if opposite_stat != 'ok':
+            err_str = self.msg_err.format(
+                sys._getframe().f_code.co_name,
+                self.bk_name + ' get error from ' +
+                self.bk_name_opposite + ': ' + opposite_stat
+            )
+            raise BkOppBetError(err_str)
+
+        prnt(self.msg.format(
+            sys._getframe().f_code.co_name,
+            self.bk_name + ' get status bet in from ' +
+            self.bk_name_opposite + ': ' + str(opposite_stat) + '(' + str(type(opposite_stat)) + ')'
+        ))
+
+    def opposite_stat_wait(self, shared: dict):
+        # if not DEBUG:
+        prnt(self.msg.format(
+            sys._getframe().f_code.co_name,
+            self.bk_name + ' wait status bet in from ' +
+            self.bk_name_opposite
+        ))
+
+        opp_stat = None
+        while opp_stat is None:
+            opp_stat = shared.get(self.bk_name_opposite + '_err')
+
+        prnt(self.msg.format(
+            sys._getframe().f_code.co_name,
+            self.bk_name + ' get status bet in from ' +
+            self.bk_name_opposite + ': ' + str(opp_stat) + '(' + str(type(opp_stat)) + ')'
+        ))
 
     def bet_simple(self, shared: dict):
 
@@ -163,7 +221,6 @@ class BetManager:
             # В обоих БК ошибки, выкидываем вилку
             shared[self.bk_name + '_err'] = str(e.__class__.__name__) + ': ' + str(e)
             shared[self.bk_name_opposite + '_err'] = str(e.__class__.__name__) + ': ' + str(e)
-            prnt('exit: ' + str(e))
 
     def bet_safe(self, shared: dict):
         new_stat = {}
@@ -323,6 +380,15 @@ class BetManager:
 
         try:
             if self.bk_name == 'olimp':
+                
+                # # for test
+                # sleep(5)
+                # try:
+                #     1/0
+                # except Exception as e:
+                #     #raise SessionNotDefined(e)
+                #     raise ValueError(e)
+                
                 payload = copy.deepcopy(ol_payload)
                 payload.update({'login': self.account['login'], 'password': self.account['password']})
 
@@ -348,6 +414,14 @@ class BetManager:
                 self.session['currency'] = dict(data).get('cur')
 
             elif self.bk_name == 'fonbet':
+                
+                # # for test
+                # sleep(5)
+                # try:
+                #     1/0
+                # except Exception as e:
+                #     #raise SessionNotDefined(e)
+                #     raise ValueError(e)
 
                 fb_payload['platform'] = 'mobile_android'
                 fb_payload['clientId'] = self.account['login']
@@ -390,6 +464,7 @@ class BetManager:
                                  str(self.session.get('balance')) + ' ' +
                                  str(self.session.get('currency'))))
             write_file(self.session_file, self.session['session'].strip())
+            shared['sign_in_' + self.bk_name] = 'ok'
             self.wait_sign_in_opp(shared)
 
             if not self.session.get('session'):
@@ -766,64 +841,6 @@ class BetManager:
         with open(path.join(package_dir, 'account.json')) as file:
             account = load(file)
         return account.get(self.bk_name, {})
-
-    def wait_sign_in_opp(self, shared: dict):
-        # if not DEBUG:
-        msg_push = True
-        shared['sign_in_' + self.bk_name] = 'ok'
-
-        sign_stat = None
-        while sign_stat is None:
-            sign_stat = shared.get('sign_in_' + self.bk_name_opposite)
-            if msg_push:
-                prnt(self.msg.format(
-                    sys._getframe().f_code.co_name,
-                    self.bk_name + ' wait sign in from ' +
-                    self.bk_name_opposite
-                ))
-                msg_push = False
-
-        prnt(self.msg.format(
-            sys._getframe().f_code.co_name,
-            self.bk_name + ' get sign in from ' +
-            self.bk_name_opposite + ': ' + str(sign_stat) + '(' + str(type(sign_stat)) + ')'
-        ))
-
-    def opposite_stat_get(self, shared: dict):
-
-        opposite_stat = str(shared.get(self.bk_name_opposite + '_err', 'ok'))
-
-        if opposite_stat != 'ok':
-            err_str = self.msg_err.format(
-                sys._getframe().f_code.co_name,
-                self.bk_name + ' get error from ' +
-                self.bk_name_opposite + ': ' + opposite_stat
-            )
-            raise BkOppBetError(err_str)
-
-        prnt(self.msg.format(
-            sys._getframe().f_code.co_name,
-            self.bk_name + ' get status bet in from ' +
-            self.bk_name_opposite + ': ' + str(opposite_stat) + '(' + str(type(opposite_stat)) + ')'
-        ))
-
-    def opposite_stat_wait(self, shared: dict):
-        # if not DEBUG:
-        prnt(self.msg.format(
-            sys._getframe().f_code.co_name,
-            self.bk_name + ' wait status bet in from ' +
-            self.bk_name_opposite
-        ))
-
-        opp_stat = None
-        while opp_stat is None:
-            opp_stat = shared.get(self.bk_name_opposite + '_err')
-
-        prnt(self.msg.format(
-            sys._getframe().f_code.co_name,
-            self.bk_name + ' get status bet in from ' +
-            self.bk_name_opposite + ': ' + str(opp_stat) + '(' + str(type(opp_stat)) + ')'
-        ))
 
     def check_max_bet(self, shared: dict):
         self.opposite_stat_get(shared)
