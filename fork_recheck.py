@@ -143,6 +143,7 @@ def get_fonbet_info(match_id, factor_id, param, bet_tepe=None):
                                     if new_wager:
                                         print('Тотал найден: ' + str(new_wager))
                                         k = new_wager.get('value', 0)
+                                        sc = new_wager.get('score', '0:0').replace('-', ':')
                                         return k, sc, round(resp.elapsed.total_seconds(), 2)
                                     else:
                                         err_str = 'Тотал не найден' + str(new_wager)
