@@ -10,22 +10,6 @@ import json
 import os
 from utils import DEBUG, get_param
 
-file_name = 'id_forks.txt'
-olimp_bet_min = 1000000000
-fonbet_bet_min = 999999999999999999999
-
-with open(file_name, encoding='utf-8') as f:
-    for line in f.readlines():
-        fork = json.loads(line)
-        for id, info in fork.items():
-            if info['fonbet'].get('reg_id', fonbet_bet_min):
-                if int(info['fonbet'].get('reg_id', fonbet_bet_min)) < fonbet_bet_min:
-                    fonbet_bet_min = info['fonbet'].get('reg_id', '')
-            if info['olimp'].get('reg_id', olimp_bet_min):
-                if int(info['olimp'].get('reg_id', olimp_bet_min)) < olimp_bet_min:
-                    olimp_bet_min = info['olimp'].get('reg_id', '')
-
-
 def olimp_get_hist(OLIMP_USER):
     global olimp_bet_min
     prnt('Олимп: делаю выгрузку')
@@ -113,7 +97,21 @@ def fonbet_get_hist(FONBET_USER):
 
 
 def export_hist(OLIMP_USER, FONBET_USER):
-    global file_name
+    file_name = 'id_forks.txt'
+    olimp_bet_min = 1000000000
+    fonbet_bet_min = 999999999999999999999
+    
+    with open(file_name, encoding='utf-8') as f:
+        for line in f.readlines():
+            fork = json.loads(line)
+            for id, info in fork.items():
+                if info['fonbet'].get('reg_id', fonbet_bet_min):
+                    if int(info['fonbet'].get('reg_id', fonbet_bet_min)) < fonbet_bet_min:
+                        fonbet_bet_min = info['fonbet'].get('reg_id', '')
+                if info['olimp'].get('reg_id', olimp_bet_min):
+                    if int(info['olimp'].get('reg_id', olimp_bet_min)) < olimp_bet_min:
+                        olimp_bet_min = info['olimp'].get('reg_id', '')
+                        
     out = ""
     o_list = olimp_get_hist(OLIMP_USER)
     f_list = fonbet_get_hist(FONBET_USER)
