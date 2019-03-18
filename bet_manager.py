@@ -12,7 +12,7 @@ from threading import Thread
 import hmac
 from hashlib import sha512
 import copy
-from retry_requests import requests_retry_session
+from retry_requests import requests_retry_session, requests_retry_session_post
 
 from meta_ol import ol_url_api, ol_payload, ol_headers, get_xtoken_bet
 from meta_fb import fb_payload, fb_payload_bet, get_random_str, get_dumped_payload, get_urls, get_common_url
@@ -57,7 +57,7 @@ class BetManager:
         self.wager = bk_container['wager']
         self.bk_name_opposite = bk_container['opposite']
         self.account = self.get_account_info()
-        self.timeout = 15
+        self.timeout = 50
         self.match_id = None
         self.reg_id = None
         self.reqId = None
@@ -103,22 +103,25 @@ class BetManager:
         
     
     def wait_sign_in_opp(self, shared: dict):
-        # if not DEBUG:
-        prnt(self.msg.format(
-            sys._getframe().f_code.co_name,
-            self.bk_name + ' wait sign in from ' +
-            self.bk_name_opposite
-        ))
-
-        sign_stat = 'wait'
-        while sign_stat != 'wait':
-            sign_stat = shared.get('sign_in_' + self.bk_name_opposite, 'wait')
-
-        prnt(self.msg.format(
-            sys._getframe().f_code.co_name,
-            self.bk_name + ' get sign in from ' +
-            self.bk_name_opposite + ': ' + str(sign_stat) + '(' + str(type(sign_stat)) + ')'
-        ))
+        sign_stat = shared.get('sign_in_' + self.bk_name_opposite, 'wait')
+        
+        push_ok = False
+        if sign_stat != 'ok':
+            while sign_stat != 'ok':
+                if not push_ok:
+                    prnt(self.msg.format(
+                        sys._getframe().f_code.co_name,
+                        self.bk_name + ' wait stat sign in from ' +
+                        self.bk_name_opposite + ': ' + str(sign_stat) + '(' + str(type(sign_stat)) + ')'
+                    ))
+                    push_ok = True
+                sign_stat = shared.get('sign_in_' + self.bk_name_opposite, 'wait')
+    
+            prnt(self.msg.format(
+                sys._getframe().f_code.co_name,
+                self.bk_name + ' get sign in from ' +
+                self.bk_name_opposite + ': ' + str(sign_stat) + '(' + str(type(sign_stat)) + ')'
+            ))
 
     def opposite_stat_get(self, shared: dict):
 
@@ -178,13 +181,9 @@ class BetManager:
 
         try:
             try:
-                try:
-                    self.sign_in(shared)
-                except Exception as e:
-                    err_str = self.msg_err.format(sys._getframe().f_code.co_name, str(e.__class__.__name__) + ': ' + str(e))
-                    prnt(err_str)
-                    self.sign_in(shared)
-
+                self.sign_in(shared)
+                self.wait_sign_in_opp(shared)
+                sleep(600)
                 self.bet_place(shared)
             except CouponBlocked as e:
                 # todo loop
@@ -397,7 +396,7 @@ class BetManager:
                 headers.update({'X-XERPC': '1'})
 
                 prnt(self.msg.format(sys._getframe().f_code.co_name, 'rq: ' + str(payload) + ' ' + str(headers)), 'hide')
-                resp = requests_retry_session().post(
+                resp = requests_retry_session_post(
                     ol_url_api.format(str(self.server_olimp), 'autorize'),
                     headers=headers,
                     data=payload,
@@ -440,7 +439,7 @@ class BetManager:
 
                 prnt(self.msg.format(sys._getframe().f_code.co_name, 'rq: ' + str(data)), 'hide')
 
-                resp = requests_retry_session().post(
+                resp = requests_retry_session_post(
                     url.format('login'),
                     headers=fb_headers,
                     data=data,
@@ -465,7 +464,6 @@ class BetManager:
                                  str(self.session.get('currency'))))
             write_file(self.session_file, self.session['session'].strip())
             shared['sign_in_' + self.bk_name] = 'ok'
-            self.wait_sign_in_opp(shared)
 
             if not self.session.get('session'):
                 err_str = self.msg_err.format(sys._getframe().f_code.co_name, 'session_id not defined')
@@ -533,7 +531,7 @@ class BetManager:
 
             prnt(self.msg.format(sys._getframe().f_code.co_name, 'rq: ' + str(payload) + ' ' + str(headers)), 'hide')
             self.opposite_stat_get(shared)
-            resp = requests_retry_session().post(
+            resp = requests_retry_session_post(
                 ol_url_api.format(str(self.server_olimp), 'basket/fast'),
                 headers=headers,
                 data=payload,
@@ -615,7 +613,7 @@ class BetManager:
 
             prnt(self.msg.format(sys._getframe().f_code.co_name, 'rq: ' + str(payload) + ' ' + str(headers)), 'hide')
             self.opposite_stat_get(shared)
-            resp = requests_retry_session().post(
+            resp = requests_retry_session_post(
                 url.format('coupon/register'),
                 headers=headers,
                 json=self.payload,
@@ -674,7 +672,7 @@ class BetManager:
 
                 prnt(self.msg.format(
                     sys._getframe().f_code.co_name, 'rq: ' + str(payload) + ' ' + str(headers)), 'hide')
-                resp = requests_retry_session().post(
+                resp = requests_retry_session_post(
                     ol_url_api.format(str(self.server_olimp), 'user/cashout'),
                     headers=headers,
                     data=payload,
@@ -719,7 +717,7 @@ class BetManager:
                 payload['fsid'] = self.session['session']
 
                 prnt(self.msg.format(sys._getframe().f_code.co_name, 'rq: ' + str(payload) + ' ' + str(headers)), 'hide')
-                resp = requests_retry_session().post(
+                resp = requests_retry_session_post(
                     url.format('coupon/sell/conditions/getFromVersion'),
                     headers=headers,
                     json=payload,
@@ -769,7 +767,7 @@ class BetManager:
                 payload['fsid'] = self.session['session']
 
                 prnt(self.msg.format(sys._getframe().f_code.co_name, 'rq: ' + str(payload) + ' ' + str(headers)), 'hide')
-                resp = requests_retry_session().post(
+                resp = requests_retry_session_post(
                     url.format('coupon/sell/requestId'),
                     headers=headers,
                     json=payload,
@@ -797,7 +795,7 @@ class BetManager:
                 payload['fsid'] = self.session['session']
 
                 prnt(self.msg.format(sys._getframe().f_code.co_name, 'rq: ' + str(payload) + ' ' + str(headers)), 'hide')
-                resp = requests_retry_session().post(
+                resp = requests_retry_session_post(
                     url.format('coupon/sell/completeSell'),
                     headers=headers,
                     json=payload,
@@ -868,7 +866,7 @@ class BetManager:
         data = get_dumped_payload(payload)
 
         prnt(self.msg.format(sys._getframe().f_code.co_name, 'rq: ' + str(payload) + ' ' + str(headers)), 'hide')
-        resp = requests_retry_session().post(
+        resp = requests_retry_session_post(
             'https://23.111.80.252/session/coupon/getMinMax',
             headers=headers,
             data=data,
@@ -917,7 +915,7 @@ class BetManager:
         headers = copy.deepcopy(fb_headers)
 
         prnt(self.msg.format(sys._getframe().f_code.co_name, 'rs: ' + str(payload)), 'hide')
-        resp = requests_retry_session().post(
+        resp = requests_retry_session_post(
             url.format('coupon/result'),
             headers=headers,
             json=payload,
@@ -1047,7 +1045,7 @@ class BetManager:
         payload['client']['id'] = self.account['login']
 
         prnt(self.msg.format(sys._getframe().f_code.co_name, 'rq: ' + str(payload) + ' ' + str(headers)), 'hide')
-        resp = requests_retry_session().post(
+        resp = requests_retry_session_post(
             url.format('coupon/requestId'),
             headers=headers,
             json=payload,
@@ -1088,7 +1086,7 @@ class BetManager:
         payload['fsid'] = self.session['session']
 
         prnt(self.msg.format(sys._getframe().f_code.co_name, 'rq: ' + str(payload) + ' ' + str(headers)), 'hide')
-        resp = requests_retry_session().post(
+        resp = requests_retry_session_post(
             url.format('coupon/sell/result'),
             headers=headers,
             json=payload,
@@ -1227,7 +1225,7 @@ class BetManager:
         headers.update({'X-XERPC': '1'})
 
         prnt(self.msg.format(sys._getframe().f_code.co_name, 'rq: ' + str(payload) + ' ' + str(headers)), 'hide')
-        resp = requests_retry_session().post(
+        resp = requests_retry_session_post(
             req_url,
             headers=headers,
             data=payload,
