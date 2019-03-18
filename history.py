@@ -211,6 +211,5 @@ def export_hist(OLIMP_USER, FONBET_USER):
         pass
     os.rename(file_name, acc_name + '_' + cur_date_str + '_' + file_name)
 
-
 if __name__ == "__main__":
     export_hist(OLIMP_USER, FONBET_USER)
