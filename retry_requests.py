@@ -54,21 +54,18 @@ def retry(exceptions, delay=0, times=2):
                     return value
                 except (exceptions) as e:
                     final_excep = e
+                    prnt(final_excep)
                     pass
-                
             if final_excep is not None:
                 raise final_excep
         return inner_wrapper
-    
     return outer_wrapper
 
 @retry(exceptions=(Timeout), delay=1, times=50)
-def requests_retry_session_post(headers=None, data=None, verify=None, timeout=None, proxies=None):
+def requests_retry_session_post(url: str, headers=None, data=None, verify=None, timeout=None, proxies=None):
     global cnt_retry
-    prnt('execute requests_retry_session_post, retry:{}'.format(cnt_retry))
-    resp = requests.post(headers=headers, data=dat, verify=verify, timeout=timeout, proxies=proxies)
+    cnt_retry += 1
+    prnt('execute requests_retry_session_post, retry: {}'.format(cnt_retry))
+    resp = requests.post(url=url, headers=headers, data=data, verify=verify, timeout=timeout, proxies=proxies)
     cnt_retry = 0
     return resp
-    
-if __name__ == '__main__':
-    call_api()
