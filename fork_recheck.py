@@ -7,6 +7,7 @@ import re
 from utils import prnt
 import copy
 from retry_requests import requests_retry_session
+from exceptions import BetIsLost, BetError
 
 
 def get_olimp_info(id_matche, olimp_k):

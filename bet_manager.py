@@ -220,8 +220,8 @@ class BetManager:
                             k_val, sc, rime_req = get_fonbet_info(match_id, bet_id, param)
                         self.new_cur_total = sum(map(int, sc.split(':')))
                     except Exception as e:
-                        err_msg = self.msg_err.format(sys._getframe().f_code.co_name, 'recheck err ' + str(e))
-                        raise BetError(err_msg)
+                        err_msg = 'recheck err (' + str(e.__class__.__name__) + '): ' + str(e)
+                        prnt(self.msg_err.format(sys._getframe().f_code.co_name, err_msg))
 
                 if self.bk_name == 'olimp':
                     try:
