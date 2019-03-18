@@ -8,7 +8,7 @@ from datetime import datetime
 import time, random
 import json
 import os
-from utils import DEBUG
+from utils import DEBUG, get_param
 
 file_name = 'id_forks.txt'
 olimp_bet_min = 1000000000
@@ -199,8 +199,18 @@ def export_hist(OLIMP_USER, FONBET_USER):
         with open(datetime.now().strftime("%d_%m_%Y") + '_statistics.csv', 'w', encoding='utf-8') as f:
             f.write(header + out)
 
-    os.rename(file_name, datetime.now().strftime("%d_%m_%Y") + '_' + file_name)
-
+    cur_date_str = datetime.now().strftime("%d_%m_%Y")
+    acc_name = get_param('account_name')
+    try:
+        os.rename('client.log', + acc_name + '_' + cur_date_str + '_' + 'client.log')
+    except:
+        pass
+    try:
+        os.rename('client_hide.log', acc_name + '_' + cur_date_str + '_' + 'client_hide.log')
+    except:
+        pass
+    os.rename(file_name, acc_name + '_' + cur_date_str + '_' + file_name)
 
 if __name__ == "__main__":
     export_hist(OLIMP_USER, FONBET_USER)
+
