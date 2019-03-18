@@ -6,7 +6,6 @@ import cfscrape
 import requests
 import datetime
 import statistics
-from utils import get_param
 
 if get_param('debug'):
     DEBUG = True
