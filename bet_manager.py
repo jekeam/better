@@ -306,7 +306,6 @@ class BetManager:
         bet_id = int(self.bk_container.get('wager', {}).get('factor'))
         param = self.bk_container.get('wager', {}).get('param')
         
-        
         bet_type_sub = re.sub('\(.*\)', '', bet_type)
         bet_depends = 'Уставки есть привязкa:'
         msk_match_per = '^\d\w.*\d$'
