@@ -225,6 +225,9 @@ class BetManager:
             shared[self.bk_name_opposite + '_err'] = str(e.__class__.__name__) + ': ' + str(e)
 
     def bet_safe(self, shared: dict):
+        def get_new_total(sc: str, bet_type: str, half: int) -> int:
+            pass
+        
         new_stat = {}
         rime_req = ''
 
@@ -279,15 +282,16 @@ class BetManager:
                         else:
                             k_val, sc, rime_req = get_fonbet_info(match_id, bet_id, param, bet_type)
                         self.new_cur_total = sum(map(int, sc.split(':')))
+                        prnt(self.msg.format(sys._getframe().f_code.co_name, 'get new total from fonbet: ' + str(self.new_cur_total)))
                     except Exception as e:
-                        err_msg = 'recheck err (' + str(e.__class__.__name__) + '): ' + str(e)
+                        err_msg = 'recheck fb err (' + str(e.__class__.__name__) + '): ' + str(e)
                         prnt(self.msg_err.format(sys._getframe().f_code.co_name, err_msg))
 
                 if self.bk_name == 'olimp':
                     try:
                         k_val, sc, rime_req = get_olimp_info(match_id, bet_type)
                     except Exception as e:
-                        err_msg = self.msg_err.format(sys._getframe().f_code.co_name, 'recheck err: ' + str(e))
+                        err_msg = self.msg_err.format(sys._getframe().f_code.co_name, 'recheck ol err: ' + str(e))
                         print(err_msg)
 
                 prnt(self.msg.format(
@@ -298,6 +302,7 @@ class BetManager:
 
                 # check: score changed?
                 if self.cur_total != self.new_cur_total:
+                    prnt(self.msg.format(sys._getframe().f_code.co_name, 'score changed!'))
 
                     self.cur_total = self.new_cur_total
                     self.diff_total = float(self.bet_total - self.cur_total)
@@ -307,7 +312,6 @@ class BetManager:
                         prnt(err_str)
                         raise BetIsLost(err_str)
 
-                    prnt(self.msg.format(sys._getframe().f_code.co_name, 'score changed!'))
                     if self.vector == 'UP':
                         if self.bet_total <= self.new_cur_total:
                             #  SC1 + SC2 >= Х
