@@ -199,6 +199,7 @@ class BetManager:
                 self.wait_sign_in_opp(shared)
                 self.bet_place(shared)
             except BetError as e:
+                shared[self.bk_name + '_err'] = str(e.__class__.__name__) + ': ' + str(e)
                 prnt(e)
                 
                 self.opposite_stat_wait(shared)
@@ -208,7 +209,6 @@ class BetManager:
                     sys._getframe().f_code.co_name,
                     'Ошибка при проставлении ставки в ' + self.bk_name + ', передаю его завершающему'
                 ))
-                shared[self.bk_name + '_err'] = str(e.__class__.__name__) + ': ' + str(e)
                 self.bet_safe(shared)
 
             except BkOppBetError as e:
@@ -669,8 +669,7 @@ class BetManager:
 
             if result == 'betDelay':
                 bet_delay_sec = (float(res.get('betDelay')) / 1000)
-                prnt(self.msg.format(
-                    sys._getframe().f_code.co_name, 'bet_delay: ' + str(bet_delay_sec) + ' sec.'))
+                prnt(self.msg.format(sys._getframe().f_code.co_name, 'bet_delay: ' + str(bet_delay_sec) + ' sec.'))
                 sleep(bet_delay_sec)
 
             self.check_result(shared)
