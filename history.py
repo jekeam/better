@@ -207,7 +207,7 @@ def export_hist(OLIMP_USER, FONBET_USER):
             f.write(header + out)
 
     try:
-        os.rename('client.log', + acc_name + '_' + cur_date_str + '_' + 'client.log')
+        os.rename('client.log', acc_name + '_' + cur_date_str + '_' + 'client.log')
     except:
         pass
     try:
