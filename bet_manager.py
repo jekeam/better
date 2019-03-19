@@ -1030,16 +1030,13 @@ class BetManager:
 
                             match_id = self.wager.get('event')
                             new_wager = get_new_bets_fonbet(match_id, self.proxies, self.timeout)
-                            new_wager = new_wager.get(str(match_id), {}).get('kofs', {}).get(
-                                self.bk_container.get('bet_type'))
+                            new_wager = new_wager.get(str(match_id), {}).get('kofs', {}).get(self.bk_container.get('bet_type'))
                             if new_wager:
-                                self.msg.format(sys._getframe().f_code.co_name, 'Тотал найден: ' + str(new_wager))
+                                prnt(self.msg.format(sys._getframe().f_code.co_name, 'Тотал найден: ' + str(new_wager)))
                                 self.wager.update(new_wager)
                                 return self.bet_place(shared)
                             else:
-                                err_str = self.msg_err.format(
-                                    sys._getframe().f_code.co_name, 'Тотал не найден' + str(new_wager)
-                                )
+                                err_str = self.msg_err.format(sys._getframe().f_code.co_name, 'Тотал не найден' + str(new_wager))
                                 raise BetIsLost(err_str)
                         else:
                             err_str = self.msg_err.format(
