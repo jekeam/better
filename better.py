@@ -315,7 +315,7 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
         if shared.get('olimp_err') != 'ok' and shared.get('fonbet_err') != 'ok':
             cnt_fail = cnt_fail + 1
 
-        max_fail = 1
+        max_fail = 2
         if cnt_fail > max_fail:
             err_str = 'cnt_fail > max_fail (' + str(max_fail) + '), script off'
             raise MaxFail(err_str)
@@ -510,8 +510,9 @@ if __name__ == '__main__':
                     vect2 = bk2_bet_json.get('vector')
 
                     try:
-                        info = key + ': ' + name + \
-                               ' ' + k1_type + '=' + str(k1) + '/' + k2_type + '=' + str(k2) + ', ' + \
+                        info = key + ': ' + name + ' ' + \
+                        k1_type + '=' + str(k1) + '/' + \
+                        k2_type + '=' + str(k2) + ', ' + \
                                v_time + ' (' + str(minute) + ') ' + \
                                score + ' ' + str(pair_math) + \
                                ', live_fork: ' + str(live_fork) + \
