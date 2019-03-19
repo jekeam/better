@@ -511,8 +511,8 @@ if __name__ == '__main__':
 
                     try:
                         info = key + ': ' + name + ' ' + \
-                        k1_type + '=' + str(k1) + '/' + \
-                        k2_type + '=' + str(k2) + ', ' + \
+                               k1_type + '=' + str(k1) + '/' + \
+                               k2_type + '=' + str(k2) + ', ' + \
                                v_time + ' (' + str(minute) + ') ' + \
                                score + ' ' + str(pair_math) + \
                                ', live_fork: ' + str(live_fork) + \
