@@ -103,6 +103,8 @@ def get_olimp_info(id_matche, olimp_k):
 
 def get_fonbet_info(match_id, factor_id, param, bet_tepe=None):
     dop_stat = dict()
+    sc1 = None
+    sc2 = None
     
     prnt('match_id:{}, factor_id:{}, param:{}, bet_tepe:{}'.format(match_id, factor_id, param, bet_tepe))
     
@@ -133,17 +135,29 @@ def get_fonbet_info(match_id, factor_id, param, bet_tepe=None):
             
             if re.match('\([\d|\d\d]:[\d|\d\d]\)', event.get('scoreComment', '').replace('-',':')) and \
                str(event.get('timer', '')) == '45:00' and \
-               round(event.get('timerSeconds', 0)/60, 2) == 45.0:
+               event.get('timerSeconds', 0) == 45.0:
                 time_break_fonbet = True
                 period = 2
             elif re.match('\([\d|\d\d]:[\d|\d\d]\)', event.get('scoreComment', '').replace('-',':')) and \
-                 round(event.get('timerSeconds', 0)/60, 2) > 45.0:
+                 event.get('timerSeconds', 0)/60 > 45.0:
                 period = 2
+                
+            try:
+                sc1 = int(sc.split(':')[0])
+            except:
+                pass
+            
+            try:
+                sc2 = int(sc.split(':')[1])
+            except:
+                pass
                 
             dop_stat = {
                 'cur_score: ': sc,
+                'sc1: ': sc1,
+                'sc2: ': sc2,
                 '1st_half_score: ': event.get('scoreComment'),
-                'timerSeconds: ': event.get('timerSeconds'),
+                'minutes: ': round(event.get('timerSeconds', 0)/60) + (event.get('timerSeconds', 0)%60/100),
                 'timer: ': event.get('timer'),
                 'period: ': period,
                 'timebreak: ': time_break_fonbet
@@ -169,7 +183,7 @@ def get_fonbet_info(match_id, factor_id, param, bet_tepe=None):
                                         prnt('Тотал найден: ' + str(new_wager))
                                         k = new_wager.get('value', 0)
                                         sc = new_wager.get('score', '0:0').replace('-', ':')
-                                        return k, sc, round(resp.elapsed.total_seconds(), 2)
+                                        return k, sc, round(resp.elapsed.total_seconds(), 2), dop_stat
                                     else:
                                         err_str = 'Тотал не найден' + str(new_wager)
                                         raise BetIsLost(err_str)
@@ -181,7 +195,7 @@ def get_fonbet_info(match_id, factor_id, param, bet_tepe=None):
 
                         k = kof.get('value', 0)
                         prnt('FORK_RECHECK.PY: get_olimp_info end work', 'hide')
-                        return k, sc, round(resp.elapsed.total_seconds(), 2)
+                        return k, sc, round(resp.elapsed.total_seconds(), 2), dop_stat
 
 
 def get_kof_fonbet(obj, match_id, factor_id, param):
