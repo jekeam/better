@@ -231,6 +231,7 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
                                 "reg_id": 0,
                                 "bet_type": olimp_bet_type,
                                 "balance": bal1,
+                                "time_bet": 0,
                                 "err": 'ok'
                             },
                             "fonbet": {
@@ -240,6 +241,7 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
                                 "reg_id": 0,
                                 "bet_type": fonbet_bet_type,
                                 "balance": bal2,
+                                "time_bet": 0,
                                 "err": 'ok'
                             },
                         }
@@ -300,6 +302,14 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
         run_bets(shared)
 
         prnt('shared: ' + str(shared), 'hide')
+
+        bal1 = shared['olimp'].get('balance', bal1)
+        bal2 = shared['fonbet'].get('balance', bal2)
+        fork_info[fork_id]['olimp']['balance'] = str(bal1)
+        fork_info[fork_id]['fonbet']['balance'] = str(bal2)
+
+        fork_info[fork_id]['olimp']['balance'] = shared['olimp'].get('time_bet')
+        fork_info[fork_id]['fonbet']['balance'] = shared['fonbet'].get('time_bet')
 
         # Добавим инфу о проставлении
         success.append(key)

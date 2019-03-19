@@ -82,6 +82,8 @@ class BetManager:
         self.session_file = 'session.' + self.bk_name
         self.session = {}
 
+        self.time_start = round(time())
+
         err_msg = ''
 
         bk_work = ('olimp', 'fonbet')
@@ -179,11 +181,17 @@ class BetManager:
                         '. Пробую проставить и пробую выкупить еще!'))
                     sleep(3)
 
+        def bet_done():
+            global shared
+            if not shared[self.bk_name].get('time_bet'):
+                shared[self.bk_name]['time_bet'] = round(time() - self.time_start)
+
         try:
             try:
                 self.sign_in(shared)
                 self.wait_sign_in_opp(shared)
                 self.bet_place(shared)
+                bet_done()
             except BetError as e:
                 shared[self.bk_name + '_err'] = str(e.__class__.__name__) + ': ' + str(e)
                 prnt(e)
@@ -214,6 +222,8 @@ class BetManager:
             # В обоих БК ошибки, выкидываем вилку
             shared[self.bk_name + '_err'] = str(e.__class__.__name__) + ': ' + str(e)
             shared[self.bk_name_opposite + '_err'] = str(e.__class__.__name__) + ': ' + str(e)
+        finally:
+            bet_done()
 
     def bet_safe(self, shared: dict):
         def get_new_total(sc: str, bet_type: str, half: int) -> int:
@@ -490,6 +500,7 @@ class BetManager:
                 raise SessionNotDefined(err_str)
 
             shared['sign_in_' + self.bk_name] = 'ok'
+            shared[self.bk_name]['balance'] = self.session.get('balance')
 
         except SessionNotDefined as e:
             shared['sign_in_' + self.bk_name] = str(e.__class__.__name__) + ': ' + str(e)
@@ -520,7 +531,7 @@ class BetManager:
             if cur_bal < self.sum_bet:
                 err_str = self.msg_err.format(
                     sys._getframe().f_code.co_name,
-                    self.bk_name + ' balance ({}) < sum_bet({})'.format(str(cur_bal), str(self.sum_bet))
+                    self.bk_name + ' balance ({}) < sum_bet({})'.format(str(cur_bal), str(self.sum_bet)))
                 raise NoMoney(err_str)
 
         if self.bk_name == 'olimp':
