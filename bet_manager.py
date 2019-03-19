@@ -244,6 +244,37 @@ class BetManager:
                 err_str = 'timeout: time_start:{}, time_left:{}, cur_time:{}'. \
                     format(self.time_start, self.time_left, cur_time)
                 raise BetIsLost(err_str)
+            
+        def upd_dop_info():
+            if self.bk_name == 'fonbet' or self.bk_name_opposite == 'fonbet':
+                try:
+                    if self.bk_name_opposite == 'fonbet':
+                        k_val_opp, sc, rime_req_opp, dop_stat = get_fonbet_info(match_id_opp, bet_id_opp, param_opp, bet_type_opp)
+                    else:
+                        k_val, sc, rime_req, dop_stat = get_fonbet_info(match_id, bet_id, param, bet_type)
+                    
+                    # new flag params
+                    self.new_cur_total = sum(map(int, sc.split(':')))
+                    
+                    prnt(self.msg.format(sys._getframe().f_code.co_name, 'get new total from fonbet: ' + str(self.new_cur_total)))
+                    prnt('dop_stat: ' + str(dumps(dop_stat, ensure_ascii=False)))
+                    
+                except Exception as e:
+                    err_msg = 'recheck fb err (' + str(e.__class__.__name__) + '): ' + str(e)
+                    prnt(self.msg_err.format(sys._getframe().f_code.co_name, err_msg))
+                    
+            if self.bk_name == 'olimp':
+                try:
+                    k_val_ol, sc_ol, rime_req = get_olimp_info(match_id, bet_type)
+                except Exception as e:
+                    err_msg = self.msg_err.format(sys._getframe().f_code.co_name, 'recheck ol err: ' + str(e))
+                    print(err_msg)
+
+            prnt(self.msg.format(
+                sys._getframe().f_code.co_name,
+                'Обновил данные: match_id:{}, bet_type:{}, bet_total:{}, cur_total:{}, new_cur_total_fb:{}, rime_req:{}'.
+                    format(match_id, bet_type, self.bet_total, self.cur_total, self.new_cur_total, rime_req)))
+
         
         dop_stat = dict()
         new_stat = dict()
@@ -291,32 +322,7 @@ class BetManager:
             try:
                 # update params
                 upd_time_left()
-                if self.bk_name == 'fonbet' or self.bk_name_opposite == 'fonbet':
-                    try:
-                        if self.bk_name_opposite == 'fonbet':
-                            k_val_opp, sc, rime_req_opp, dop_stat = get_fonbet_info(match_id_opp, bet_id_opp, param_opp, bet_type_opp)
-                        else:
-                            k_val, sc, rime_req, dop_stat = get_fonbet_info(match_id, bet_id, param, bet_type)
-                        self.new_cur_total = sum(map(int, sc.split(':')))
-                        prnt(self.msg.format(sys._getframe().f_code.co_name, 'get new total from fonbet: ' + str(self.new_cur_total)))
-                        prnt('dop_stat: ' + str(dumps(dop_stat, ensure_ascii=False)))
-                    except Exception as e:
-                        err_msg = 'recheck fb err (' + str(e.__class__.__name__) + '): ' + str(e)
-                        prnt(self.msg_err.format(sys._getframe().f_code.co_name, err_msg))
-
-                if self.bk_name == 'olimp':
-                    try:
-                        k_val, sc, rime_req = get_olimp_info(match_id, bet_type)
-                    except Exception as e:
-                        err_msg = self.msg_err.format(sys._getframe().f_code.co_name, 'recheck ol err: ' + str(e))
-                        print(err_msg)
-
-                prnt(self.msg.format(
-                    sys._getframe().f_code.co_name,
-                    'Обновил данные из {}: match_id:{}, bet_type:{}, bet_total:{}, cur_total:{}, new_cur_total_fb:{}, rime_req:{}'.
-                        format(self.bk_name, match_id, bet_type, self.bet_total, self.cur_total, self.new_cur_total,
-                               rime_req)))
-
+                upd_dop_info()
                 # check: score changed?
                 if self.cur_total != self.new_cur_total:
                     prnt(self.msg.format(sys._getframe().f_code.co_name, 'score changed!'))
