@@ -418,10 +418,11 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
                                 if True:  # and '46136612' in bet_key:
                                     file_forks = 'forks.csv'
 
-                                    prnts('\n')
-                                    str_js = json.dumps(forks.get(bet_key), ensure_ascii=False)
-                                    prnts('forks: ' + bet_key + ' ' + str(str_js))
-                                    prnts('\n')
+                                    if DEBUG:
+                                        prnts('\n')
+                                        str_js = json.dumps(forks.get(bet_key), ensure_ascii=False)
+                                        prnts('forks: ' + bet_key + ' ' + str(str_js))
+                                        prnts('\n')
 
                                     if not os.path.isfile(file_forks):
                                         with open(file_forks, 'w', encoding='utf-8') as csv:
