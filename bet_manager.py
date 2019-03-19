@@ -1034,7 +1034,7 @@ class BetManager:
                                 self.wager.update(new_wager)
                                 return self.bet_place(shared)
                             else:
-                                err_str = self.msg_err.format(sys._getframe().f_code.co_name, 'Тотал не найден' + str(new_wager))
+                                err_str = self.msg_err.format(sys._getframe().f_code.co_name, 'Тотал не найден: ' + str(new_wager))
                                 raise BetIsLost(err_str)
                         else:
                             err_str = self.msg_err.format(
