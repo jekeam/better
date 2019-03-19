@@ -12,7 +12,7 @@ import time
 from random import randint
 import platform
 import sys
-from exceptions import Shutdown, FonbetBetError, OlimpBetError, MaxFail
+from exceptions import Shutdown, FonbetBetError, OlimpBetError, MaxFail, MaxFork
 import http.client
 import json
 import re
@@ -359,6 +359,11 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max, vect1, vect2, s
                 err_str = 'Max fail > ' + str(max_fail) + ', script off'
                 raise MaxFail(err_str)
 
+            max_fork = get_param('max_work')
+            if len(success) >= max_fork:
+                err_str = 'Max fork = ' + str(max_fork) + ', script off'
+                raise MaxFork(err_str)
+
             return True
 
 
@@ -443,7 +448,8 @@ if __name__ == '__main__':
         prnt('balance line: ' + str(balance_line))
         prnt('fork life time: ' + str(get_param('fork_life_time')))
         prnt('junior team exclude: ' + str(get_param('junior_team_exclude')))
-        prnt('working hours: ' + str(get_param('work_hours')))
+        prnt('working hours: ' + str(get_param('work_hour')))
+        prnt('max cnt fork: ' + str(get_param('max_work')))
 
         server_forks = dict()
         success = []
@@ -454,7 +460,7 @@ if __name__ == '__main__':
 
             balance_line = (bal1 + bal2) / 2 / 100 * 30
 
-            shutdown_minutes = 60 * (60 * get_param('work_hours'))  # секунды * на кол-во (60*1) - это час
+            shutdown_minutes = 60 * (60 * get_param('work_hour'))  # секунды * на кол-во (60*1) - это час
             if (datetime.datetime.now() - time_live).total_seconds() > (shutdown_minutes):
                 err_str = 'Прошло ' + str(shutdown_minutes / 60 / 60) + ' ч., я выключился...'
                 prnt(err_str)
@@ -560,17 +566,8 @@ if __name__ == '__main__':
                 if go_bet_key:
                     prnt(' ')
                     prnt('Go bets: ' + info)
-                    fork_success = go_bets(
-                        go_bet_json.get('kof_olimp'),
-                        go_bet_json.get('kof_fonbet'),
-                        total_bet,
-                        go_bet_key,
-                        deff_max,
-                        vect1,
-                        vect2,
-                        sc1,
-                        sc2
-                    )
+                    fork_success = go_bets(go_bet_json.get('kof_olimp'), go_bet_json.get('kof_fonbet'),
+                                           total_bet, go_bet_key, deff_max, vect1, vect2, sc1, sc2)
                 else:
                     pass
             else:

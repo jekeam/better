@@ -35,6 +35,9 @@ class BetIsLost(Exception):
 class MaxFail(Exception):
     pass
 
+class MaxFork(Exception):
+    pass
+
 class SessionNotDefined(Exception):
     pass
 
