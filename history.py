@@ -200,7 +200,7 @@ def export_hist(OLIMP_USER, FONBET_USER):
                      'fb_profit;o_profit;fb_result;o_result;fb_name;o_name;fb_status;' \
                      'o_status;f_kof_type;o_kof_type;fb_bal;ol_bal;fb_err;ol_err;\n'
 
-        with open(datetime.now().strftime("%d_%m_%Y") + '_statistics.csv', 'w', encoding='utf-8') as f:
+        with open(acc_name + '_' + datetime.now().strftime("%d_%m_%Y") + '_statistics.csv', 'w', encoding='utf-8') as f:
             f.write(header + out)
 
     cur_date_str = datetime.now().strftime("%d_%m_%Y")
