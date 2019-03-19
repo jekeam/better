@@ -169,61 +169,58 @@ class BetManager:
 
     def bet_simple(self, shared: dict):
 
-        def sale(e, shared):
+        def sale_opp(e, shared):
+            self.opposite_stat_wait(shared)
+            self.opposite_stat_get(shared)
             prnt(self.msg.format(sys._getframe().f_code.co_name,
                                  'Ошибка при проставлении ставки в ' + self.bk_name +
                                  ', делаю выкуп ставки в ' + self.bk_name_opposite))
-
-            shared[self.bk_name + '_err'] = str(e.__class__.__name__) + ': ' + str(e)
-            self.opposite_stat_wait(shared)
-            self.opposite_stat_get(shared)
+            
             self_opp = shared[self.bk_name_opposite].get('self', {})
 
-            try:
-                self_opp.sale_bet(shared)
-            except SaleError:
-                self_opp.sale_bet(shared)
+            while True:
+                try:
+                    self_opp.sale_bet(shared)
+                    break
+                except (SaleError, CouponBlocked) as e:
+                    prnt(self.msg.format(
+                        sys._getframe().f_code.co_name,
+                        'Ошибка: ' + e.__class__.__name__ + ' - ' + str(e) +
+                        '. Пробую проставить и пробую выкупить еще!'
+                    ))
+
 
         try:
             try:
                 self.sign_in(shared)
                 self.wait_sign_in_opp(shared)
                 self.bet_place(shared)
-            except (BetIsLost, NoMoney, SessionExpired) as e:
-                prnt(e)
-                while True:
-                    try:
-                        self.sale_bet(shared)
-                        is_go = False
-                        break
-                    except CouponBlocked as e:
-                        prnt(self.msg.format(
-                            sys._getframe().f_code.co_name,
-                            'Ошибка: ' + e.__class__.__name__ + ' - ' + str(e) +
-                            '. Пробую выкупить еще!'
-                        ))
-
             except BetError as e:
                 prnt(e)
+                
+                self.opposite_stat_wait(shared)
+                self.opposite_stat_get(shared)
+                
                 prnt(self.msg.format(
                     sys._getframe().f_code.co_name,
                     'Ошибка при проставлении ставки в ' + self.bk_name + ', передаю его завершающему'
                 ))
-
                 shared[self.bk_name + '_err'] = str(e.__class__.__name__) + ': ' + str(e)
-                self.opposite_stat_wait(shared)
-                self.opposite_stat_get(shared)
                 self.bet_safe(shared)
 
             except BkOppBetError as e:
                 raise BkOppBetError(e)
-            except Exception as e:
+            except (BetIsLost, NoMoney, SessionExpired, Exception) as e:
+                shared[self.bk_name + '_err'] = str(e.__class__.__name__) + ': ' + str(e)
+                
                 exc_type, exc_value, exc_traceback = sys.exc_info()
-                err_msg = 'unknown err(' + str(e.__class__.__name__) + '): ' + str(e) + '. ' + \
+                err_msg = 'Ошибка: ' + str(e.__class__.__name__) + ' - ' + str(e) + '. ' + \
                           str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
                 err_str = self.msg_err.format(sys._getframe().f_code.co_name, err_msg)
                 prnt(err_str)
-                sale(e, shared)
+                
+                sale_opp(e, shared)
+                
                 raise ValueError(err_str)
         except BkOppBetError as e:
             # В обоих БК ошибки, выкидываем вилку
@@ -848,7 +845,7 @@ class BetManager:
                 err_str = self.msg_err.format(sys._getframe().f_code.co_name, 'session expired: ' + self.session['session'])
                 raise SessionExpired(err_msg + ' ' + err_str)
             elif 'Продажа ставки недоступна'.lower() in err_msg.lower() or 'Изменилась сумма продажи ставки'.lower() in err_msg.lower():
-                raise CouponBlocked(err_msg)
+                raise CouponBlocked(self.msg.format(sys._getframe().f_code.co_name, err_msg))
 
     def get_proxy(self) -> str:
 
