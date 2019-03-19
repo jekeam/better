@@ -435,11 +435,11 @@ if __name__ == '__main__':
 
             shutdown_minutes = 60 * (60 * get_param('work_hours'))  # секунды * на кол-во (60*1) - это час
             if (datetime.datetime.now() - time_live).total_seconds() > (shutdown_minutes):
-                err_str = 'Прошло ' + str(shutdown_minutes / 60 / 60) + ' ч., я выключился...'
+                err_str = 'Прошло ' + str(shutdown_minutes / 60 / 60) + ' ч., я завершил работу'
                 prnt(err_str)
                 shutdown = True
 
-                wait_before_exp = 60 * 60 * 2
+                wait_before_exp = 60 * 60 * 0
                 prnt('Ожидание ' + str(wait_before_exp / 60) + ' минут, до выгрузки')
                 time.sleep(wait_before_exp)
 

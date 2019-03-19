@@ -10,6 +10,10 @@ import json
 import os
 from utils import DEBUG, get_param
 
+file_name = 'id_forks.txt'
+olimp_bet_min = 1000000000
+fonbet_bet_min = 999999999999999999999
+
 def olimp_get_hist(OLIMP_USER):
     global olimp_bet_min
     prnt('Олимп: делаю выгрузку')
@@ -98,9 +102,9 @@ def fonbet_get_hist(FONBET_USER):
 
 def export_hist(OLIMP_USER, FONBET_USER):
     
-    file_name = 'id_forks.txt'
-    olimp_bet_min = 1000000000
-    fonbet_bet_min = 999999999999999999999
+    global file_name
+    global olimp_bet_min
+    global fonbet_bet_min
     
     with open(file_name, encoding='utf-8') as f:
         for line in f.readlines():
