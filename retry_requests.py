@@ -57,6 +57,7 @@ def retry(exceptions, delay=0, times=2):
                     prnt('retry_requests: ' + str(final_excep))
                     pass
             if final_excep is not None:
+                prnt('retry_requests: ' + str(final_excep))
                 raise final_excep
         return inner_wrapper
     return outer_wrapper
