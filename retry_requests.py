@@ -9,11 +9,12 @@ from utils import prnt
 
 cnt_retry = 0
 
+
 def requests_retry_session(
-    retries=3,
-    backoff_factor=0.3,
-    status_forcelist=(500, 501, 502, 504),
-    session=None,
+        retries=3,
+        backoff_factor=0.3,
+        status_forcelist=(500, 501, 502, 504),
+        session=None,
 ):
     session = session or requests.Session()
     retry = Retry(
@@ -28,6 +29,7 @@ def requests_retry_session(
     session.mount('https://', adapter)
     return session
 
+
 def retry(exceptions, delay=0, times=2):
     """
     A decorator for retrying a function call with a specified delay in case of a set of exceptions
@@ -41,10 +43,11 @@ def retry(exceptions, delay=0, times=2):
 
 
     """
+
     def outer_wrapper(function):
         @functools.wraps(function)
         def inner_wrapper(*args, **kwargs):
-            final_excep = None  
+            final_excep = None
             for counter in range(times):
                 if counter > 0:
                     time.sleep(delay)
@@ -59,8 +62,11 @@ def retry(exceptions, delay=0, times=2):
             if final_excep is not None:
                 prnt('retry_requests 2: ' + str(final_excep))
                 raise final_excep
+
         return inner_wrapper
+
     return outer_wrapper
+
 
 @retry(exceptions=(Timeout, ProxyError), delay=1, times=4)
 def requests_retry_session_post(url: str, headers=None, data=None, json=None, verify=None, timeout=None, proxies=None):

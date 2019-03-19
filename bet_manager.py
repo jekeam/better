@@ -101,11 +101,10 @@ class BetManager:
         # self.manager(shared)
         shared[self.bk_name]['self'] = self
         self.bet_simple(shared)
-        
-    
+
     def wait_sign_in_opp(self, shared: dict):
         sign_stat = shared.get('sign_in_' + self.bk_name_opposite, 'wait')
-        
+
         push_ok = False
         while sign_stat == 'wait':
             if not push_ok:
@@ -116,7 +115,7 @@ class BetManager:
                 ))
                 push_ok = True
             sign_stat = shared.get('sign_in_' + self.bk_name_opposite, 'wait')
-        
+
         if sign_stat not in ('ok', 'wait'):
             err_str = self.msg_err.format(
                 sys._getframe().f_code.co_name,
@@ -130,8 +129,6 @@ class BetManager:
             self.bk_name + ' get sign in from ' +
             self.bk_name_opposite + ': ' + str(sign_stat) + '(' + str(type(sign_stat)) + ')'
         ))
-        
-        
 
     def opposite_stat_get(self, shared: dict):
 
@@ -177,7 +174,7 @@ class BetManager:
             prnt(self.msg.format(sys._getframe().f_code.co_name,
                                  'Ошибка при проставлении ставки в ' + self.bk_name +
                                  ', делаю выкуп ставки в ' + self.bk_name_opposite))
-            
+
             self_opp = shared[self.bk_name_opposite].get('self', {})
 
             while True:
@@ -192,7 +189,6 @@ class BetManager:
                     ))
                     sleep(3)
 
-
         try:
             try:
                 self.sign_in(shared)
@@ -201,10 +197,10 @@ class BetManager:
             except BetError as e:
                 shared[self.bk_name + '_err'] = str(e.__class__.__name__) + ': ' + str(e)
                 prnt(e)
-                
+
                 self.opposite_stat_wait(shared)
                 self.opposite_stat_get(shared)
-                
+
                 prnt(self.msg.format(
                     sys._getframe().f_code.co_name,
                     'Ошибка при проставлении ставки в ' + self.bk_name + ', передаю его завершающему'
@@ -215,15 +211,15 @@ class BetManager:
                 raise BkOppBetError(e)
             except (BetIsLost, NoMoney, SessionExpired, Exception) as e:
                 shared[self.bk_name + '_err'] = str(e.__class__.__name__) + ': ' + str(e)
-                
+
                 exc_type, exc_value, exc_traceback = sys.exc_info()
                 err_msg = 'Ошибка: ' + str(e.__class__.__name__) + ' - ' + str(e) + '. ' + \
                           str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
                 err_str = self.msg_err.format(sys._getframe().f_code.co_name, err_msg)
                 prnt(err_str)
-                
+
                 sale_opp(e, shared)
-                
+
                 raise ValueError(err_str)
         except BkOppBetError as e:
             # В обоих БК ошибки, выкидываем вилку
@@ -233,7 +229,7 @@ class BetManager:
     def bet_safe(self, shared: dict):
         def get_new_total(sc: str, bet_type: str, half: int) -> int:
             pass
-        
+
         def check_lost():
             self.cur_total = self.new_cur_total
             self.diff_total = float(self.bet_total - self.cur_total)
@@ -241,37 +237,37 @@ class BetManager:
                 err_str = ' cur_total:{}, bet_total:{}. bet lost, im sorry...'.format(self.cur_total, self.bet_total)
                 prnt(err_str)
                 raise BetIsLost(err_str)
-        
+
         def upd_time_left():
             cur_time = round(int(time()))
             self.time_left = (self.time_start + self.timeout_left) - cur_time
             if self.time_left < 0:
                 err_str = 'timeout: time_start:{}, time_left:{}, cur_time:{}'.format(self.time_start, self.time_left, cur_time)
                 raise BetIsLost(err_str)
-            
+
         def upd_dop_info():
-            global  rime_req
-            global  k_val
-            global  match_id
-            global  bet_type
-            
+            global rime_req
+            global k_val
+            global match_id
+            global bet_type
+
             if self.bk_name == 'fonbet' or self.bk_name_opposite == 'fonbet':
                 try:
                     if self.bk_name_opposite == 'fonbet':
                         k_val_opp, sc, rime_req_opp, dop_stat = get_fonbet_info(match_id_opp, bet_id_opp, param_opp, bet_type_opp)
                     else:
                         k_val, sc, rime_req, dop_stat = get_fonbet_info(match_id, bet_id, param, bet_type)
-                    
+
                     # new flag params
                     self.new_cur_total = sum(map(int, sc.split(':')))
-                    
+
                     prnt(self.msg.format(sys._getframe().f_code.co_name, 'get new total from fonbet: ' + str(self.new_cur_total)))
                     prnt('dop_stat: ' + str(dumps(dop_stat, ensure_ascii=False)))
-                    
+
                 except Exception as e:
                     err_msg = 'recheck fb err (' + str(e.__class__.__name__) + '): ' + str(e)
                     prnt(self.msg_err.format(sys._getframe().f_code.co_name, err_msg))
-                    
+
             if self.bk_name == 'olimp':
                 try:
                     k_val, sc_ol, rime_req = get_olimp_info(match_id, bet_type)
@@ -284,7 +280,6 @@ class BetManager:
                 'Обновил данные: match_id:{}, bet_type:{}, val:{}, bet_total:{}, cur_total:{}, new_cur_total_fb:{}, rime_req:{}'.
                     format(match_id, bet_type, k_val, self.bet_total, self.cur_total, self.new_cur_total, rime_req)))
 
-        
         dop_stat = dict()
         new_stat = dict()
         rime_req = 0
@@ -297,7 +292,7 @@ class BetManager:
 
         self.time_start = round(int(time()))
         self.time_left = -1
-        
+
         if self.vector == 'UP':
             self.timeout_left = float(60 * 10)
         elif self.vector == 'DOWN':
@@ -313,7 +308,7 @@ class BetManager:
         bet_type = self.bk_container.get('bet_type')
         bet_id = int(self.bk_container.get('wager', {}).get('factor'))
         param = self.bk_container.get('wager', {}).get('param')
-        
+
         bet_type_sub = re.sub('\(.*\)', '', bet_type)
         bet_depends = 'Уставки есть привязкa:'
         msk_match_per = '^\d\w.*\d$'
@@ -321,16 +316,15 @@ class BetManager:
         msk_period = '^\d\w.*'
         if re.match(msk_match_per, bet_type_sub):
             bet_depends = bet_depends + \
-            ' команада=' + bet_type_sub[-1] + ' и период=' +  bet_type_sub[0:1]
+                          ' команада=' + bet_type_sub[-1] + ' и период=' + bet_type_sub[0:1]
         elif re.match(msk_team, bet_type_sub):
             bet_depends = bet_depends + ' команада=' + bet_type_sub[-1]
         elif re.match(msk_period, bet_type_sub):
             bet_depends = bet_depends + ' период=' + bet_type_sub[0:1]
         else:
             bet_depends = 'Ставка не привязана ни к периоду, ни к команде'
-            
+
         prnt(self.msg.format(sys._getframe().f_code.co_name, bet_depends))
-            
 
         if self.bk_name_opposite == 'fonbet':
             prnt(self.msg.format(
@@ -356,7 +350,7 @@ class BetManager:
                 # check: score changed?
                 if self.cur_total != self.new_cur_total:
                     prnt(self.msg.format(sys._getframe().f_code.co_name, 'score changed!'))
-                    
+
                     check_lost()
 
                     if self.vector == 'UP':
@@ -431,7 +425,7 @@ class BetManager:
                 # except Exception as e:
                 #     #raise SessionNotDefined(e)
                 #     raise ValueError(e)
-                
+
                 payload = copy.deepcopy(ol_payload)
                 payload.update({'login': self.account['login'], 'password': self.account['password']})
 
@@ -457,7 +451,7 @@ class BetManager:
                 self.session['currency'] = dict(data).get('cur')
 
             elif self.bk_name == 'fonbet':
-                
+
                 # # for test
                 # sleep(5)
                 # try:
@@ -511,7 +505,7 @@ class BetManager:
             if not self.session.get('session'):
                 err_str = self.msg_err.format(sys._getframe().f_code.co_name, 'session_id not defined')
                 raise SessionNotDefined(err_str)
-                
+
             shared['sign_in_' + self.bk_name] = 'ok'
 
         except SessionNotDefined as e:
@@ -519,7 +513,7 @@ class BetManager:
             raise SessionNotDefined(e)
         except Exception as e:
             shared['sign_in_' + self.bk_name] = str(e.__class__.__name__) + ': ' + str(e)
-            
+
             exc_type, exc_value, exc_traceback = sys.exc_info()
             err_msg = 'unknown err(' + str(e.__class__.__name__) + '): ' + str(e) + '. ' + \
                       str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
