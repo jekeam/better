@@ -359,7 +359,7 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max, vect1, vect2, s
                 err_str = 'Max fail > ' + str(max_fail) + ', script off'
                 raise MaxFail(err_str)
 
-            max_fork = get_param('max_work')
+            max_fork = get_param('max_fork')
             if len(success) >= max_fork:
                 err_str = 'Max fork = ' + str(max_fork) + ', script off'
                 raise MaxFork(err_str)
@@ -449,7 +449,7 @@ if __name__ == '__main__':
         prnt('fork life time: ' + str(get_param('fork_life_time')))
         prnt('junior team exclude: ' + str(get_param('junior_team_exclude')))
         prnt('working hours: ' + str(get_param('work_hour')))
-        prnt('max cnt fork: ' + str(get_param('max_work')))
+        prnt('max cnt fork: ' + str(get_param('max_fork')))
 
         server_forks = dict()
         success = []
