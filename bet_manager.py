@@ -228,23 +228,28 @@ class BetManager:
         def get_new_total(sc: str, bet_type: str, half: int) -> int:
             pass
         
+        def upd_time_left():
+            cur_time = round(int(time()))
+            self.time_left = (self.time_start + self.timeout_left) - cur_time
+            if self.time_left < 0:
+                err_str = 'timeout: time_start:{}, time_left:{}, cur_time:{}'. \
+                    format(self.time_start, self.time_left, cur_time)
+                raise BetIsLost(err_str)
+        
         dop_stat = dict()
         new_stat = dict()
-        rime_req = ''
+        rime_req = 0
 
         self_opp = shared[self.bk_name_opposite].get('self', {})
         self.vector = self.bk_container.get('wager', {})['vector']
 
         self.time_start = round(int(time()))
         self.time_left = -1
+        
         if self.vector == 'UP':
-            timeout = float(60 * 10)
-            # timeout = float(60 * 0.5)
-            self.time_left = (self.time_start + timeout) - round(int(time()))
+            self.timeout_left = float(60 * 10)
         elif self.vector == 'DOWN':
-            timeout = round(float(60 * 2.5))
-            # timeout = round(float(60 * 0.25))
-            self.time_left = (self.time_start + timeout) - round(int(time()))
+            self.timeout_left = round(float(60 * 2.5))
 
         self.cur_total = float(self.bk_container['cur_total'])
         self.bet_total = float(self.bk_container.get('bet_total'))
@@ -276,6 +281,7 @@ class BetManager:
         while is_go:
             try:
                 # update params
+                upd_time_left()
                 if self.bk_name == 'fonbet' or self.bk_name_opposite == 'fonbet':
                     try:
                         if self.bk_name_opposite == 'fonbet':
@@ -337,23 +343,12 @@ class BetManager:
                             prnt(self.msg.format(sys._getframe().f_code.co_name, 'Greetings! You won, brain!'))
                             is_go = False
                 else:
-                    cur_time = round(int(time()))
-                    self.time_left = (self.time_start + timeout) - cur_time
-
                     if self.vector == 'UP':
-                        if self.time_left < 0:
-                            err_str = 'timeout: time_start:{}, time_left:{}, cur_time:{}'. \
-                                format(self.time_start, self.time_left, cur_time)
-                            raise BetIsLost(err_str)
                         # recalc sum
                         self.bet_place(shared)
                         is_go = False
 
                     elif self.vector == 'DOWN':
-                        if self.time_left < 0:
-                            err_str = 'timeout: time_start:{}, time_left:{}, cur_time:{}'. \
-                                format(self.time_start, self.time_left, cur_time)
-                            raise BetIsLost(err_str)
                         # recalc sum
                         self.bet_place(shared)
                         is_go = False
@@ -365,17 +360,17 @@ class BetManager:
                 prnt(self.msg.format(sys._getframe().f_code.co_name,
                                      'Ошибка при проставлении ставки в ' + self.bk_name +
                                      ', делаю выкуп ставки в ' + self.bk_name_opposite))
-                # TODO REFACT - loop
-                try:
-                    self_opp.sale_bet(shared)
-                    is_go = False
-                except CouponBlocked as e:
-                    is_sale_lock = True
-                    prnt(self.msg.format(
-                        sys._getframe().f_code.co_name,
-                        'Ошибка: ' + e.__class__.__name__ + ' - ' + str(e) +
-                        '. Пробую проставить и пробую выкупить еще!'
-                    ))
+                while True:
+                    try:
+                        self_opp.sale_bet(shared)
+                        is_go = False
+                        break
+                    except CouponBlocked as e:
+                        prnt(self.msg.format(
+                            sys._getframe().f_code.co_name,
+                            'Ошибка: ' + e.__class__.__name__ + ' - ' + str(e) +
+                            '. Пробую проставить и пробую выкупить еще!'
+                        ))
 
             except Exception as e:
                 prnt(self.msg.format(

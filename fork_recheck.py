@@ -141,7 +141,6 @@ def get_fonbet_info(match_id, factor_id, param, bet_tepe=None):
             elif re.match('\([\d|\d\d]:[\d|\d\d]\)', event.get('scoreComment', '').replace('-',':')) and \
                  event.get('timerSeconds', 0)/60 > 45.0:
                 period = 2
-                
             try:
                 sc1 = int(sc.split(':')[0])
             except:
