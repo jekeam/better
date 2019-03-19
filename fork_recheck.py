@@ -161,7 +161,6 @@ def get_fonbet_info(match_id, factor_id, param, bet_tepe=None):
                 'period: ': period,
                 'timebreak: ': time_break_fonbet
             }
-            prnt('dop_stat: ' + json.dumps(dop_stat, ensure_ascii=False))
             
             for cat in event.get('subcategories'):
                 for kof in cat.get('quotes'):
