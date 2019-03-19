@@ -181,8 +181,7 @@ class BetManager:
                         '. Пробую проставить и пробую выкупить еще!'))
                     sleep(3)
 
-        def bet_done():
-            global shared
+        def bet_done(shared):
             if not shared[self.bk_name].get('time_bet'):
                 shared[self.bk_name]['time_bet'] = round(time() - self.time_start)
 
@@ -191,7 +190,7 @@ class BetManager:
                 self.sign_in(shared)
                 self.wait_sign_in_opp(shared)
                 self.bet_place(shared)
-                bet_done()
+                bet_done(shared)
             except BetError as e:
                 shared[self.bk_name + '_err'] = str(e.__class__.__name__) + ': ' + str(e)
                 prnt(e)
@@ -223,7 +222,7 @@ class BetManager:
             shared[self.bk_name + '_err'] = str(e.__class__.__name__) + ': ' + str(e)
             shared[self.bk_name_opposite + '_err'] = str(e.__class__.__name__) + ': ' + str(e)
         finally:
-            bet_done()
+            bet_done(shared)
 
     def bet_safe(self, shared: dict):
         def get_new_total(sc: str, bet_type: str, half: int) -> int:
