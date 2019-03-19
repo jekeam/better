@@ -317,7 +317,7 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
 
         max_fail = 1
         if cnt_fail > max_fail:
-            err_str = 'Max fail > ' + str(max_fail) + ', script off'
+            err_str = 'cnt_fail > max_fail (' + str(max_fail) + '), script off'
             raise MaxFail(err_str)
 
         prnt('Matchs exclude: ' + str(success))
