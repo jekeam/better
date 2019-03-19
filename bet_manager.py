@@ -189,12 +189,19 @@ class BetManager:
                 self.sign_in(shared)
                 self.wait_sign_in_opp(shared)
                 self.bet_place(shared)
-            except CouponBlocked as e:
-                # todo loop
-                prnt(e)
             except (BetIsLost, NoMoney, SessionExpired) as e:
                 prnt(e)
-                sale(e, shared)
+                while True:
+                    try:
+                        self.sale_bet(shared)
+                        is_go = False
+                        break
+                    except CouponBlocked as e:
+                        prnt(self.msg.format(
+                            sys._getframe().f_code.co_name,
+                            'Ошибка: ' + e.__class__.__name__ + ' - ' + str(e) +
+                            '. Пробую выкупить еще!'
+                        ))
 
             except BetError as e:
                 prnt(e)
