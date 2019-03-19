@@ -14,6 +14,7 @@ file_name = 'id_forks.txt'
 olimp_bet_min = 1000000000
 fonbet_bet_min = 999999999999999999999
 
+
 def olimp_get_hist(OLIMP_USER):
     global olimp_bet_min
     prnt('Олимп: делаю выгрузку')
@@ -104,7 +105,10 @@ def export_hist(OLIMP_USER, FONBET_USER):
     global file_name
     global olimp_bet_min
     global fonbet_bet_min
-    
+
+    cur_date_str = datetime.now().strftime("%d_%m_%Y")
+    acc_name = get_param('account_name')
+
     with open(file_name, encoding='utf-8') as f:
         for line in f.readlines():
             fork = json.loads(line)
@@ -115,7 +119,7 @@ def export_hist(OLIMP_USER, FONBET_USER):
                 if info['olimp'].get('reg_id', olimp_bet_min):
                     if int(info['olimp'].get('reg_id', olimp_bet_min)) < olimp_bet_min:
                         olimp_bet_min = info['olimp'].get('reg_id', '')
-                        
+
     out = ""
     o_list = olimp_get_hist(OLIMP_USER)
     f_list = fonbet_get_hist(FONBET_USER)
@@ -198,13 +202,11 @@ def export_hist(OLIMP_USER, FONBET_USER):
                      'fb_profit;o_profit;fb_result;o_result;fb_name;o_name;fb_status;' \
                      'o_status;f_kof_type;o_kof_type;fb_bal;ol_bal;fb_err;ol_err;\n'
 
-        with open(datetime.now().strftime("%d_%m_%Y") + '_statistics.csv', 'w', encoding='utf-8') as f:
+        with open(acc_name + '_' + datetime.now().strftime("%d_%m_%Y") + '_statistics.csv', 'w', encoding='utf-8') as f:
             f.write(header + out)
 
-    cur_date_str = datetime.now().strftime("%d_%m_%Y")
-    acc_name = get_param('account_name')
     try:
-        os.rename('client.log', + acc_name + '_' + cur_date_str + '_' + 'client.log')
+        os.rename('client.log', acc_name + '_' + cur_date_str + '_' + 'client.log')
     except:
         pass
     try:
@@ -213,6 +215,6 @@ def export_hist(OLIMP_USER, FONBET_USER):
         pass
     os.rename(file_name, acc_name + '_' + cur_date_str + '_' + file_name)
 
+
 if __name__ == "__main__":
     export_hist(OLIMP_USER, FONBET_USER)
-
