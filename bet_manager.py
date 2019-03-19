@@ -228,6 +228,15 @@ class BetManager:
         def get_new_total(sc: str, bet_type: str, half: int) -> int:
             pass
         
+        def check_lost():
+            self.cur_total = self.new_cur_total
+            self.diff_total = float(self.bet_total - self.cur_total)
+            if self.diff_total < 0:
+                err_str = ' cur_total:{}, bet_total:{}. bet lost, im sorry...'. \
+                    format(self.cur_total, self.bet_total)
+                prnt(err_str)
+                raise BetIsLost(err_str)
+        
         def upd_time_left():
             cur_time = round(int(time()))
             self.time_left = (self.time_start + self.timeout_left) - cur_time
@@ -311,14 +320,8 @@ class BetManager:
                 # check: score changed?
                 if self.cur_total != self.new_cur_total:
                     prnt(self.msg.format(sys._getframe().f_code.co_name, 'score changed!'))
-
-                    self.cur_total = self.new_cur_total
-                    self.diff_total = float(self.bet_total - self.cur_total)
-                    if self.diff_total < 0:
-                        err_str = ' cur_total:{}, bet_total:{}. bet lost, im sorry...'. \
-                            format(self.cur_total, self.bet_total)
-                        prnt(err_str)
-                        raise BetIsLost(err_str)
+                    
+                    check_lost()
 
                     if self.vector == 'UP':
                         if self.bet_total <= self.new_cur_total:
