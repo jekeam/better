@@ -354,7 +354,7 @@ def go_bets(wager_olimp, wager_fonbet, total_bet, key, deff_max, vect1, vect2, s
             prnt('Ожидание ' + str(sleep_post_work) + ' сек.')
             time.sleep(sleep_post_work)
 
-            max_fail = 5
+            max_fail = get_param('max_fail')
             if cnt_fail > max_fail:
                 err_str = 'Max fail > ' + str(max_fail) + ', script off'
                 raise MaxFail(err_str)
@@ -450,6 +450,7 @@ if __name__ == '__main__':
         prnt('junior team exclude: ' + str(get_param('junior_team_exclude')))
         prnt('working hours: ' + str(get_param('work_hour')))
         prnt('max cnt fork: ' + str(get_param('max_fork')))
+        prnt('max cnt fail: ' + str(get_param('max_fail')))
 
         server_forks = dict()
         success = []
