@@ -98,7 +98,7 @@ def check_fork(key, L, k1, k2, live_fork, bk1_score, bk2_score, minute, time_bre
     fork_exclude_text = ''
     v = True
 
-    if '(' not in key and ')' not in key:
+    if '@ТМ(' not in key and '@ТБ(' not in key:
         fork_exclude_text = fork_exclude_text + 'Вилка исключена, т.к. я еще не умею работать с этой ставкой: ' + str(key) + ')\n'
 
     deff_limit = 3
@@ -218,7 +218,7 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
                 change_proc = round(new_proc - cur_proc, 2)
                 prnt('new proc: ' + str(new_proc) + '%, change: ' + str(change_proc))
 
-                if (check_l(L) == '' or DEBUG) and ('(' in key or ')' in key):
+                if check_l(L) == '' or (DEBUG and ('@ТМ(' in key or '@ТБ(' in key)):
 
                     is_recheck = True
                     fork_id = int(time.time())
