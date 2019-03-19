@@ -315,7 +315,7 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
         if shared.get('olimp_err') != 'ok' and shared.get('fonbet_err') != 'ok':
             cnt_fail = cnt_fail + 1
 
-        max_fail = 3
+        max_fail = 1
         if cnt_fail > max_fail:
             err_str = 'Max fail > ' + str(max_fail) + ', script off'
             raise MaxFail(err_str)
@@ -387,7 +387,7 @@ F = 0  # счетчик (количество, найденых вилок)
 balance_line = 0  # (bal1 + bal2) / 2 / 100 * 60
 time_get_balance = datetime.datetime.now()
 time_live = datetime.datetime.now()
-cnt_fail = 5
+cnt_fail = 0
 
 # wag_fb:{'event': '12797479', 'factor': '921', 'param': '', 'score': '0:0', 'value': '2.35'}
 # wag_fb:{'apid': '1144260386:45874030:1:3:-9999:3:NULL:NULL:1', 'factor': '1.66', 'sport_id': 1, 'event': '45874030'}
