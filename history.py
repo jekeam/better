@@ -106,6 +106,9 @@ def export_hist(OLIMP_USER, FONBET_USER):
     global olimp_bet_min
     global fonbet_bet_min
     
+    cur_date_str = datetime.now().strftime("%d_%m_%Y")
+    acc_name = get_param('account_name')
+    
     with open(file_name, encoding='utf-8') as f:
         for line in f.readlines():
             fork = json.loads(line)
@@ -203,8 +206,6 @@ def export_hist(OLIMP_USER, FONBET_USER):
         with open(acc_name + '_' + datetime.now().strftime("%d_%m_%Y") + '_statistics.csv', 'w', encoding='utf-8') as f:
             f.write(header + out)
 
-    cur_date_str = datetime.now().strftime("%d_%m_%Y")
-    acc_name = get_param('account_name')
     try:
         os.rename('client.log', + acc_name + '_' + cur_date_str + '_' + 'client.log')
     except:
