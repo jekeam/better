@@ -54,7 +54,7 @@ def retry(exceptions, delay=0, times=2):
                     return value
                 except (exceptions) as e:
                     final_excep = e
-                    prnt(final_excep)
+                    prnt('retry_requests: ' + str(final_excep))
                     pass
             if final_excep is not None:
                 raise final_excep
@@ -65,7 +65,7 @@ def retry(exceptions, delay=0, times=2):
 def requests_retry_session_post(url: str, headers=None, data=None, json=None, verify=None, timeout=None, proxies=None):
     global cnt_retry
     cnt_retry += 1
-    prnt('execute requests_retry_session_post, retry: {}'.format(cnt_retry))
+    prnt('retry_requests: execute requests_retry_session_post, retry: {}'.format(cnt_retry))
     resp = requests_retry_session().post(url=url, headers=headers, data=data, json=json, verify=False, timeout=20, proxies=proxies)
     cnt_retry = 0
     return resp

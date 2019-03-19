@@ -351,10 +351,10 @@ def run_client():
             server_forks = data_json
             time.sleep(0.5)
     except Shutdown as e:
-        prnt(e)
+        prnt('better: ' +  str(e.__class__.__name__) + ' - ' + str(e))
         raise ValueError(e)
     except Exception as e:
-        prnt(e)
+        prnt('better: ' +  str(e.__class__.__name__) + ' - ' + str(e))
         server_forks = {}
         conn.close()
         time.sleep(10)
@@ -436,7 +436,7 @@ if __name__ == '__main__':
             shutdown_minutes = 60 * (60 * get_param('work_hours'))  # секунды * на кол-во (60*1) - это час
             if (datetime.datetime.now() - time_live).total_seconds() > (shutdown_minutes):
                 err_str = 'Прошло ' + str(shutdown_minutes / 60 / 60) + ' ч., я завершил работу'
-                prnt(err_str)
+                prnt('better: ' +  err_str)
                 shutdown = True
 
                 wait_before_exp = 60 * 60 * 0
@@ -520,7 +520,7 @@ if __name__ == '__main__':
                     except Exception as e:
                         exc_type, exc_value, exc_traceback = sys.exc_info()
                         err_str = str(e) + ' ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
-                        prnt(err_str)
+                        prnt('better: ' +  err_str)
 
                         prnt('deff_max: ' + str(deff_max))
                         prnt('live_fork_total: ' + str(live_fork_total))
@@ -574,4 +574,4 @@ if __name__ == '__main__':
     except Exception as e:
         exc_type, exc_value, exc_traceback = sys.exc_info()
         err_str = str(e) + ' ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
-        prnt(err_str)
+        prnt('better: ' +  str(e.__class__.__name__) + ' - ' + str(err_str))
