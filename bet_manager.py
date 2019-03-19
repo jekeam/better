@@ -175,8 +175,8 @@ class BetManager:
                                  ', делаю выкуп ставки в ' + self.bk_name_opposite))
 
             shared[self.bk_name + '_err'] = str(e.__class__.__name__) + ': ' + str(e)
-            self.opposite_stat_get(shared)
             self.opposite_stat_wait(shared)
+            self.opposite_stat_get(shared)
             self_opp = shared[self.bk_name_opposite].get('self', {})
 
             try:
