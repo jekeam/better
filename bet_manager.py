@@ -205,8 +205,8 @@ class BetManager:
                 ))
 
                 shared[self.bk_name + '_err'] = str(e.__class__.__name__) + ': ' + str(e)
-                self.opposite_stat_get(shared)
                 self.opposite_stat_wait(shared)
+                self.opposite_stat_get(shared)
                 self.bet_safe(shared)
 
             except BkOppBetError as e:
@@ -217,9 +217,7 @@ class BetManager:
                           str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
                 err_str = self.msg_err.format(sys._getframe().f_code.co_name, err_msg)
                 prnt(err_str)
-
                 sale(e, shared)
-
                 raise ValueError(err_str)
         except BkOppBetError as e:
             # В обоих БК ошибки, выкидываем вилку
