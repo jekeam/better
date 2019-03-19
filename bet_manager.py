@@ -228,7 +228,8 @@ class BetManager:
         def get_new_total(sc: str, bet_type: str, half: int) -> int:
             pass
         
-        new_stat = {}
+        dop_stat = dict()
+        new_stat = dict()
         rime_req = ''
 
         self_opp = shared[self.bk_name_opposite].get('self', {})
@@ -278,11 +279,12 @@ class BetManager:
                 if self.bk_name == 'fonbet' or self.bk_name_opposite == 'fonbet':
                     try:
                         if self.bk_name_opposite == 'fonbet':
-                            k_val_opp, sc, rime_req_opp = get_fonbet_info(match_id_opp, bet_id_opp, param_opp, bet_type_opp)
+                            k_val_opp, sc, rime_req_opp, dop_stat = get_fonbet_info(match_id_opp, bet_id_opp, param_opp, bet_type_opp)
                         else:
-                            k_val, sc, rime_req = get_fonbet_info(match_id, bet_id, param, bet_type)
+                            k_val, sc, rime_req, dop_stat = get_fonbet_info(match_id, bet_id, param, bet_type)
                         self.new_cur_total = sum(map(int, sc.split(':')))
                         prnt(self.msg.format(sys._getframe().f_code.co_name, 'get new total from fonbet: ' + str(self.new_cur_total)))
+                        prnt('dop_stat: ' + str(dumps(dop_stat, ensure_ascii=False)))
                     except Exception as e:
                         err_msg = 'recheck fb err (' + str(e.__class__.__name__) + '): ' + str(e)
                         prnt(self.msg_err.format(sys._getframe().f_code.co_name, err_msg))

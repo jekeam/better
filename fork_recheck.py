@@ -101,6 +101,8 @@ def get_olimp_info(id_matche, olimp_k):
 
 
 def get_fonbet_info(match_id, factor_id, param, bet_tepe=None):
+    dop_stat = dict()
+    
     prnt('match_id:{}, factor_id:{}, param:{}, bet_tepe:{}'.format(match_id, factor_id, param, bet_tepe))
     
     header = copy.deepcopy(fb_headers)
@@ -137,12 +139,14 @@ def get_fonbet_info(match_id, factor_id, param, bet_tepe=None):
                  round(event.get('timerSeconds', 0)/60, 2) > 45.0:
                 period = 2
                 
-            prnt('current score: ' + str(sc))
-            prnt('1st half score: ' + str(event.get('scoreComment')))
-            prnt('timerSeconds: ' + str(event.get('timerSeconds')))
-            prnt('timer: ' + str(event.get('timer')))
-            prnt('calc period: '+str(period))
-            prnt('calc timebreak: ' + str(time_break_fonbet))
+            dop_stat = {
+                'cur_score: ': sc,
+                '1st_half_score: ': event.get('scoreComment'),
+                'timerSeconds: ': event.get('timerSeconds'),
+                'timer: ': event.get('timer'),
+                'period: ': period,
+                'timebreak: ': time_break_fonbet
+            }
             
             for cat in event.get('subcategories'):
                 for kof in cat.get('quotes'):
@@ -184,11 +188,12 @@ def get_kof_fonbet(obj, match_id, factor_id, param):
     obj['fonbet'] = 0
     obj['fonbet_time_req'] = 0
     sc = ''
+    dop_stat = dict()
     if param:
         param = int(param)
 
     try:
-        obj['fonbet'], sc, rime_req = get_fonbet_info(match_id, factor_id, param)
+        obj['fonbet'], sc, rime_req, dop_stat = get_fonbet_info(match_id, factor_id, param)
         obj['fonbet_time_req'] = rime_req
     except Exception as e:
         prnt('FORK_RECHECK.PY - fonbet-error: ошибка при повторной проверке коэф-та: ' + str(e))
@@ -215,4 +220,4 @@ def get_kof_olimp(obj, olimp_match, olimp_k):
 
 
 if __name__ == "__main__":
-    x, y, z = get_fonbet_info(13798881, 1871, 50, 'ТМ2(1.5)')
+    x, y, z, m = get_fonbet_info(13798881, 1871, 50, 'ТМ2(1.5)')
