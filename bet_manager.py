@@ -383,6 +383,7 @@ class BetManager:
                         # recalc sum
                         self.bet_place(shared)
                         is_go = False
+                sleep(3)
 
             except BetIsLost as e:
                 shared[self.bk_name + '_err'] = str(e.__class__.__name__) + ': ' + str(e)
