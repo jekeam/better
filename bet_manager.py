@@ -250,6 +250,11 @@ class BetManager:
                 raise BetIsLost(err_str)
             
         def upd_dop_info():
+            global  rime_req
+            global  k_val
+            global  match_id
+            global  bet_type
+            
             if self.bk_name == 'fonbet' or self.bk_name_opposite == 'fonbet':
                 try:
                     if self.bk_name_opposite == 'fonbet':
@@ -276,13 +281,16 @@ class BetManager:
 
             prnt(self.msg.format(
                 sys._getframe().f_code.co_name,
-                'Обновил данные: match_id:{}, bet_type:{}, bet_total:{}, cur_total:{}, new_cur_total_fb:{}, rime_req:{}'.
-                    format(match_id, bet_type, self.bet_total, self.cur_total, self.new_cur_total, rime_req)))
+                'Обновил данные: match_id:{}, bet_type:{}, val:{}, bet_total:{}, cur_total:{}, new_cur_total_fb:{}, rime_req:{}'.
+                    format(match_id, bet_type, k_val, self.bet_total, self.cur_total, self.new_cur_total, rime_req)))
 
         
         dop_stat = dict()
         new_stat = dict()
         rime_req = 0
+        k_val = 0
+        match_id = 0
+        bet_type = ''
 
         self_opp = shared[self.bk_name_opposite].get('self', {})
         self.vector = self.bk_container.get('wager', {})['vector']
