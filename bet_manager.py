@@ -184,7 +184,7 @@ class BetManager:
         def bet_done(shared):
             if not shared[self.bk_name].get('time_bet'):
                 shared[self.bk_name]['time_bet'] = round(time() - self.time_start)
-                shared[self.bk_name]['balance'] = self.session.get('balance')
+            shared[self.bk_name]['balance'] = self.session.get('balance')
 
         try:
             try:

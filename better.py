@@ -305,8 +305,8 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
 
         bal1 = shared['olimp'].get('balance', bal1)
         bal2 = shared['fonbet'].get('balance', bal2)
-        fork_info[fork_id]['olimp']['balance'] = str(bal1)
-        fork_info[fork_id]['fonbet']['balance'] = str(bal2)
+        fork_info[fork_id]['olimp']['balance'] = bal1
+        fork_info[fork_id]['fonbet']['balance'] = bal2
 
         fork_info[fork_id]['olimp']['balance'] = shared['olimp'].get('time_bet')
         fork_info[fork_id]['fonbet']['balance'] = shared['fonbet'].get('time_bet')
