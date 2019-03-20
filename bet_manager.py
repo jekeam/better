@@ -650,7 +650,9 @@ class BetManager:
             self.payload['requestId'] = self.reqId
 
             prnt(self.msg.format(sys._getframe().f_code.co_name, 'rq: ' + str(payload) + ' ' + str(headers)), 'hide')
+            
             self.opposite_stat_get(shared)
+            
             resp = requests_retry_session_post(
                 url.format('coupon/register'),
                 headers=headers,
