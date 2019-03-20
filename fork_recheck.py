@@ -192,6 +192,7 @@ def get_fonbet_info(match_id, factor_id, param, bet_tepe=None):
                                 prnt('kof is blocked ' + str(kof))
 
                         k = kof.get('value', 0)
+                        prnt('fonbet score: ' + sc)
                         prnt('FORK_RECHECK.PY: get_olimp_info end work', 'hide')
                         return k, sc, round(resp.elapsed.total_seconds(), 2), dop_stat
 
