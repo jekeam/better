@@ -53,10 +53,14 @@ def run_bets(shared: dict):
 class BetManager:
 
     def __init__(self, shared: dict, bk_name: str, bk_container: dict):
+
         self.bk_name = bk_name
         self.bk_container = bk_container
         self.wager = bk_container['wager']
         self.bk_name_opposite = bk_container['opposite']
+
+        self.msg_err = self.bk_name + '. {}, err: {}'
+        self.msg = self.bk_name + '. {}, msg: {}'
 
         self.total_bet = bk_container.get('bet_total')
         self.side_team = bk_container['side_team']
@@ -90,8 +94,6 @@ class BetManager:
         self.proxies = self.get_proxy()
         self.server_olimp = 10
         self.server_fb = {}
-        self.msg_err = self.bk_name + '. {}, err: {}'
-        self.msg = self.bk_name + '. {}, msg: {}'
         self.mirror = self.get_account_info().get('mirror')
 
         self.session_file = 'session.' + self.bk_name
@@ -246,12 +248,12 @@ class BetManager:
         self.side_bet_half = None
 
         bet_type_sub = re.sub('\(.*\)', '', self.bet_type)
-        bet_depends = 'Уставки есть привязкa:'
 
         msk_match_per = '^\d\w.*\d$'
         msk_team = '^\w.*\d$'
         msk_period = '^\d\w.*'
 
+        bet_depends = 'Уставки есть привязкa:'
         if re.match(msk_match_per, bet_type_sub):
             self.side_bet = bet_type_sub[-1]
             self.side_bet_helf = bet_type_sub[0:1]
@@ -267,8 +269,6 @@ class BetManager:
         prnt(self.msg.format(sys._getframe().f_code.co_name, bet_depends))
 
     def bet_safe(self, shared: dict):
-        def get_new_total(sc: str, bet_type: str, half: int) -> int:
-            pass
 
         self.vector = self.bk_container.get('wager', {})['vector']
         self.time_start = round(int(time()))
@@ -310,7 +310,7 @@ class BetManager:
                         elif self.bk_name == 'fonbet':
                             self.cur_val_bet, self.cur_sc, time_req, self.dop_stat = get_fonbet_info(match_id, bet_id, param, self.bet_type)
 
-                        prnt(self.msg.format(sys._getframe().f_code.co_name, 'get info from fonbet: ' + dumps(self.dop_stat, ensure_ascii=False)))
+                        prnt(self.msg.format(sys._getframe().f_code.co_name, 'get data from fonbet: ' + dumps(self.dop_stat, ensure_ascii=False)))
 
                     except Exception as e:
                         err_msg = 'recheck err (' + str(e.__class__.__name__) + '): ' + str(e)
@@ -548,12 +548,12 @@ class BetManager:
 
         if self.bk_name == 'olimp':
 
-            # # for test
-            # sleep(5)
-            # try:
-            #     1/0
-            # except Exception as e:
-            #     raise BetError(e)
+            # for test
+            sleep(5)
+            try:
+                1/0
+            except Exception as e:
+                raise BetError(e)
 
             payload = copy.deepcopy(ol_payload)
 
