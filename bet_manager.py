@@ -57,8 +57,9 @@ class BetManager:
         self.bk_container = bk_container
         self.wager = bk_container['wager']
         self.bk_name_opposite = bk_container['opposite']
+        self.side_team = bk_container['side_team']
         self.account = self.get_account_info()
-        self.timeout = 50
+        self.timeout = 20
         self.match_id = None
         self.reg_id = None
         self.reqId = None
@@ -234,7 +235,7 @@ class BetManager:
             self.cur_total = self.new_cur_total
             self.diff_total = float(self.bet_total - self.cur_total)
             
-            prnt(self.msg.format(sys._getframe().f_code.co_name,'Доступный шаг: diff_total:{}'.format(self.diff_total)))
+            prnt(self.msg.format(sys._getframe().f_code.co_name, 'Доступный шаг: diff_total:{}'.format(self.diff_total)))
             
             if self.diff_total < 0:
                 err_str = ' cur_total:{}, bet_total:{}. bet lost, im sorry...'.format(self.cur_total, self.bet_total)
@@ -280,29 +281,39 @@ class BetManager:
             self.timeout_left = float(60 * 10)
         elif self.vector == 'DOWN':
             self.timeout_left = round(float(60 * 2.5))
-
-        self.cur_total = float(self.bk_container['cur_total'])
-        self.bet_total = float(self.bk_container.get('bet_total'))
-        self.diff_total = float(self.bet_total - self.cur_total)
-
-        self.new_cur_total = self.cur_total
-
+            
         bet_type_sub = re.sub('\(.*\)', '', bet_type)
         bet_depends = 'Уставки есть привязкa:'
         msk_match_per = '^\d\w.*\d$'
         msk_team = '^\w.*\d$'
         msk_period = '^\d\w.*'
+        side_bet = None
+        side_bet_half = None
         if re.match(msk_match_per, bet_type_sub):
+            side_bet = bet_type_sub[-1]
+            side_bet_helf = bet_type_sub[0:1]
             bet_depends = bet_depends + \
-                          ' команада=' + bet_type_sub[-1] + ' и период=' + bet_type_sub[0:1]
+                          ' команада=' + self.side_bet + ' и период=' + side_bet_half
         elif re.match(msk_team, bet_type_sub):
-            bet_depends = bet_depends + ' команада=' + bet_type_sub[-1]
+            side_bet = bet_type_sub[-1]
+            bet_depends = bet_depends + ' команада=' + side_bet
         elif re.match(msk_period, bet_type_sub):
-            bet_depends = bet_depends + ' период=' + bet_type_sub[0:1]
+            side_bet_half = bet_type_sub[0:1]
+            bet_depends = bet_depends + ' период=' + side_bet_half
         else:
             bet_depends = 'Ставка не привязана ни к периоду, ни к команде'
-
         prnt(self.msg.format(sys._getframe().f_code.co_name, bet_depends))
+
+        if not side_bet:
+            self.cur_total = float(self.bk_container['cur_total'])
+        elif side_bet == '1':
+            self.cur_total = float(self.bk_container['sc1'])
+        elif elif side_bet == '2':
+            self.cur_total = float(self.bk_container['sc2'])
+            
+        self.bet_total = float(self.bk_container.get('bet_total'))
+        self.diff_total = float(self.bet_total - self.cur_total)
+        self.new_cur_total = self.cur_total
 
         if self.bk_name_opposite == 'fonbet':
             prnt(self.msg.format(
