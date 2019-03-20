@@ -248,52 +248,6 @@ class BetManager:
                 err_str = 'timeout: time_start:{}, time_left:{}, cur_time:{}'.format(self.time_start, self.time_left, cur_time)
                 raise BetIsLost(err_str)
 
-        def upd_dop_info():
-            global self_opp
-            global bet_type
-            global match_id
-            global bet_id
-            global param
-            
-            rime_req = 0
-            k_val = 0
-            match_id_opp = 0
-            
-            match_id_opp = self_opp.bk_container.get('wager', {})['event']
-            bet_id_opp = int(self_opp.bk_container.get('wager', {}).get('factor'))
-            param_opp = self_opp.bk_container.get('wager', {}).get('param')
-            bet_type_opp = self_opp.bk_container.get('bet_type')
-
-
-            if self.bk_name == 'fonbet' or self.bk_name_opposite == 'fonbet':
-                try:
-                    if self.bk_name_opposite == 'fonbet':
-                        k_val_opp, sc, rime_req_opp, dop_stat = get_fonbet_info(match_id_opp, bet_id_opp, param_opp, bet_type_opp)
-                    else:
-                        k_val, sc, rime_req, dop_stat = get_fonbet_info(match_id, bet_id, param, bet_type)
-
-                    # new flag params
-                    self.new_cur_total = sum(map(int, sc.split(':')))
-
-                    prnt(self.msg.format(sys._getframe().f_code.co_name, 'get new total from fonbet: ' + str(self.new_cur_total)))
-                    prnt('dop_stat: ' + str(dumps(dop_stat, ensure_ascii=False)))
-
-                except Exception as e:
-                    err_msg = 'recheck fb err (' + str(e.__class__.__name__) + '): ' + str(e)
-                    prnt(self.msg_err.format(sys._getframe().f_code.co_name, err_msg))
-
-            if self.bk_name == 'olimp':
-                try:
-                    k_val, sc_ol, rime_req = get_olimp_info(match_id, bet_type)
-                except Exception as e:
-                    err_msg = self.msg_err.format(sys._getframe().f_code.co_name, 'recheck ol err: ' + str(e))
-                    print(err_msg)
-
-            prnt(self.msg.format(
-                sys._getframe().f_code.co_name,
-                'Обновил данные: match_id:{}, bet_type:{}, val:{}, bet_total:{}, cur_total:{}, new_cur_total_fb:{}, rime_req:{}'.
-                    format(match_id, bet_type, k_val, self.bet_total, self.cur_total, self.new_cur_total, rime_req)))
-
         dop_stat = dict()
         new_stat = dict()
         
@@ -305,6 +259,16 @@ class BetManager:
         
         bet_id = int(self.bk_container.get('wager', {}).get('factor'))
         param = self.bk_container.get('wager', {}).get('param')
+        
+        rime_req = 0
+        k_val = 0
+        
+        match_id_opp = 0
+        match_id_opp = self_opp.bk_container.get('wager', {})['event']
+        
+        bet_id_opp = int(self_opp.bk_container.get('wager', {}).get('factor'))
+        param_opp = self_opp.bk_container.get('wager', {}).get('param')
+        bet_type_opp = self_opp.bk_container.get('bet_type')
 
         self_opp = shared[self.bk_name_opposite].get('self', {})
         self.vector = self.bk_container.get('wager', {})['vector']
@@ -353,7 +317,36 @@ class BetManager:
             try:
                 # update params
                 upd_time_left()
-                upd_dop_info()
+    
+                if self.bk_name == 'fonbet' or self.bk_name_opposite == 'fonbet':
+                    try:
+                        if self.bk_name_opposite == 'fonbet':
+                            k_val_opp, sc, rime_req_opp, dop_stat = get_fonbet_info(match_id_opp, bet_id_opp, param_opp, bet_type_opp)
+                        else:
+                            k_val, sc, rime_req, dop_stat = get_fonbet_info(match_id, bet_id, param, bet_type)
+    
+                        # new flag params
+                        self.new_cur_total = sum(map(int, sc.split(':')))
+    
+                        prnt(self.msg.format(sys._getframe().f_code.co_name, 'get new total from fonbet: ' + str(self.new_cur_total)))
+                        prnt('dop_stat: ' + str(dumps(dop_stat, ensure_ascii=False)))
+    
+                    except Exception as e:
+                        err_msg = 'recheck fb err (' + str(e.__class__.__name__) + '): ' + str(e)
+                        prnt(self.msg_err.format(sys._getframe().f_code.co_name, err_msg))
+    
+                if self.bk_name == 'olimp':
+                    try:
+                        k_val, sc_ol, rime_req = get_olimp_info(match_id, bet_type)
+                    except Exception as e:
+                        err_msg = self.msg_err.format(sys._getframe().f_code.co_name, 'recheck ol err: ' + str(e))
+                        print(err_msg)
+    
+                prnt(self.msg.format(
+                    sys._getframe().f_code.co_name,
+                    'Обновил данные: match_id:{}, bet_type:{}, val:{}, bet_total:{}, cur_total:{}, new_cur_total_fb:{}, rime_req:{}'.
+                        format(match_id, bet_type, k_val, self.bet_total, self.cur_total, self.new_cur_total, rime_req)))
+                
                 # check: score changed?
                 if self.cur_total != self.new_cur_total:
                     prnt(self.msg.format(sys._getframe().f_code.co_name, 'score changed!'))
@@ -413,9 +406,11 @@ class BetManager:
                         sleep(3)
 
             except Exception as e:
+                exc_type, exc_value, exc_traceback = sys.exc_info()
                 prnt(self.msg.format(
                     sys._getframe().f_code.co_name,
-                    'Ошибка: (' + e.__class__.__name__ + ') ' + str(e) +
+                    'Ошибка: (' + e.__class__.__name__ + ') ' + str(e) + ' ' +
+                    str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))) + 
                     '. Работаю еще: ' + str(self.time_left) + ' сек'))
             finally:
                 sleep(3)
