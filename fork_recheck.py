@@ -105,9 +105,9 @@ def get_fonbet_info(match_id, factor_id, param, bet_tepe=None):
     dop_stat = dict()
     sc1 = None
     sc2 = None
-    
+
     prnt('match_id:{}, factor_id:{}, param:{}, bet_tepe:{}'.format(match_id, factor_id, param, bet_tepe))
-    
+
     header = copy.deepcopy(fb_headers)
     url = "https://23.111.80.222/line/eventView?eventId=" + str(match_id) + "&lang=ru"
     prnt('FORK_RECHECK.PY: get_fonbet_info rq: ' + url + ' ' + str(header), 'hide')
@@ -119,49 +119,49 @@ def get_fonbet_info(match_id, factor_id, param, bet_tepe=None):
     )
     prnt('FORK_RECHECK.PY: get_fonbet_info rs: ' + str(resp.text), 'hide')
     res = resp.json()
-    
+
     result = res.get('result')
-    
+
     wager = {}
-    
+
     if result == "error":
         raise ValueError(resp.get("errorMessage"))
-        
+
     for event in res.get("events"):
         if event.get('id') == match_id:
             sc = event.get('score', '0:0').replace('-', ':')
             period = 1
             time_break_fonbet = False
-            
-            if re.match('\([\d|\d\d]:[\d|\d\d]\)', event.get('scoreComment', '').replace('-',':')) and \
-               str(event.get('timer', '')) == '45:00' and \
-               event.get('timerSeconds', 0) == 45.0:
+
+            if re.match('\([\d|\d\d]:[\d|\d\d]\)', event.get('scoreComment', '').replace('-', ':')) and \
+                    str(event.get('timer', '')) == '45:00' and \
+                    event.get('timerSeconds', 0) == 45.0:
                 time_break_fonbet = True
                 period = 2
-            elif re.match('\([\d|\d\d]:[\d|\d\d]\)', event.get('scoreComment', '').replace('-',':')) and \
-                 event.get('timerSeconds', 0)/60 > 45.0:
+            elif re.match('\([\d|\d\d]:[\d|\d\d]\)', event.get('scoreComment', '').replace('-', ':')) and \
+                    event.get('timerSeconds', 0) / 60 > 45.0:
                 period = 2
             try:
                 sc1 = int(sc.split(':')[0])
             except:
                 pass
-            
+
             try:
                 sc2 = int(sc.split(':')[1])
             except:
                 pass
-                
+
             dop_stat = {
                 'cur_score: ': sc,
                 'sc1: ': sc1,
                 'sc2: ': sc2,
                 '1st_half_score: ': event.get('scoreComment'),
-                'minutes: ': round(event.get('timerSeconds', 0)/60) + (event.get('timerSeconds', 0)%60/100),
+                'minutes: ': round(event.get('timerSeconds', 0) / 60) + (event.get('timerSeconds', 0) % 60 / 100),
                 'timer: ': event.get('timer'),
                 'period: ': period,
                 'timebreak: ': time_break_fonbet
             }
-            
+
             for cat in event.get('subcategories'):
                 for kof in cat.get('quotes'):
                     if kof.get('factorId') == factor_id:
@@ -171,8 +171,8 @@ def get_fonbet_info(match_id, factor_id, param, bet_tepe=None):
 
                         if param:
                             if kof.get('pValue') != param:
-                                prnt('Изменилась тотал ставки, param не совпадает: ' +'new: ' + str(kof.get('pValue')) + ', old: ' + str(param))
-            
+                                prnt('Изменилась тотал ставки, param не совпадает: ' + 'new: ' + str(kof.get('pValue')) + ', old: ' + str(param))
+
                                 if bet_tepe:
                                     prnt('поиск нового id тотала: ' + bet_tepe)
                                     new_wager = get_new_bets_fonbet(match_id, proxies={})
