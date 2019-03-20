@@ -312,9 +312,6 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
         fork_info[fork_id]['olimp']['time_bet'] = shared['olimp'].get('time_bet')
         fork_info[fork_id]['fonbet']['time_bet'] = shared['fonbet'].get('time_bet')
 
-        # Добавим инфу о проставлении
-        success.append(key)
-
         fork_info[fork_id]['olimp']['reg_id'] = shared['olimp'].get('reg_id')
         fork_info[fork_id]['fonbet']['reg_id'] = shared['fonbet'].get('reg_id')
 
@@ -332,7 +329,8 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
         if shared.get('olimp_err') != 'ok' and shared.get('fonbet_err') != 'ok':
             if not bet_skip:
                 cnt_fail = cnt_fail + 1
-                
+        # Добавим инфу о проставлении
+        success.append(key) 
         save_fork(fork_info)
 
         max_fail = 2
