@@ -189,7 +189,7 @@ def prnt(vstr=None, hide=None):
         else:
             strLog = datetime.datetime.now().strftime('%d %H:%M:%S.%f ') +'    ' + str(vstr)
             Outfile = open('client_hide.log', "a+", encoding='utf-8')
-            Outfile.write(strLog + '\n')
+            Outfile.write(strLog + '\n\n')
             Outfile.close()
             
 
