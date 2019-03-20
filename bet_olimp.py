@@ -437,5 +437,5 @@ if __name__ == '__main__':
     olimp = OlimpBot(OLIMP_USER)
     olimp.sign_in()
     #olimp.place_bet(obj)
-    olimp.sale_bet(1865)
+    olimp.sale_bet(1893)
     #olimp.sale_bet(29)

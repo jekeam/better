@@ -250,6 +250,7 @@ class BetManager:
 
         dop_stat = dict()
         new_stat = dict()
+        self_opp = shared[self.bk_name_opposite].get('self', {})
         
         bet_type = ''
         bet_type = self.bk_container.get('bet_type')
@@ -270,7 +271,6 @@ class BetManager:
         param_opp = self_opp.bk_container.get('wager', {}).get('param')
         bet_type_opp = self_opp.bk_container.get('bet_type')
 
-        self_opp = shared[self.bk_name_opposite].get('self', {})
         self.vector = self.bk_container.get('wager', {})['vector']
 
         self.time_start = round(int(time()))

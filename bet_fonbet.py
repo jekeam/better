@@ -961,6 +961,6 @@ if __name__ == '__main__':
     fonbet.sign_in()
     #fonbet.place_bet(obj)
     #time.sleep(3)
-    fonbet.sale_bet(15041498557)
+    fonbet.sale_bet(15073663627)
     # fonbet_reg_id = fonbet.place_bet(amount_fonbet, wager_fonbet)
     # {'e': 12264423, 'f': 931, 'v': 1.4, 'p': 250, 'pt': '2.5', 'isLive': True}
