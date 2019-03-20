@@ -249,10 +249,21 @@ class BetManager:
                 raise BetIsLost(err_str)
 
         def upd_dop_info():
-            global rime_req
-            global k_val
-            global match_id
+            global self_opp
             global bet_type
+            global match_id
+            global bet_id
+            global param
+            
+            rime_req = 0
+            k_val = 0
+            match_id_opp = 0
+            
+            match_id_opp = self_opp.bk_container.get('wager', {})['event']
+            bet_id_opp = int(self_opp.bk_container.get('wager', {}).get('factor'))
+            param_opp = self_opp.bk_container.get('wager', {}).get('param')
+            bet_type_opp = self_opp.bk_container.get('bet_type')
+
 
             if self.bk_name == 'fonbet' or self.bk_name_opposite == 'fonbet':
                 try:
@@ -285,10 +296,15 @@ class BetManager:
 
         dop_stat = dict()
         new_stat = dict()
-        rime_req = 0
-        k_val = 0
-        match_id = 0
+        
         bet_type = ''
+        bet_type = self.bk_container.get('bet_type')
+        
+        match_id = 0
+        match_id = self.bk_container.get('wager', {})['event']
+        
+        bet_id = int(self.bk_container.get('wager', {}).get('factor'))
+        param = self.bk_container.get('wager', {}).get('param')
 
         self_opp = shared[self.bk_name_opposite].get('self', {})
         self.vector = self.bk_container.get('wager', {})['vector']
@@ -306,11 +322,6 @@ class BetManager:
         self.diff_total = float(self.bet_total - self.cur_total)
 
         self.new_cur_total = self.cur_total
-
-        match_id = self.bk_container.get('wager', {})['event']
-        bet_type = self.bk_container.get('bet_type')
-        bet_id = int(self.bk_container.get('wager', {}).get('factor'))
-        param = self.bk_container.get('wager', {}).get('param')
 
         bet_type_sub = re.sub('\(.*\)', '', bet_type)
         bet_depends = 'Уставки есть привязкa:'
@@ -336,11 +347,6 @@ class BetManager:
                 'diff_total:{}, self.time_left:{}, match_id:{}, bet_id:{}, param:{}'.format(
                     self.time_start, bet_type, self.vector, self.bet_total, self.cur_total,
                     self.diff_total, self.time_left, match_id, bet_id, param)))
-
-            match_id_opp = self_opp.bk_container.get('wager', {})['event']
-            bet_type_opp = self_opp.bk_container.get('bet_type')
-            bet_id_opp = int(self_opp.bk_container.get('wager', {}).get('factor'))
-            param_opp = self_opp.bk_container.get('wager', {}).get('param')
 
         is_go = True
         while is_go:
