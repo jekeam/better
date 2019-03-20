@@ -321,8 +321,6 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
         fork_info[fork_id]['olimp']['err'] = str(shared.get('olimp_err', 'ok'))
         fork_info[fork_id]['fonbet']['err'] = str(shared.get('fonbet_err', 'ok'))
 
-        save_fork(fork_info)
-        
         bet_skip = False
         if 'BkOppBetError' in shared.get('olimp_err') and 'BkOppBetError' in shared.get('fonbet_err'):
             bet_skip = True
@@ -334,6 +332,8 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
         if shared.get('olimp_err') != 'ok' and shared.get('fonbet_err') != 'ok':
             if not bet_skip:
                 cnt_fail = cnt_fail + 1
+                
+        save_fork(fork_info)
 
         max_fail = 2
         if cnt_fail > max_fail:
