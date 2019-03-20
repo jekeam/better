@@ -308,10 +308,11 @@ class BetManager:
                             bet_type_opp = self_opp.bk_container.get('bet_type')
                             k_val, self.cur_sc_main, time_req_opp, self.dop_stat = get_fonbet_info(match_id_opp, bet_id_opp, param_opp, bet_type_opp)
                         elif self.bk_name == 'fonbet':
-                            self.cur_val_bet, self.cur_sc, time_req, self.dop_stat = get_fonbet_info(match_id, bet_id, param, self.bet_type)
+                            self.cur_val_bet, self.cur_sc_main, time_req, self.dop_stat = get_fonbet_info(match_id, bet_id, param, self.bet_type)
 
                         prnt(self.msg.format(sys._getframe().f_code.co_name, 'get data from fonbet: ' + dumps(self.dop_stat, ensure_ascii=False)))
-
+                    except BetIsLost as e:
+                        raise BetIsLost(e)
                     except Exception as e:
                         err_msg = 'recheck err (' + str(e.__class__.__name__) + '): ' + str(e)
                         prnt(self.msg_err.format(sys._getframe().f_code.co_name, err_msg))
@@ -400,7 +401,13 @@ class BetManager:
                 prnt(self.msg.format(sys._getframe().f_code.co_name,
                                      'Ошибка при проставлении ставки в ' + self.bk_name +
                                      ', делаю выкуп ставки в ' + self.bk_name_opposite))
+                cnt_attempt = 5
                 while True:
+                    if cnt_attempt > 0:
+                        cnt_attempt = cnt_attempt - 1
+                    else:
+                        raise BetIsLost(e)
+
                     try:
                         self_opp.sale_bet(shared)
                         is_go = False
@@ -429,7 +436,7 @@ class BetManager:
                 # # for test
                 # sleep(10)
                 # try:
-                #     1/0
+                #     1 / 0
                 # except Exception as e:
                 #     #raise SessionNotDefined(e)
                 #     raise ValueError(e)
@@ -462,7 +469,7 @@ class BetManager:
                 # # for test
                 # sleep(5)
                 # try:
-                #     1/0
+                #     1 / 0
                 # except Exception as e:
                 #     #raise SessionNotDefined(e)
                 #     raise ValueError(e)
@@ -548,12 +555,12 @@ class BetManager:
 
         if self.bk_name == 'olimp':
 
-            # for test
-            sleep(5)
-            try:
-                1/0
-            except Exception as e:
-                raise BetError(e)
+            # # for test
+            # sleep(5)
+            # try:
+            #     1 / 0
+            # except Exception as e:
+            #     raise BetError(e)
 
             payload = copy.deepcopy(ol_payload)
 
@@ -613,12 +620,12 @@ class BetManager:
 
         elif self.bk_name == 'fonbet':
 
-            # # for test
-            # sleep(2)
-            # try:
-            #     1/0
-            # except Exception as e:
-            #     raise BetError(e)
+            # for test
+            sleep(2)
+            try:
+                1 / 0
+            except Exception as e:
+                raise BetError(e)
 
             if not self.server_fb:
                 self.server_fb = get_urls(self.mirror, self.proxies)
