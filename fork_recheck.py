@@ -193,6 +193,7 @@ def get_fonbet_info(match_id, factor_id, param, bet_tepe=None):
 
                         k = kof.get('value', 0)
                         prnt('fonbet score: ' + sc)
+                        dop_stat.update({'val': k})
                         prnt('FORK_RECHECK.PY: get_olimp_info end work', 'hide')
                         return k, sc, round(resp.elapsed.total_seconds(), 2), dop_stat
 
