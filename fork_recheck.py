@@ -106,7 +106,7 @@ def get_fonbet_info(match_id, factor_id, param, bet_tepe=None):
     sc1 = None
     sc2 = None
 
-    prnt('match_id:{}, factor_id:{}, param:{}, bet_tepe:{}'.format(match_id, factor_id, param, bet_tepe))
+    prnt('get_fonbet_info: match_id:{}, factor_id:{}, param:{}, bet_tepe:{}'.format(match_id, factor_id, param, bet_tepe))
 
     header = copy.deepcopy(fb_headers)
     url = "https://23.111.80.222/line/eventView?eventId=" + str(match_id) + "&lang=ru"
@@ -152,14 +152,14 @@ def get_fonbet_info(match_id, factor_id, param, bet_tepe=None):
                 pass
 
             dop_stat = {
-                'cur_score: ': sc,
-                'sc1: ': sc1,
-                'sc2: ': sc2,
-                '1st_half_score: ': event.get('scoreComment'),
-                'minutes: ': round(event.get('timerSeconds', 0) / 60) + (event.get('timerSeconds', 0) % 60 / 100),
-                'timer: ': event.get('timer'),
-                'period: ': period,
-                'timebreak: ': time_break_fonbet
+                'cur_score': sc,
+                'sc1': sc1,
+                'sc2': sc2,
+                '1st_half_score': event.get('scoreComment'),
+                'minutes': round(event.get('timerSeconds', 0) / 60) + (event.get('timerSeconds', 0) % 60 / 100),
+                'timer': event.get('timer'),
+                'period': period,
+                'timebreak': time_break_fonbet
             }
 
             for cat in event.get('subcategories'):
