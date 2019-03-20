@@ -122,10 +122,8 @@ def get_fonbet_info(match_id, factor_id, param, bet_tepe=None):
 
     result = res.get('result')
 
-    wager = {}
-
     if result == "error":
-        raise ValueError(resp.get("errorMessage"))
+        raise BetIsLost(resp.get("errorMessage"))
 
     for event in res.get("events"):
         if event.get('id') == match_id:
@@ -183,11 +181,9 @@ def get_fonbet_info(match_id, factor_id, param, bet_tepe=None):
                                         sc = new_wager.get('score', '0:0').replace('-', ':')
                                         return k, sc, round(resp.elapsed.total_seconds(), 2), dop_stat
                                     else:
-                                        err_str = 'Тотал не найден' + str(new_wager)
-                                        raise BetIsLost(err_str)
+                                        err_str = 'Тотал не найден: ' + str(new_wager)
                                 else:
-                                    err_str = 'Тип ставки, например 1ТМ(2.5) - не задан, выдаю ошибку: bet_type:' + bet_tepe
-                                    raise BetIsLost(err_str)
+                                    err_str = 'Тип ставки, например 1ТМ(2.5) - не задан: bet_type:' + bet_tepe
                             if kof.get('blocked'):
                                 prnt('kof is blocked ' + str(kof))
 
