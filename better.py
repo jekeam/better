@@ -274,7 +274,7 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
             'sc1': sc1,
             'sc2': sc2,
             'cur_total': sc1 + sc2,
-            "side_team", "1"
+            "side_team": "1"
         }
 
         shared['fonbet'] = {
@@ -286,7 +286,7 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
             'sc1': sc1,
             'sc2': sc2,
             'cur_total': sc1 + sc2,
-            "side_team", "2"
+            "side_team": "2"
         }
 
         if '(' in fonbet_bet_type:
@@ -307,7 +307,7 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
 
         bal1 = shared['olimp'].get('balance', bal1)
         bal2 = shared['fonbet'].get('balance', bal2)
-        
+
         fork_info[fork_id]['olimp']['balance'] = round(bal1)
         fork_info[fork_id]['fonbet']['balance'] = round(bal2)
 
@@ -323,7 +323,7 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
         bet_skip = False
         if 'BkOppBetError' in shared.get('olimp_err') and 'BkOppBetError' in shared.get('fonbet_err'):
             bet_skip = True
-        
+
         if bet_skip:
             fork_info[fork_id]['olimp']['err'] = 'Вилка пропущена, т.к. была ошибка в обоих БК.'
             fork_info[fork_id]['fonbet']['err'] = 'Вилка пропущена, т.к. была ошибка в обоих БК.'
@@ -332,7 +332,7 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
             if not bet_skip:
                 cnt_fail = cnt_fail + 1
         # Добавим инфу о проставлении
-        success.append(key) 
+        success.append(key)
         save_fork(fork_info)
 
         max_fail = 2
