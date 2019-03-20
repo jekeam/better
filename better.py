@@ -574,17 +574,8 @@ if __name__ == '__main__':
                 if go_bet_key:
                     prnt(' ')
                     prnt('Go bets: ' + info)
-                    fork_success = go_bets(
-                        go_bet_json.get('kof_olimp'),
-                        go_bet_json.get('kof_fonbet'),
-                        total_bet,
-                        go_bet_key,
-                        deff_max,
-                        vect1,
-                        vect2,
-                        sc1,
-                        sc2
-                    )
+                    fork_success = go_bets(go_bet_json.get('kof_olimp'), go_bet_json.get('kof_fonbet'),
+                                           total_bet, go_bet_key, deff_max, vect1, vect2, sc1, sc2)
                 else:
                     pass
             else:
