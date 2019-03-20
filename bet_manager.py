@@ -230,8 +230,48 @@ class BetManager:
     def bet_safe(self, shared: dict):
         def get_new_total(sc: str, bet_type: str, half: int) -> int:
             pass
+        
+        def upd_stat():
+            if self.bk_name == 'fonbet' or self.bk_name_opposite == 'fonbet':
+                try:
+                    if self.bk_name_opposite == 'fonbet':
+                        k_val_opp, sc, rime_req_opp, dop_stat = get_fonbet_info(match_id_opp, bet_id_opp, param_opp, bet_type_opp)
+                    else:
+                        k_val, sc, rime_req, dop_stat = get_fonbet_info(match_id, bet_id, param, bet_type)
 
-        def check_lost():
+                    # new flag params
+                    self.new_cur_total = sum(map(int, sc.split(':')))
+
+                    prnt(self.msg.format(sys._getframe().f_code.co_name, 'get new total from fonbet: ' + str(self.new_cur_total)))
+                    prnt('dop_stat: ' + str(dumps(dop_stat, ensure_ascii=False)))
+
+                except Exception as e:
+                    err_msg = 'recheck fb err (' + str(e.__class__.__name__) + '): ' + str(e)
+                    prnt(self.msg_err.format(sys._getframe().f_code.co_name, err_msg))
+
+            if self.bk_name == 'olimp':
+                try:
+                    k_val, sc_ol, rime_req = get_olimp_info(match_id, bet_type)
+                except Exception as e:
+                    err_msg = self.msg_err.format(sys._getframe().f_code.co_name, 'recheck ol err: ' + str(e))
+                    print(err_msg)
+
+            prnt(self.msg.format(
+                sys._getframe().f_code.co_name,
+                'Обновил данные: match_id:{}, bet_type:{}, val:{}, bet_total:{}, cur_total:{}, new_cur_total_fb:{}, rime_req:{}'.
+                    format(match_id, bet_type, k_val, self.bet_total, self.cur_total, self.new_cur_total, rime_req)))
+
+        def check_lost(side_bet: str, sc):
+            self.bet_total = float(self.bk_container.get('bet_total'))
+            self.diff_total = float(self.bet_total - self.cur_total)
+            self.new_cur_total = self.cur_total
+            
+            if not side_bet:
+                self.cur_total = float(self.bk_container['cur_total'])
+            elif side_bet == '1':
+                self.cur_total = float(self.bk_container['sc1'])
+            elif side_bet == '2':
+                self.cur_total = float(self.bk_container['sc2'])
             self.cur_total = self.new_cur_total
             self.diff_total = float(self.bet_total - self.cur_total)
             
@@ -304,24 +344,13 @@ class BetManager:
             bet_depends = 'Ставка не привязана ни к периоду, ни к команде'
         prnt(self.msg.format(sys._getframe().f_code.co_name, bet_depends))
 
-        if not side_bet:
-            self.cur_total = float(self.bk_container['cur_total'])
-        elif side_bet == '1':
-            self.cur_total = float(self.bk_container['sc1'])
-        elif elif side_bet == '2':
-            self.cur_total = float(self.bk_container['sc2'])
-            
-        self.bet_total = float(self.bk_container.get('bet_total'))
-        self.diff_total = float(self.bet_total - self.cur_total)
-        self.new_cur_total = self.cur_total
-
         if self.bk_name_opposite == 'fonbet':
             prnt(self.msg.format(
                 sys._getframe().f_code.co_name,
                 '{}: Завершающий принял работу: bet_type:{}, vector:{}, bet_total:{}, cur_total:{}, '
-                'diff_total:{}, self.time_left:{}, match_id:{}, bet_id:{}, param:{}'.format(
+                'side_bet:{}, time_left:{}, match_id:{}, bet_id:{}, param:{}'.format(
                     self.time_start, bet_type, self.vector, self.bet_total, self.cur_total,
-                    self.diff_total, self.time_left, match_id, bet_id, param)))
+                    side_bet, self.time_left, match_id, bet_id, param)))
 
         is_go = True
         while is_go:
@@ -329,40 +358,13 @@ class BetManager:
                 # update params
                 upd_time_left()
     
-                if self.bk_name == 'fonbet' or self.bk_name_opposite == 'fonbet':
-                    try:
-                        if self.bk_name_opposite == 'fonbet':
-                            k_val_opp, sc, rime_req_opp, dop_stat = get_fonbet_info(match_id_opp, bet_id_opp, param_opp, bet_type_opp)
-                        else:
-                            k_val, sc, rime_req, dop_stat = get_fonbet_info(match_id, bet_id, param, bet_type)
-    
-                        # new flag params
-                        self.new_cur_total = sum(map(int, sc.split(':')))
-    
-                        prnt(self.msg.format(sys._getframe().f_code.co_name, 'get new total from fonbet: ' + str(self.new_cur_total)))
-                        prnt('dop_stat: ' + str(dumps(dop_stat, ensure_ascii=False)))
-    
-                    except Exception as e:
-                        err_msg = 'recheck fb err (' + str(e.__class__.__name__) + '): ' + str(e)
-                        prnt(self.msg_err.format(sys._getframe().f_code.co_name, err_msg))
-    
-                if self.bk_name == 'olimp':
-                    try:
-                        k_val, sc_ol, rime_req = get_olimp_info(match_id, bet_type)
-                    except Exception as e:
-                        err_msg = self.msg_err.format(sys._getframe().f_code.co_name, 'recheck ol err: ' + str(e))
-                        print(err_msg)
-    
-                prnt(self.msg.format(
-                    sys._getframe().f_code.co_name,
-                    'Обновил данные: match_id:{}, bet_type:{}, val:{}, bet_total:{}, cur_total:{}, new_cur_total_fb:{}, rime_req:{}'.
-                        format(match_id, bet_type, k_val, self.bet_total, self.cur_total, self.new_cur_total, rime_req)))
+                upd_stat()
                 
                 # check: score changed?
                 if self.cur_total != self.new_cur_total:
                     prnt(self.msg.format(sys._getframe().f_code.co_name, 'score changed!'))
 
-                    check_lost()
+                    check_lost(side_bet, sc)
 
                     if self.vector == 'UP':
                         if self.bet_total <= self.new_cur_total:
