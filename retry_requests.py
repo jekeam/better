@@ -72,7 +72,7 @@ def retry(exceptions, delay=0, times=2):
 def requests_retry_session_post(url: str, headers=None, data=None, json=None, verify=None, timeout=None, proxies=None):
     global cnt_retry
     cnt_retry += 1
-    prnt('retry_requests: execute requests_retry_session_post, retry: {}, url:{}'.format(cnt_retry, url))
+    prnt('retry_requests: execute requests_retry_session_post, retry={}, url={}'.format(cnt_retry, url))
     resp = requests_retry_session().post(url=url, headers=headers, data=data, json=json, verify=False, timeout=20, proxies=proxies)
     cnt_retry = 0
     return resp
