@@ -207,17 +207,18 @@ class BetManager:
             except BkOppBetError as e:
                 raise BkOppBetError(e)
             except (BetIsLost, NoMoney, SessionExpired, Exception) as e:
-                shared[self.bk_name + '_err'] = str(e.__class__.__name__) + ': ' + str(e)
-
-                exc_type, exc_value, exc_traceback = sys.exc_info()
-                err_msg = 'Ошибка: ' + str(e.__class__.__name__) + ' - ' + str(e) + '. ' + \
-                          str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
-                err_str = self.msg_err.format(sys._getframe().f_code.co_name, err_msg)
-                prnt(err_str)
-
-                sale_opp(e, shared)
-
-                raise ValueError(err_str)
+                if not shared.get(self.bk_name_opposite, {}).get('reg_id'):
+                    shared[self.bk_name + '_err'] = str(e.__class__.__name__) + ': ' + str(e)
+    
+                    exc_type, exc_value, exc_traceback = sys.exc_info()
+                    err_msg = 'Ошибка: ' + str(e.__class__.__name__) + ' - ' + str(e) + '. ' + \
+                              str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
+                    err_str = self.msg_err.format(sys._getframe().f_code.co_name, err_msg)
+                    prnt(err_str)
+    
+                    sale_opp(e, shared)
+    
+                    raise ValueError(err_str)
         except BkOppBetError as e:
             # В обоих БК ошибки, выкидываем вилку
             shared[self.bk_name + '_err'] = str(e.__class__.__name__) + ': ' + str(e)
