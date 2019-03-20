@@ -276,7 +276,6 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
             'cur_total': sc1 + sc2,
             "side_team": "1"
         }
-
         shared['fonbet'] = {
             'opposite': 'olimp',
             'amount': amount_fonbet,
@@ -288,10 +287,9 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
             'cur_total': sc1 + sc2,
             "side_team": "2"
         }
-
         if '(' in fonbet_bet_type:
-            shared['olimp']['bet_total'] = re.findall(r'\((.*)\)', fonbet_bet_type)[0]
-            shared['fonbet']['bet_total'] = re.findall(r'\((.*)\)', fonbet_bet_type)[0]
+            shared['olimp']['bet_total'] = float(re.findall(r'\((.*)\)', fonbet_bet_type)[0])
+            shared['fonbet']['bet_total'] = float(re.findall(r'\((.*)\)', fonbet_bet_type)[0])
 
         for bk_name, val in shared.items():
             prnt('BK ' + str(bk_name) +
