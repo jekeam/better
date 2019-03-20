@@ -29,13 +29,19 @@ else:
 
 
 def get_sum_bets(k1, k2, total_bet, hide=False):
+
+    round_fork = get_param('round_fork')
+    if round_fork not in (5, 10, 50, 100, 1000):
+        err_msg = 'Incorrect param round_fork={}'.format(round_fork)
+        raise ValueError(err_msg)
+
     k1 = float(k1)
     k2 = float(k2)
     prnt('k1:{}, k2:{}'.format(k1, k2), hide)
     l = (1 / k1) + (1 / k2)
 
     # Округление проставления в БК1 происходит по правилам математики
-    bet_1 = round(total_bet / (k1 * l) / 5) * 5
+    bet_1 = round(total_bet / (k1 * l) / round_fork) * round_fork
     bet_2 = total_bet - bet_1
 
     prnt('L: ' + str(round((1 - l) * 100, 2)) + '% (' + str(l) + ') ', hide)
@@ -439,7 +445,8 @@ if __name__ == '__main__':
         prnt('balance line: ' + str(balance_line))
         prnt('fork life time: ' + str(get_param('fork_life_time')))
         prnt('junior team exclude: ' + str(get_param('junior_team_exclude')))
-        prnt('working hours: ' + str(get_param('work_hours')))
+        prnt('working hours: ' + str(get_param('work_hour')))
+        prnt('round fork: ' + str(get_param('round_fork')))
 
         server_forks = dict()
         success = []
@@ -451,7 +458,7 @@ if __name__ == '__main__':
 
             balance_line = (bal1 + bal2) / 2 / 100 * 30
 
-            shutdown_minutes = 60 * (60 * get_param('work_hours'))  # секунды * на кол-во (60*1) - это час
+            shutdown_minutes = 60 * (60 * get_param('work_hour'))  # секунды * на кол-во (60*1) - это час
             if (datetime.datetime.now() - time_live).total_seconds() > (shutdown_minutes):
                 err_str = 'Прошло ' + str(shutdown_minutes / 60 / 60) + ' ч., я завершил работу'
                 prnt('better: ' + err_str)
