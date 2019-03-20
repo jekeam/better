@@ -382,7 +382,6 @@ class BetManager:
                         # recalc sum
                         self.bet_place(shared)
                         is_go = False
-                sleep(3)
 
             except BetIsLost as e:
                 shared[self.bk_name + '_err'] = str(e.__class__.__name__) + ': ' + str(e)
@@ -408,6 +407,8 @@ class BetManager:
                     sys._getframe().f_code.co_name,
                     'Ошибка: (' + e.__class__.__name__ + ') ' + str(e) +
                     '. Работаю еще: ' + str(self.time_left) + ' сек'))
+            finally:
+                sleep(3)
 
     def sign_in(self, shared: dict):
 
