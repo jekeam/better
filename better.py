@@ -322,9 +322,18 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
         fork_info[fork_id]['fonbet']['err'] = str(shared.get('fonbet_err', 'ok'))
 
         save_fork(fork_info)
+        
+        bet_skip = False
+        if 'BkOppBetError' in shared.get('olimp_err') and 'BkOppBetError' in shared.get('fonbet_err'):
+            bet_skip = True
+        
+        if bet_skip:
+            fork_info[fork_id]['olimp']['err'] = 'Вилка пропущена, т.к. была ошибка в обоих БК.'
+            fork_info[fork_id]['olimp']['err'] = 'Вилка пропущена, т.к. была ошибка в обоих БК.'
 
         if shared.get('olimp_err') != 'ok' and shared.get('fonbet_err') != 'ok':
-            cnt_fail = cnt_fail + 1
+            if not bet_skip:
+                cnt_fail = cnt_fail + 1
 
         max_fail = 2
         if cnt_fail > max_fail:
