@@ -283,7 +283,7 @@ class BetManager:
         is_go = True
         while is_go:
             try:
-
+                prnt('')
                 # UPDATE TIME LEFT
                 prnt(self.msg.format(sys._getframe().f_code.co_name, 'UPDATE TIME LEFT'))
                 cur_time = round(int(time()))
