@@ -184,6 +184,7 @@ class BetManager:
         def bet_done(shared):
             if not shared[self.bk_name].get('time_bet'):
                 shared[self.bk_name]['time_bet'] = round(time() - self.time_start)
+                shared[self.bk_name]['balance'] = self.session.get('balance')
 
         try:
             try:
@@ -499,7 +500,6 @@ class BetManager:
                 raise SessionNotDefined(err_str)
 
             shared['sign_in_' + self.bk_name] = 'ok'
-            shared[self.bk_name]['balance'] = self.session.get('balance')
 
         except SessionNotDefined as e:
             shared['sign_in_' + self.bk_name] = str(e.__class__.__name__) + ': ' + str(e)
