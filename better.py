@@ -339,7 +339,7 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
         success.append(key)
         save_fork(fork_info)
 
-        max_fail = 2
+        max_fail = get_param('max_fail')
         if cnt_fail > max_fail:
             err_str = 'cnt_fail > max_fail (' + str(max_fail) + '), script off'
             raise MaxFail(err_str)
@@ -447,6 +447,7 @@ if __name__ == '__main__':
         prnt('junior team exclude: ' + str(get_param('junior_team_exclude')))
         prnt('working hours: ' + str(get_param('work_hour')))
         prnt('round fork: ' + str(get_param('round_fork')))
+        prit('max count fail: ' + str(get_param('max_fail')))
 
         server_forks = dict()
         success = []
