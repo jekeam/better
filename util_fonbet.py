@@ -459,10 +459,8 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
             prnts('Фонбет, ошибка 2 при удалении старой котирофки: ' + str(e))
         return time_resp + (time.time() - time_start_proc)
     except FonbetMatchСompleted as e:
-        try:
+        if bets_fonbet.get(key_id):
             bets_fonbet.pop(key_id)
-        except Exception as e:
-            prnts(e)
         raise FonbetMatchСompleted('4 ' + str(e))
     except Exception as e:
         prnts(e)
