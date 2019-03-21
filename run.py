@@ -16,6 +16,7 @@ import os.path
 import os
 from statistics import median
 from datetime import datetime
+import copy
 
 import sys
 import traceback
@@ -38,7 +39,7 @@ prnts('SERVER_IP: ' + str(SERVER_IP))
 
 def get_olimp(resp, arr_matchs):
     # Очистим дстарые данные
-    arr_matchs_copy = arr_matchs.copy()
+    arr_matchs_copy = copy.deepcopy(arr_matchs)
     for key in arr_matchs_copy.keys():
         arr_matchs.pop(key)
     if resp:
@@ -53,7 +54,7 @@ def get_olimp(resp, arr_matchs):
 
 
 def get_fonbet(resp, arr_matchs):
-    arr_matchs_copy = arr_matchs.copy()
+    arr_matchs_copy = copy.deepcopy(arr_matchs)
     for key in arr_matchs_copy.keys():
         arr_matchs.pop(key)
     # получим все события по футболу
@@ -327,24 +328,12 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
         forks_meta[bet_key] = {'live_fork_total': live_fork_total}
 
     while True:
-        for key, val in forks.copy().items():
-            if round(float(time.time() - float(val.get('time_req_olimp', 0)))) > 8 or \
-                    round(float(time.time() - float(val.get('time_req_fonbet', 0)))) > 8:
-                try:
-                    forks_meta_upd(forks_meta, forks)
-                    forks.pop(key)
-                    prnts('Данные по вилке из БК не получены более 8 сек., вилка удалена: ' + str(key))
-                    prnts(str(val), 'hide')
-                except Exception as e:
-                    prnts(e)
-                    pass
-
         for pair_math in pair_mathes:
 
             math_json_olimp = bets_olimp.get(pair_math[0], {})
             math_json_fonbet = bets_fonbet.get(pair_math[1], {})
 
-            curr_opposition = opposition.copy()
+            curr_opposition = copy.deepcopy(opposition)
 
             for kof_type in math_json_olimp.get('kofs', {}):
                 if '(' in kof_type:
@@ -371,8 +360,14 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
                     v_fonbet = v_fonbet + 1
 
                 if v_olimp > 0.0 and v_fonbet > 0.0:
+                    
+                    ol_time_req = math_json_olimp.get('time_req', 0)
+                    fb_time_req = math_json_fonbet.get('time_req', 0)
+                    cur_time = round(time.time())
+                    deff_time = max((cur_time-ol_time_req), (cur_time-fb_time_req))
+                    
                     L = (1 / float(v_olimp)) + (1 / float(v_fonbet))
-                    is_fork = True if L < 1 else False
+                    is_fork = True if L < 1 and deff_time < 7 else False
 
                     if is_fork:  # or True
                         time_break_fonbet = False
@@ -384,17 +379,18 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
                         elif re.match('\([\d|\d\d]:[\d|\d\d]\)', math_json_fonbet.get('score_1st', '')) and \
                                 round(math_json_fonbet.get('minute', ''), 2) > 45.0:
                             period = 2
-
-                        if forks.get(bet_key, '') != '':
+                        
+                        # TODO: котровка, например с олимпа ушла, и осталась брошена не в 0, в результате в bets_olimp, показывает неактуальную вилку. Надо или тут разбирать и удалять либо там
+                        if forks.get(bet_key, '') != '' and deff_time < 6:
 
                             live_fork = round(time.time() - forks.get(bet_key, {}).get('create_fork'))
 
                             forks[bet_key].update({
-                                'time_last_upd': round(time.time()),
+                                'time_last_upd': cur_time,
                                 'name': math_json_fonbet.get('name', ''),
                                 'name_rus': math_json_olimp.get('name', ''),
-                                'time_req_olimp': math_json_olimp.get('time_req', 0),
-                                'time_req_fonbet': math_json_fonbet.get('time_req', 0),
+                                'time_req_olimp': ol_time_req,
+                                'time_req_fonbet': fb_time_req,
                                 'l': L,
                                 'pair_math': pair_math,
                                 'bk1_score': math_json_olimp.get('score', ''),
@@ -442,7 +438,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
                                         with open(file_forks, 'a', encoding='utf-8') as csv:
                                             csv.write(
                                                 str(forks.get(bet_key).get('create_fork')) + ';' +
-                                                str(round(time.time())) + ';' +
+                                                str(cur_time) + ';' +
                                                 str(math_json_olimp.get('time_req', '')) + ';' +
                                                 str(math_json_fonbet.get('time_req', '')) + ';' +
                                                 str(live_fork) + ';' +
@@ -479,11 +475,8 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
                                             )
                         else:
 
-                            ol_time_req = math_json_olimp.get('time_req', 0)
-                            fb_time_req = math_json_fonbet.get('time_req', 0)
-
                             forks[bet_key] = {
-                                'time_last_upd': round(time.time()),
+                                'time_last_upd': cur_time,
                                 'name': math_json_fonbet.get('name', ''),
                                 'name_rus': math_json_olimp.get('name', ''),
                                 'time_req_olimp': ol_time_req,
@@ -544,8 +537,8 @@ if __name__ == '__main__':
     proxies_olimp = get_proxy_from_file(proxy_filename_olimp)
     proxies_fonbet = get_proxy_from_file(proxy_filename_fonbet)
 
-    gen_proxi_olimp = createBatchGenerator(get_next_proxy(proxies_olimp.copy()))
-    gen_proxi_fonbet = createBatchGenerator(get_next_proxy(proxies_fonbet.copy()))
+    gen_proxi_olimp = createBatchGenerator(get_next_proxy(copy.deepcopy(proxies_olimp)))
+    gen_proxi_fonbet = createBatchGenerator(get_next_proxy(copy.deepcopy(proxies_fonbet)))
 
     proxy_saver = threading.Thread(
         target=start_proxy_saver,
