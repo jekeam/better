@@ -347,7 +347,7 @@ class BetManager:
                 prnt(self.msg.format(sys._getframe().f_code.co_name, 'UPDATE TIME LEFT'))
                 cur_time = round(int(time()))
                 self.time_left = (self.time_start + self.timeout_left) - cur_time
-                if self.time_left < 0 and self.vector == 'DOWN':  # можно  на первое вермя работать с подстраховкой+ and self.total_stock < 1
+                if self.time_left < 0 and self.vector == 'DOWN' and self.total_stock < 1.5:  # можно  на первое вермя работать с подстраховкой: and self.total_stock < 1.5 - подразумевает что есть запас тотола в один гол
                     err_str = 'timeout: time_start:{}, time_left:{}, cur_time:{}'.format(self.time_start, self.time_left, cur_time)
                     raise BetIsLost(err_str)
 
@@ -375,18 +375,18 @@ class BetManager:
                             err_str = ' total_bet < cur_total ({} < {}), bet lost, im sorry =('.format(self.total_bet, self.cur_total)
                             prnt(err_str)
                             raise BetIsLost(err_str)
-                        elif self.cur_total < self.bet_total:
+                        elif self.cur_total < self.total_bet:
                             # exmpl: SC1 + SC2 < Х
                             # recalc sum
                             self.bet_place(shared)
                             is_go = False
                     elif self.vector == 'DOWN':
-                        if self.cur_total < self.bet_total:
+                        if self.cur_total < self.total_bet:
                             # exmpl: SC1 + SC2 < Х
                             # recalc sum
                             self.bet_place(shared)
                             is_go = False
-                        elif self.bet_total <= self.cur_total:
+                        elif self.total_bet <= self.cur_total:
                             # exmpl: SC1 + SC2 >= Х
                             prnt(self.msg.format(sys._getframe().f_code.co_name, 'Greetings! You won, brain!'))
                             is_go = False
