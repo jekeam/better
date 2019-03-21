@@ -507,7 +507,10 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
         #     time.sleep(10)
         return time_resp + (time.time() - time_start_proc)
     except OlimpMatchСompleted as e:
-        bets_olimp.pop(key_id)
+        try:
+            bets_olimp.pop(key_id)
+        except Exception as e:
+            prnts(e)
         raise OlimpMatchСompleted('4 ' + str(e))
     except Exception as e:
         prnts(e)
