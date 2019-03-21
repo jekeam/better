@@ -4,7 +4,7 @@ from hashlib import md5
 import urllib3
 from math import floor
 import time
-from retry_requests import requests_retry_session
+from retry_requests import requests_retry_session, requests_retry_session_post
 from exceptions import FonbetBetError
 from util_olimp import get_xtoken_bet
 
@@ -72,7 +72,7 @@ class OlimpBot:
             headers = base_headers.copy()
             headers.update(get_xtoken_bet(payload))
             headers.update({'X-XERPC': '1'})
-            resp = requests_retry_session().post(
+            resp = requests_retry_session_post(
                 req_url,
                 headers=headers,
                 data=payload,

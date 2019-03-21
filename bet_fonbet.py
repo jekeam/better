@@ -6,7 +6,7 @@ import urllib3
 from utils import *
 from math import floor
 import time
-from retry_requests import requests_retry_session
+from retry_requests import requests_retry_session, requests_retry_session_post
 from exceptions import OlimpBetError
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -236,7 +236,7 @@ class FonbetBot:
             sign = hmac.new(key=self.account['password'].encode(), msg=msg.encode(), digestmod=sha512).hexdigest()
             payload["sign"] = sign
             data = get_dumped_payload(payload)
-            resp = requests_retry_session().post(
+            resp = requests_retry_session_post(
                 self.common_url.format("login"),
                 headers=self.fonbet_headers,
                 data=data,
