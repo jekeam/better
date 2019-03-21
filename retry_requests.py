@@ -58,10 +58,10 @@ def retry(exceptions, delay=0, times=2):
                     return value
                 except (exceptions) as e:
                     final_excep = e
-                    prnt('retry_requests 1: ' + str(final_excep)+ ', args=' + str(*args) +', kwargs='+str(**kwargs)))
+                    prnt('retry_requests 1: ' + str(final_excep)+ ', args=' + str(*args) +', kwargs='+str(**kwargs))
                     pass
             if final_excep is not None:
-                prnt('retry_requests 2: ' + str(final_excep)+ ', args=' + str(*args) +', kwargs='+str(**kwargs)))
+                prnt('retry_requests 2: ' + str(final_excep)+ ', args=' + str(*args) +', kwargs='+str(**kwargs))
                 raise final_excep
 
         return inner_wrapper
