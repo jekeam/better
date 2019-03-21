@@ -97,6 +97,9 @@ def check_l(L):
     else:
         return ''
 
+def bet_type_is_work(key):
+    if 'ТМ' in key or 'ТБ' in key:
+        return True
 
 def check_fork(key, L, k1, k2, live_fork, bk1_score, bk2_score, minute, time_break_fonbet, period, deff_max, info=''):
     global bal1, bal2, balance_line
@@ -104,7 +107,7 @@ def check_fork(key, L, k1, k2, live_fork, bk1_score, bk2_score, minute, time_bre
     fork_exclude_text = ''
     v = True
 
-    if 'ТМ' not in key and 'ТБ' not in key:
+    if not bet_type_is_work(key):
         fork_exclude_text = fork_exclude_text + 'Вилка исключена, т.к. я еще не умею работать с этой ставкой: ' + str(key) + ')\n'
 
     deff_limit = 3
@@ -160,7 +163,7 @@ def check_fork(key, L, k1, k2, live_fork, bk1_score, bk2_score, minute, time_bre
         prnt(info + '\n' + fork_exclude_text + '\n', 'hide')
         v = False
     return v
-
+    
 
 def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
     global bal1
@@ -224,7 +227,7 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
                 change_proc = round(new_proc - cur_proc, 2)
                 prnt('new proc: ' + str(new_proc) + '%, change: ' + str(change_proc))
 
-                if check_l(L) == '' or (DEBUG and ('@ТМ(' in key or '@ТБ(' in key)):
+                if check_l(L) == '' or (DEBUG and bet_type_is_work(key)):
 
                     is_recheck = True
                     fork_id = int(time.time())
