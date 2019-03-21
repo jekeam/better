@@ -150,7 +150,8 @@ def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi
             cnt = 0
             for pair_match in pair_mathes:
                 if match_id_olimp in pair_match:
-                    bets_olimp.pop(str(match_id_olimp))
+                    if bets_olimp.get(str(match_id_olimp)):
+                        bets_olimp.pop(str(match_id_olimp))
                     prnts('Olimp, pair mathes remove: ' + str(pair_mathes[cnt]))
                     pair_mathes.remove(pair_mathes[cnt])
                     mathes_complite.append(match_id_olimp)
@@ -195,7 +196,8 @@ def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_p
             cnt = 0
             for pair_match in pair_mathes:
                 if match_id_fonbet in pair_match:
-                    bets_fonbet.pop(str(match_id_fonbet))
+                    if bets_fonbet.get(str(match_id_fonbet)):
+                        bets_fonbet.pop(str(match_id_fonbet))
                     prnts('Fonbet, pair mathes remove: ' + str(pair_mathes[cnt]))
                     pair_mathes.remove(pair_mathes[cnt])
                     mathes_complite.append(match_id_fonbet)
@@ -291,12 +293,12 @@ def start_compare_matches(pair_mathes, json_bk1, json_bk2, mathes_complite):
                                         pass
                                     else:
                                         match_name = str(bk1_match_id) + ' ' + \
-                                        bk1_match_info.get('team1') + ' vs ' + \
-                                        bk1_match_info.get('team2') + ' | ' + \
-                                        str(bk2_match_id) + ' ' + \
-                                        bk2_match_info.get('team1') + ' vs ' + \
-                                        bk2_match_info.get('team2')
-                                        
+                                                     bk1_match_info.get('team1') + ' vs ' + \
+                                                     bk1_match_info.get('team2') + ' | ' + \
+                                                     str(bk2_match_id) + ' ' + \
+                                                     bk2_match_info.get('team1') + ' vs ' + \
+                                                     bk2_match_info.get('team2')
+
                                         if compare_teams(
                                                 bk1_match_info.get('team1'),
                                                 bk1_match_info.get('team2'),
@@ -306,7 +308,7 @@ def start_compare_matches(pair_mathes, json_bk1, json_bk2, mathes_complite):
                                             # if re.search('(u\d{2}|\(w\)|\(r\)|\(res\)|\(Reserves\)|-stud\.), match_name.lower()):
                                             #     serv_log('match_list', 'Матч исключен: ' + match_name)
                                             #     pass
-                                            if DEBUG: # and str(bk2_match_id) == '13706641':
+                                            if DEBUG:  # and str(bk2_match_id) == '13706641':
                                                 serv_log('match_list', 'Матч добавлен: ' + match_name)
                                                 pair_mathes.append([bk1_match_id, bk2_match_id])
                                             elif not DEBUG:
@@ -362,12 +364,12 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
                     v_fonbet = v_fonbet + 1
 
                 if v_olimp > 0.0 and v_fonbet > 0.0:
-                    
+
                     ol_time_req = math_json_olimp.get('time_req', 0)
                     fb_time_req = math_json_fonbet.get('time_req', 0)
                     cur_time = round(time.time())
-                    deff_time = max((cur_time-ol_time_req), (cur_time-fb_time_req))
-                    
+                    deff_time = max((cur_time - ol_time_req), (cur_time - fb_time_req))
+
                     L = (1 / float(v_olimp)) + (1 / float(v_fonbet))
                     is_fork = True if L < 1 and deff_time < 7 else False
 
@@ -381,7 +383,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
                         elif re.match('\([\d|\d\d]:[\d|\d\d]\)', math_json_fonbet.get('score_1st', '')) and \
                                 round(math_json_fonbet.get('minute', ''), 2) > 45.0:
                             period = 2
-                        
+
                         # TODO: котровка, например с олимпа ушла, и осталась брошена не в 0, в результате в bets_olimp, показывает неактуальную вилку. Надо или тут разбирать и удалять либо там
                         if forks.get(bet_key, '') != '' and deff_time < 6:
 
