@@ -447,7 +447,7 @@ if __name__ == '__main__':
         prnt('junior team exclude: ' + str(get_param('junior_team_exclude')))
         prnt('working hours: ' + str(get_param('work_hour')))
         prnt('round fork: ' + str(get_param('round_fork')))
-        prit('max count fail: ' + str(get_param('max_fail')))
+        prnt('max count fail: ' + str(get_param('max_fail')))
 
         server_forks = dict()
         success = []
