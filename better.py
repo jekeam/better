@@ -565,6 +565,7 @@ if __name__ == '__main__':
                         prnt('k2: ' + str(k2))
                         prnt('name: ' + str(name))
                         prnt('key: ' + str(key))
+                        prnt('val_json: ' + str(val_json))
 
                         info = ''
 
