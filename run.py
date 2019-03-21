@@ -150,6 +150,7 @@ def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi
             cnt = 0
             for pair_match in pair_mathes:
                 if match_id_olimp in pair_match:
+                    bets_olimp.pop(str(match_id_olimp))
                     prnts('Olimp, pair mathes remove: ' + str(pair_mathes[cnt]))
                     pair_mathes.remove(pair_mathes[cnt])
                     mathes_complite.append(match_id_olimp)
@@ -194,6 +195,7 @@ def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_p
             cnt = 0
             for pair_match in pair_mathes:
                 if match_id_fonbet in pair_match:
+                    bets_fonbet.pop(str(match_id_fonbet))
                     prnts('Fonbet, pair mathes remove: ' + str(pair_mathes[cnt]))
                     pair_mathes.remove(pair_mathes[cnt])
                     mathes_complite.append(match_id_fonbet)
