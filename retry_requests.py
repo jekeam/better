@@ -37,11 +37,9 @@ def retry(exceptions, delay=0, times=2):
 
     Parameter List
     -------------
-    :param exceptions:  A tuple of all exceptions that need to be caught for retry
-                                        e.g. retry(exception_list = (Timeout, Readtimeout))
+    :param exceptions:  A tuple of all exceptions that need to be caught for retry e.g. retry(exception_list = (Timeout, Readtimeout))
     :param delay: Amount of delay (seconds) needed between successive retries.
     :param times: no of times the function should be retried
-
 
     """
 
