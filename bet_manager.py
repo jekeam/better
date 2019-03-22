@@ -319,7 +319,14 @@ class BetManager:
             
             vector = self.dop_stat.get('vector')
             if vector:
-                self.vector = vector
+                if self.bk_name_opposite == 'fonbet':
+                    vector_opp = {
+                        'UP': 'DOWN', 
+                        'DOWN':'UP'
+                    }
+                    self.vector = vector_opp.get(vector)
+                else:
+                    self.vector = vector
 
             prnt(self.msg.format(
                 sys._getframe().f_code.co_name,
