@@ -198,9 +198,9 @@ class BetManager:
                     sleep(5)
 
         def bet_done(shared):
-            prnt(self.msg.format(sys._getframe().f_code.co_name, 'Успешно проставлено в ' + self.bk_name))
             if not shared[self.bk_name].get('time_bet'):
                 shared[self.bk_name]['time_bet'] = round(time() - self.time_start)
+                prnt(self.msg.format(sys._getframe().f_code.co_name, 'Успешно проставлено в ' + self.bk_name))
             shared[self.bk_name]['balance'] = self.session.get('balance')
 
         try:
