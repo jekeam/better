@@ -327,8 +327,8 @@ class BetManager:
             # RECALC SUM
             # If(K2<4.5;
             #    IF(K2<1.3;
-            #      ROUNDUP( (BET/NEW%) / (K2*(1/NEW%) );-1);
-            #      ROUND( (K2/NEW%)/(K2*(1/NEW%) );-1)
+            #      ROUNDUP( (BET/NEW%) / (K2*(1/NEW%)) ;-1);
+            #      ROUND( (K2/NEW%) / (K2*(1/NEW%)) ;-1)
             #    );
             #    ROUNDDOWN((BET/NEW%)/(K2/NEW%));-1)
             # )
