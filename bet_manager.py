@@ -323,6 +323,21 @@ class BetManager:
                            self.cur_minute, self.cur_sc_main, self.cur_sc, self.total_stock)))
 
             prnt(self.msg.format(sys._getframe().f_code.co_name, 'Запас тотала: total_stock:{}'.format(self.total_stock)))
+            
+            # RECALC SUM
+            # If(K2<4.5;
+            #   IF(K2<1.3;
+            #     ROUNDUP( (BET/NEW%) / (K2*(1/NEW%) );-1);
+            #     ROUND( (K2/NEW%)/(K2*(1/NEW%) );-1)
+            #      );
+            #   ROUNDDOWN((BET/NEW%)/(K2/NEW%));-1)
+            # )
+            #   - K2: новый коф
+            #   - Bet: сколько планировали ставить
+            #   - NEW%: новый процент вилки
+            # prnt(self.msg.format(sys._getframe().f_code.co_name, 
+            # 'Пересчет суммы ставки: {}->{} (k: {}->{}, l: {}->{})'.format(,,,,,)))
+                
 
         self.vector = self.bk_container.get('wager', {})['vector']
         self.time_start = round(int(time()))
