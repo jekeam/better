@@ -356,12 +356,12 @@ class BetManager:
 
                 # CHECK FOR LOSS
                 prnt(self.msg.format(sys._getframe().f_code.co_name, 'CHECK FOR LOSS'))
-                if self.side_bet_half == '1' and self.cur_minute > 45.0:
-                    err_str = 'Bet is lost: side_bet_half={} and cur_minute many 45({})'.format(self.side_bet_half, self.cur_minute)
+                if self.side_bet_half == '1' and self.cur_minute > 43.0:
+                    err_str = 'Bet is lost: side_bet_half={} and cur_minute many 43({})'.format(self.side_bet_half, self.cur_minute)
                     prnt(err_str)
                     raise BetIsLost(err_str)
-                elif self.cur_minute > 90.0:
-                    err_str = 'Bet is lost: side_bet_half={} and cur_minute many 90({})'.format(self.side_bet_half, self.cur_minute)
+                elif self.cur_minute > 88.0:
+                    err_str = 'Bet is lost: side_bet_half={} and cur_minute many 88({})'.format(self.side_bet_half, self.cur_minute)
                     prnt(err_str)
                     raise BetIsLost(err_str)
 
