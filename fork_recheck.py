@@ -4,7 +4,7 @@ from olimp import to_abb, abbreviations
 from meta_ol import get_xtoken_bet, olimp_secret_key, ol_url_api, ol_payload, ol_headers
 from meta_fb import fb_headers, get_new_bets_fonbet
 import re
-from utils import prnt
+from utils import prnt, get_vector
 import copy
 from retry_requests import requests_retry_session
 from exceptions import BetIsLost, BetError
@@ -159,6 +159,8 @@ def get_fonbet_info(match_id, factor_id, param, bet_tepe=None):
                 'period': period,
                 'timebreak': time_break_fonbet
             }
+            if bet_tepe:
+                dop_stat.update({'vector': get_vector(bet_tepe, sc1, sc2)})
 
             for cat in event.get('subcategories'):
                 for kof in cat.get('quotes'):

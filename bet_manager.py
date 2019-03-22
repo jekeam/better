@@ -65,7 +65,6 @@ class BetManager:
         self.total_bet = bk_container.get('bet_total')
         self.side_team = bk_container['side_team']
         self.bet_type = bk_container['bet_type']
-        self.set_param()  # set self.side_bet, self.side_bet_half
         self.dop_stat = dict()
         # dynamic params
         self.cur_sc = None
@@ -315,6 +314,10 @@ class BetManager:
             self.cur_half = self.dop_stat['period']
             self.cur_minute = self.dop_stat['minutes']
             self.total_stock = self.total_bet - self.cur_total
+            
+            vector = self.dop_stat.get('vector')
+            if vector:
+                self.vector = vector
 
             prnt(self.msg.format(
                 sys._getframe().f_code.co_name,
@@ -338,36 +341,47 @@ class BetManager:
             # prnt(self.msg.format(sys._getframe().f_code.co_name, 
             # 'Пересчет суммы ставки: {}->{} (k: {}->{}, l: {}->{})'.format(,,,,,)))
                 
-
+        self.set_param()  # set self.side_bet, self.side_bet_half
         self.vector = self.bk_container.get('wager', {})['vector']
         self.time_start = round(int(time()))
         self.time_left = -1
-
-        if self.vector == 'UP':
-            self.timeout_left = float(60 * 10)
-            if DEBUG:
-                self.timeout_left = float(45)
-        elif self.vector == 'DOWN':
-            self.timeout_left = round(float(60 * 2.5))
-            if DEBUG:
-                self.timeout_left = float(20)
-        prnt(self.msg.format(sys._getframe().f_code.co_name, 'Завершающий принял работу, время на работу(сек):' + str(self.timeout_left)))
+                
+        prnt(self.msg.format(sys._getframe().f_code.co_name, 'Завершающий принял работу'))
 
         is_go = True
         cnt_attempt_sale = 5
         while is_go:
             try:
                 prnt(' ')
-                # UPDATE TIME LEFT
-                prnt(self.msg.format(sys._getframe().f_code.co_name, 'UPDATE TIME LEFT'))
-                cur_time = round(int(time()))
-                self.time_left = (self.time_start + self.timeout_left) - cur_time
-                if self.time_left < 0 and self.vector == 'DOWN' and self.total_stock < 1.5:  # можно  на первое вермя работать с подстраховкой: and self.total_stock < 1.5 - подразумевает что есть запас тотола в один гол
-                    err_str = 'timeout: time_start:{}, time_left:{}, cur_time:{}'.format(self.time_start, self.time_left, cur_time)
-                    raise BetIsLost(err_str)
-
                 # UPDATE DATA
                 data_update()
+                
+                # UPDATE TIME LEFT
+                prnt(self.msg.format(sys._getframe().f_code.co_name, 'UPDATE TIME LEFT'))
+                
+                if self.vector == 'UP':
+                    self.timeout_left = float(60 * 10)
+                    if DEBUG:
+                        self.timeout_left = float(45)
+                elif self.vector == 'DOWN':
+                    self.timeout_left = round(float(60 * 2.5))
+                    if DEBUG:
+                        self.timeout_left = float(20)
+                        
+                cur_time = round(int(time()))
+                self.time_left = (self.time_start + self.timeout_left) - cur_time
+                        
+                prnt(self.msg.format(
+                    sys._getframe().f_code.co_name,
+                    'Vector: {}, время на работу(сек): {}'.format(self.vector, self.timeout_left)))
+                
+                # Пока убрал фичю
+                # if self.time_left < 0 and self.vector == 'DOWN' and self.total_stock < 1.5:  # можно  на первое вермя работать с подстраховкой: and self.total_stock < 1.5 - подразумевает что есть запас тотола в один гол
+                if self.time_left < 0:
+                    prnt(self.msg.format(
+                      sys._getframe().f_code.co_name, 
+                      'timeout: time_start:{}, time_left:{}, cur_time:{}'.format(self.time_start, self.time_left, cur_time)))
+                    raise BetIsLost('Время проставления истекло!')
 
                 # CHECK FOR LOSS
                 prnt(self.msg.format(sys._getframe().f_code.co_name, 'CHECK FOR LOSS'))
@@ -380,7 +394,7 @@ class BetManager:
                     prnt(err_str)
                     raise BetIsLost(err_str)
 
-                # check: score changed?
+                # CHECK: SCORE CHANGED?
                 if self.cur_total != self.cur_total_new:
                     self.cur_total_new = self.cur_total
                     prnt(self.msg.format(sys._getframe().f_code.co_name, 'score changed!'))
