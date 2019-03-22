@@ -198,6 +198,7 @@ class BetManager:
                     sleep(5)
 
         def bet_done(shared):
+            prnt(self.msg.format(sys._getframe().f_code.co_name, 'Успешно проставлено в ' + self.bk_name))
             if not shared[self.bk_name].get('time_bet'):
                 shared[self.bk_name]['time_bet'] = round(time() - self.time_start)
             shared[self.bk_name]['balance'] = self.session.get('balance')
@@ -632,12 +633,13 @@ class BetManager:
             self.check_responce(err_msg)
 
             if err_code == 0:
+                shared[self.bk_name + '_err'] = 'ok'
+
                 self.match_id = self.wager['event']
 
                 self.get_cur_max_bet_id()
 
                 shared[self.bk_name]['reg_id'] = self.reg_id
-                shared[self.bk_name + '_err'] = 'ok'
 
                 prnt(self.msg.format(sys._getframe().f_code.co_name, 'bet successful, reg_id: ' + str(self.reg_id)))
 
