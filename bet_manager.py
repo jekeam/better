@@ -970,6 +970,8 @@ class BetManager:
             raise BetIsLost(err_str)
 
         min_amount, max_amount = res['min'] // 100, res['max'] // 100
+        
+        shared[self.bk_name]['max_bet'] = max_amount
 
         prnt(self.msg.format(sys._getframe().f_code.co_name, 'sum bet=' + str(self.sum_bet)))
         prnt(self.msg.format(sys._getframe().f_code.co_name, 'min_amount=' + str(min_amount) + ', max_amount=' + str(max_amount)))
