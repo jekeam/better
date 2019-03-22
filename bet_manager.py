@@ -271,6 +271,7 @@ class BetManager:
     def bet_safe(self, shared: dict):
 
         def data_update():
+            prnt(' ')
             prnt(self.msg.format(sys._getframe().f_code.co_name, 'UPDATE DATA'))
             match_id = self.bk_container.get('wager', {})['event']
             param = self.bk_container.get('wager', {}).get('param')
@@ -357,6 +358,7 @@ class BetManager:
                 # UPDATE DATA
                 data_update()
                 
+                prnt(' ')
                 # UPDATE TIME LEFT
                 prnt(self.msg.format(sys._getframe().f_code.co_name, 'UPDATE TIME LEFT'))
                 
@@ -374,7 +376,7 @@ class BetManager:
                         
                 prnt(self.msg.format(
                     sys._getframe().f_code.co_name,
-                    'Vector: {}, время на работу(сек): {}'.format(self.vector, self.timeout_left)))
+                    'Vector: {}, общее время на работу(сек): {}'.format(self.vector, self.timeout_left)))
                 
                 # Пока убрал фичю
                 # if self.time_left < 0 and self.vector == 'DOWN' and self.total_stock < 1.5:  # можно  на первое вермя работать с подстраховкой: and self.total_stock < 1.5 - подразумевает что есть запас тотола в один гол
@@ -394,7 +396,7 @@ class BetManager:
                     err_str = 'Bet is lost: side_bet_half={} and cur_minute many 88({})'.format(self.side_bet_half, self.cur_minute)
                     prnt(err_str)
                     raise BetIsLost(err_str)
-
+                
                 # CHECK: SCORE CHANGED?
                 if self.cur_total != self.cur_total_new:
                     self.cur_total_new = self.cur_total
