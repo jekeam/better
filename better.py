@@ -233,25 +233,25 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
                     fork_id = int(time.time())
                     fork_info = {
                         fork_id: {
-                            "olimp": {
-                                "id": wag_ol["event"],
-                                "kof": wag_ol["factor"],
-                                "amount": amount_olimp,
-                                "reg_id": 0,
-                                "bet_type": olimp_bet_type,
-                                "balance": bal1,
-                                "time_bet": 0,
-                                "err": 'ok'
+                            'olimp': {
+                                'id': wag_ol['event'],
+                                'kof': wag_ol['factor'],
+                                'amount': amount_olimp,
+                                'reg_id': 0,
+                                'bet_type': olimp_bet_type,
+                                'balance': bal1,
+                                'time_bet': 0,
+                                'err': 'ok'
                             },
-                            "fonbet": {
-                                "id": wag_fb["event"],
-                                "kof": wag_fb["value"],
-                                "amount": amount_fonbet,
-                                "reg_id": 0,
-                                "bet_type": fonbet_bet_type,
-                                "balance": bal2,
-                                "time_bet": 0,
-                                "err": 'ok'
+                            'fonbet': {
+                                'id': wag_fb['event'],
+                                'kof': wag_fb['value'],
+                                'amount': amount_fonbet,
+                                'reg_id': 0,
+                                'bet_type': fonbet_bet_type,
+                                'balance': bal2,
+                                'time_bet': 0,
+                                'err': 'ok'
                             },
                         }
                     }
@@ -283,7 +283,7 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
             'sc1': sc1,
             'sc2': sc2,
             'cur_total': sc1 + sc2,
-            "side_team": "1"
+            'side_team': '1'
         }
         shared['fonbet'] = {
             'opposite': 'olimp',
@@ -294,8 +294,8 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
             'sc1': sc1,
             'sc2': sc2,
             'cur_total': sc1 + sc2,
-            "side_team": "2",
-            "max_bet": 0
+            'side_team': '2',
+            'max_bet': 0
         }
         if '(' in fonbet_bet_type:
             shared['olimp']['bet_total'] = float(re.findall(r'\((.*)\)', fonbet_bet_type)[0])
@@ -375,7 +375,7 @@ def run_client():
                 err_str = 'Основной поток завершен, я тоже офф'
                 conn.close()
                 raise Shutdown(err_str)
-            conn.request("GET", "")
+            conn.request('GET', '')
             rs = conn.getresponse()
             data = rs.read().decode('utf-8')
             data_json = json.loads(data)
@@ -393,12 +393,12 @@ def run_client():
 
 
 FONBET_USER = {
-    "login": get_account_info(
-        'fonbet', 'login'), "password": get_account_info(
+    'login': get_account_info(
+        'fonbet', 'login'), 'password': get_account_info(
         'fonbet', 'password')}
 OLIMP_USER = {
-    "login": get_account_info(
-        'olimp', 'login'), "password": get_account_info(
+    'login': get_account_info(
+        'olimp', 'login'), 'password': get_account_info(
         'olimp', 'password')}
 
 bet1 = 0.  # Сумма ставки в БК1
