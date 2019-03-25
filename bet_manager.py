@@ -428,37 +428,19 @@ class BetManager:
                 if self.cur_total != self.cur_total_new:
                     self.cur_total_new = self.cur_total
                     prnt(self.msg.format(sys._getframe().f_code.co_name, 'score changed!'))
-                    if self.vector == 'UP':
-                        # if self.total_bet <= self.cur_total_new:
-                        if self.total_stock <= 0:
+                    if self.total_stock <= 0:
+                        if self.vector == 'UP':
                             err_str = ' total_bet < cur_total ({} < {}), bet lost, im sorry =('.format(self.total_bet, self.cur_total)
                             prnt(err_str)
                             raise BetIsLost(err_str)
-                        elif self.cur_total < self.total_bet:
-                            # exmpl: SC1 + SC2 < Х
-                            # recalc sum
-                            self.bet_place(shared)
-                            is_go = False
-                    elif self.vector == 'DOWN':
-                        if self.cur_total < self.total_bet:
-                            # exmpl: SC1 + SC2 < Х
-                            # recalc sum
-                            self.bet_place(shared)
-                            is_go = False
-                        elif self.total_bet <= self.cur_total:
+                        elif self.vector == 'DOWN':
                             # exmpl: SC1 + SC2 >= Х
                             prnt(self.msg.format(sys._getframe().f_code.co_name, 'Greetings! You won, brain!'))
                             is_go = False
-                else:
-                    if self.vector == 'UP':
-                        # recalc sum
-                        self.bet_place(shared)
-                        is_go = False
-
-                    elif self.vector == 'DOWN':
-                        # recalc sum
-                        self.bet_place(shared)
-                        is_go = False
+                
+                # recalc sum
+                self.bet_place(shared)
+                is_go = False
 
             except BetIsLost as e:
                 err_msg = str(e.__class__.__name__) + ': ' + str(e)
