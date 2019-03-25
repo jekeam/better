@@ -696,10 +696,16 @@ class BetManager:
 
             self.check_max_bet(shared)
 
-            try:
-                self.get_request_id()
-            except BetError:
-                self.get_request_id()
+            self.attempt_get_req_id = 3
+            while True:
+                if self.attempt_get_req_id < 0:
+                    raise BetIsLost('not get get_request_id')
+                try:
+                    self.attempt_get_req_id = self.attempt_get_req_id - 1
+                    self.get_request_id()
+                    break
+                except BetError as e:
+                    prnt(self.msg_err.format(sys._getframe().f_code.co_name, 'get_request_id err: ' + str(e) + ', replay'))
 
             self.payload['requestId'] = self.reqId
 
@@ -1139,8 +1145,7 @@ class BetManager:
             raise BetError(err_str)
         else:
             self.reqId = res['requestId']
-            prnt(self.msg.format(sys._getframe().f_code.co_name,
-                                 'get requestId=' + str(self.reqId)))
+            prnt(self.msg.format(sys._getframe().f_code.co_name, 'get requestId=' + str(self.reqId)))
             return self.reqId
 
     def check_sell_result(self):
