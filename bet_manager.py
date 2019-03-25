@@ -381,8 +381,8 @@ class BetManager:
                 # UPDATE DATA
                 data_update()
                 
-                prnt(' ')
                 # UPDATE TIME LEFT
+                prnt(' ')
                 prnt(self.msg.format(sys._getframe().f_code.co_name, 'UPDATE TIME LEFT'))
                 
                 if self.vector == 'UP':
@@ -408,8 +408,9 @@ class BetManager:
                       sys._getframe().f_code.co_name, 
                       'timeout: time_start:{}, time_left:{}, cur_time:{}'.format(self.time_start, self.time_left, cur_time)))
                     raise BetIsLost('Время проставления истекло!')
-
+                
                 # CHECK FOR LOSS
+                prnt(' ')
                 prnt(self.msg.format(sys._getframe().f_code.co_name, 'CHECK FOR LOSS'))
                 if self.side_bet_half == '1' and self.cur_minute >= 43.0:
                     err_str = 'Bet is lost: side_bet_half={} and cur_minute many 43({})'.format(self.side_bet_half, self.cur_minute)
