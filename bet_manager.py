@@ -430,11 +430,10 @@ class BetManager:
                     prnt(self.msg.format(sys._getframe().f_code.co_name, 'score changed!'))
                     if self.total_stock <= 0:
                         if self.vector == 'UP':
-                            err_str = ' total_bet < cur_total ({} < {}), bet lost, im sorry =('.format(self.total_bet, self.cur_total)
+                            err_str = ' total_bet < cur_total ({} < {}), bet lost'.format(self.total_bet, self.cur_total)
                             prnt(err_str)
                             raise BetIsLost(err_str)
                         elif self.vector == 'DOWN':
-                            # exmpl: SC1 + SC2 >= Х
                             prnt(self.msg.format(sys._getframe().f_code.co_name, 'Greetings! You won, brain!'))
                             is_go = False
                 
