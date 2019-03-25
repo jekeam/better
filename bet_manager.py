@@ -399,7 +399,7 @@ class BetManager:
                         
                 prnt(self.msg.format(
                     sys._getframe().f_code.co_name,
-                    'Vector: {}, общее время на работу(сек): {}'.format(self.vector, self.timeout_left)))
+                    'Vector: {}, время на работу(сек): {} из {}'.format(self.vector, self.time_left, self.timeout_left)))
                 
                 # Пока убрал фичю
                 # if self.time_left < 0 and self.vector == 'DOWN' and self.total_stock < 1.5:  # можно  на первое вермя работать с подстраховкой: and self.total_stock < 1.5 - подразумевает что есть запас тотола в один гол
