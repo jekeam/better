@@ -746,8 +746,11 @@ class BetManager:
 
             if result == 'betDelay':
                 bet_delay_sec = (float(res.get('betDelay')) / 1000)
+                shared[self.bk_name]['bet_delay'] = bet_delay_sec
                 prnt(self.msg.format(sys._getframe().f_code.co_name, 'bet_delay: ' + str(bet_delay_sec) + ' sec.'))
                 sleep(bet_delay_sec)
+            else:
+                shared[self.bk_name]['bet_delay'] = 0
 
             self.check_result(shared)
 
