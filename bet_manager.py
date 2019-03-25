@@ -76,7 +76,7 @@ class BetManager:
         self.cur_minute = None
         self.total_stock = None
         
-        self.strat_full_game = False
+        self.strat_name = None
 
         self.account = self.get_account_info()
         self.timeout = 20
@@ -247,9 +247,9 @@ class BetManager:
 
     def set_param(self):
         
-        def set_full_game_strategy(side: str):
+        def set_strategy(strat_name: str, side: str):
             self.side_bet = side
-            self.strat_full_game = True
+            self.strat_name = strat_name
         
         self.side_bet = None
         self.side_bet_half = None
@@ -271,14 +271,16 @@ class BetManager:
         elif re.match(msk_period, bet_type_sub):
             self.side_bet_half = bet_type_sub[0:1]
             bet_depends = bet_depends + ' период=' + self.side_bet_half
-        elif bet_type_sub[0:2] == 'П1':
-            set_full_game_strategy('1')
+        elif 'КЗ' in bet_type_sub or 'КНЗ' in bet_type_sub:
+            set_strategy('КЗ', re.sub('\D', '', bet_type_sub))
             bet_depends = bet_depends + ' команада=' + self.side_bet
-        elif bet_type_sub[0:2] == 'П2':
-            set_full_game_strategy('2')
+        elif bet_type_sub[0:1] == 'П':
+            set_strategy(bet_type_sub[0:1], bet_type_sub[1:2])
             bet_depends = bet_depends + ' команада=' + self.side_bet
         else:
             bet_depends = 'Ставка не привязана ни к периоду, ни к команде'
+            if 'ОЗ' in bet_type_sub:
+                set_strategy('ОЗ', None)
         prnt(self.msg.format(sys._getframe().f_code.co_name, bet_depends))
 
     def bet_safe(self, shared: dict):
@@ -422,13 +424,25 @@ class BetManager:
                 if self.cur_total != self.cur_total_new:
                     self.cur_total_new = self.cur_total
                     prnt(self.msg.format(sys._getframe().f_code.co_name, 'Score changed!'))
-                    # strat 1
-                    if self.strat_full_game:
+                    # strategy definition
+                    if self.strat_name in ('П'):
                         if self.cur_minute >= 80:
-                            err_str = 'Strategy full game: bet is lost, cur_minute many 80({})'.format(self.cur_minute)
+                            err_str = err_str = 'Strategy ' + self.strat_name + ': bet is lost, cur_minute many 80({})'.format(self.cur_minute)
                             prnt(err_str)
                             raise BetIsLost(err_str)
-                    # start 2
+                     # strategy definition
+                    elif self.strat_name == 'КЗ':
+                        if self.side_bet == '1' and int(self.cur_sc_main.split(':')[0]) > 0 or \
+                           self.side_bet == '2' and int(self.cur_sc_main.split(':')[1]) > 0:
+                            err_str = 'Strategy ' + self.strat_name + ': bet is lost, side_bet:{}, score:{}'.format(self.side_bet, self.cur_sc_main)
+                            prnt(err_str)
+                            raise BetIsLost(err_str)
+                    elif self.strat_name == 'ОЗ':
+                        if self.cur_total > 0:
+                            err_str = 'Strategy ' + self.strat_name + ': bet is lost, score:{}, cur_total:{}'.format(self.cur_sc_main, self.cur_total)
+                            prnt(err_str)
+                            raise BetIsLost(err_str)
+                    # strategy definition
                     else:
                         if self.total_stock <= 0:
                             if self.vector == 'UP':

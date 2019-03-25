@@ -101,7 +101,11 @@ def bet_type_is_work(key):
     if 'ТМ' in key or \
        'ТБ' in key or \
        'П1' in key[0:2] or \
-       'П2' in key[0:2]:
+       'П2' in key[0:2] or \
+       'КЗ' in key[0:2] or \
+       'КНЗ' in key[0:2] or \
+       'ОЗД' == key or \
+       'ОЗН' == key:
         return True
 
 def check_fork(key, L, k1, k2, live_fork, bk1_score, bk2_score, minute, time_break_fonbet, period, deff_max, info=''):
