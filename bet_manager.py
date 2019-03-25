@@ -432,7 +432,7 @@ class BetManager:
                     else:
                         if self.total_stock <= 0:
                             if self.vector == 'UP':
-                                err_str = 'Strategy totla: total_bet < cur_total ({} < {}), bet lost'.format(self.total_bet, self.cur_total)
+                                err_str = 'Strategy total: total_bet < cur_total ({} < {}), bet lost'.format(self.total_bet, self.cur_total)
                                 prnt(err_str)
                                 raise BetIsLost(err_str)
                             elif self.vector == 'DOWN':
