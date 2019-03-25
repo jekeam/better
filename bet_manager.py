@@ -75,6 +75,8 @@ class BetManager:
         self.cur_val_bet = None
         self.cur_minute = None
         self.total_stock = None
+        
+        self.full_game_strat = False
 
         self.account = self.get_account_info()
         self.timeout = 20
@@ -244,6 +246,11 @@ class BetManager:
             bet_done(shared)
 
     def set_param(self):
+        
+        def set_full_game_strategy(side: str):
+            self.side_bet = side
+            self.full_game_strat = True
+        
         self.side_bet = None
         self.side_bet_half = None
 
@@ -265,10 +272,10 @@ class BetManager:
             self.side_bet_half = bet_type_sub[0:1]
             bet_depends = bet_depends + ' период=' + self.side_bet_half
         elif bet_type_sub[0:2] == 'П1':
-            self.side_bet = '1'
+            set_full_game_strategy('1')
             bet_depends = bet_depends + ' команада=' + self.side_bet
         elif bet_type_sub[0:2] == 'П2':
-            self.side_bet = '2'
+            set_full_game_strategy('2')
             bet_depends = bet_depends + ' команада=' + self.side_bet
         else:
             bet_depends = 'Ставка не привязана ни к периоду, ни к команде'
@@ -402,14 +409,20 @@ class BetManager:
 
                 # CHECK FOR LOSS
                 prnt(self.msg.format(sys._getframe().f_code.co_name, 'CHECK FOR LOSS'))
-                if self.side_bet_half == '1' and self.cur_minute > 35.0:
-                    err_str = 'Bet is lost: side_bet_half={} and cur_minute many 35({})'.format(self.side_bet_half, self.cur_minute)
-                    prnt(err_str)
-                    raise BetIsLost(err_str)
-                elif self.cur_minute > 80.0:
-                    err_str = 'Bet is lost: side_bet_half={} and cur_minute many 80({})'.format(self.side_bet_half, self.cur_minute)
-                    prnt(err_str)
-                    raise BetIsLost(err_str)
+                if self.full_game_strat:
+                    if self.cur_minute >= 80:
+                        err_str = 'Bet is lost: side_bet_half={} and cur_minute many 80({})'.format(self.side_bet_half, self.cur_minute)
+                        prnt(err_str)
+                        raise BetIsLost(err_str)
+                else:
+                    if self.side_bet_half == '1' and self.cur_minute >= 43.0:
+                        err_str = 'Bet is lost: side_bet_half={} and cur_minute many 43({})'.format(self.side_bet_half, self.cur_minute)
+                        prnt(err_str)
+                        raise BetIsLost(err_str)
+                    elif self.cur_minute >= 88.0:
+                        err_str = 'Bet is lost: side_bet_half={} and cur_minute many 88({})'.format(self.side_bet_half, self.cur_minute)
+                        prnt(err_str)
+                        raise BetIsLost(err_str)
                 
                 # CHECK: SCORE CHANGED?
                 if self.cur_total != self.cur_total_new:
