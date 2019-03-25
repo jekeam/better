@@ -706,6 +706,7 @@ class BetManager:
                     break
                 except BetError as e:
                     prnt(self.msg_err.format(sys._getframe().f_code.co_name, 'get_request_id err: ' + str(e) + ', replay'))
+                    sleep(1)
 
             self.payload['requestId'] = self.reqId
 
