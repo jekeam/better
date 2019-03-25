@@ -76,7 +76,7 @@ class BetManager:
         self.cur_minute = None
         self.total_stock = None
         
-        self.full_game_strat = False
+        self.strat_full_game = False
 
         self.account = self.get_account_info()
         self.timeout = 20
@@ -249,7 +249,7 @@ class BetManager:
         
         def set_full_game_strategy(side: str):
             self.side_bet = side
-            self.full_game_strat = True
+            self.strat_full_game = True
         
         self.side_bet = None
         self.side_bet_half = None
@@ -409,33 +409,35 @@ class BetManager:
 
                 # CHECK FOR LOSS
                 prnt(self.msg.format(sys._getframe().f_code.co_name, 'CHECK FOR LOSS'))
-                if self.full_game_strat:
-                    if self.cur_minute >= 80:
-                        err_str = 'Bet is lost: side_bet_half={} and cur_minute many 80({})'.format(self.side_bet_half, self.cur_minute)
-                        prnt(err_str)
-                        raise BetIsLost(err_str)
-                else:
-                    if self.side_bet_half == '1' and self.cur_minute >= 43.0:
-                        err_str = 'Bet is lost: side_bet_half={} and cur_minute many 43({})'.format(self.side_bet_half, self.cur_minute)
-                        prnt(err_str)
-                        raise BetIsLost(err_str)
-                    elif self.cur_minute >= 88.0:
-                        err_str = 'Bet is lost: side_bet_half={} and cur_minute many 88({})'.format(self.side_bet_half, self.cur_minute)
-                        prnt(err_str)
-                        raise BetIsLost(err_str)
+                if self.side_bet_half == '1' and self.cur_minute >= 43.0:
+                    err_str = 'Bet is lost: side_bet_half={} and cur_minute many 43({})'.format(self.side_bet_half, self.cur_minute)
+                    prnt(err_str)
+                    raise BetIsLost(err_str)
+                elif self.cur_minute >= 88.0:
+                    err_str = 'Bet is lost: side_bet_half={} and cur_minute many 88({})'.format(self.side_bet_half, self.cur_minute)
+                    prnt(err_str)
+                    raise BetIsLost(err_str)
                 
                 # CHECK: SCORE CHANGED?
                 if self.cur_total != self.cur_total_new:
                     self.cur_total_new = self.cur_total
-                    prnt(self.msg.format(sys._getframe().f_code.co_name, 'score changed!'))
-                    if self.total_stock <= 0:
-                        if self.vector == 'UP':
-                            err_str = ' total_bet < cur_total ({} < {}), bet lost'.format(self.total_bet, self.cur_total)
+                    prnt(self.msg.format(sys._getframe().f_code.co_name, 'Score changed!'))
+                    # strat 1
+                    if self.strat_full_game:
+                        if self.cur_minute >= 80:
+                            err_str = 'Start full game: bet is lost, cur_minute many 80({})'.format(self.cur_minute)
                             prnt(err_str)
                             raise BetIsLost(err_str)
-                        elif self.vector == 'DOWN':
-                            prnt(self.msg.format(sys._getframe().f_code.co_name, 'Greetings! You won, brain!'))
-                            is_go = False
+                    # start 2
+                    else:
+                        if self.total_stock <= 0:
+                            if self.vector == 'UP':
+                                err_str = 'Strat totla: total_bet < cur_total ({} < {}), bet lost'.format(self.total_bet, self.cur_total)
+                                prnt(err_str)
+                                raise BetIsLost(err_str)
+                            elif self.vector == 'DOWN':
+                                prnt(self.msg.format(sys._getframe().f_code.co_name, 'Greetings! You won, brain!'))
+                                is_go = False
                 
                 # recalc sum
                 self.bet_place(shared)
