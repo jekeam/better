@@ -346,9 +346,9 @@ class BetManager:
 
             prnt(self.msg.format(
                 sys._getframe().f_code.co_name,
-                'Получил данные: bet_type:{}, vector:{}, total:{}, half:{}, val_bet:{}, minute:{}, sc_main:{}, sc:{}, total_stock:{}'.
+                'Получил данные: bet_type:{}, vector:{}, total:{}, half:{}, val_bet:{}, minute:{}, sc_main:{}, sc:{}'.
                     format(self.bet_type, self.vector, self.cur_total, self.cur_half, self.cur_val_bet,
-                           self.cur_minute, self.cur_sc_main, self.cur_sc, self.total_stock)))
+                           self.cur_minute, self.cur_sc_main, self.cur_sc)))
 
             prnt(self.msg.format(sys._getframe().f_code.co_name, 'Запас тотала: total_stock:{}'.format(self.total_stock)))
             
