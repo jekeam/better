@@ -425,14 +425,14 @@ class BetManager:
                     # strat 1
                     if self.strat_full_game:
                         if self.cur_minute >= 80:
-                            err_str = 'Start full game: bet is lost, cur_minute many 80({})'.format(self.cur_minute)
+                            err_str = 'Strategy full game: bet is lost, cur_minute many 80({})'.format(self.cur_minute)
                             prnt(err_str)
                             raise BetIsLost(err_str)
                     # start 2
                     else:
                         if self.total_stock <= 0:
                             if self.vector == 'UP':
-                                err_str = 'Strat totla: total_bet < cur_total ({} < {}), bet lost'.format(self.total_bet, self.cur_total)
+                                err_str = 'Strategy totla: total_bet < cur_total ({} < {}), bet lost'.format(self.total_bet, self.cur_total)
                                 prnt(err_str)
                                 raise BetIsLost(err_str)
                             elif self.vector == 'DOWN':
