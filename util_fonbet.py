@@ -200,7 +200,7 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
                 except Exception as e:
                     prnts('err util_fonbet scs: ' + str(match_id) + ' score=' + str(score) + ' ' + str(e))
 
-                timer = event.get('timer')
+                timer = event.get('timer','00:00')
                 minute = event.get('timerSeconds', 0) / 60
 
                 if minute >= MINUTE_COMPLITE:
