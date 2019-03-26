@@ -242,6 +242,12 @@ class BetManager:
             # В обоих БК ошибки, выкидываем вилку
             shared[self.bk_name + '_err'] = str(e.__class__.__name__) + ': ' + str(e)
             shared[self.bk_name_opposite + '_err'] = str(e.__class__.__name__) + ': ' + str(e)
+        except Exeption as e:
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            err_msg = 'Неизвестная ошибка: ' + str(e.__class__.__name__) + ' - ' + str(e) + '. ' + \
+                      str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
+            err_str = self.msg_err.format(sys._getframe().f_code.co_name, err_msg)
+            prnt(err_str)
         finally:
             bet_done(shared)
 
@@ -727,10 +733,8 @@ class BetManager:
 
             self.payload['requestId'] = self.reqId
 
-            prnt(self.msg.format(sys._getframe().f_code.co_name, 'rq: ' + str(payload) + ' ' + str(headers)), 'hide')
-
             self.opposite_stat_get(shared)
-
+            prnt(self.msg.format(sys._getframe().f_code.co_name, 'rq: ' + str(payload) + ' ' + str(headers)), 'hide')
             resp = requests_retry_session_post(
                 url.format('coupon/register'),
                 headers=headers,
@@ -1132,7 +1136,7 @@ class BetManager:
         if not self.session.get('session'):
             self.session['session'] = read_file(self.session_file)
 
-    def get_request_id(self) -> int:
+    def get_request_id(self):
 
         if not self.server_fb:
             self.server_fb = get_urls(self.mirror, self.proxies)
@@ -1167,7 +1171,6 @@ class BetManager:
         else:
             self.reqId = res['requestId']
             prnt(self.msg.format(sys._getframe().f_code.co_name, 'get requestId=' + str(self.reqId)))
-            return self.reqId
 
     def check_sell_result(self):
         if not self.server_fb:
