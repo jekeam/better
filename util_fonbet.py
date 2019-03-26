@@ -17,7 +17,7 @@ fonbet_header = {
 base_payload = {
     "appVersion": "5.1.3b",
     "lang": "ru",
-    "rooted": "false",
+    "rooted": False,
     "sdkVersion": 21,
     "sysId": 4
 }
