@@ -58,6 +58,7 @@ class BetManager:
         self.bk_container = bk_container
         self.wager = bk_container['wager']
         self.bk_name_opposite = bk_container['opposite']
+        self.vector = self.bk_container.get('wager', {})['vector']
 
         self.msg_err = self.bk_name + '. {}, err: {}'
         self.msg = self.bk_name + '. {}, msg: {}'
@@ -378,7 +379,6 @@ class BetManager:
             # 'Пересчет суммы ставки: {}->{} (k: {}->{}, l: {}->{})'.format(,,,,,)))
                 
         self.set_param()  # set self.side_bet, self.side_bet_half
-        self.vector = self.bk_container.get('wager', {})['vector']
         self.time_start = round(int(time()))
         self.time_left = -1
                 
