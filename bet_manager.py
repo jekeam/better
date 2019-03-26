@@ -226,28 +226,28 @@ class BetManager:
             except BkOppBetError as e:
                 raise BkOppBetError(e)
             except (BetIsLost, NoMoney, SessionExpired, Exception) as e:
-                if not shared.get(self.bk_name_opposite, {}).get('reg_id'):
-                    shared[self.bk_name + '_err'] = str(e.__class__.__name__) + ': ' + str(e)
-
-                    exc_type, exc_value, exc_traceback = sys.exc_info()
-                    err_msg = 'Ошибка: ' + str(e.__class__.__name__) + ' - ' + str(e) + '. ' + \
-                              str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
-                    err_str = self.msg_err.format(sys._getframe().f_code.co_name, err_msg)
-                    prnt(err_str)
-
+                exc_type, exc_value, exc_traceback = sys.exc_info()
+                err_msg = 'Ошибка: ' + str(e.__class__.__name__) + ' - ' + str(e) + '. ' + \
+                          str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
+                shared[self.bk_name + '_err'] = err_msg
+                prnt(err_msg)
+                    
+                self.opposite_stat_wait(shared)
+                if shared.get(self.bk_name_opposite, {}).get('reg_id'):
                     sale_opp(e, shared)
-
-                    raise ValueError(err_str)
+                    raise ValueError(err_msg)
+                else:
+                    raise BkOppBetError(err_msg)
         except BkOppBetError as e:
             # В обоих БК ошибки, выкидываем вилку
             shared[self.bk_name + '_err'] = str(e.__class__.__name__) + ': ' + str(e)
             shared[self.bk_name_opposite + '_err'] = str(e.__class__.__name__) + ': ' + str(e)
-        # except Exception as e:
-        #     exc_type, exc_value, exc_traceback = sys.exc_info()
-        #     err_msg = 'Неизвестная ошибка: ' + str(e.__class__.__name__) + ' - ' + str(e) + '. ' + \
-        #               str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
-        #     err_str = self.msg_err.format(sys._getframe().f_code.co_name, err_msg)
-        #     prnt(err_str)
+        except Exception as e:
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            err_msg = 'Неизвестная ошибка: ' + str(e.__class__.__name__) + ' - ' + str(e) + '. ' + \
+                      str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
+            err_str = self.msg_err.format(sys._getframe().f_code.co_name, err_msg)
+            prnt(err_str)
         finally:
             bet_done(shared)
 
@@ -622,12 +622,12 @@ class BetManager:
 
         if self.bk_name == 'olimp':
 
-            # # bet_place
-            # sleep(5)
-            # try:
-            #     1 / 0
-            # except Exception as e:
-            #     raise BetError(e)
+            # bet_place
+            sleep(20)
+            try:
+                1 / 0
+            except Exception as e:
+                raise BetError(e)
 
             payload = copy.deepcopy(ol_payload)
 
@@ -721,8 +721,9 @@ class BetManager:
 
             self.attempt_get_req_id = 3
             while True:
-                if self.attempt_get_req_id < 0:
-                    raise BetIsLost('not get get_request_id')
+                if self.attempt_get_req_id <= 0:
+                    err_str = 'get_request_id: no data found'
+                    raise BetIsLost(err_str)
                 try:
                     self.attempt_get_req_id = self.attempt_get_req_id - 1
                     self.get_request_id()
@@ -1158,6 +1159,7 @@ class BetManager:
             verify=False,
             timeout=self.timeout,
             proxies=self.proxies)
+        1/0
         prnt(self.msg.format(sys._getframe().f_code.co_name, 'rs: ' + str(resp.status_code) + ' ' + str(resp.text)), 'hide')
         res = resp.json()
 
