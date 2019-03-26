@@ -622,12 +622,12 @@ class BetManager:
 
         if self.bk_name == 'olimp':
 
-            # bet_place
-            sleep(20)
-            try:
-                1 / 0
-            except Exception as e:
-                raise BetError(e)
+            # # bet_place
+            # sleep(20)
+            # try:
+            #     1 / 0
+            # except Exception as e:
+            #     raise BetError(e)
 
             payload = copy.deepcopy(ol_payload)
 
@@ -1159,7 +1159,6 @@ class BetManager:
             verify=False,
             timeout=self.timeout,
             proxies=self.proxies)
-        1/0
         prnt(self.msg.format(sys._getframe().f_code.co_name, 'rs: ' + str(resp.status_code) + ' ' + str(resp.text)), 'hide')
         res = resp.json()
 
