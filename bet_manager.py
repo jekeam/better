@@ -202,7 +202,7 @@ class BetManager:
         def bet_done(shared):
             if not shared[self.bk_name].get('time_bet'):
                 shared[self.bk_name]['time_bet'] = round(time() - self.time_start)
-                prnt(self.msg.format(sys._getframe().f_code.co_name, 'Завершил проставление в ' + self.bk_name))
+                prnt(self.msg.format(sys._getframe().f_code.co_name, 'Завершил работу в ' + self.bk_name))
             shared[self.bk_name]['balance'] = self.session.get('balance')
 
         try:
@@ -242,12 +242,12 @@ class BetManager:
             # В обоих БК ошибки, выкидываем вилку
             shared[self.bk_name + '_err'] = str(e.__class__.__name__) + ': ' + str(e)
             shared[self.bk_name_opposite + '_err'] = str(e.__class__.__name__) + ': ' + str(e)
-        except Exeption as e:
-            exc_type, exc_value, exc_traceback = sys.exc_info()
-            err_msg = 'Неизвестная ошибка: ' + str(e.__class__.__name__) + ' - ' + str(e) + '. ' + \
-                      str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
-            err_str = self.msg_err.format(sys._getframe().f_code.co_name, err_msg)
-            prnt(err_str)
+        # except Exception as e:
+        #     exc_type, exc_value, exc_traceback = sys.exc_info()
+        #     err_msg = 'Неизвестная ошибка: ' + str(e.__class__.__name__) + ' - ' + str(e) + '. ' + \
+        #               str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
+        #     err_str = self.msg_err.format(sys._getframe().f_code.co_name, err_msg)
+        #     prnt(err_str)
         finally:
             bet_done(shared)
 
@@ -1158,6 +1158,10 @@ class BetManager:
             verify=False,
             timeout=self.timeout,
             proxies=self.proxies)
+        print('111')
+        sleep(15)
+        print('222')
+        1/0
         prnt(self.msg.format(sys._getframe().f_code.co_name, 'rs: ' + str(resp.status_code) + ' ' + str(resp.text)), 'hide')
         res = resp.json()
 
