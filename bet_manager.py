@@ -727,7 +727,7 @@ class BetManager:
                     self.attempt_get_req_id = self.attempt_get_req_id - 1
                     self.get_request_id()
                     break
-                except BetError as e:
+                except Exception as e:
                     prnt(self.msg_err.format(sys._getframe().f_code.co_name, 'get_request_id err: ' + str(e) + ', replay'))
                     sleep(1)
 
@@ -1158,10 +1158,6 @@ class BetManager:
             verify=False,
             timeout=self.timeout,
             proxies=self.proxies)
-        print('111')
-        sleep(15)
-        print('222')
-        1/0
         prnt(self.msg.format(sys._getframe().f_code.co_name, 'rs: ' + str(resp.status_code) + ' ' + str(resp.text)), 'hide')
         res = resp.json()
 
