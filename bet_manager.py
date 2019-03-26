@@ -1214,7 +1214,7 @@ class BetManager:
             return self.check_sell_result()
 
         elif result == 'unableToSellCoupon':
-            if res.get('reason') in (2, 3):
+            if res.get('reason') == 2:
                 err_str = self.msg_err.format(sys._getframe().f_code.co_name, 'unable to sell coupon, reason=' + str(res.get('reason')))
                 raise BetIsLost(err_str)
             else:
