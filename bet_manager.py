@@ -209,6 +209,11 @@ class BetManager:
             try:
                 self.sign_in(shared)
                 self.wait_sign_in_opp(shared)
+                
+                if self.vector == 'UP':
+                    self.opposite_stat_wait(shared)
+                    self.opposite_stat_get(shared)
+                    
                 self.bet_place(shared)
                 bet_done(shared)
             except BetError as e:
