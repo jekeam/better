@@ -2,7 +2,9 @@
 import requests
 from requests.exceptions import Timeout, ProxyError
 from requests.adapters import HTTPAdapter
-from requests.packages.urllib3.util.retry import Retry
+#from requests.packages.urllib3.util.retry import Retry
+#from urllib3.util import Retry
+from urllib3.util.retry import Retry
 import functools
 import time
 from utils import prnt
@@ -10,7 +12,9 @@ from utils import prnt
 
 def requests_retry_session(
         retries=3,
-        backoff_factor=0.3,
+        backoff_factor=1,
+        status=3,
+        method_whitelist=frozenset(['POST']),
         status_forcelist=(500, 501, 502, 504),
         session=None,
 ):
@@ -20,6 +24,8 @@ def requests_retry_session(
         read=retries,
         connect=retries,
         backoff_factor=backoff_factor,
+        method_whitelist=method_whitelist,
+        status=status,
         status_forcelist=status_forcelist,
     )
     adapter = HTTPAdapter(max_retries=retry)
