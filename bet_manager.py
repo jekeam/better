@@ -636,12 +636,16 @@ class BetManager:
             #     raise BetError(e)
 
             payload = copy.deepcopy(ol_payload)
+            
+            save_any = 3
+            if self.vector == 'DOWN':
+                save_any = 2
 
             payload.update({
                 'coefs_ids': '[["{apid}",{factor},1]]'.format(apid=self.wager.get('apid'), factor=self.wager.get('factor')),
                 'sport_id': self.wager.get('sport_id'),
                 'sum': self.sum_bet,
-                'save_any': 3,
+                'save_any': save_any,
                 'fast': 1,
                 'any_handicap': 1,
                 'session': self.session['session']
@@ -739,9 +743,12 @@ class BetManager:
                     sleep(1)
 
             self.payload['requestId'] = self.reqId
+            
+            if self.vector == 'DOWN':
+                self.payload['coupon']['flexBet'] = 'up'
 
             self.opposite_stat_get(shared)
-            prnt(self.msg.format(sys._getframe().f_code.co_name, 'rq: ' + str(payload) + ' ' + str(headers)), 'hide')
+            prnt(self.msg.format(sys._getframe().f_code.co_name, 'rq: ' + str(self.payload) + ' ' + str(headers)), 'hide')
             resp = requests_retry_session_post(
                 url.format('coupon/register'),
                 headers=headers,
