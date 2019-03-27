@@ -437,8 +437,10 @@ F = 0  # счетчик (количество, найденых вилок)
 balance_line = 0  # (bal1 + bal2) / 2 / 100 * 60
 time_get_balance = datetime.datetime.now()
 time_live = datetime.datetime.now()
+
 cnt_fail = 0
 black_list_matches = []
+success = []
 
 # wag_fb:{'event': '12797479', 'factor': '921', 'param': '', 'score': '0:0', 'value': '2.35'}
 # wag_fb:{'apid': '1144260386:45874030:1:3:-9999:3:NULL:NULL:1', 'factor': '1.66', 'sport_id': 1, 'event': '45874030'}
@@ -477,7 +479,6 @@ if __name__ == '__main__':
         prnt('max count fail: ' + str(get_param('max_fail')))
 
         server_forks = dict()
-        success = []
         start_see_fork = threading.Thread(
             target=run_client)  # , args=(server_forks,))
         start_see_fork.start()
