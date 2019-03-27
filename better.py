@@ -185,8 +185,8 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
     global cnt_fail
     global black_list_matches
 
-    olimp_bet_type = str(go_bet_key.split('@')[-2])
-    fonbet_bet_type = str(go_bet_key.split('@')[-1])
+    olimp_bet_type = str(key.split('@')[-2])
+    fonbet_bet_type = str(key.split('@')[-1])
     # Проверяем ставили ли мы на этот матч, пока в ручную
 
     L = ((1 / float(wag_ol['factor'])) +
@@ -360,7 +360,7 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
         if shared.get('olimp_err') != 'ok' and shared.get('fonbet_err') != 'ok':
             if not bet_skip:
                 cnt_fail = cnt_fail + 1
-                black_list_matches.append(go_bet_key.split('@')[0],go_bet_key.split('@')[0])
+                black_list_matches.append(key.split('@')[0], key.split('@')[1])
         # Добавим доп инфу о проставлении
         success.append(key)
         save_fork(fork_info)
@@ -562,6 +562,8 @@ if __name__ == '__main__':
 
                     vect1 = bk1_bet_json.get('vector')
                     vect2 = bk2_bet_json.get('vector')
+                    if vect1 != 'DOWN':
+                        return False
 
                     try:
                         info = key + ': ' + name + ' ' + \
