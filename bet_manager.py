@@ -336,7 +336,9 @@ class BetManager:
 
             self.cur_half = self.dop_stat['period']
             self.cur_minute = self.dop_stat['minutes']
-            self.total_stock = self.total_bet - self.cur_total
+            
+            if self.cur_total and self.total_bet:
+                self.total_stock = self.total_bet - self.cur_total
             
             vector = self.dop_stat.get('vector')
             if vector:
@@ -451,7 +453,7 @@ class BetManager:
                             raise BetIsLost(err_str)
                     # strategy definition
                     else:
-                        if self.total_stock <= 0:
+                        if self.total_stock and self.total_stock <= 0:
                             if self.vector == 'UP':
                                 err_str = 'Strategy total: total_bet < cur_total ({} < {}), bet lost'.format(self.total_bet, self.cur_total)
                                 prnt(err_str)
@@ -459,6 +461,8 @@ class BetManager:
                             elif self.vector == 'DOWN':
                                 prnt(self.msg.format(sys._getframe().f_code.co_name, 'Greetings! You won, brain!'))
                                 is_go = False
+                        elif not self.total_stock:
+                            raise BetIsLost('Totals not found!')
                 
                 # recalc sum
                 self.bet_place(shared)
@@ -472,15 +476,14 @@ class BetManager:
                                          'Ошибка при проставлении ставки в ' + self.bk_name +
                                          ', делаю выкуп ставки в ' + self.bk_name_opposite))
     
-                    if cnt_attempt_sale < 0 and self.total_stock <= 0:
-                        cnt_attempt_sale = cnt_attempt_sale - 1
-                        raise BetIsLost(err_msg)
-    
+                    #if (self.total_stock and self.total_stock <= 0) or cnt_attempt_sale < 0:
+                        #raise BetIsLost(err_msg)
                     try:
                         shared[self.bk_name_opposite].get('self', {}).sale_bet(shared)
                         is_go = False
                         break
                     except CouponBlocked as e:
+                        # cnt_attempt_sale = cnt_attempt_sale - 1
                         prnt(self.msg.format(
                             sys._getframe().f_code.co_name,
                             'Ошибка: ' + e.__class__.__name__ + ' - ' + str(e) +
