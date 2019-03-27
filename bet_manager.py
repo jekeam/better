@@ -1223,6 +1223,9 @@ class BetManager:
             if res.get('reason') == 2:
                 err_str = self.msg_err.format(sys._getframe().f_code.co_name, 'unable to sell coupon, reason=' + str(res.get('reason')))
                 raise BetIsLost(err_str)
+            elif res.get('reason') == 3:
+                err_msg = 'coupon ' + str(self.reg_id) + ' blocked'
+                raise CouponBlocked(err_msg)
             else:
                 prnt(self.msg.format(sys._getframe().f_code.co_name, 'new actualSellSum: ' + str(res.get('actualSellSum') / 10)))
                 return self.sale_bet(shared)
