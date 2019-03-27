@@ -466,7 +466,7 @@ class BetManager:
                             elif self.vector == 'DOWN':
                                 prnt(self.msg.format(sys._getframe().f_code.co_name, 'Greetings! You won, brain!'))
                                 is_go = False
-                        else:
+                        elif not self.total_stock:
                             raise BetIsLost('Totals not found!')
                 
                 # recalc sum
