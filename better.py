@@ -101,11 +101,11 @@ def bet_type_is_work(key):
     if 'ТМ' in key or \
        'ТБ' in key or \
        \
-       'П1' in key[0:2] or \
-       'П2' in key[0:2] or \
+       'П1' in key or \
+       'П2' in key or \
        \
-       'КЗ' in key[0:2] or \
-       'КНЗ' in key[0:2] or \
+       'КЗ' in key or \
+       'КНЗ' in key or \
        \
        'ОЗД' == key or \
        'ОЗН' == key:
