@@ -1132,7 +1132,6 @@ class BetManager:
                     # Изменилась катировка
                     elif 'Odds changed'.lower() in err_msg_eng.lower():
                         err_str = self.msg_err.format(sys._getframe().f_code.co_name, err_msg)
-                        prnt(err_str)
                         raise BetIsLost(err_str)
                     else:
                         err_str = self.msg_err.format(
@@ -1140,7 +1139,6 @@ class BetManager:
                             'неизвестная ошибка: ' + str(err_msg) +
                             ', new_wager: ' + str(new_wager) +
                             ', old_wager: ' + str(self.wager))
-                        prnt(err_str)
                         raise BetIsLost(err_str)
         elif result == 'error' and 'temporary unknown result' in msg_str:
             err_str = 'Get temporary unknown result: ' + str(msg_str)
