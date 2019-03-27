@@ -470,26 +470,27 @@ class BetManager:
                 is_go = False
 
             except BetIsLost as e:
-                err_msg = str(e.__class__.__name__) + ': ' + str(e)
-                shared[self.bk_name + '_err'] = err_msg
-                prnt(self.msg.format(sys._getframe().f_code.co_name,
-                                     'Ошибка при проставлении ставки в ' + self.bk_name +
-                                     ', делаю выкуп ставки в ' + self.bk_name_opposite))
-
-                if cnt_attempt_sale < 0 and self.total_stock <= 0:
-                    cnt_attempt_sale = cnt_attempt_sale - 1
-                    raise BetIsLost(err_msg)
-
-                try:
-                    shared[self.bk_name_opposite].get('self', {}).sale_bet(shared)
-                    is_go = False
-                    break
-                except CouponBlocked as e:
-                    prnt(self.msg.format(
-                        sys._getframe().f_code.co_name,
-                        'Ошибка: ' + e.__class__.__name__ + ' - ' + str(e) +
-                        '. Пробую проставить и пробую выкупить еще!'))
-                    sleep(5)
+                if shared.get(self.bk_name + '_err', 'err') != 'ok':
+                    err_msg = str(e.__class__.__name__) + ': ' + str(e)
+                    shared[self.bk_name + '_err'] = err_msg
+                    prnt(self.msg.format(sys._getframe().f_code.co_name,
+                                         'Ошибка при проставлении ставки в ' + self.bk_name +
+                                         ', делаю выкуп ставки в ' + self.bk_name_opposite))
+    
+                    if cnt_attempt_sale < 0 and self.total_stock <= 0:
+                        cnt_attempt_sale = cnt_attempt_sale - 1
+                        raise BetIsLost(err_msg)
+    
+                    try:
+                        shared[self.bk_name_opposite].get('self', {}).sale_bet(shared)
+                        is_go = False
+                        break
+                    except CouponBlocked as e:
+                        prnt(self.msg.format(
+                            sys._getframe().f_code.co_name,
+                            'Ошибка: ' + e.__class__.__name__ + ' - ' + str(e) +
+                            '. Пробую проставить и пробую выкупить еще!'))
+                        sleep(5)
 
             except Exception as e:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
