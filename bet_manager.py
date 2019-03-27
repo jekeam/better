@@ -948,6 +948,8 @@ class BetManager:
                 raise SessionExpired(err_msg + ' ' + err_str)
             elif 'Продажа ставки недоступна'.lower() in err_msg.lower() or 'Изменилась сумма продажи ставки'.lower() in err_msg.lower():
                 raise CouponBlocked(self.msg.format(sys._getframe().f_code.co_name, err_msg))
+            elif 'Превышена cуммарная ставка'.lower() in err_msg.lower():
+                raise BetIsLost(err_msg)
 
     def get_proxy(self) -> str:
 
