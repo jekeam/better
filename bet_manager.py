@@ -1056,6 +1056,7 @@ class BetManager:
 
         err_code = res.get('coupon', {}).get('resultCode')
         err_msg = res.get('coupon', {}).get('errorMessageRus')
+        err_msg_eng = res.get('coupon', {}).get('errorMessageEng')
 
         if result == 'couponResult':
             if err_code == 0:
@@ -1088,6 +1089,10 @@ class BetManager:
                     err_str = 'current bet is lost: ' + str(err_msg)
                     raise BetIsLost(err_str)
                 # Изменился ИД тотола
+                elif 'Odds changed'.lower() in err_msg_eng.lower():
+                    err_str = self.msg_err.format(sys._getframe().f_code.co_name, err_msg)
+                    prnt(err_str)
+                    raise BetIsLost(err_str)
                 else:
                     new_wager = res.get('coupon').get('bets')[0]
 
