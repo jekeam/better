@@ -552,6 +552,8 @@ class FonbetBot:
                                   str(err_str) + ', new_wager: ' + str(new_wager) + ', old_wager: ' + str(self.wager)
                         prnt(err_str)
                         raise LoadException(err_str)
+            else:
+                raise LoadException(res.get('coupon').get('errorMessage', ''))
         elif err_res == 'error' and "temporary unknown result" in resp.text:
             # there's situations where "temporary unknown result" means successful response
             # {'result': 'error', 'errorCode': 200, 'errorMessage': 'temporary unknown result'}
