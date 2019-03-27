@@ -358,7 +358,7 @@ class BetManager:
                     format(self.bet_type, self.vector, self.cur_total, self.cur_half, self.cur_val_bet,
                            self.cur_minute, self.cur_sc_main, self.cur_sc)))
 
-            prnt(self.msg.format(sys._getframe().f_code.co_name, 'Запас тотала: total_stock:{}'.format(self.total_stock)))
+            prnt(self.msg.format(sys._getframe().f_code.co_name, 'Запас тотала: total_stock:{}, total_bet:{}, cur_total:{}'.format(self.total_stock, self.total_bet, self.cur_total)))
             
             # RECALC SUM
             # If(K2<4.5;
@@ -1272,7 +1272,7 @@ class BetManager:
         max_bet_id = 0
         coupon_data = {}
 
-        # reg_id - мы знаем заранее - только при ручном выкупе как правило
+        # reg_id - мы з��аем заранее - только при ручном выкупе как правило
         if self.reg_id:
             coupon_found = False
             for bet_list in res.get('data').get('bet_list', {}):
