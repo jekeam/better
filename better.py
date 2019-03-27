@@ -84,13 +84,16 @@ def bet_olimp_cl(obj):
 
 
 def check_l(L):
+    global MIN_L
+    
     l_exclude_text = ''
+    
     if L <= 0.90:
         l_exclude_text = l_exclude_text + 'Вилка ' + str(L) + ' (' + str(round((1 - L) * 100, 2)) + \
                          '%), вилка исключена т.к. доходноть высокая >= 10%\n'
-    if L > 0.995:
+    if L > MIN_L:
         l_exclude_text = l_exclude_text + 'Вилка ' + \
-            str(L) + ' (' + str(round((1 - L) * 100, 3)) + '%), беру вилки только >= 0.5%\n'
+            str(L) + ' (' + str(round((1 - L) * 100, 3)) + '%), беру вилки только >= ' + str(round((1 - MIN_L) * 100, 3)) + '%\n'
 
     if l_exclude_text != '':
         return l_exclude_text
@@ -467,6 +470,9 @@ if __name__ == '__main__':
             server_ip = get_param('server_ip')
         else:
             server_ip = get_param('server_ip_test')
+        
+        MIN_L = get_param('min_l')    
+            
         prnt('server: ' + server_ip + ':80')
         prnt('bal1: ' + str(bal1) + ' руб.')
         prnt('bal2: ' + str(bal2) + ' руб.')
@@ -477,6 +483,7 @@ if __name__ == '__main__':
         prnt('working hours: ' + str(get_param('work_hour')))
         prnt('round fork: ' + str(get_param('round_fork')))
         prnt('max count fail: ' + str(get_param('max_fail')))
+        prnt('min profit: ' + str(round((1-MIN_L)*100, 3)) + '%')
 
         start_see_fork = threading.Thread(
             target=run_client)  # , args=(server_forks,))
