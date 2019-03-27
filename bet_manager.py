@@ -337,7 +337,7 @@ class BetManager:
             self.cur_half = self.dop_stat['period']
             self.cur_minute = self.dop_stat['minutes']
             
-            if self.cur_total and self.total_bet:
+            if self.cur_total is not None and self.total_bet is not None:
                 self.total_stock = self.total_bet - self.cur_total
             
             vector = self.dop_stat.get('vector')
@@ -453,7 +453,7 @@ class BetManager:
                             raise BetIsLost(err_str)
                     # strategy definition
                     else:
-                        if self.total_stock and self.total_stock <= 0:
+                        if self.total_stock is not None and self.total_stock <= 0:
                             if self.vector == 'UP':
                                 err_str = 'Strategy total: total_bet < cur_total ({} < {}), bet lost'.format(self.total_bet, self.cur_total)
                                 prnt(err_str)
@@ -461,7 +461,7 @@ class BetManager:
                             elif self.vector == 'DOWN':
                                 prnt(self.msg.format(sys._getframe().f_code.co_name, 'Greetings! You won, brain!'))
                                 is_go = False
-                        elif not self.total_stock:
+                        elif self.total_stock is None:
                             raise BetIsLost('Totals not found!')
                 
                 # recalc sum
@@ -476,7 +476,7 @@ class BetManager:
                                          'Ошибка при проставлении ставки в ' + self.bk_name +
                                          ', делаю выкуп ставки в ' + self.bk_name_opposite))
     
-                    #if (self.total_stock and self.total_stock <= 0) or cnt_attempt_sale < 0:
+                    #if (self.total_stock is not None and self.total_stock <= 0) or cnt_attempt_sale < 0:
                         #raise BetIsLost(err_msg)
                     try:
                         shared[self.bk_name_opposite].get('self', {}).sale_bet(shared)
