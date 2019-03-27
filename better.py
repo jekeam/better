@@ -562,8 +562,6 @@ if __name__ == '__main__':
 
                     vect1 = bk1_bet_json.get('vector')
                     vect2 = bk2_bet_json.get('vector')
-                    if vect1 != 'DOWN':
-                        return False
 
                     try:
                         info = key + ': ' + name + ' ' + \
