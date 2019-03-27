@@ -1044,6 +1044,7 @@ class BetManager:
 
         err_code = res.get('coupon', {}).get('resultCode')
         err_msg = res.get('coupon', {}).get('errorMessageRus')
+        err_msg_eng = res.get('coupon', {}).get('errorMessageEng')
 
         if result == 'couponResult':
             if err_code == 0:
@@ -1116,6 +1117,11 @@ class BetManager:
                                 'Тип ставки, например 1ТМ(2.5) - не задан, выдаю ошибку: bet_type:' +
                                 self.bk_container.get('bet_type') + ', bk_container:' + str(self.bk_container))
                             raise BetIsLost(err_str)
+                    # Изменилась катировка
+                    elif 'Odds changed'.lower() in err_msg_eng.lower():
+                        err_str = self.msg_err.format(sys._getframe().f_code.co_name, err_msg)
+                        prnt(err_str)
+                        raise BetIsLost(err_str)
                     else:
                         err_str = self.msg_err.format(
                             sys._getframe().f_code.co_name,
