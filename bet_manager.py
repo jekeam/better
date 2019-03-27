@@ -1088,11 +1088,7 @@ class BetManager:
                 if res.get('coupon', {}).get('bets')[0]['value'] == 0:
                     err_str = 'current bet is lost: ' + str(err_msg)
                     raise BetIsLost(err_str)
-                # Изменился ИД тотола
-                elif 'Odds changed'.lower() in err_msg_eng.lower():
-                    err_str = self.msg_err.format(sys._getframe().f_code.co_name, err_msg)
-                    prnt(err_str)
-                    raise BetIsLost(err_str)
+                # Изменился ИД тотола или значение катировки
                 else:
                     new_wager = res.get('coupon').get('bets')[0]
 
@@ -1133,6 +1129,11 @@ class BetManager:
                                 'Тип ставки, например 1ТМ(2.5) - не задан, выдаю ошибку: bet_type:' +
                                 self.bk_container.get('bet_type') + ', bk_container:' + str(self.bk_container))
                             raise BetIsLost(err_str)
+                    # Изменилась катировка
+                    elif 'Odds changed'.lower() in err_msg_eng.lower():
+                        err_str = self.msg_err.format(sys._getframe().f_code.co_name, err_msg)
+                        prnt(err_str)
+                        raise BetIsLost(err_str)
                     else:
                         err_str = self.msg_err.format(
                             sys._getframe().f_code.co_name,
