@@ -112,7 +112,7 @@ def bet_type_is_work(key):
         return True
 
 def check_fork(key, L, k1, k2, live_fork, bk1_score, bk2_score, minute, time_break_fonbet, period, deff_max, info=''):
-    global bal1, bal2, balance_line
+    global bal1, bal2, balance_line, success, black_list_matches
 
     fork_exclude_text = ''
     v = True
@@ -124,8 +124,11 @@ def check_fork(key, L, k1, k2, live_fork, bk1_score, bk2_score, minute, time_bre
     if deff_max > deff_limit:
         fork_exclude_text = fork_exclude_text + 'Вилка исключена, т.к. deff_max (' + str(deff_max) + ' > ' + str(deff_limit) + ')\n'
 
-    if success.count(key) >= 1:
+    if success.count(key) > 0:
         fork_exclude_text = fork_exclude_text + 'Вилка не проставлена, т.к. уже проставляли на эту вилку: ' + key + '\n'
+        
+    if black_list_matches.count(key.split('@')[0]) > 0 or black_list_matches.count(key.split('@')[1]) > 0:
+        fork_exclude_text = fork_exclude_text + 'Вилка исключена, т.к. матч занесен в blacklist: ' + key + ', ' + black_list_matches + '\n'
 
     # Проверяем корректная ли сумма
     if bet1 < 30 or bet2 < 30:
@@ -180,8 +183,8 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
     global bal2
     global cnt_fail
 
-    olimp_bet_type = str(go_bet_key.split('@')[-2])
-    fonbet_bet_type = str(go_bet_key.split('@')[-1])
+    olimp_bet_type = str(key.split('@')[-2])
+    fonbet_bet_type = str(key.split('@')[-1])
     # Проверяем ставили ли мы на этот матч, пока в ручную
 
     L = ((1 / float(wag_ol['factor'])) +
@@ -355,6 +358,7 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
         if shared.get('olimp_err') != 'ok' and shared.get('fonbet_err') != 'ok':
             if not bet_skip:
                 cnt_fail = cnt_fail + 1
+                black_list_matches.append(key.split('@')[0], key.split('@')[1])
         # Добавим доп инфу о проставлении
         success.append(key)
         save_fork(fork_info)
@@ -431,7 +435,12 @@ F = 0  # счетчик (количество, найденых вилок)
 balance_line = 0  # (bal1 + bal2) / 2 / 100 * 60
 time_get_balance = datetime.datetime.now()
 time_live = datetime.datetime.now()
+
+server_forks = dict()
+success = []
 cnt_fail = 0
+black_list_matches = []
+
 
 # wag_fb:{'event': '12797479', 'factor': '921', 'param': '', 'score': '0:0', 'value': '2.35'}
 # wag_fb:{'apid': '1144260386:45874030:1:3:-9999:3:NULL:NULL:1', 'factor': '1.66', 'sport_id': 1, 'event': '45874030'}
@@ -469,8 +478,6 @@ if __name__ == '__main__':
         prnt('round fork: ' + str(get_param('round_fork')))
         prnt('max count fail: ' + str(get_param('max_fail')))
 
-        server_forks = dict()
-        success = []
         start_see_fork = threading.Thread(
             target=run_client)  # , args=(server_forks,))
         start_see_fork.start()
