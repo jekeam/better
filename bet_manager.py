@@ -73,6 +73,7 @@ class BetManager:
         self.cur_total_new = None
         self.cur_half = None
         self.cur_val_bet = None
+        self.old_val_bet = None
         self.cur_minute = None
         self.total_stock = None
         
@@ -86,6 +87,7 @@ class BetManager:
         self.reqIdSale = None
         self.payload = None
         self.sum_bet = None
+        self.sum_bet_old = None
         self.sum_sell = None
         self.attempt_login = 1
         self.attempt_bet = 1
@@ -360,19 +362,26 @@ class BetManager:
 
             prnt(self.msg.format(sys._getframe().f_code.co_name, 'Запас тотала: total_stock:{}, total_bet:{}, cur_total:{}'.format(self.total_stock, self.total_bet, self.cur_total)))
             
-            # RECALC SUM
-            # If(K2<4.5;
-            #    IF(K2<1.3;
-            #      ROUNDUP( (BET/NEW%) / (K2*(1/NEW%)) ;-1);
-            #      ROUND( (K2/NEW%) / (K2*(1/NEW%)) ;-1)
-            #    );
-            #    ROUNDDOWN((BET/NEW%)/(K2/NEW%));-1)
-            # )
-            #   - K2: новый коф
-            #   - Bet: сколько планировали ставить
-            #   - NEW%: новый процент вилки
-            # prnt(self.msg.format(sys._getframe().f_code.co_name, 
-            # 'Пересчет суммы ставки: {}->{} (k: {}->{}, l: {}->{})'.format(,,,,,)))
+            # RECALC SUM BET
+            if self.old_val_bet and self.cur_val_bet and self.old_val_bet != self.cur_val_bet:
+                prnt(' ')
+                prnt(self.msg.format(sys._getframe().f_code.co_name, 'RECALC SUM BET'))
+                
+                self_opp_val = shared[self.bk_name_opposite].get('self', {})
+                k_opp = self_opp_val.bk_container.get('wager', {}).get('value')
+                
+                new_l = (k_opp*self.cur_val_bet)/(k_opp+self.cur_val_bet)
+                old_l = (k_opp*self.old_val_bet)/(k_opp+self.old_val_bet)
+                
+                self.sum_bet = round((self.sum_bet/new_l)/(self.cur_val_bet/new_l), -1)
+                
+                prnt(self.msg.format(sys._getframe().f_code.co_name,
+                'Пересчет суммы ставки: {}->{} (k: {}->{}, l: {}->{}, k_opp:{}'.
+                format(self.sum_bet_old, self.sum_bet, self.old_val_bet, self.cur_val_bet, old_l, new_l, k_opp)))
+                
+            if self.cur_val_bet:
+                self.old_val_bet = self.cur_val_bet
+            self.sum_bet_old = self.sum_bet
                 
         self.set_param()  # set self.side_bet, self.side_bet_half
         self.vector = self.bk_container.get('wager', {})['vector']
