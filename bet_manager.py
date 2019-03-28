@@ -374,11 +374,12 @@ class BetManager:
                 old_l = (k_opp*self.old_val_bet)/(k_opp+self.old_val_bet)
                 
                 round_rang = get_param('round_fork')
-                self_sum_bet = round(((self.sum_bet/new_l)/(self.cur_val_bet/new_l)) / round_rang) * round_rang
+                total_bet = get_param('summ')
+                self_sum_bet = round(((total_bet/new_l)/(self.cur_val_bet/new_l)) / round_rang) * round_rang
                 
                 prnt(self.msg.format(sys._getframe().f_code.co_name,
-                'Пересчет суммы ставки: {}->{} (k: {}->{}, l: {}->{}, k_opp:{}'.
-                format(self.sum_bet_old, self_sum_bet, self.old_val_bet, self.cur_val_bet, old_l, new_l, k_opp)))
+                'Пересчет суммы ставки({}): {}->{} (k: {}->{}, l: {}->{}, k_opp:{}'.
+                format(total_bet, self.sum_bet_old, self_sum_bet, self.old_val_bet, self.cur_val_bet, old_l, new_l, k_opp)))
                 
                 self.sum_bet_old = self_sum_bet
                 
