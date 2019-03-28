@@ -389,10 +389,10 @@ class BetManager:
                 prnt(self.msg.format(sys._getframe().f_code.co_name,
                 'Пересчет суммы ставки: {}->{} (k: {}->{}, l: {}->{}, k_opp:{}'.
                 format(self.sum_bet_old, self.sum_bet, self.old_val_bet, self.cur_val_bet, old_l, new_l, k_opp)))
-                self.sum_bet_old = self.sum_bet
                 
             if self.cur_val_bet:
                 self.old_val_bet = self.cur_val_bet
+            self.sum_bet_old = self.sum_bet
                 
                 
         self.set_param()  # set self.side_bet, self.side_bet_half
