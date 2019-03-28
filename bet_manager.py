@@ -92,8 +92,8 @@ class BetManager:
         self.reqId = None
         self.reqIdSale = None
         self.payload = None
-        self.sum_bet = None
-        self.sum_bet_old = None
+        self.sum_bet = bk_container.get('amount')
+        self.sum_bet_old = self.sum_bet
         self.sum_sell = None
         self.attempt_login = 1
         self.attempt_bet = 1
@@ -632,9 +632,6 @@ class BetManager:
         # if self.bk_name == 'fonbet':
         #     sleep(15)
         self.opposite_stat_get(shared)
-
-        self.sum_bet = self.bk_container.get('amount')
-        self.sum_bet_old = self.sum_bet
 
         cur_bal = self.session.get('balance')
 
