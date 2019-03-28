@@ -259,6 +259,7 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
                                 'bet_type': olimp_bet_type,
                                 'balance': bal1,
                                 'time_bet': 0,
+                                'vector': '',
                                 'err': 'ok'
                             },
                             'fonbet': {
@@ -270,6 +271,7 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
                                 'balance': bal2,
                                 'time_bet': 0,
                                 'bet_delay': 0,
+                                'vector': '',
                                 'err': 'ok'
                             },
                         }
