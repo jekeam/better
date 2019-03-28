@@ -260,6 +260,7 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
                                 'balance': bal1,
                                 'time_bet': 0,
                                 'vector': vect1,
+                                'new_bet_sum': 0,
                                 'err': 'ok'
                             },
                             'fonbet': {
@@ -272,6 +273,7 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
                                 'time_bet': 0,
                                 'bet_delay': 0,
                                 'vector': vect2,
+                                'new_bet_sum': 0,
                                 'err': 'ok'
                             },
                         }
@@ -344,6 +346,8 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
         fork_info[fork_id]['fonbet']['time_bet'] = shared['fonbet'].get('time_bet')
         fork_info[fork_id]['fonbet']['bet_delay'] = shared['fonbet'].get('bet_delay')
         
+        fork_info[fork_id]['olimp']['new_bet_sum'] = shared['olimp'].get('new_bet_sum')
+        fork_info[fork_id]['fonbet']['new_bet_sum'] = shared['fonbet'].get('new_bet_sum')
 
         fork_info[fork_id]['olimp']['reg_id'] = shared['olimp'].get('reg_id')
         fork_info[fork_id]['fonbet']['reg_id'] = shared['fonbet'].get('reg_id')

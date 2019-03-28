@@ -387,6 +387,7 @@ class BetManager:
                 round_rang = get_param('round_fork')
                 total_bet = get_param('summ')
                 self_sum_bet = round(((total_bet/new_l)/(self.cur_val_bet/new_l)) / round_rang) * round_rang
+                shared[self.bk_name]['new_bet_sum'] = self_sum_bet
                 
                 prnt(self.msg.format(sys._getframe().f_code.co_name,
                 'Пересчет суммы ставки({}): {}->{} (k: {}->{}, l: {}->{}, k_opp:{}'.
