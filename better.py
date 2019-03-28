@@ -359,6 +359,9 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
             fork_info[fork_id]['fonbet']['err'] = 'Вилка была пропущена: ' + str(shared.get('fonbet_err', 'Bet skipped'))
             
         fork_info[fork_id]['fonbet']['max_bet'] = shared['fonbet'].get('max_bet')
+        
+        fork_info[fork_id]['olimp']['err']['vector'] = vect1
+        fork_info[fork_id]['fonbet']['err']['vector'] = vect2
 
         if shared.get('olimp_err') != 'ok' and shared.get('fonbet_err') != 'ok':
             if not bet_skip:

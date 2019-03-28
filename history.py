@@ -192,6 +192,9 @@ def export_hist(OLIMP_USER, FONBET_USER):
                       str(info['fonbet'].get('bet_type', '')) + ';' + \
                       str(info['olimp'].get('bet_type', '')) + ';' + \
  \
+                      str(info['fonbet'].get('vector', '')) + ';' + \
+                      str(info['olimp'].get('vector', '')) + ';' + \
+ \
                       str(info['fonbet'].get('time_bet', '')) + ';' + \
                       str(info['olimp'].get('time_bet', '')) + ';' + \
  \
@@ -208,7 +211,7 @@ def export_hist(OLIMP_USER, FONBET_USER):
             header = 'ID;time;pre_fb_kof;pre_o_kof;pre_fb_sum;pre_o_sum;' \
                      'fb_id;o_id;fb_time;o_time;fb_kof;o_kof;fb_sum_bet;o_sum_bet;' \
                      'fb_profit;o_profit;fb_result;o_result;fb_name;o_name;fb_status;' \
-                     'o_status;f_kof_type;o_kof_type;fb_time_bet;ol_time_bet;fb_bal;ol_bal;fb_max_bet;fb_bet_delay;fb_err;ol_err;\n'
+                     'o_status;f_kof_type;o_kof_type;fb_vector;ol_vector;fb_time_bet;ol_time_bet;fb_bal;ol_bal;fb_max_bet;fb_bet_delay;fb_err;ol_err;\n'
 
         with open(acc_name + '_' + datetime.now().strftime("%d_%m_%Y") + '_statistics.csv', 'w', encoding='utf-8') as f:
             f.write(header + out)
