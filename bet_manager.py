@@ -86,8 +86,8 @@ class BetManager:
         self.reqId = None
         self.reqIdSale = None
         self.payload = None
-        self.sum_bet = None
-        self.sum_bet_old = None
+        self.sum_bet = bk_container.get('amount')
+        self.sum_bet_old = self.sum_bet
         self.sum_sell = None
         self.attempt_login = 1
         self.attempt_bet = 1
@@ -373,15 +373,17 @@ class BetManager:
                 new_l = (k_opp*self.cur_val_bet)/(k_opp+self.cur_val_bet)
                 old_l = (k_opp*self.old_val_bet)/(k_opp+self.old_val_bet)
                 
-                self.sum_bet = round((self.sum_bet/new_l)/(self.cur_val_bet/new_l), -1)
+                self_sum_bet = round((self.sum_bet/new_l)/(self.cur_val_bet/new_l), -1)
                 
                 prnt(self.msg.format(sys._getframe().f_code.co_name,
                 'Пересчет суммы ставки: {}->{} (k: {}->{}, l: {}->{}, k_opp:{}'.
-                format(self.sum_bet_old, self.sum_bet, self.old_val_bet, self.cur_val_bet, old_l, new_l, k_opp)))
+                format(self.sum_bet_old, self_sum_bet, self.old_val_bet, self.cur_val_bet, old_l, new_l, k_opp)))
+                
+                self.sum_bet_old = self_sum_bet
                 
             if self.cur_val_bet:
                 self.old_val_bet = self.cur_val_bet
-            self.sum_bet_old = self.sum_bet
+                
                 
         self.set_param()  # set self.side_bet, self.side_bet_half
         self.vector = self.bk_container.get('wager', {})['vector']
@@ -621,8 +623,8 @@ class BetManager:
         # if self.bk_name == 'fonbet':
         #     sleep(15)
         self.opposite_stat_get(shared)
-
-        self.sum_bet = self.bk_container.get('amount')
+        
+        self.sum_bet_old = self.sum_bet
 
         cur_bal = self.session.get('balance')
 
