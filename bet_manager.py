@@ -1139,9 +1139,13 @@ class BetManager:
                                 self.bk_container.get('bet_type') + ', bk_container:' + str(self.bk_container))
                             raise BetIsLost(err_str)
                     # Изменилась катировка
-                    elif 'Odds changed'.lower() in err_msg_eng.lower() and self.flex_bet == 'UP':
-                        err_str = self.msg_err.format(sys._getframe().f_code.co_name, err_msg)
-                        raise BetIsLost(err_str)
+                    elif 'Odds changed'.lower() in err_msg_eng.lower():
+                        if self.flex_bet == 'UP':
+                            err_str = self.msg_err.format(sys._getframe().f_code.co_name, err_msg)
+                            raise BetIsLost(err_str)
+                        else:
+                            err_str = self.msg_err.format(sys._getframe().f_code.co_name, err_msg)
+                            raise BetError(err_str)
                     else:
                         err_str = self.msg_err.format(
                             sys._getframe().f_code.co_name,
