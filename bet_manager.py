@@ -79,6 +79,7 @@ class BetManager:
         self.cur_total_new = None
         self.cur_half = None
         self.cur_val_bet = None
+        self.old_val_bet = None
         self.cur_minute = None
         self.total_stock = None
         
@@ -371,19 +372,25 @@ class BetManager:
 
             prnt(self.msg.format(sys._getframe().f_code.co_name, 'Запас тотала: total_stock:{}, total_bet:{}, cur_total:{}'.format(self.total_stock, self.total_bet, self.cur_total)))
             
-            # RECALC SUM
-            # If(K2<4.5;
-            #    IF(K2<1.3;
-            #      ROUNDUP( (BET/NEW%) / (K2*(1/NEW%)) ;-1);
-            #      ROUND( (K2/NEW%) / (K2*(1/NEW%)) ;-1)
-            #    );
-            #    ROUNDDOWN((BET/NEW%)/(K2/NEW%));-1)
-            # )
-            #   - K2: новый коф
-            #   - Bet: сколько планировали ставить
-            #   - NEW%: новый процент вилки
-            # prnt(self.msg.format(sys._getframe().f_code.co_name, 
-            # 'Пересчет суммы ставки: {}->{} (k: {}->{}, l: {}->{})'.format(,,,,,)))
+            # RECALC SUM BET
+            if self.old_val_bet is not None and self.old_val_bet != self.cur_val_bet:
+                prnt(' ')
+                prnt(self.msg.format(sys._getframe().f_code.co_name, 'RECALC SUM BET'))
+                if self.cur_val_bet<4.5:
+                    if self.cur_val_bet<1.3:
+                        ROUNDUP( (self.sum_bet) / (self.cur_val_bet*(1/NEW%)), -1)
+                        ROUND( (self.cur_val_bet/NEW%) / (self.cur_val_bet*(1/NEW%)), -1)
+                    else:
+                        floor((self.sum_bet/NEW%)/(self.cur_val_bet/NEW%));-1)
+                # )
+                
+                #   - K2: новый коф
+                #   - Bet: сколько планировали ставить
+                #   - NEW%: новый процент вилки
+                # prnt(self.msg.format(sys._getframe().f_code.co_name, 
+                # 'Пересчет суммы ставки: {}->{} (k: {}->{}, l: {}->{})'.format(,,,,,)))
+            if self.cur_val_bet is not None:
+                self.old_val_bet = self.cur_val_bet
                 
         self.set_param()  # set self.side_bet, self.side_bet_half
         self.time_start = round(int(time()))
