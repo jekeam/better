@@ -59,6 +59,11 @@ class BetManager:
         self.wager = bk_container['wager']
         self.bk_name_opposite = bk_container['opposite']
         self.vector = self.bk_container.get('wager', {})['vector']
+        
+        if self.vector == 'DOWN':
+            self.flex_bet = 'UP'
+        else:
+            self.flex_bet = None
 
         self.msg_err = self.bk_name + '. {}, err: {}'
         self.msg = self.bk_name + '. {}, msg: {}'
@@ -414,8 +419,7 @@ class BetManager:
                     sys._getframe().f_code.co_name,
                     'Vector: {}, время на работу(сек): {} из {}'.format(self.vector, self.time_left, self.timeout_left)))
                 
-                # Пока убрал фичю
-                # if self.time_left < 0 and self.vector == 'DOWN' and self.total_stock < 1.5:  # можно  на первое вермя работать с подстраховкой: and self.total_stock < 1.5 - подразумевает что есть запас тотола в один гол
+                # Пока убрал фичю, тут можно делать запас тотола
                 if self.time_left < 0:
                     prnt(self.msg.format(
                       sys._getframe().f_code.co_name, 
@@ -641,7 +645,7 @@ class BetManager:
             payload = copy.deepcopy(ol_payload)
             
             save_any = 3
-            if self.vector == 'DOWN':
+            if self.flex_bet == 'UP':
                 save_any = 2
 
             payload.update({
@@ -747,7 +751,7 @@ class BetManager:
 
             self.payload['requestId'] = self.reqId
             
-            if self.vector == 'DOWN':
+            if self.flex_bet == 'UP':
                 self.payload['coupon']['flexBet'] = 'up'
 
             self.opposite_stat_get(shared)
@@ -1135,7 +1139,7 @@ class BetManager:
                                 self.bk_container.get('bet_type') + ', bk_container:' + str(self.bk_container))
                             raise BetIsLost(err_str)
                     # Изменилась катировка
-                    elif 'Odds changed'.lower() in err_msg_eng.lower():
+                    elif 'Odds changed'.lower() in err_msg_eng.lower() and self.flex_bet == 'UP':
                         err_str = self.msg_err.format(sys._getframe().f_code.co_name, err_msg)
                         raise BetIsLost(err_str)
                     else:
