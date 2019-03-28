@@ -72,8 +72,8 @@ class BetManager:
         self.cur_total = None
         self.cur_total_new = None
         self.cur_half = None
-        self.cur_val_bet = None
-        self.old_val_bet = None
+        self.cur_val_bet = bk_container.get('wager', {}).get('value')
+        self.old_val_bet = bk_container.get('wager', {}).get('value')
         self.cur_minute = None
         self.total_stock = None
         
