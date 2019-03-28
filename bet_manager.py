@@ -58,7 +58,7 @@ class BetManager:
         self.bk_container = bk_container
         self.wager = bk_container['wager']
         self.bk_name_opposite = bk_container['opposite']
-        self.vector = self.bk_container.get('wager', {})['vector']
+        self.vector = bk_container.get('wager', {})['vector']
         
         if self.vector == 'DOWN':
             self.flex_bet = 'UP'
@@ -78,8 +78,8 @@ class BetManager:
         self.cur_total = None
         self.cur_total_new = None
         self.cur_half = None
-        self.cur_val_bet = None
-        self.old_val_bet = None
+        self.cur_val_bet = bk_container.get('wager', {}).get('value')
+        self.old_val_bet = bk_container.get('wager', {}).get('value')
         self.cur_minute = None
         self.total_stock = None
         
