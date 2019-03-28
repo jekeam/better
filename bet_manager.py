@@ -626,8 +626,6 @@ class BetManager:
         # if self.bk_name == 'fonbet':
         #     sleep(15)
         self.opposite_stat_get(shared)
-        
-        self.sum_bet_old = self.sum_bet
 
         cur_bal = self.session.get('balance')
 
