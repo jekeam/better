@@ -367,8 +367,9 @@ class BetManager:
                 prnt(' ')
                 prnt(self.msg.format(sys._getframe().f_code.co_name, 'RECALC SUM BET'))
                 
-                self_opp_val = shared[self.bk_name_opposite].get('self', {})
-                k_opp = self_opp_val.bk_container.get('wager', {}).get('value')
+                self_opp_data = shared[self.bk_name_opposite].get('self', {})
+                k_opp = self_opp_data.bk_container.get('wager', {}).get('value')
+                sum_opp = self_opp_data.bk_container.get('amount')
                 
                 new_l = (k_opp*self.cur_val_bet)/(k_opp+self.cur_val_bet)
                 old_l = (k_opp*self.old_val_bet)/(k_opp+self.old_val_bet)
@@ -379,8 +380,8 @@ class BetManager:
                 shared[self.bk_name]['new_bet_sum'] = self_sum_bet
                 
                 prnt(self.msg.format(sys._getframe().f_code.co_name,
-                'Пересчет суммы ставки({}): {}->{} (k: {}->{}, l: {}->{}, k_opp:{}'.
-                format(total_bet, self.sum_bet_old, self_sum_bet, self.old_val_bet, self.cur_val_bet, old_l, new_l, k_opp)))
+                'Пересчет суммы ставки({}): {}->{} (k: {}->{}, l: {}->{}, k_opp:{}, sum_opp:{}({})'.
+                format(total_bet, self.sum_bet_old, self_sum_bet, self.old_val_bet, self.cur_val_bet, old_l, new_l, k_opp, sum_opp*0.2, sum_opp)))
                 
                 self.sum_bet_old = self_sum_bet
                 
