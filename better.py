@@ -336,11 +336,15 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
 
         prnt('shared: ' + str(shared), 'hide')
 
-        bal1 = shared['olimp'].get('balance', bal1)
-        bal2 = shared['fonbet'].get('balance', bal2)
+        bal1_new = shared['olimp'].get('balance', bal1)
+        bal2_new = shared['fonbet'].get('balance', bal2)
+        if bal1_new:
+            bal1 = round(bal1_new)
+        if bal2_new:
+            bal2 = round(bal2_new)
 
-        fork_info[fork_id]['olimp']['balance'] = round(bal1)
-        fork_info[fork_id]['fonbet']['balance'] = round(bal2)
+        fork_info[fork_id]['olimp']['balance'] = bal1_new
+        fork_info[fork_id]['fonbet']['balance'] = bal2_new
 
         fork_info[fork_id]['olimp']['time_bet'] = shared['olimp'].get('time_bet')
         fork_info[fork_id]['fonbet']['time_bet'] = shared['fonbet'].get('time_bet')
