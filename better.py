@@ -101,18 +101,18 @@ def check_l(L):
         return ''
 
 def bet_type_is_work(key):
-    if 'ТМ' in key or \
-       'ТБ' in key or \
-       \
-       'П1' in key or \
-       'П2' in key or \
-       \
-       'КЗ' in key or \
-       'КНЗ' in key or \
-       \
-       'ОЗД' == key or \
-       'ОЗН' == key:
-        return True
+    # if 'ТМ' in key or \
+    #   'ТБ' in key or \
+    #   \
+    #   'П1' in key or \
+    #   'П2' in key or \
+    #   \
+    #   'КЗ' in key or \
+    #   'КНЗ' in key or \
+    #   \
+    #   'ОЗД' == key or \
+    #   'ОЗН' == key:
+    return True
 
 def check_fork(key, L, k1, k2, live_fork, bk1_score, bk2_score, minute, time_break_fonbet, period, deff_max, info=''):
     global bal1, bal2, balance_line, success, black_list_matches

@@ -72,6 +72,7 @@ class OlimpBot:
             headers = base_headers.copy()
             headers.update(get_xtoken_bet(payload))
             headers.update({'X-XERPC': '1'})
+            prnt('BET_OLIMP.PY: Olimp, sign_in request: ' + str(req_url), 'hide')
             resp = requests_retry_session_post(
                 req_url,
                 headers=headers,
@@ -81,7 +82,7 @@ class OlimpBot:
                 proxies=self.proxies
             )
             check_status_with_resp(resp)
-            prnt('BET_OLIMP.PY: Olimp, sign_in request: ' + str(resp.status_code))
+            prnt('BET_OLIMP.PY: Olimp, sign_in responce: ' + str(resp.status_code) + ' ' + resp.text, 'hide')
 
             self.session_payload["session"] = resp.json()["data"]["session"]
             login_info = dict(resp.json()['data'])
