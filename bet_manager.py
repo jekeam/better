@@ -20,13 +20,13 @@ from meta_ol import ol_url_api, ol_payload, ol_headers, get_xtoken_bet
 from meta_fb import fb_payload, fb_payload_bet, get_random_str, get_dumped_payload, get_urls, get_common_url
 from meta_fb import fb_headers, get_new_bets_fonbet, payload_req, payload_coupon_sum, payload_coupon_sell
 from meta_fb import payload_sell_check_result
-from utils import prnt, package_dir, write_file, read_file, get_account_info, get_param
+from utils import prnt, package_dir, write_file, read_file, get_account_info, get_prop
 from fork_recheck import get_olimp_info, get_fonbet_info
 
 from exceptions import BetIsLost, SessionNotDefined, BkOppBetError, NoMoney, BetError, SessionExpired, SaleError
 from exceptions import CouponBlocked, BetIsLost
 
-if get_param('debug'):
+if get_prop('debug'):
     DEBUG = True
 else:
     DEBUG = False
@@ -385,8 +385,8 @@ class BetManager:
                 new_l = (k_opp*self.cur_val_bet)/(k_opp+self.cur_val_bet)
                 old_l = (k_opp*self.old_val_bet)/(k_opp+self.old_val_bet)
                 
-                round_rang = get_param('round_fork')
-                total_bet = get_param('summ')
+                round_rang = get_prop('round_fork')
+                total_bet = get_prop('summ')
                 self_sum_bet = round(((total_bet/new_l)/(self.cur_val_bet/new_l)) / round_rang) * round_rang
                 shared[self.bk_name]['new_bet_sum'] = self_sum_bet
                 

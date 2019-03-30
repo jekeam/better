@@ -169,8 +169,8 @@ def get_account_summ():
     return json.get('summ', None)
 
 
-def get_param(param):
-    with open(os.path.join(package_dir, "account.json")) as file:
+def get_prop(param):
+    with open(os.path.join(package_dir, "properties.json")) as file:
         json = load(file)
     return json.get(param)
 

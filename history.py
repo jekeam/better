@@ -9,7 +9,7 @@ import time
 import random
 import json
 import os
-from utils import DEBUG, get_param
+from utils import DEBUG, get_prop
 
 file_name = 'id_forks.txt'
 olimp_bet_min = 1000000000
@@ -108,7 +108,7 @@ def export_hist(OLIMP_USER, FONBET_USER):
     global fonbet_bet_min
 
     cur_date_str = datetime.now().strftime("%d_%m_%Y")
-    acc_name = get_param('account_name')
+    acc_name = get_prop('account_name')
 
     with open(file_name, encoding='utf-8') as f:
         for line in f.readlines():

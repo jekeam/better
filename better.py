@@ -3,7 +3,7 @@ from bet_fonbet import *
 from bet_olimp import *
 import datetime
 from fork_recheck import get_kof_olimp, get_kof_fonbet
-from utils import prnt, get_account_info, get_param, get_account_summ
+from utils import prnt, get_account_info, get_prop, get_account_summ
 # from client import run_client
 import threading
 from multiprocessing import Manager, Process, Pipe
@@ -22,14 +22,14 @@ if __name__ == '__main__':
     from history import export_hist
 
 shutdown = False
-if get_param('debug'):
+if get_prop('debug'):
     DEBUG = True
 else:
     DEBUG = False
 
 
 def get_sum_bets(k1, k2, total_bet, hide=False):
-    round_fork = get_param('round_fork')
+    round_fork = get_prop('round_fork')
     if round_fork not in (5, 10, 50, 100, 1000):
         err_msg = 'Incorrect param round_fork={}'.format(round_fork)
         raise ValueError(err_msg)
@@ -168,7 +168,7 @@ def check_fork(key, L, k1, k2, live_fork, bk1_score, bk2_score, minute, time_bre
             fork_exclude_text + 'Вилка ' + str(round((1 - L) * 100, 2)) + '% исключена т.к. идет ' + str(minute) + ' минута матча \n'
 
     # Вилка живет достаточно
-    long_livers = get_param('fork_life_time')
+    long_livers = get_prop('fork_life_time')
     if live_fork < long_livers:
         fork_exclude_text = fork_exclude_text + 'Вилка ' + str(round((1 - L) * 100, 2)) + \
                             '% исключена т.к. живет меньше ' + str(long_livers) + ' сек. \n'
@@ -375,12 +375,12 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
         success.append(key)
         save_fork(fork_info)
 
-        max_fail = get_param('max_fail')
+        max_fail = get_prop('max_fail')
         if cnt_fail > max_fail:
             err_str = 'cnt_fail > max_fail (' + str(max_fail) + '), script off'
             raise MaxFail(err_str)
 
-        max_fork = get_param('max_fork')
+        max_fork = get_prop('max_fork')
         if len(success) >= max_fork:
             err_str = 'Max fork = ' + str(max_fork) + ', script off'
             raise MaxFork(err_str)
@@ -479,24 +479,24 @@ if __name__ == '__main__':
             total_bet = get_account_summ()
         balance_line = (bal1 + bal2) / 2 / 100 * 30
         if not DEBUG:
-            server_ip = get_param('server_ip')
+            server_ip = get_prop('server_ip')
         else:
-            server_ip = get_param('server_ip_test')
+            server_ip = get_prop('server_ip_test')
 
-        MIN_L = get_param('min_l')
+        MIN_L = get_prop('min_l')
 
-        prnt('account name: ' + get_param('account_name'))
+        prnt('account name: ' + get_prop('account_name'))
         prnt('server: ' + server_ip + ':80')
         prnt('bal1: ' + str(bal1) + ' руб.')
         prnt('bal2: ' + str(bal2) + ' руб.')
         prnt('total bet: ' + str(total_bet) + ' руб.')
         prnt('balance line: ' + str(balance_line))
-        prnt('fork life time: ' + str(get_param('fork_life_time')))
-        prnt('junior team exclude: ' + str(get_param('junior_team_exclude')))
-        prnt('working hours: ' + str(get_param('work_hour')))
-        prnt('round fork: ' + str(get_param('round_fork')))
-        prnt('max count fork: ' + str(get_param('max_fork')))
-        prnt('max count fail: ' + str(get_param('max_fail')))
+        prnt('fork life time: ' + str(get_prop('fork_life_time')))
+        prnt('junior team exclude: ' + str(get_prop('junior_team_exclude')))
+        prnt('working hours: ' + str(get_prop('work_hour')))
+        prnt('round fork: ' + str(get_prop('round_fork')))
+        prnt('max count fork: ' + str(get_prop('max_fork')))
+        prnt('max count fail: ' + str(get_prop('max_fail')))
         prnt('min profit: ' + str(round((1 - MIN_L) * 100, 3)) + '%')
 
         server_forks = dict()
@@ -507,7 +507,7 @@ if __name__ == '__main__':
 
             balance_line = (bal1 + bal2) / 2 / 100 * 30
 
-            shutdown_minutes = 60 * (60 * get_param('work_hour'))  # секунды * на кол-во (60*1) - это час
+            shutdown_minutes = 60 * (60 * get_prop('work_hour'))  # секунды * на кол-во (60*1) - это час
             if (datetime.datetime.now() - time_live).total_seconds() > (shutdown_minutes):
                 err_str = 'Прошло ' + str(shutdown_minutes / 60 / 60) + ' ч., я завершил работу'
                 prnt('better: ' + err_str)
