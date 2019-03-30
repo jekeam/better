@@ -3,7 +3,7 @@ from bet_fonbet import *
 from bet_olimp import *
 import datetime
 from fork_recheck import get_kof_olimp, get_kof_fonbet
-from utils import prnt, get_account_info, get_prop, get_account_summ
+from utils import prnt, get_account_info, get_prop
 # from client import run_client
 import threading
 from multiprocessing import Manager, Process, Pipe
@@ -476,7 +476,7 @@ if __name__ == '__main__':
             bal1 = OlimpBot(OLIMP_USER).get_balance()  # Баланс в БК1
             bal2 = FonbetBot(FONBET_USER).get_balance()  # Баланс в БК2
             # round(0.10 * (bal1 + bal2))  # Общая масксимальная сумма ставки
-            total_bet = get_account_summ()
+            total_bet = get_prop('summ')
         balance_line = (bal1 + bal2) / 2 / 100 * 30
         if not DEBUG:
             server_ip = get_prop('server_ip')
