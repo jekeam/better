@@ -387,14 +387,14 @@ class BetManager:
                 
                 round_rang = get_prop('round_fork')
                 total_bet = get_prop('summ')
-                self_sum_bet = round(((total_bet/new_l)/(self.cur_val_bet/new_l)) / round_rang) * round_rang
-                shared[self.bk_name]['new_bet_sum'] = self_sum_bet
+                self.sum_bet = round(((total_bet/new_l)/(self.cur_val_bet/new_l)) / round_rang) * round_rang
+                shared[self.bk_name]['new_bet_sum'] = self.sum_bet
                 
                 prnt(self.msg.format(sys._getframe().f_code.co_name,
                 'Пересчет суммы ставки({}): {}->{} (k: {}->{}, l: {}->{}, k_opp:{}, sum_opp:{}({})'.
-                format(total_bet, self.sum_bet_old, self_sum_bet, self.old_val_bet, self.cur_val_bet, old_l, new_l, k_opp, sum_opp*0.2, sum_opp)))
+                format(total_bet, self.sum_bet_old, self.sum_bet, self.old_val_bet, self.cur_val_bet, old_l, new_l, k_opp, sum_opp*0.2, sum_opp)))
                 
-                self.sum_bet_old = self_sum_bet
+                self.sum_bet_old = self.sum_bet
                 
             if self.cur_val_bet:
                 self.old_val_bet = self.cur_val_bet
