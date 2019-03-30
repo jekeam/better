@@ -11,7 +11,7 @@ from math import floor, ceil
 import time
 from random import randint
 import platform
-from exceptions import Shutdown, FonbetBetError, OlimpBetError, MaxFail, MaxFork
+from exceptions import FonbetBetError, OlimpBetError, Shutdown, MaxFail, MaxFork
 import http.client
 import json
 import re
@@ -297,8 +297,7 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
             amount_olimp = 30
             amount_fonbet = 30
             # return False
-
-        # with Manager() as manager:
+        
         shared = dict()
 
         shared['olimp'] = {
@@ -378,21 +377,22 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
             if not bet_skip:
                 cnt_fail = cnt_fail + 1
                 black_list_matches.append(key.split('@')[0], key.split('@')[1])
-        # Добавим доп инфу о проставлении
-        success.append(key)
+                # Добавим доп инфу о проставлении
+                success.append(key)
         save_fork(fork_info)
 
         max_fail = get_prop('max_fail')
-        if cnt_fail > max_fail:
-            err_str = 'cnt_fail > max_fail (' + str(max_fail) + '), script off'
-            raise MaxFail(err_str)
+        if cnt_fail >= max_fail:
+            msg_str = 'Кол-во ошибок больше допустимого (' + str(max_fail) + '), работа завершена.'
+            raise MaxFail(msg_str)
 
         max_fork = get_prop('max_fork')
         if len(success) >= max_fork:
-            err_str = 'Max fork = ' + str(max_fork) + ', script off'
-            raise MaxFork(err_str)
+            msg_str = 'Кол-во успешно просталвенных вилок достигнуто (' + str(max_fork) + '), работа завершена.'
+            raise MaxFork(msg_str)
 
-        prnt('Matchs exclude: ' + str(success))
+        prnt('Исключенные матчи: ' + str(success))
+        prnt('Черный список матчей: ' + str(black_list_matches))
         sleep_post_work = 30
         prnt('Ожидание ' + str(sleep_post_work) + ' сек.')
         time.sleep(sleep_post_work)
@@ -413,7 +413,7 @@ def run_client():
 
         while True:
             if shutdown:
-                err_str = 'Основной поток завершен, я тоже офф'
+                err_str = 'Основной поток завершен и run_client тоже.'
                 conn.close()
                 raise Shutdown(err_str)
             conn.request('GET', '')
@@ -423,8 +423,8 @@ def run_client():
             server_forks = data_json
             time.sleep(0.5)
     except Shutdown as e:
-        prnt('better: ' + str(e.__class__.__name__) + ' - ' + str(e))
-        raise ValueError(e)
+        prnt(str(e.__class__.__name__) + ' - ' + str(e))
+        raise Shutdown(e)
     except Exception as e:
         prnt('better: ' + str(e.__class__.__name__) + ' - ' + str(e))
         server_forks = {}
@@ -515,26 +515,25 @@ if __name__ == '__main__':
             balance_line = (bal1 + bal2) / 2 / 100 * 30
 
             shutdown_minutes = 60 * (60 * get_prop('work_hour'))  # секунды * на кол-во (60*1) - это час
-            if (datetime.datetime.now() - time_live).total_seconds() > (shutdown_minutes):
-                err_str = 'Прошло ' + str(shutdown_minutes / 60 / 60) + ' ч., я завершил работу'
-                prnt('better: ' + err_str)
-                shutdown = True
+            if (datetime.datetime.now() - time_live).total_seconds() > shutdown_minutes:
+                msg_str = 'Прошло ' + str(round(shutdown_minutes / 60 / 60, 2)) + ' ч., я завершил работу'
+                raise Shutdown(msg_str)
 
-                wait_before_exp = 60 * 60 * 0
-                prnt('Ожидание ' + str(wait_before_exp / 60) + ' минут, до выгрузки')
-                time.sleep(wait_before_exp)
-
-                export_hist(OLIMP_USER, FONBET_USER)
-
-                raise ValueError(err_str)
-
-            # Обновление баланса каждые 35-45 минут
-            ref_balace = randint(35, 45)
+            # Обновление баланса каждые 30 минут
+            ref_balace = 30
             if (datetime.datetime.now() - time_get_balance).total_seconds() > (60 * ref_balace):
-                prnt('It took more than ' + str(ref_balace) + ' minutes, the refresh balances:')
+                prnt(' ')
+                prnt('Прошло больше ' + str(ref_balace) + ' минут, пора обновить балансы:')
                 time_get_balance = datetime.datetime.now()
                 bal1 = OlimpBot(OLIMP_USER).get_balance()  # Баланс в БК1
                 bal2 = FonbetBot(FONBET_USER).get_balance()  # Баланс в БК2
+
+            # Показываем каждые 15 минут
+            if int(datetime.datetime.now().strftime('%M')) % 15 == 0:
+                prnt(' ')
+                prnt('Кол-во успешно проставленных вилок: ' + str(len(success)))
+                prnt('Кол-во вилок с ошибками: ' + str(cnt_fail))
+                prnt('Работаю еще: ' + str(round((shutdown_minutes - (datetime.datetime.now() - time_live).total_seconds()) / 60 / 60, 2)) + ' ч.')
 
             if server_forks:
                 go_bet_key = ''
@@ -647,6 +646,15 @@ if __name__ == '__main__':
             else:
                 pass
             time.sleep(0.25)
+
+    except (Shutdown, MaxFail, MaxFork) as e:
+        prnt(' ')
+        prnt(str(e))
+        wait_before_exp = 60 * 60 * 2
+        prnt('Ожидание ' + str(wait_before_exp / 60) + ' минут, до выгрузки')
+        time.sleep(wait_before_exp)
+        export_hist(OLIMP_USER, FONBET_USER)
+
     except Exception as e:
         exc_type, exc_value, exc_traceback = sys.exc_info()
         err_str = str(e) + ' ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
