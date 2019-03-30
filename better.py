@@ -29,7 +29,6 @@ else:
 
 
 def get_sum_bets(k1, k2, total_bet, hide=False):
-
     round_fork = get_param('round_fork')
     if round_fork not in (5, 10, 50, 100, 1000):
         err_msg = 'Incorrect param round_fork={}'.format(round_fork)
@@ -85,20 +84,21 @@ def bet_olimp_cl(obj):
 
 def check_l(L):
     global MIN_L
-    
+
     l_exclude_text = ''
-    
+
     if L <= 0.90:
         l_exclude_text = l_exclude_text + 'Вилка ' + str(L) + ' (' + str(round((1 - L) * 100, 2)) + \
                          '%), вилка исключена т.к. доходноть высокая >= 10%\n'
     if L > MIN_L:
         l_exclude_text = l_exclude_text + 'Вилка ' + \
-            str(L) + ' (' + str(round((1 - L) * 100, 3)) + '%), беру вилки только >= ' + str(round((1 - MIN_L) * 100, 3)) + '%\n'
+                         str(L) + ' (' + str(round((1 - L) * 100, 3)) + '%), беру вилки только >= ' + str(round((1 - MIN_L) * 100, 3)) + '%\n'
 
     if l_exclude_text != '':
         return l_exclude_text
     else:
         return ''
+
 
 def bet_type_is_work(key):
     # if 'ТМ' in key or \
@@ -113,6 +113,7 @@ def bet_type_is_work(key):
     #   'ОЗД' == key or \
     #   'ОЗН' == key:
     return True
+
 
 def check_fork(key, L, k1, k2, live_fork, bk1_score, bk2_score, minute, time_break_fonbet, period, deff_max, info=''):
     global bal1, bal2, balance_line, success, black_list_matches
@@ -129,10 +130,9 @@ def check_fork(key, L, k1, k2, live_fork, bk1_score, bk2_score, minute, time_bre
 
     if success.count(key) > 0:
         fork_exclude_text = fork_exclude_text + 'Вилка не проставлена, т.к. уже проставляли на эту вилку: ' + key + '\n'
-        
+
     if black_list_matches.count(key.split('@')[0]) > 0 or black_list_matches.count(key.split('@')[1]) > 0:
         fork_exclude_text = fork_exclude_text + 'Вилка исключена, т.к. матч занесен в blacklist: ' + key + ', ' + black_list_matches + '\n'
-        
 
     # Проверяем корректная ли сумма
     if bet1 < 30 or bet2 < 30:
@@ -180,7 +180,7 @@ def check_fork(key, L, k1, k2, live_fork, bk1_score, bk2_score, minute, time_bre
         prnt(info + '\n' + fork_exclude_text + '\n', 'hide')
         v = False
     return v
-    
+
 
 def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
     global bal1
@@ -349,7 +349,7 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
         fork_info[fork_id]['olimp']['time_bet'] = shared['olimp'].get('time_bet')
         fork_info[fork_id]['fonbet']['time_bet'] = shared['fonbet'].get('time_bet')
         fork_info[fork_id]['fonbet']['bet_delay'] = shared['fonbet'].get('bet_delay')
-        
+
         fork_info[fork_id]['olimp']['new_bet_sum'] = shared['olimp'].get('new_bet_sum')
         fork_info[fork_id]['fonbet']['new_bet_sum'] = shared['fonbet'].get('new_bet_sum')
 
@@ -367,7 +367,7 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
         if bet_skip:
             fork_info[fork_id]['olimp']['err'] = 'Вилка была пропущена: ' + str(shared.get('olimp_err', 'Bet skipped'))
             fork_info[fork_id]['fonbet']['err'] = 'Вилка была пропущена: ' + str(shared.get('fonbet_err', 'Bet skipped'))
-            
+
         fork_info[fork_id]['fonbet']['max_bet'] = shared['fonbet'].get('max_bet')
 
         if shared.get('olimp_err') != 'ok' and shared.get('fonbet_err') != 'ok':
@@ -480,9 +480,9 @@ if __name__ == '__main__':
             server_ip = get_param('server_ip')
         else:
             server_ip = get_param('server_ip_test')
-            
+
         MIN_L = get_param('min_l')
-            
+
         prnt('server: ' + server_ip + ':80')
         prnt('bal1: ' + str(bal1) + ' руб.')
         prnt('bal2: ' + str(bal2) + ' руб.')
@@ -493,7 +493,7 @@ if __name__ == '__main__':
         prnt('working hours: ' + str(get_param('work_hour')))
         prnt('round fork: ' + str(get_param('round_fork')))
         prnt('max count fail: ' + str(get_param('max_fail')))
-        prnt('min profit: ' + str(round((1-MIN_L)*100, 3)) + '%')
+        prnt('min profit: ' + str(round((1 - MIN_L) * 100, 3)) + '%')
 
         server_forks = dict()
         start_see_fork = threading.Thread(

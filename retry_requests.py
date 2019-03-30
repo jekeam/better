@@ -2,8 +2,8 @@
 import requests
 from requests.exceptions import Timeout, ProxyError
 from requests.adapters import HTTPAdapter
-#from requests.packages.urllib3.util.retry import Retry
-#from urllib3.util import Retry
+# from requests.packages.urllib3.util.retry import Retry
+# from urllib3.util import Retry
 from urllib3.util.retry import Retry
 import functools
 import time
@@ -59,10 +59,10 @@ def retry(exceptions, delay=0, times=2):
                     return value
                 except (exceptions) as e:
                     final_excep = e
-                    prnt('retry_requests 1: ' + str(final_excep)+ ', args=' + str(*args) +', kwargs='+str(**kwargs))
+                    prnt('retry_requests 1: ' + str(final_excep) + ', args=' + str(*args) + ', kwargs=' + str(**kwargs))
                     pass
             if final_excep is not None:
-                prnt('retry_requests 2: ' + str(final_excep)+ ', args=' + str(*args) +', kwargs='+str(**kwargs))
+                prnt('retry_requests 2: ' + str(final_excep) + ', args=' + str(*args) + ', kwargs=' + str(**kwargs))
                 raise final_excep
 
         return inner_wrapper
