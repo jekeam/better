@@ -15,6 +15,10 @@ class Shutdown(Exception):
     pass
 
 
+class MaxFork(Exception):
+    pass
+
+
 class TimeOutFonbet(Exception):
     pass
 

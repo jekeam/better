@@ -11,7 +11,7 @@ from math import floor, ceil
 import time
 from random import randint
 import platform
-from exceptions import Shutdown, FonbetBetError, OlimpBetError, MaxFail
+from exceptions import Shutdown, FonbetBetError, OlimpBetError, MaxFail, MaxFork
 import http.client
 import json
 import re
@@ -60,7 +60,6 @@ def bet_fonbet_cl(obj):
         obj['fonbet_err'] = 'ok'
         obj['olimp_err'] = 'ok'
     except Exception as e:
-        obj['fonbet'] = fonbet
         obj['fonbet_err'] = str(e)
     finally:
         obj['fonbet'] = fonbet
@@ -161,8 +160,8 @@ def check_fork(key, L, k1, k2, live_fork, bk1_score, bk2_score, minute, time_bre
     # Больше 43 минуты и не идет перерыв и это 1 период
     if 43.0 < float(minute) and not time_break_fonbet and period == 1:
         fork_exclude_text = \
-            fork_exclude_text + 'Вилка ' + str(round((1 - L) * 100, 2)) + '% исключена т.к. идет ' + str(
-                minute) + ' минута матча и это не перерыв и это не 2-й период \n'
+            fork_exclude_text + 'Вилка ' + str(round((1 - L) * 100, 2)) + '% исключена т.к. идет ' + str(minute) + \
+            ' минута матча и это не перерыв и это не 2-й период \n'
 
     if float(minute) > 88.0:
         fork_exclude_text = \
@@ -192,14 +191,13 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
     fonbet_bet_type = str(key.split('@')[-1])
     # Проверяем ставили ли мы на этот матч, пока в ручную
 
-    L = ((1 / float(wag_ol['factor'])) +
-         (1 / float(wag_fb['value'])))
+    L = ((1 / float(wag_ol['factor'])) + (1 / float(wag_fb['value'])))
     cur_proc = round((1 - L) * 100, 2)
 
     amount_olimp, amount_fonbet = get_sum_bets(wag_ol['factor'], wag_fb['value'], total_bet)
 
     if __name__ == '__main__':
-        wait_sec = 0  # max(0, (3.5 - deff_max))
+        wait_sec = 0
         prnt('Wait sec: ' + str(wait_sec))
 
         real_wait = wait_sec + deff_max
@@ -213,8 +211,7 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
             obj = manager.dict()
 
             recheck_o = Process(target=get_kof_olimp, args=(obj, wag_ol['event'], olimp_bet_type))
-            recheck_fb = Process(target=get_kof_fonbet,
-                                 args=(obj, wag_fb['event'], int(wag_fb['factor']), wag_fb['param']))
+            recheck_fb = Process(target=get_kof_fonbet, args=(obj, wag_fb['event'], int(wag_fb['factor']), wag_fb['param']))
 
             recheck_fb.start()
             recheck_o.start()
@@ -383,6 +380,11 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
             err_str = 'cnt_fail > max_fail (' + str(max_fail) + '), script off'
             raise MaxFail(err_str)
 
+        max_fork = get_param('max_fork')
+        if len(success) >= max_fork:
+            err_str = 'Max fork = ' + str(max_fork) + ', script off'
+            raise MaxFork(err_str)
+
         prnt('Matchs exclude: ' + str(success))
         sleep_post_work = 30
         prnt('Ожидание ' + str(sleep_post_work) + ' сек.')
@@ -483,6 +485,7 @@ if __name__ == '__main__':
 
         MIN_L = get_param('min_l')
 
+        prnt('account name: ' + get_param('account_name'))
         prnt('server: ' + server_ip + ':80')
         prnt('bal1: ' + str(bal1) + ' руб.')
         prnt('bal2: ' + str(bal2) + ' руб.')
@@ -492,12 +495,12 @@ if __name__ == '__main__':
         prnt('junior team exclude: ' + str(get_param('junior_team_exclude')))
         prnt('working hours: ' + str(get_param('work_hour')))
         prnt('round fork: ' + str(get_param('round_fork')))
+        prnt('max count fork: ' + str(get_param('max_fork')))
         prnt('max count fail: ' + str(get_param('max_fail')))
         prnt('min profit: ' + str(round((1 - MIN_L) * 100, 3)) + '%')
 
         server_forks = dict()
-        start_see_fork = threading.Thread(
-            target=run_client)  # , args=(server_forks,))
+        start_see_fork = threading.Thread(target=run_client)  # , args=(server_forks,))
         start_see_fork.start()
 
         while True:
