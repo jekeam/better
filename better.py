@@ -114,11 +114,18 @@ def bet_type_is_work(key):
     return True
 
 
-def check_fork(key, L, k1, k2, live_fork, bk1_score, bk2_score, minute, time_break_fonbet, period, deff_max, info=''):
+def check_fork(key, L, k1, k2, live_fork, bk1_score, bk2_score, minute, time_break_fonbet, period, name, name_rus, deff_max, info=''):
     global bal1, bal2, balance_line, success, black_list_matches
 
     fork_exclude_text = ''
     v = True
+
+    if get_param('junior_team_exclude'):
+        if re.search('(u\d{2}|\(жен\)|\(ж\)|\(р\)|\(рез\)|\(.*\d{2}\)|-студ.)', name_rus.lower()):
+            fork_exclude_text = fork_exclude_text + 'Вилка исключена по названию команд: ' + name_rus + '\n'
+
+        if re.search('(u\d{2}|\(w\)|\(r\)|\(res\)|\(Reserves\)|-stud\.)', name.lower()):
+            fork_exclude_text = fork_exclude_text + 'Вилка исключена по названию команд: ' + name + '\n'
 
     if not bet_type_is_work(key):
         fork_exclude_text = fork_exclude_text + 'Вилка исключена, т.к. я еще не умею работать с этой ставкой: ' + str(key) + ')\n'
@@ -541,6 +548,7 @@ if __name__ == '__main__':
                     k2_type = key.split('@')[-2]
 
                     name = val_json.get('name', 'name')
+                    name_rus = val_json.get('name_rus', 'name_rus')
                     pair_math = val_json.get('pair_math', 'pair_math')
 
                     bk1_score = str(val_json.get('bk1_score', 'bk1_score'))
@@ -619,7 +627,8 @@ if __name__ == '__main__':
                             bet1, bet2 = get_sum_bets(k1, k2, total_bet, 'hide')
                             # Проверим вилку на исключения
                             if check_fork(key, l_temp, k1, k2, live_fork, bk1_score, bk2_score,
-                                          minute, time_break_fonbet, period, deff_max, info) or (DEBUG and ('(' in key or ')' in key)):
+                                          minute, time_break_fonbet, period, name, name_rus, deff_max, info) or \
+                                    (DEBUG and ('(' in key or ')' in key)):
                                 go_bet_key = key
                                 l = l_temp
                                 go_bet_json = val_json
