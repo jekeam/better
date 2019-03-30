@@ -297,7 +297,7 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
             amount_olimp = 30
             amount_fonbet = 30
             # return False
-        
+
         shared = dict()
 
         shared['olimp'] = {
@@ -463,6 +463,7 @@ time_live = datetime.datetime.now()
 cnt_fail = 0
 black_list_matches = []
 success = []
+printed = False
 
 # wag_fb:{'event': '12797479', 'factor': '921', 'param': '', 'score': '0:0', 'value': '2.35'}
 # wag_fb:{'apid': '1144260386:45874030:1:3:-9999:3:NULL:NULL:1', 'factor': '1.66', 'sport_id': 1, 'event': '45874030'}
@@ -505,6 +506,7 @@ if __name__ == '__main__':
         prnt('max count fork: ' + str(get_prop('max_fork')))
         prnt('max count fail: ' + str(get_prop('max_fail')))
         prnt('min profit: ' + str(round((1 - MIN_L) * 100, 3)) + '%')
+        time.sleep(15)
 
         server_forks = dict()
         start_see_fork = threading.Thread(target=run_client)  # , args=(server_forks,))
@@ -529,11 +531,15 @@ if __name__ == '__main__':
                 bal2 = FonbetBot(FONBET_USER).get_balance()  # Баланс в БК2
 
             # Показываем каждые 15 минут
-            if int(datetime.datetime.now().strftime('%M')) % 15 == 0:
+            cur_min = int(datetime.datetime.now().strftime('%M'))
+            if cur_min % 15 == 0 and not printed:
                 prnt(' ')
                 prnt('Кол-во успешно проставленных вилок: ' + str(len(success)))
                 prnt('Кол-во вилок с ошибками: ' + str(cnt_fail))
                 prnt('Работаю еще: ' + str(round((shutdown_minutes - (datetime.datetime.now() - time_live).total_seconds()) / 60 / 60, 2)) + ' ч.')
+                printed = True
+            elif cur_min % 15 != 0 and printed:
+                printed = False
 
             if server_forks:
                 go_bet_key = ''
