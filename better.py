@@ -297,7 +297,7 @@ def go_bets(wag_ol, wag_fb, total_bet, key, deff_max, vect1, vect2, sc1, sc2):
             amount_olimp = 30
             amount_fonbet = 30
             # return False
-        
+
         shared = dict()
 
         shared['olimp'] = {
@@ -505,6 +505,7 @@ if __name__ == '__main__':
         prnt('max count fork: ' + str(get_prop('max_fork')))
         prnt('max count fail: ' + str(get_prop('max_fail')))
         prnt('min profit: ' + str(round((1 - MIN_L) * 100, 3)) + '%')
+        time.sleep(15)
 
         server_forks = dict()
         start_see_fork = threading.Thread(target=run_client)  # , args=(server_forks,))
