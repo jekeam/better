@@ -531,13 +531,14 @@ if __name__ == '__main__':
                 bal2 = FonbetBot(FONBET_USER).get_balance()  # Баланс в БК2
 
             # Показываем каждые 15 минут
-            if int(datetime.datetime.now().strftime('%M')) % 15 == 0 and not printed:
+            cur_min = int(datetime.datetime.now().strftime('%M'))
+            if cur_min % 15 == 0 and not printed:
                 prnt(' ')
                 prnt('Кол-во успешно проставленных вилок: ' + str(len(success)))
                 prnt('Кол-во вилок с ошибками: ' + str(cnt_fail))
                 prnt('Работаю еще: ' + str(round((shutdown_minutes - (datetime.datetime.now() - time_live).total_seconds()) / 60 / 60, 2)) + ' ч.')
                 printed = True
-            else:
+            elif cur_min % 15 != 0 and printed:
                 printed = False
 
             if server_forks:
