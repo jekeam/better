@@ -46,7 +46,7 @@ class OlimpBot:
         self.wager = None
         self.amount = None
         self.sleep = 11
-        self.timeout = 50
+        self.timeout = 20
 
         with open(os.path.join(package_dir, "proxies.json")) as file:
             proxies = load(file)
