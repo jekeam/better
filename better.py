@@ -120,7 +120,7 @@ def check_fork(key, L, k1, k2, live_fork, bk1_score, bk2_score, minute, time_bre
     fork_exclude_text = ''
     v = True
 
-    if get_param('junior_team_exclude'):
+    if get_prop('junior_team_exclude'):
         if re.search('(u\d{2}|\(жен\)|\(ж\)|\(р\)|\(рез\)|\(.*\d{2}\)|-студ.)', name_rus.lower()):
             fork_exclude_text = fork_exclude_text + 'Вилка исключена по названию команд: ' + name_rus + '\n'
 
