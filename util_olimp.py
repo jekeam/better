@@ -1,7 +1,7 @@
 # coding: utf-8
 from hashlib import md5
 import requests
-#from proxy_worker import del_proxy
+from proxy_worker import del_proxy
 import re
 import time
 from exceptions import OlimpMatchСompleted, TimeOut

@@ -399,7 +399,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
                                 'pair_math': pair_math,
                                 'bk1_score': math_json_olimp.get('score', ''),
                                 'bk2_score': math_json_fonbet.get('score', ''),
-                                'time': math_json_fonbet.get('time', '0:0'),
+                                'time': math_json_fonbet.get('time', '00:00'),
                                 'minute': math_json_fonbet.get('minute', 0),
                                 'kof_olimp': k_olimp,
                                 'kof_fonbet': k_fonbet,
@@ -455,7 +455,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
                                                 math_json_fonbet.get('score', '') + ';' +
                                                 str(k_olimp.get('vector')) + ';' +
                                                 str(k_fonbet.get('vector')) + ';' +
-                                                str(math_json_fonbet.get('time', '0:0')) + ';' +
+                                                str(math_json_fonbet.get('time', '00:00')) + ';' +
                                                 str(math_json_fonbet.get('minute', 0)) + ';' +
                                                 str(k_olimp.get('value')) + ';' +
                                                 str(k_olimp.get('hist', {}).get('avg_change', [])) + ';' +
@@ -489,7 +489,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
                                 'pair_math': pair_math,
                                 'bk1_score': math_json_olimp.get('score', ''),
                                 'bk2_score': math_json_fonbet.get('score', ''),
-                                'time': math_json_fonbet.get('time', '0:0'),
+                                'time': math_json_fonbet.get('time', '00:00'),
                                 'minute': math_json_fonbet.get('minute', 0),
                                 'kof_olimp': k_olimp,
                                 'kof_fonbet': k_fonbet,
