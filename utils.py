@@ -88,9 +88,9 @@ def get_vector(bet_type, sc1=None, sc2=None):
     if sc2:
         sc2 = int(sc2)
 
-    if [t for t in ['ТБ', 'КЗ', 'ОЗН', 'ННД'] if t in bet_type]:
+    if [t for t in ['ТБ', 'КЗ', 'ОЗД', 'ННД'] if t in bet_type]:
         return U
-    if [t for t in ['ТМ', 'КНЗ', 'ОЗД', 'ННН'] if t in bet_type]:
+    if [t for t in ['ТМ', 'КНЗ', 'ОЗН', 'ННН'] if t in bet_type]:
         return D
 
     # Или добавлять ретурн в каждую из веток,
