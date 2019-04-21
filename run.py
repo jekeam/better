@@ -279,11 +279,13 @@ def start_compare_matches(pair_mathes, json_bk1, json_bk2, mathes_complite):
     while True:
         try:
             prnts('Найдено матчей: ' + str(len(pair_mathes)) + ' ' + str(pair_mathes))
-            for bk1_match_id, bk1_match_info in copy.deepcopy(json_bk1).items():
+            json_bk1_copy = copy.deepcopy(json_bk1)
+            json_bk2_copy = copy.deepcopy(json_bk2)
+            for bk1_match_id, bk1_match_info in json_bk1_copy.items():
                 if [bk1_name for bk1_name in bk1_match_info.values() if bk1_name is not None]:
                     # Проверим что ид матча 1 нет в списке
                     if 'yes' not in list(map(lambda id: 'yes' if bk1_match_id in id else 'no', pair_mathes)):
-                        for bk2_match_id, bk2_match_info in copy.deepcopy(json_bk2).items():
+                        for bk2_match_id, bk2_match_info in json_bk2_copy.items():
                             if [bk2_name for bk2_name in bk2_match_info.values() if bk2_name is not None]:
                                 # Проверим что ид матча 2 нет в списке
                                 if 'yes' not in list(map(lambda id: 'yes' if bk2_match_id in id else 'no', pair_mathes)):
