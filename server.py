@@ -24,7 +24,7 @@ def run_server(SERVER_IP, data_json, pair_mathes):
                 ip_adr = str(self.client_address[0])
             except Exception as e:
                 print(str(e))
-            if self.path == '/get_forks' or self.path == '/':
+            if self.path == '/get_forks':
                 self.send_response(200)
                 self.send_header('content-type', 'application/json')
                 self.end_headers()
