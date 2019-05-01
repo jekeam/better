@@ -3,6 +3,9 @@ from functools import partial
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 import platform
+import threading
+
+mutex = threading.Lock()
 
 
 def run_server(SERVER_IP, data_json, pair_mathes):
@@ -16,13 +19,23 @@ def run_server(SERVER_IP, data_json, pair_mathes):
             super().__init__(*args, **kwargs)
 
         def do_GET(self):
-            print(self.path)
-            print(len(pair_mathes))
-            self.send_response(200)
-            self.send_header('content-type', 'application/json')
-            self.end_headers()
-            # print('resp: ' + str(self.jstr))
-            self.wfile.write(str(self.data).encode('utf-8'))
+            ip_adr = str(self.client_address[0])
+            print()
+            if self.path == '/get_forks':
+                self.send_response(200)
+                self.send_header('content-type', 'application/json')
+                self.end_headers()
+                self.wfile.write(str(self.data).encode('utf-8'))
+            elif self.path == '/get_cnt_matches':
+                self.send_response(200)
+                self.send_header('content-type', 'application/json')
+                self.end_headers()
+                self.wfile.write(str(len(pair_mathes)).encode('utf-8'))
+            else:
+                mutex.acquire()
+                with open('access.log', 'a+', encoding='utf-8') as f:
+                    f.write('ip: ' + ip_adr + ', path: ' + self.path + '\n')
+                mutex.release()
 
     handler = partial(HttpProcessor, data_json, 0, 0)
     serv = HTTPServer((SERVER_IP, 80), handler)
