@@ -287,29 +287,11 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
 
     try:
         resp, time_resp = get_match_olimp(match_id, proxies_olimp, proxy, time_out, pair_mathes)
-        # Очистим дстарые данные
-        # if bets_olimp.get(key_id):
-        # bets_olimp[key_id] = dict()
 
         time_start_proc = time.time()
 
-        # print(resp)
-        # if key_id == '46953789':
-        #     import json
-        #     prnts(json.dumps(resp, ensure_ascii=False))
-        # f = open('olimp.txt', 'a+')
-        # f.write(json.dumps(resp, ensure_ascii=False))
-
-        # prnts(json.dumps(resp, ensure_ascii=False, indent=4))
-        # prnts(json.dumps(resp, ensure_ascii=False))
-        # exit()
-        math_block = \
-            True \
-                if not resp \
-                   or str(resp.get('ms', '1')) != '2' \
-                   or resp.get('error', {'err_code': 0}).get('err_code') == 404 \
-                else False \
-            # 1 - block, 2 - available
+        math_block = True if not resp or str(resp.get('ms', '1')) != '2' or resp.get('error', {'err_code': 0}).get('err_code') == 404 else False
+        # 1 - block, 2 - available
         if not math_block:
 
             timer = resp.get('t', '')
@@ -399,41 +381,18 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
                                            else to_abb(c.replace(' ', ''))
                                            for c in [key_r]
                                        ][0])
-                            hist5 = bets_olimp[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('4', 0)
-                            hist4 = bets_olimp[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('3', 0)
-                            hist3 = bets_olimp[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('2', 0)
-                            hist2 = bets_olimp[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('1', 0)
-                            hist1 = bets_olimp[key_id].get('kofs', {}).get(coef, {}).get('value', 0)
+                            kof_order = bets_olimp[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('order', [])
+                            kof_order.append(d.get('v', ''))
 
-                            cof_is_change = True if hist1 != d.get('v', '') else False
+                            cof_is_change = True if kof_order[0:1] != kof_order[1:2] else False
 
                             if cof_is_change:
-                                avg_change = \
-                                    bets_olimp[key_id]. \
-                                        get('kofs', {}). \
-                                        get(coef, {}). \
-                                        get('hist', {}). \
-                                        get('avg_change', [])
-                                avg_change.append(round(time.time() -
-                                                        bets_olimp[key_id].
-                                                        get('kofs', {}).
-                                                        get(coef, {}).
-                                                        get('hist', {}).
-                                                        get('time_change', time.time())))
+                                avg_change = bets_olimp[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('avg_change', [])
+                                avg_change.append(round(time.time() - bets_olimp[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('time_change', time.time())))
                                 time_change = round(time.time())
                             else:
-                                avg_change = \
-                                    bets_olimp[key_id]. \
-                                        get('kofs', {}). \
-                                        get(coef, {}). \
-                                        get('hist', {}). \
-                                        get('avg_change', [])
-                                time_change = \
-                                    bets_olimp[key_id]. \
-                                        get('kofs', {}). \
-                                        get(coef, {}). \
-                                        get('hist', {}). \
-                                        get('time_change', round(time.time()))
+                                avg_change = bets_olimp[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('avg_change', [])
+                                time_change = bets_olimp[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('time_change', round(time.time()))
 
                             try:
                                 bets_olimp[key_id]['kofs'].update(
@@ -450,21 +409,13 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
                                                 'hist': {
                                                     'time_change': time_change,
                                                     'avg_change': avg_change,
-                                                    '1': hist1,
-                                                    '2': hist2,
-                                                    '3': hist3,
-                                                    '4': hist4,
-                                                    '5': hist5
+                                                    'order': kof_order
                                                 }
                                             }
                                     }
                                 )
                             except:
                                 pass
-                                # print('---error---')
-                                # import json
-                                # print(json.dumps(bets_olimp[key_id], ensure_ascii=False))
-                                # print('------------')
         else:
             try:
                 bets_olimp.pop(key_id)
@@ -494,17 +445,6 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
                         prnts('Олимп, ошибка 1 при удалении старой котирофки: ' + str(e))
         except Exception as e:
             prnts('Олимп, ошибка 2 при удалении старой котирофки: ' + str(e))
-        # if key_id == '46204691':
-        #     import json
-        #     print('------о----------')
-        #     # print(json.dumps(resp, ensure_ascii=False))
-        #     print('')
-        #     print('')
-        #     print(key_id, json.dumps(bets_olimp.get(key_id), ensure_ascii=False))
-        #     print('')
-        #     print('')
-        #     print('--------о--------')
-        #     time.sleep(10)
         return time_resp + (time.time() - time_start_proc)
     except OlimpMatchСompleted as e:
         if bets_olimp.get(key_id):

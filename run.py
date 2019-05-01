@@ -436,8 +436,8 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
                                                 'time_break_fonbet;'
                                                 'period;'
                                                 'ol_avg_change_total;fb_avg_change_total;'
-                                                'ol_hist1;ol_hist2;ol_hist3;ol_hist4;ol_hist5;'
-                                                'fb_hist1;fb_hist2;fbl_hist3;fb_hist4;fb_hist5'
+                                                'ol_kof_order;'
+                                                'fb_kof_order;'
                                                 '\n'
                                             )
                                     if os.path.isfile(file_forks):
@@ -467,16 +467,8 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
                                                 str(period) + ';' +
                                                 str(math_json_olimp.get('avg_change_total', [])) + ';' +
                                                 str(math_json_fonbet.get('avg_change_total', [])) + ';' +
-                                                str(k_olimp.get('hist', {}).get('1', [])) + ';' +
-                                                str(k_olimp.get('hist', {}).get('2', [])) + ';' +
-                                                str(k_olimp.get('hist', {}).get('3', [])) + ';' +
-                                                str(k_olimp.get('hist', {}).get('4', [])) + ';' +
-                                                str(k_olimp.get('hist', {}).get('5', [])) + ';' +
-                                                str(k_fonbet.get('hist', {}).get('1', [])) + ';' +
-                                                str(k_fonbet.get('hist', {}).get('2', [])) + ';' +
-                                                str(k_fonbet.get('hist', {}).get('3', [])) + ';' +
-                                                str(k_fonbet.get('hist', {}).get('4', [])) + ';' +
-                                                str(k_fonbet.get('hist', {}).get('5', [])) +
+                                                str(k_olimp.get('hist', {}).get('kof_order', [])) + ';' +
+                                                str(k_fonbet.get('hist', {}).get('kof_order', [])) +
                                                 '\n'
                                             )
                         else:

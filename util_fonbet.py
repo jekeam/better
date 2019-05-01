@@ -165,16 +165,8 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
     key_id = str(match_id)
     try:
         resp, time_resp = get_match_fonbet(match_id, proxies_fonbet, proxy, time_out, pair_mathes)
-        # Очистим дстарые данные
-        # if bets_fonbet.get(key_id):
-        # bets_fonbet[key_id] = dict()
-        time_start_proc = time.time()
 
-        # if key_id in (str(12879839), str(12801238), str(12801237), str(12801241)):
-        #     f = open('fonbet.txt', 'a+')
-        #     f.write(json.dumps(resp, ensure_ascii=False))
-        #     f.write('\n')
-        #     # prnts('fonbet: '+str(json.dumps(resp, ensure_ascii=False)))
+        time_start_proc = time.time()
 
         TT = []
         for bet in [TTO, TTU, TT1O, TT1U, TT2O, TT2U]:
@@ -200,7 +192,7 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
                 except Exception as e:
                     prnts('err util_fonbet scs: ' + str(match_id) + ' score=' + str(score) + ' ' + str(e))
 
-                timer = event.get('timer','00:00')
+                timer = event.get('timer', '00:00')
                 minute = event.get('timerSeconds', 0) / 60
 
                 if minute >= MINUTE_COMPLITE:
@@ -279,57 +271,21 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
                                 for vct in VICTS:
                                     coef = half + str(vct[0])  # + num_team
                                     if str(vct[1]) == factorId:
-                                        hist5 = bets_fonbet[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get(
-                                            '4',
-                                            0)
-                                        hist4 = bets_fonbet[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get(
-                                            '3',
-                                            0)
-                                        hist3 = bets_fonbet[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get(
-                                            '2',
-                                            0)
-                                        hist2 = bets_fonbet[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get(
-                                            '1',
-                                            0)
-                                        hist1 = bets_fonbet[key_id].get('kofs', {}).get(coef, {}).get('value', 0)
+                                        kof_order = bets_fonbet[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('order', [])
+                                        kof_order.append(value)
 
-                                        cof_is_change = True if hist1 != value else False
+                                        cof_is_change = True if kof_order[0:1] != kof_order[1:2] else False
 
                                         if cof_is_change and not kof_is_block:
-                                            avg_change = \
-                                                bets_fonbet[key_id]. \
-                                                    get('kofs', {}). \
-                                                    get(coef, {}). \
-                                                    get('hist', {}). \
-                                                    get('avg_change', [])
-                                            avg_change.append(round(time.time() -
-                                                                    bets_fonbet[key_id].
-                                                                    get('kofs', {}).
-                                                                    get(coef, {}).
-                                                                    get('hist', {}).
-                                                                    get('time_change', time.time())))
+                                            avg_change = bets_fonbet[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('avg_change', [])
+                                            avg_change.append(round(time.time() - bets_fonbet[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('time_change', time.time())))
                                             time_change = round(time.time())
                                         elif not kof_is_block:
-                                            avg_change = \
-                                                bets_fonbet[key_id]. \
-                                                    get('kofs', {}). \
-                                                    get(coef, {}). \
-                                                    get('hist', {}). \
-                                                    get('avg_change', [])
-                                            time_change = \
-                                                bets_fonbet[key_id]. \
-                                                    get('kofs', {}). \
-                                                    get(coef, {}). \
-                                                    get('hist', {}). \
-                                                    get('time_change', round(time.time()))
+                                            avg_change = bets_fonbet[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('avg_change', [])
+                                            time_change = bets_fonbet[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('time_change', round(time.time()))
 
                                         if kof_is_block:
-                                            avg_change = \
-                                                bets_fonbet[key_id]. \
-                                                    get('kofs', {}). \
-                                                    get(coef, {}). \
-                                                    get('hist', {}). \
-                                                    get('avg_change', [])
+                                            avg_change = bets_fonbet[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('avg_change', [])
                                             time_change = round(time.time())
 
                                         bets_fonbet[key_id]['kofs'].update(
@@ -346,11 +302,7 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
                                                         'hist': {
                                                             'time_change': time_change,
                                                             'avg_change': avg_change,
-                                                            '1': hist1,
-                                                            '2': hist2,
-                                                            '3': hist3,
-                                                            '4': hist4,
-                                                            '5': hist5
+                                                            'order': kof_order
                                                         }
                                                     }
                                             }
@@ -359,57 +311,23 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
                                 for stake in TT:
                                     coef = half + str(stake[0].format(p))  # + num_team
                                     if str(stake[1]) == factorId:
-                                        hist5 = bets_fonbet[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get(
-                                            '4',
-                                            0)
-                                        hist4 = bets_fonbet[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get(
-                                            '3',
-                                            0)
-                                        hist3 = bets_fonbet[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get(
-                                            '2',
-                                            0)
-                                        hist2 = bets_fonbet[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get(
-                                            '1',
-                                            0)
-                                        hist1 = bets_fonbet[key_id].get('kofs', {}).get(coef, {}).get('value', 0)
+                                        kof_order = bets_fonbet[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('order', [])
+                                        kof_order.append(value)
 
-                                        cof_is_change = True if hist1 != value else False
+                                        cof_is_change = True if kof_order[0:1] != kof_order[1:2] else False
 
                                         if cof_is_change and not kof_is_block:
-                                            avg_change = \
-                                                bets_fonbet[key_id]. \
-                                                    get('kofs', {}). \
-                                                    get(coef, {}). \
-                                                    get('hist', {}). \
-                                                    get('avg_change', [])
-                                            avg_change.append(round(time.time() -
-                                                                    bets_fonbet[key_id].
-                                                                    get('kofs', {}).
-                                                                    get(coef, {}).
-                                                                    get('hist', {}).
-                                                                    get('time_change', round(time.time()))))
+                                            avg_change = bets_fonbet[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('avg_change', [])
+                                            avg_change.append(
+                                                round(time.time() - bets_fonbet[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('time_change', round(time.time())))
+                                            )
                                             time_change = round(time.time())
                                         elif not kof_is_block:
-                                            avg_change = \
-                                                bets_fonbet[key_id]. \
-                                                    get('kofs', {}). \
-                                                    get(coef, {}). \
-                                                    get('hist', {}). \
-                                                    get('avg_change', [])
-                                            time_change = \
-                                                bets_fonbet[key_id]. \
-                                                    get('kofs', {}). \
-                                                    get(coef, {}). \
-                                                    get('hist', {}). \
-                                                    get('time_change', round(time.time()))
+                                            avg_change = bets_fonbet[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('avg_change', [])
+                                            time_change = bets_fonbet[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('time_change', round(time.time()))
 
                                         if kof_is_block:
-                                            avg_change = \
-                                                bets_fonbet[key_id]. \
-                                                    get('kofs', {}). \
-                                                    get(coef, {}). \
-                                                    get('hist', {}). \
-                                                    get('avg_change', [])
+                                            avg_change = bets_fonbet[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('avg_change', [])
                                             time_change = round(time.time())
 
                                         bets_fonbet[key_id]['kofs'].update(
@@ -426,11 +344,7 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
                                                         'hist': {
                                                             'time_change': time_change,
                                                             'avg_change': avg_change,
-                                                            '1': hist1,
-                                                            '2': hist2,
-                                                            '3': hist3,
-                                                            '4': hist4,
-                                                            '5': hist5
+                                                            'order': kof_order
                                                         }
                                                     }}
                                         )
