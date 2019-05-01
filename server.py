@@ -19,8 +19,11 @@ def run_server(SERVER_IP, data_json, pair_mathes):
             super().__init__(*args, **kwargs)
 
         def do_GET(self):
-            ip_adr = str(self.client_address[0])
-            print()
+            ip_adr = ''
+            try:
+                ip_adr = str(self.client_address[0])
+            except Exception as e:
+                print(str(e))
             if self.path == '/get_forks':
                 self.send_response(200)
                 self.send_header('content-type', 'application/json')
