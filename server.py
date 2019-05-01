@@ -4,7 +4,6 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 import platform
 import threading
-import time
 
 mutex = threading.Lock()
 
@@ -29,20 +28,6 @@ def run_server(SERVER_IP, data_json, pair_mathes):
                 self.send_response(200)
                 self.send_header('content-type', 'application/json')
                 self.end_headers()
-
-                # attempt create long polling
-                x = 0
-                while len(self.data) == 2:
-                    print('***********************')
-                    print('time.sleep: ' + str(x))
-                    print(' ')
-                    x += 1
-                    if x >= 60:
-                        break
-                    time.sleep(1)
-                print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-                print('time.sleep, go: ' + str(len(self.data)))
-                print(' ')
                 self.wfile.write(str(self.data).encode('utf-8'))
             elif self.path == '/get_cnt_matches':
                 self.send_response(200)
