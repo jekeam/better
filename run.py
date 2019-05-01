@@ -613,7 +613,7 @@ if __name__ == '__main__':
     started_stat_req = threading.Thread(target=stat_req, args=(stat_req_olimp, stat_req_fonbet))
     started_stat_req.start()
 
-    server = threading.Thread(target=run_server, args=(SERVER_IP, forks,))
+    server = threading.Thread(target=run_server, args=(SERVER_IP, forks, pair_mathes))
     server.start()
 
     proxy_saver.join()

@@ -1,10 +1,11 @@
-#coding:utf-8
+# coding:utf-8
 from functools import partial
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 import platform
 
-def run_server(SERVER_IP, data_json):
+
+def run_server(SERVER_IP, data_json, pair_mathes):
     class HttpProcessor(BaseHTTPRequestHandler):
         def __init__(self, data_json, bar, qux, *args, **kwargs):
             self.data = json.dumps(data_json, ensure_ascii=False)
@@ -15,6 +16,8 @@ def run_server(SERVER_IP, data_json):
             super().__init__(*args, **kwargs)
 
         def do_GET(self):
+            print(self.path)
+            print(len(pair_mathes))
             self.send_response(200)
             self.send_header('content-type', 'application/json')
             self.end_headers()
