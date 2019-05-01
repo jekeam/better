@@ -32,7 +32,7 @@ def run_server(SERVER_IP, data_json, pair_mathes):
 
                 # attempt create long polling
                 x = 0
-                while self.data == {}:
+                while len(self.data) == 2:
                     print('***********************')
                     print('time.sleep: ' + str(self.data))
                     print(' ')
