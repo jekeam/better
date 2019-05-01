@@ -41,7 +41,7 @@ def run_server(SERVER_IP, data_json, pair_mathes):
                         break
                     time.sleep(1)
                 print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-                print('time.sleep, go: ' + str(self.data))
+                print('time.sleep, go: ' + str(len(self.data)))
                 print(' ')
                 self.wfile.write(str(self.data).encode('utf-8'))
             elif self.path == '/get_cnt_matches':
