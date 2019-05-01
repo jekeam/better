@@ -33,12 +33,16 @@ def run_server(SERVER_IP, data_json, pair_mathes):
                 # attempt create long polling
                 x = 0
                 while not self.data:
+                    print('***********************')
                     print('time.sleep: ' + str(self.data))
+                    print(' ')
                     x += 1
                     if x >= 60:
                         break
                     time.sleep(1)
+                print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
                 print('time.sleep, go: ' + str(self.data))
+                print(' ')
                 self.wfile.write(str(self.data).encode('utf-8'))
             elif self.path == '/get_cnt_matches':
                 self.send_response(200)
