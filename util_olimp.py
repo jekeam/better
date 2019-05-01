@@ -345,8 +345,8 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
                     'score': score,
                     'time_start': timer,
                     'time_req': round(time.time()),
-                    'time_change_total': round(time.time()),
-                    'avg_change_total': [],
+                    # 'time_change_total': round(time.time()),
+                    # 'avg_change_total': [],
                     'kofs': {}
                 }
 
@@ -381,17 +381,24 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
                                            else to_abb(c.replace(' ', ''))
                                            for c in [key_r]
                                        ][0])
+
                             kof_order = bets_olimp[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('order', [])
-                            kof_order.append(d.get('v', ''))
 
-                            cof_is_change = True if kof_order[0:1] != kof_order[1:2] else False
+                            cof_is_change = False
+                            try:
+                                if d.get('v', 0) != kof_order[-1:][0]:
+                                    kof_order.append(d.get('v', 0))
+                                    cof_is_change = True
+                            except IndexError:
+                                kof_order.append(d.get('v', 0))
 
+                            avg_change = bets_olimp[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('avg_change', [])
                             if cof_is_change:
-                                avg_change = bets_olimp[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('avg_change', [])
-                                avg_change.append(round(time.time() - bets_olimp[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('time_change', time.time())))
+                                sec_passed = round(time.time() - bets_olimp[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('time_change', time.time()))
+                                if sec_passed:
+                                    avg_change.append(sec_passed)
                                 time_change = round(time.time())
                             else:
-                                avg_change = bets_olimp[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('avg_change', [])
                                 time_change = bets_olimp[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('time_change', round(time.time()))
 
                             try:
@@ -400,9 +407,9 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
                                         coef:
                                             {
                                                 'time_req': round(time.time()),
-                                                'value': d.get('v', ''),
+                                                'value': d.get('v', 0),
                                                 'apid': d.get('apid', ''),
-                                                'factor': d.get('v', ''),
+                                                'factor': d.get('v', 0),
                                                 'sport_id': skId,
                                                 'event': match_id,
                                                 'vector': get_vector(coef, sc1, sc2),
@@ -422,14 +429,14 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
             except:
                 pass
 
-        for val in bets_olimp.get(key_id, {}).get('kofs', {}).values():
-            time_change_kof = val.get('hist', {}).get('time_change')
-            time_change_tot = bets_olimp.get(key_id, {}).get('time_change_total')
-            avg_change_total = bets_olimp.get(key_id, {}).get('avg_change_total', [])
-            if round(time_change_tot) < round(time_change_kof):
-                avg_change_total.append(round(time_change_kof - time_change_tot))
-                bets_olimp[key_id].update({'time_change_total': round(time_change_kof)})
-                bets_olimp[key_id].update({'avg_change_total': avg_change_total})
+        # for val in bets_olimp.get(key_id, {}).get('kofs', {}).values():
+        #     time_change_kof = val.get('hist', {}).get('time_change')
+        #     time_change_tot = bets_olimp.get(key_id, {}).get('time_change_total')
+        #     avg_change_total = bets_olimp.get(key_id, {}).get('avg_change_total', [])
+        #     if round(time_change_tot) < round(time_change_kof):
+        #         avg_change_total.append(round(time_change_kof - time_change_tot))
+        #         bets_olimp[key_id].update({'time_change_total': round(time_change_kof)})
+        #         bets_olimp[key_id].update({'avg_change_total': avg_change_total})
 
         try:
             for i, j in bets_olimp.get(key_id, {}).get('kofs', {}).copy().items():

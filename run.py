@@ -407,10 +407,10 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
                                 'kof_fonbet': k_fonbet,
                                 'time_break_fonbet': time_break_fonbet,
                                 'period': period,
-                                'ol_time_change_total': math_json_olimp.get('time_change_total', 0),
-                                'ol_avg_change_total': math_json_olimp.get('avg_change_total', []),
-                                'fb_time_change_total': math_json_fonbet.get('time_change_total', 0),
-                                'fb_avg_change_total': math_json_fonbet.get('avg_change_total', []),
+                                # 'ol_time_change_total': math_json_olimp.get('time_change_total', 0),
+                                # 'ol_avg_change_total': math_json_olimp.get('avg_change_total', []),
+                                # 'fb_time_change_total': math_json_fonbet.get('time_change_total', 0),
+                                # 'fb_avg_change_total': math_json_fonbet.get('avg_change_total', []),
                                 'live_fork': live_fork,
                                 'live_fork_total': forks_meta.get(bet_key, dict()).get('live_fork_total', 0) + live_fork
 
@@ -435,9 +435,9 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
                                                 'minute;ol_kof;ol_avg_change;fb_kof;fb_avg_change;'
                                                 'time_break_fonbet;'
                                                 'period;'
-                                                'ol_avg_change_total;fb_avg_change_total;'
+                                                # 'ol_avg_change_total;fb_avg_change_total;'
                                                 'ol_kof_order;'
-                                                'fb_kof_order;'
+                                                'fb_kof_order'
                                                 '\n'
                                             )
                                     if os.path.isfile(file_forks):
@@ -448,8 +448,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
                                                 str(math_json_olimp.get('time_req', '')) + ';' +
                                                 str(math_json_fonbet.get('time_req', '')) + ';' +
                                                 str(live_fork) + ';' +
-                                                str(forks_meta.get(bet_key, dict()).get('live_fork_total', 0)
-                                                    + live_fork) + ';' +
+                                                str(forks_meta.get(bet_key, dict()).get('live_fork_total', 0) + live_fork) + ';' +
                                                 str(bet_key.split('@')[0]) + ';' + str(bet_key.split('@')[1]) + ';' +
                                                 str(bet_key.split('@')[2]) + ';' + str(bet_key.split('@')[3]) + ';' +
                                                 math_json_olimp.get('name', '') + ';' + str(L) + ';' +
@@ -465,8 +464,8 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
                                                 str(k_fonbet.get('hist', {}).get('avg_change', [])) + ';' +
                                                 str(time_break_fonbet) + ';' +
                                                 str(period) + ';' +
-                                                str(math_json_olimp.get('avg_change_total', [])) + ';' +
-                                                str(math_json_fonbet.get('avg_change_total', [])) + ';' +
+                                                # str(math_json_olimp.get('avg_change_total', [])) + ';' +
+                                                # str(math_json_fonbet.get('avg_change_total', [])) + ';' +
                                                 str(k_olimp.get('hist', {}).get('order', [])) + ';' +
                                                 str(k_fonbet.get('hist', {}).get('order', [])) +
                                                 '\n'
