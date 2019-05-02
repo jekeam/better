@@ -386,12 +386,23 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
                                 round(math_json_fonbet.get('minute', ''), 2) > 45.0:
                             period = 2
 
-                        # TODO: котровка, например с олимпа ушла, и осталась брошена не в 0, в результате в bets_olimp, показывает неактуальную вилку. Надо или тут разбирать и удалять либо там
+                        # created_fork = forks.get(bet_key, {}).get('created_fork', '')
+                        # ol_time_chage = k_olimp.get('hist', {}).get('time_change')
+                        # fb_time_chage = k_fonbet.get('hist', {}).get('time_change')
+                        # if ol_time_chage and fb_time_chage:
+                        #     if ol_time_chage > fb_time_chage:
+                        #         created_fork = 'olimp'
+                        #     elif fb_time_chage > ol_time_chage:
+                        #         created_fork = 'fonbet'
+
+                        # TODO: котровка, например с олимпа ушла, и осталась брошена не в 0, в результате в bets_olimp, показывает неактуальную вилку. Надо или тут разбирать и удалять либо там?
+                        # UPD 02/05/19 - Вроде не актуально
                         if forks.get(bet_key, '') != '' and deff_time < 6:
 
                             live_fork = round(time.time() - forks.get(bet_key, {}).get('create_fork'))
 
                             forks[bet_key].update({
+                                # 'created_fork': created_fork,
                                 'time_last_upd': cur_time,
                                 'name': math_json_fonbet.get('name', ''),
                                 'name_rus': math_json_olimp.get('name', ''),
@@ -429,14 +440,16 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
                                     if not os.path.isfile(file_forks):
                                         with open(file_forks, 'w', encoding='utf-8') as csv:
                                             csv.write(
-                                                'create_fork;cut_time;ol_time;fb_time;live_fork;live_fork_total;'
+                                                'time_create;created_fork;cut_time;ol_time;fb_time;live_fork;live_fork_total;'
                                                 'match_ol;match_fb;kof_ol;kof_fb;name;l;bk1_score;bk2_score;'
                                                 'vect_ol;vect_fb;time;'
                                                 'minute;ol_kof;ol_avg_change;fb_kof;fb_avg_change;'
                                                 'time_break_fonbet;'
                                                 'period;'
                                                 # 'ol_avg_change_total;fb_avg_change_total;'
+                                                'ol_time_change;'
                                                 'ol_kof_order;'
+                                                'fb_time_change;'
                                                 'fb_kof_order'
                                                 '\n'
                                             )
@@ -444,6 +457,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
                                         with open(file_forks, 'a', encoding='utf-8') as csv:
                                             csv.write(
                                                 str(forks.get(bet_key).get('create_fork')) + ';' +
+                                                str(forks.get(bet_key).get('created_fork')) + ';' +
                                                 str(cur_time) + ';' +
                                                 str(math_json_olimp.get('time_req', '')) + ';' +
                                                 str(math_json_fonbet.get('time_req', '')) + ';' +
@@ -466,11 +480,21 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
                                                 str(period) + ';' +
                                                 # str(math_json_olimp.get('avg_change_total', [])) + ';' +
                                                 # str(math_json_fonbet.get('avg_change_total', [])) + ';' +
-                                                str(k_olimp.get('hist', {}).get('order', [])) + ';' +
-                                                str(k_fonbet.get('hist', {}).get('order', [])) +
+                                                str(k_olimp.get('hist', {}).get('time_change', '')) + ';' +
+                                                str(list(reversed(k_olimp.get('hist', {}).get('order', [])))) + ';' +
+                                                str(k_fonbet.get('hist', {}).get('time_change', '')) + ';' +
+                                                str(list(reversed(k_fonbet.get('hist', {}).get('order', [])))) +
                                                 '\n'
                                             )
                         else:
+                            created_fork = ''
+                            ol_time_chage = k_olimp.get('hist', {}).get('time_change')
+                            fb_time_chage = k_fonbet.get('hist', {}).get('time_change')
+                            if ol_time_chage and fb_time_chage:
+                                if ol_time_chage > fb_time_chage:
+                                    created_fork = 'olimp'
+                                if fb_time_chage > ol_time_chage:
+                                    created_fork = 'fonbet'
 
                             forks[bet_key] = {
                                 'time_last_upd': cur_time,
@@ -490,7 +514,8 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
                                 'period': period,
                                 'live_fork': 0,
                                 'live_fork_total': forks_meta.get(bet_key, dict()).get('live_fork_total', 0),
-                                'create_fork': round(max(ol_time_req, fb_time_req))
+                                'create_fork': round(max(ol_time_req, fb_time_req)),
+                                'created_fork': created_fork
                             }
                     else:
                         try:

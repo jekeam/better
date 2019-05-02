@@ -14,13 +14,13 @@ if 1 == 1:
     df = df.round({'minute': 2})
 
     idx = df.groupby(
-        ['create_fork', 'kof_ol', 'kof_fb', 'name'], sort=False
+        ['time_create', 'kof_ol', 'kof_fb', 'name'], sort=False
     )['live_fork'].transform('max') == df['live_fork']
 
     df = df[idx]
 
     idx = df.groupby(
-        ['create_fork', 'kof_ol', 'kof_fb', 'name'], sort=False
+        ['time_create', 'kof_ol', 'kof_fb', 'name'], sort=False
     )['minute'].transform('min') == df['minute']
 
     df[idx].to_csv(cur_date_str + '_forks_simple.csv', encoding='utf-8', sep=';')
