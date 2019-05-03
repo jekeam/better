@@ -382,24 +382,23 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
                                            for c in [key_r]
                                        ][0])
 
+                            value = d.get('v', 0)
+
                             kof_order = bets_olimp[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('order', [])
-
-                            cof_is_change = False
-                            try:
-                                if d.get('v', 0) != kof_order[-1:][0]:
-                                    kof_order.append(d.get('v', 0))
-                                    cof_is_change = True
-                            except IndexError:
-                                kof_order.append(d.get('v', 0))
-
+                            time_change = bets_olimp[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('time_change', time.time())
                             avg_change = bets_olimp[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('avg_change', [])
-                            if cof_is_change:
-                                sec_passed = round(time.time() - bets_olimp[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('time_change', time.time()))
-                                if sec_passed:
-                                    avg_change.append(sec_passed)
-                                time_change = round(time.time())
-                            else:
-                                time_change = bets_olimp[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('time_change', round(time.time()))
+
+                            try:
+                                if value != kof_order[-1]:
+                                    kof_order.append(value)
+                                    avg_change.append(round(time.time() - time_change))
+                                    time_change = time.time()
+                                elif value == kof_order[-1]:
+                                    avg_change[-1] = round(time.time() - time_change)
+                            except IndexError:
+                                # firs
+                                kof_order.append(value)
+                                avg_change.append(0)
 
                             try:
                                 bets_olimp[key_id]['kofs'].update(
@@ -407,7 +406,7 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
                                         coef:
                                             {
                                                 'time_req': round(time.time()),
-                                                'value': d.get('v', 0),
+                                                'value': value,
                                                 'apid': d.get('apid', ''),
                                                 'factor': d.get('v', 0),
                                                 'sport_id': skId,

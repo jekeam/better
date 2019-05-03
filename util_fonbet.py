@@ -271,27 +271,22 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
                                 for vct in VICTS:
                                     coef = half + str(vct[0])  # + num_team
                                     if str(vct[1]) == factorId:
+
                                         kof_order = bets_fonbet[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('order', [])
-
-                                        cof_is_change = False
-                                        try:
-                                            if value != kof_order[-1:][0]:
-                                                kof_order.append(value)
-                                                cof_is_change = True
-                                        except IndexError:
-                                            kof_order.append(value)
-
+                                        time_change = bets_fonbet[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('time_change', time.time())
                                         avg_change = bets_fonbet[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('avg_change', [])
-                                        if cof_is_change:
-                                            sec_passed = round(time.time() - bets_fonbet[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('time_change', time.time()))
-                                            if sec_passed:
-                                                avg_change.append(sec_passed)
-                                            time_change = round(time.time())
-                                        else:
-                                            if kof_is_block:
-                                                time_change = round(time.time())
-                                            else:
-                                                time_change = bets_fonbet[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('time_change', round(time.time()))
+
+                                        try:
+                                            if value != kof_order[-1]:
+                                                kof_order.append(value)
+                                                avg_change.append(round(time.time() - time_change))
+                                                time_change = time.time()
+                                            elif value == kof_order[-1]:
+                                                avg_change[-1] = round(time.time() - time_change)
+                                        except IndexError:
+                                            # firs
+                                            kof_order.append(value)
+                                            avg_change.append(0)
 
                                         bets_fonbet[key_id]['kofs'].update(
                                             {
@@ -316,27 +311,22 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
                                 for stake in TT:
                                     coef = half + str(stake[0].format(p))  # + num_team
                                     if str(stake[1]) == factorId:
+
                                         kof_order = bets_fonbet[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('order', [])
-
-                                        cof_is_change = False
-                                        try:
-                                            if value != kof_order[-1:][0]:
-                                                kof_order.append(value)
-                                                cof_is_change = True
-                                        except IndexError:
-                                            kof_order.append(value)
-
+                                        time_change = bets_fonbet[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('time_change', time.time())
                                         avg_change = bets_fonbet[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('avg_change', [])
-                                        if cof_is_change:
-                                            sec_passed = round(time.time() - bets_fonbet[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('time_change', time.time()))
-                                            if sec_passed:
-                                                avg_change.append(sec_passed)
-                                            time_change = round(time.time())
-                                        else:
-                                            if kof_is_block:
-                                                time_change = round(time.time())
-                                            else:
-                                                time_change = bets_fonbet[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('time_change', round(time.time()))
+
+                                        try:
+                                            if value != kof_order[-1]:
+                                                kof_order.append(value)
+                                                avg_change.append(round(time.time() - time_change))
+                                                time_change = time.time()
+                                            elif value == kof_order[-1]:
+                                                avg_change[-1] = round(time.time() - time_change)
+                                        except IndexError:
+                                            # firs
+                                            kof_order.append(value)
+                                            avg_change.append(0)
 
                                         bets_fonbet[key_id]['kofs'].update(
                                             {
