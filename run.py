@@ -481,9 +481,9 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
                                                 # str(math_json_olimp.get('avg_change_total', [])) + ';' +
                                                 # str(math_json_fonbet.get('avg_change_total', [])) + ';' +
                                                 str(k_olimp.get('hist', {}).get('time_change', '')) + ';' +
-                                                str(list(reversed(k_olimp.get('hist', {}).get('order', [])))) + ';' +
+                                                str(k_olimp.get('hist', {}).get('order', [])) + ';' +
                                                 str(k_fonbet.get('hist', {}).get('time_change', '')) + ';' +
-                                                str(list(reversed(k_fonbet.get('hist', {}).get('order', [])))) +
+                                                str(k_fonbet.get('hist', {}).get('order', [])) +
                                                 '\n'
                                             )
                         else:
