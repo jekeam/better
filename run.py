@@ -531,7 +531,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
                         pass
         if DEBUG:
             time.sleep(5)
-        time.sleep(0.1)
+        time.sleep(0.5)
 
 
 def stat_req(stat_req_olimp, stat_req_fonbet):
