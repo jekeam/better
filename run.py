@@ -258,7 +258,7 @@ def starter_bets(
                 )
                 start_seeker_fonbet_bets_by_id.start()
 
-        time.sleep(5)
+        time.sleep(20)
 
 
 def compare_teams(team1_bk1, team2_bk1, team1_bk2, team2_bk2):
@@ -397,7 +397,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
 
                         # TODO: котровка, например с олимпа ушла, и осталась брошена не в 0, в результате в bets_olimp, показывает неактуальную вилку. Надо или тут разбирать и удалять либо там?
                         # UPD 02/05/19 - Вроде не актуально
-                        if forks.get(bet_key, '') != '' and deff_time < 6:
+                        if forks.get(bet_key, '') != '' and deff_time < 3.8:
 
                             live_fork = round(time.time() - forks.get(bet_key, {}).get('create_fork'))
 
@@ -440,7 +440,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
                                     if not os.path.isfile(file_forks):
                                         with open(file_forks, 'w', encoding='utf-8') as csv:
                                             csv.write(
-                                                'time_create;created_fork;cut_time;ol_time;fb_time;live_fork;live_fork_total;'
+                                                'time;time_create;created_fork;cut_time;ol_time;fb_time;live_fork;live_fork_total;'
                                                 'match_ol;match_fb;kof_ol;kof_fb;name;l;bk1_score;bk2_score;'
                                                 'vect_ol;vect_fb;time;'
                                                 'minute;ol_kof;ol_avg_change;fb_kof;fb_avg_change;'
@@ -456,6 +456,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
                                     if os.path.isfile(file_forks):
                                         with open(file_forks, 'a', encoding='utf-8') as csv:
                                             csv.write(
+                                                str(round(time.time())) + ';' +
                                                 str(forks.get(bet_key).get('create_fork')) + ';' +
                                                 str(forks.get(bet_key).get('created_fork')) + ';' +
                                                 str(cur_time) + ';' +
@@ -514,7 +515,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
                                 'period': period,
                                 'live_fork': 0,
                                 'live_fork_total': forks_meta.get(bet_key, dict()).get('live_fork_total', 0),
-                                'create_fork': round(max(ol_time_req, fb_time_req)),
+                                'create_fork': round(max(ol_time_chage, fb_time_chage)),
                                 'created_fork': created_fork
                             }
                     else:
@@ -529,9 +530,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
                         forks.pop(bet_key)
                     except:
                         pass
-        if DEBUG:
-            time.sleep(5)
-        time.sleep(0.5)
+        time.sleep(1)
 
 
 def stat_req(stat_req_olimp, stat_req_fonbet):
@@ -548,7 +547,7 @@ def stat_req(stat_req_olimp, stat_req_fonbet):
                   ' max:' + str(max(stat_req_olimp)) +
                   ' mode:' + str(round(find_max_mode(stat_req_olimp), 2)) +
                   ' median:' + str(round(median(stat_req_olimp), 2)))
-        time.sleep(15)
+        time.sleep(60)
 
 
 if __name__ == '__main__':
@@ -562,10 +561,7 @@ if __name__ == '__main__':
     gen_proxi_olimp = createBatchGenerator(get_next_proxy(copy.deepcopy(proxies_olimp)))
     gen_proxi_fonbet = createBatchGenerator(get_next_proxy(copy.deepcopy(proxies_fonbet)))
 
-    proxy_saver = threading.Thread(
-        target=start_proxy_saver,
-        args=(proxies_olimp, proxies_fonbet, proxy_filename_olimp, proxy_filename_fonbet,)
-    )
+    proxy_saver = threading.Thread(target=start_proxy_saver, args=(proxies_olimp, proxies_fonbet, proxy_filename_olimp, proxy_filename_fonbet,))
     proxy_saver.start()
 
     # json by mathes
@@ -583,45 +579,23 @@ if __name__ == '__main__':
     stat_req_olimp = []
     stat_req_fonbet = []
 
-    olimp_seeker_matchs = threading.Thread(
-        target=start_seeker_matchs_olimp,
-        args=(proxies_olimp, gen_proxi_olimp, arr_olimp_matchs)
-    )
+    olimp_seeker_matchs = threading.Thread(target=start_seeker_matchs_olimp, args=(proxies_olimp, gen_proxi_olimp, arr_olimp_matchs))
     olimp_seeker_matchs.start()
 
-    fonbet_seeker_matchs = threading.Thread(
-        target=start_seeker_matchs_fonbet,
-        args=(proxies_fonbet, gen_proxi_fonbet, arr_fonbet_matchs)
-    )
+    fonbet_seeker_matchs = threading.Thread(target=start_seeker_matchs_fonbet, args=(proxies_fonbet, gen_proxi_fonbet, arr_fonbet_matchs))
     fonbet_seeker_matchs.start()
 
     pair_mathes = []
-    compare_matches = threading.Thread(
-        target=start_compare_matches,
-        args=(pair_mathes, arr_olimp_matchs, arr_fonbet_matchs, mathes_complite)
-    )
+    compare_matches = threading.Thread(target=start_compare_matches, args=(pair_mathes, arr_olimp_matchs, arr_fonbet_matchs, mathes_complite))
     compare_matches.start()
 
     mathes_id_is_work = []
     starter_bets = threading.Thread(
         target=starter_bets,
         args=(
-            bets_olimp,
-            bets_fonbet,
-            pair_mathes,
-            mathes_complite,
-            mathes_id_is_work,
-            proxies_olimp,
-            gen_proxi_olimp,
-            proxies_fonbet,
-            gen_proxi_fonbet,
-            stat_req_olimp,
-            stat_req_fonbet
-        )
+            bets_olimp, bets_fonbet, pair_mathes, mathes_complite, mathes_id_is_work, proxies_olimp, gen_proxi_olimp, proxies_fonbet, gen_proxi_fonbet, stat_req_olimp, stat_req_fonbet)
     )
     starter_bets.start()
-
-    time.sleep(15)
 
     starter_forks = threading.Thread(target=get_forks, args=(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet))
     starter_forks.start()

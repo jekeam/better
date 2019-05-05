@@ -371,8 +371,7 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
                                 in d.get('n', '') \
                                 or 'Ничья' \
                                 in d.get('n', ''):
-                            key_r = d.get('n', '').replace(resp.get('c1', ''), 'Т1') \
-                                .replace(resp.get('c2', ''), 'Т2')
+                            key_r = d.get('n', '').replace(resp.get('c1', ''), 'Т1').replace(resp.get('c2', ''), 'Т2')
                             coef = str([
                                            abbreviations[c.replace(' ', '')]
                                            if c.replace(' ', '') in abbreviations.keys()
@@ -439,14 +438,11 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
 
         try:
             for i, j in bets_olimp.get(key_id, {}).get('kofs', {}).copy().items():
-                if round(float(time.time() - float(j.get('time_req', 0)))) > 7 and j.get('value', 0) > 0:
+                if round(float(time.time() - float(j.get('time_req', 0)))) > 2.8 and j.get('value', 0) > 0:
                     try:
                         bets_olimp[key_id]['kofs'][i]['value'] = 0
                         bets_olimp[key_id]['kofs'][i]['factor'] = 0
-                        prnts(
-                            'Олимп, данные по котировке из БК не получены более 7 сек., знач. выставил в 0: ' +
-                            key_id + ' ' + str(i), 'hide'
-                        )
+                        prnts('Олимп, данные по котировке из БК не получены более 2.8 сек., знач. выставил в 0: ' + key_id + ' ' + str(i), 'hide')
                     except Exception as e:
                         prnts('Олимп, ошибка 1 при удалении старой котирофки: ' + str(e))
         except Exception as e:
