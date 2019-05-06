@@ -429,9 +429,32 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
             try:
                 for i, j in bets_olimp.get(key_id, {}).get('kofs', {}).copy().items():
                     try:
+
+                        kof_order = bets_olimp[key_id].get('kofs', {}).get(i, {}).get('hist', {}).get('order', [])
+                        time_change = bets_olimp[key_id].get('kofs', {}).get(i, {}).get('hist', {}).get('time_change', time.time())
+                        avg_change = bets_olimp[key_id].get('kofs', {}).get(i, {}).get('hist', {}).get('avg_change', [])
+
+                        try:
+                            if 0 != kof_order[-1]:
+                                kof_order.append(0)
+                                avg_change.append(round(time.time() - time_change))
+                                time_change = time.time()
+                            elif 0 == kof_order[-1]:
+                                avg_change[-1] = round(time.time() - time_change)
+                        except IndexError:
+                            # firs
+                            kof_order.append(0)
+                            avg_change.append(0)
+
                         bets_olimp[key_id]['kofs'][i]['value'] = 0
                         bets_olimp[key_id]['kofs'][i]['factor'] = 0
-                        prnts('Олимп, матч заблокирован, знач. выставил в 0: ' + key_id + ' ' + str(i), 'hide')
+
+                        bets_olimp[key_id]['kofs'][i]['time_req'] = round(time.time())
+                        bets_olimp[key_id]['kofs'][i]['hist']['avg_change'] = avg_change
+                        bets_olimp[key_id]['kofs'][i]['hist']['time_change'] = time_change
+                        bets_olimp[key_id]['kofs'][i]['hist']['kof_order'] = kof_order
+
+                        prnts('Олимп, матч заблокирован, знач. выставил в 0: ' + key_id + ' ' + str(i))  # , 'hide')
                     except Exception as e:
                         prnts('Олимп, ошибка 00 при удалении старой котирофки: ' + str(e))
             except Exception as e:
