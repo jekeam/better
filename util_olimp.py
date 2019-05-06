@@ -422,10 +422,21 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
                             except:
                                 pass
         else:
+            # try:
+            #     bets_olimp.pop(key_id)
+            # except:
+            #     pass
             try:
-                bets_olimp.pop(key_id)
-            except:
-                pass
+                for i, j in bets_olimp.get(key_id, {}).get('kofs', {}).copy().items():
+                    try:
+                        bets_olimp[key_id]['kofs'][i]['value'] = 0
+                        bets_olimp[key_id]['kofs'][i]['factor'] = 0
+                        prnts('Олимп, матч заблокирован, знач. выставил в 0: ' + key_id + ' ' + str(i), 'hide')
+                    except Exception as e:
+                        prnts('Олимп, ошибка 00 при удалении старой котирофки: ' + str(e))
+            except Exception as e:
+                prnts('Олимп, ошибка 0 при удалении установке в 0 котирофки: ' + str(e))
+            return time_resp + (time.time() - time_start_proc)
 
         # for val in bets_olimp.get(key_id, {}).get('kofs', {}).values():
         #     time_change_kof = val.get('hist', {}).get('time_change')
