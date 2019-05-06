@@ -453,8 +453,8 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
                         bets_olimp[key_id]['kofs'][i]['hist']['avg_change'] = avg_change
                         bets_olimp[key_id]['kofs'][i]['hist']['time_change'] = time_change
                         bets_olimp[key_id]['kofs'][i]['hist']['kof_order'] = kof_order
-
-                        prnts('Олимп, матч заблокирован, знач. выставил в 0: ' + key_id + ' ' + str(i))  # , 'hide')
+                        if kof_order[-1]:
+                            prnts('Олимп, матч заблокирован, знач. выставил в 0: ' + key_id + ' ' + str(i), 'hide')
                     except Exception as e:
                         prnts('Олимп, ошибка 00 при удалении старой котирофки: ' + str(e))
             except Exception as e:
