@@ -140,8 +140,10 @@ def start_seeker_top_matchs_fonbet(gen_proxi_fonbet, arr_fonbet_top_matchs, pair
                 if event.get('skId') == 1:
                     match_id = event.get('id')
                     if match_id not in arr_fonbet_top_matchs and match_id in list_pair_mathes:
+                        prnts('TOP матч добавлен: ' + str(match_id) + ', ' + event.get('eventName'))
                         arr_fonbet_top_matchs.append(match_id)
                     elif match_id in arr_fonbet_top_matchs and match_id not in list_pair_mathes:
+                        prnts('TOP матч удален: ' + str(match_id) + ', ' + event.get('eventName'))
                         arr_fonbet_top_matchs.remove(match_id)
         except Exception as e:
             prnts('Фонбет, ошибка при запросе списка TOP матчей: ' + str(e) + ' ' + proxy)
