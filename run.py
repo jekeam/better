@@ -144,7 +144,7 @@ def start_seeker_top_matchs_fonbet(gen_proxi_fonbet, arr_fonbet_top_matchs, pair
                         arr_fonbet_top_matchs.append(match_id)
                     elif match_id in arr_fonbet_top_matchs and match_id not in list_pair_mathes:
                         prnts('TOP матч удален: ' + str(match_id) + ', ' + event.get('eventName'))
-                        arr_fonbet_top_matchs.remove(match_id)
+                        arr_fonbet_top_matchs.pop(match_id)
         except Exception as e:
             prnts('Фонбет, ошибка при запросе списка TOP матчей: ' + str(e) + ' ' + proxy)
             proxy = gen_proxi_fonbet.next()
@@ -610,8 +610,8 @@ if __name__ == '__main__':
     fonbet_seeker_matchs = threading.Thread(target=start_seeker_matchs_fonbet, args=(gen_proxi_fonbet, arr_fonbet_matchs))
     fonbet_seeker_matchs.start()
 
-    fonbet_seeker_matchs = threading.Thread(target=start_seeker_top_matchs_fonbet, args=(gen_proxi_fonbet, arr_fonbet_top_matchs, pair_mathes))
-    fonbet_seeker_matchs.start()
+    fonbet_seeker_top_matchs = threading.Thread(target=start_seeker_top_matchs_fonbet, args=(gen_proxi_fonbet, arr_fonbet_top_matchs, pair_mathes))
+    fonbet_seeker_top_matchs.start()
 
     compare_matches = threading.Thread(target=start_compare_matches, args=(pair_mathes, arr_olimp_matchs, arr_fonbet_matchs, mathes_complite))
     compare_matches.start()
