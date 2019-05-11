@@ -107,12 +107,12 @@ def start_seeker_matchs_olimp(proxies, gen_proxi_olimp, arr_matchs):
         time.sleep(time_sleep)
 
 
-def start_seeker_matchs_fonbet(proxies, gen_proxi_fonbet, arr_matchs):
+def start_seeker_matchs_fonbet(gen_proxi_fonbet, arr_matchs):
     global TIMEOUT_MATCHS
     proxy = gen_proxi_fonbet.next()
     while True:
         try:
-            resp, time_resp = get_matches_fonbet(proxies, proxy, TIMEOUT_MATCHS)
+            resp, time_resp = get_matches_fonbet(proxy, TIMEOUT_MATCHS)
             get_fonbet(resp, arr_matchs)
         except Exception as e:
             prnts('Фонбет, ошибка при запросе списка матчей: ' + str(e) + ' ' + proxy)
@@ -129,8 +129,36 @@ def start_seeker_matchs_fonbet(proxies, gen_proxi_fonbet, arr_matchs):
         time.sleep(time_sleep)
 
 
-def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi_olimp,
-                            pair_mathes, mathes_complite, stat_req_ol):
+def start_seeker_top_matchs_fonbet(gen_proxi_fonbet, arr_fonbet_top_matchs, pair_mathes):
+    global TIMEOUT_MATCHS
+    proxy = gen_proxi_fonbet.next()
+    while True:
+        list_pair_mathes = [int(item) for sublist in pair_mathes for item in sublist]
+        try:
+            resp, time_resp = get_matches_fonbet(proxy, TIMEOUT_MATCHS, top=True)
+            for event in resp.get('events'):
+                if event.get('skId') == 1:
+                    match_id = event.get('id')
+                    if match_id not in arr_fonbet_top_matchs and match_id in list_pair_mathes:
+                        arr_fonbet_top_matchs.append(match_id)
+                    elif match_id in arr_fonbet_top_matchs and match_id not in list_pair_mathes:
+                        arr_fonbet_top_matchs.remove(match_id)
+        except Exception as e:
+            prnts('Фонбет, ошибка при запросе списка TOP матчей: ' + str(e) + ' ' + proxy)
+            proxy = gen_proxi_fonbet.next()
+            time_resp = TIMEOUT_MATCHS
+
+        time_sleep = max(0, (TIMEOUT_MATCHS - time_resp))
+
+        if DEBUG:
+            pass
+            # prnts('Фонбет, поиск TOP матчей, время ответа: ' + str(time_resp) + ', запрос через ' +
+            #       str(time_sleep) + ' ' + proxy)
+
+        time.sleep(time_sleep)
+
+
+def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi_olimp, pair_mathes, mathes_complite, stat_req_ol):
     global TIMEOUT_MATCH, TIMEOUT_MATCH_MINUS
 
     proxy_size = 10
@@ -175,8 +203,7 @@ def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi
         time.sleep(time_sleep)
 
 
-def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_proxi_fonbet,
-                             pair_mathes, mathes_complite, stat_req_fb):
+def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_proxi_fonbet, pair_mathes, mathes_complite, stat_req_fb):
     global TIMEOUT_MATCH, TIMEOUT_MATCH_MINUS
 
     proxy_size = 5
@@ -189,8 +216,7 @@ def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_p
 
     while True:
         try:
-            time_resp = get_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet,
-                                        ps.get_next_proxy(), TIMEOUT_MATCH, pair_mathes)
+            time_resp = get_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, ps.get_next_proxy(), TIMEOUT_MATCH, pair_mathes)
             stat_req_fb.append(round(time_resp, 2))
         except FonbetMatchСompleted as e:
             cnt = 0
@@ -221,19 +247,8 @@ def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_p
         time.sleep(time_sleep)
 
 
-def starter_bets(
-        bets_olimp,
-        bets_fonbet,
-        pair_mathes,
-        mathes_complite,
-        mathes_id_is_work,
-        proxies_olimp,
-        gen_proxi_olimp,
-        proxies_fonbet,
-        gen_proxi_fonbet,
-        stat_req_olimp,
-        stat_req_fonbet
-):
+def starter_bets(bets_olimp, bets_fonbet, pair_mathes, mathes_complite, mathes_id_is_work,
+                 proxies_olimp, gen_proxi_olimp, proxies_fonbet, gen_proxi_fonbet, stat_req_olimp, stat_req_fonbet):
     while True:
         for pair_match in pair_mathes:
             match_id_olimp, match_id_fonbet = pair_match
@@ -324,7 +339,7 @@ def start_compare_matches(pair_mathes, json_bk1, json_bk2, mathes_complite):
                   str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
 
 
-def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
+def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbet_top_matchs):
     global opposition
 
     def forks_meta_upd(forks_meta, forks):
@@ -335,6 +350,10 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
 
     while True:
         for pair_math in pair_mathes:
+
+            is_top = False
+            if int(pair_math[0]) in arr_fonbet_top_matchs or int(pair_math[1]) in arr_fonbet_top_matchs:
+                is_top = True
 
             math_json_olimp = bets_olimp.get(pair_math[0], {})
             math_json_fonbet = bets_fonbet.get(pair_math[1], {})
@@ -516,7 +535,8 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet):
                                 'live_fork': 0,
                                 'live_fork_total': forks_meta.get(bet_key, dict()).get('live_fork_total', 0),
                                 'create_fork': round(max(ol_time_chage, fb_time_chage)),
-                                'created_fork': created_fork
+                                'created_fork': created_fork,
+                                'is_top': is_top
                             }
                     else:
                         try:
@@ -567,6 +587,7 @@ if __name__ == '__main__':
     # json by mathes
     arr_olimp_matchs = dict()
     arr_fonbet_matchs = dict()
+    arr_fonbet_top_matchs = []
     mathes_complite = []
 
     # json by bets math
@@ -579,31 +600,34 @@ if __name__ == '__main__':
     stat_req_olimp = []
     stat_req_fonbet = []
 
+    pair_mathes = []
+
     olimp_seeker_matchs = threading.Thread(target=start_seeker_matchs_olimp, args=(proxies_olimp, gen_proxi_olimp, arr_olimp_matchs))
     olimp_seeker_matchs.start()
 
-    fonbet_seeker_matchs = threading.Thread(target=start_seeker_matchs_fonbet, args=(proxies_fonbet, gen_proxi_fonbet, arr_fonbet_matchs))
+    fonbet_seeker_matchs = threading.Thread(target=start_seeker_matchs_fonbet, args=(gen_proxi_fonbet, arr_fonbet_matchs))
     fonbet_seeker_matchs.start()
 
-    pair_mathes = []
+    fonbet_seeker_matchs = threading.Thread(target=start_seeker_top_matchs_fonbet, args=(gen_proxi_fonbet, arr_fonbet_top_matchs, pair_mathes))
+    fonbet_seeker_matchs.start()
+
     compare_matches = threading.Thread(target=start_compare_matches, args=(pair_mathes, arr_olimp_matchs, arr_fonbet_matchs, mathes_complite))
     compare_matches.start()
 
     mathes_id_is_work = []
     starter_bets = threading.Thread(
         target=starter_bets,
-        args=(
-            bets_olimp, bets_fonbet, pair_mathes, mathes_complite, mathes_id_is_work, proxies_olimp, gen_proxi_olimp, proxies_fonbet, gen_proxi_fonbet, stat_req_olimp, stat_req_fonbet)
-    )
+        args=(bets_olimp, bets_fonbet, pair_mathes, mathes_complite, mathes_id_is_work,
+              proxies_olimp, gen_proxi_olimp, proxies_fonbet, gen_proxi_fonbet, stat_req_olimp, stat_req_fonbet))
     starter_bets.start()
 
-    starter_forks = threading.Thread(target=get_forks, args=(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet))
+    starter_forks = threading.Thread(target=get_forks, args=(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbet_top_matchs))
     starter_forks.start()
 
     started_stat_req = threading.Thread(target=stat_req, args=(stat_req_olimp, stat_req_fonbet))
     started_stat_req.start()
 
-    server = threading.Thread(target=run_server, args=(SERVER_IP, forks, pair_mathes))
+    server = threading.Thread(target=run_server, args=(SERVER_IP, forks, pair_mathes, arr_fonbet_top_matchs))
     server.start()
 
     proxy_saver.join()
