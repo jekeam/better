@@ -144,7 +144,7 @@ def start_seeker_top_matchs_fonbet(gen_proxi_fonbet, arr_fonbet_top_matchs, pair
                         arr_fonbet_top_matchs.append(match_id)
                     elif match_id in arr_fonbet_top_matchs and match_id not in list_pair_mathes:
                         prnts('TOP матч удален: ' + str(match_id) + ', ' + event.get('eventName'))
-                        arr_fonbet_top_matchs.pop(match_id)
+                        arr_fonbet_top_matchs.remove(match_id)
         except Exception as e:
             prnts('Фонбет, ошибка при запросе списка TOP матчей: ' + str(e) + ' ' + proxy)
             proxy = gen_proxi_fonbet.next()
@@ -199,8 +199,7 @@ def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi
         time_sleep = max(0, (TIMEOUT_MATCH - abs(TIMEOUT_MATCH_MINUS + time_resp)))
 
         if DEBUG:
-            prnts('Олимп, матч ' + str(match_id_olimp) + '. Время ответа: ' + str(time_resp) +
-                  ', запрос через ' + str(time_sleep) + ' ' + ps.get_cur_proxy())
+            prnts('Олимп, матч ' + str(match_id_olimp) + '. Время ответа: ' + str(time_resp) + ', запрос через ' + str(time_sleep) + ' ' + ps.get_cur_proxy())
 
         time.sleep(time_sleep)
 
@@ -260,9 +259,7 @@ def starter_bets(bets_olimp, bets_fonbet, pair_mathes, mathes_complite, mathes_i
 
                 start_seeker_olimp_bets_by_id = threading.Thread(
                     target=start_seeker_bets_olimp,
-                    args=(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi_olimp,
-                          pair_mathes, mathes_complite, stat_req_olimp)
-                )
+                    args=(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi_olimp, pair_mathes, mathes_complite, stat_req_olimp))
                 start_seeker_olimp_bets_by_id.start()
 
             if match_id_fonbet not in mathes_id_is_work:
@@ -270,9 +267,7 @@ def starter_bets(bets_olimp, bets_fonbet, pair_mathes, mathes_complite, mathes_i
 
                 start_seeker_fonbet_bets_by_id = threading.Thread(
                     target=start_seeker_bets_fonbet,
-                    args=(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_proxi_fonbet,
-                          pair_mathes, mathes_complite, stat_req_fonbet)
-                )
+                    args=(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_proxi_fonbet, pair_mathes, mathes_complite, stat_req_fonbet))
                 start_seeker_fonbet_bets_by_id.start()
 
         time.sleep(20)
