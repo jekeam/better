@@ -521,6 +521,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
                                 'time_req_olimp': ol_time_req,
                                 'time_req_fonbet': fb_time_req,
                                 'l': L,
+                                'l_fisrt': L,
                                 'pair_math': pair_math,
                                 'bk1_score': math_json_olimp.get('score', ''),
                                 'bk2_score': math_json_fonbet.get('score', ''),
