@@ -24,9 +24,9 @@ def get_xtoken_bet(payload):
 
 
 # olimp_url = 'http://08.olimp-proxy.ru:10600'
-olimp_url = 'http://195.181.241.195:10600'
+olimp_url = 'http://176.223.129.133:10600'
 # olimp_url_https = 'https://08.olimp-proxy.ru'
-olimp_url_https = 'https://195.181.241.195:10600'
+olimp_url_https = 'https://176.223.129.133:10600'
 olimp_url_random = 'https://{}.olimp-proxy.ru'  # c 10 по 18й
 
 olimp_secret_key = 'b2c59ba4-7702-4b12-bef5-0908391851d9'
