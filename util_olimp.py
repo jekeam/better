@@ -23,11 +23,9 @@ def get_xtoken_bet(payload):
     return {"X-TOKEN": md5(to_encode.encode()).hexdigest()}
 
 
-# olimp_url = 'http://08.olimp-proxy.ru:10600'
-olimp_url = 'http://176.223.129.133:10600'
-# olimp_url_https = 'https://08.olimp-proxy.ru'
-olimp_url_https = 'https://176.223.129.133:10600'
-# olimp_url_random = 'https://{}.olimp-proxy.ru'  # c 10 по 18й
+olimp_url = 'http://10.olimp-proxy.ru:10600'
+olimp_url_https = 'https://10.olimp-proxy.ru'
+olimp_url_random = 'https://{}.olimp-proxy.ru'  # c 10 по 18й
 
 olimp_secret_key = 'b2c59ba4-7702-4b12-bef5-0908391851d9'
 
@@ -90,8 +88,8 @@ def get_matches_olimp(proxies, proxy, time_out):
     global olimp_head
 
     try:
-        http_type = 'http'  # if 'https' in proxy else 'http'
-        url = olimp_url_https if 'https' in http_type else olimp_url
+        http_type = 'http' if 'https' in proxy else 'http'
+        url = olimp_url_https if 'https' in proxy else olimp_url
         proxies = {http_type: proxy}
         # prnts('Olimp set proxy: ' + proxy, 'hide')
     except Exception as e:
@@ -208,8 +206,8 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out, pair_mathes):
     olimp_stake_head.pop('Accept-Language', None)
 
     try:
-        http_type = 'http'  # if 'https' in proxy else 'http'
-        url = olimp_url_https if 'https' in http_type else olimp_url
+        http_type = 'http' if 'https' in proxy else 'http'
+        url = olimp_url_https if 'https' in proxy else olimp_url
         proxies = {http_type: proxy}
         # prnts('Olimp: set proxy by ' + str(match_id) + ': ' + str(proxy), 'hide')
     except Exception as e:
