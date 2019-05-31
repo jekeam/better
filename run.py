@@ -394,11 +394,11 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
                     if is_fork:  # or True
                         time_break_fonbet = False
                         period = 1
-                        if re.match('\(\d+:\d+\)', math_json_fonbet.get('score_1st', '').replace(' ', '')) and \
+                        if re.match('\([\d|\d\d]:[\d|\d\d]\)', math_json_fonbet.get('score_1st', '')) and \
                                 str(math_json_fonbet.get('time', '')) == '45:00' and \
                                 round(math_json_fonbet.get('minute', ''), 2) == 45.0:
                             time_break_fonbet = True
-                        elif re.match('\(\d+:\d+\)', math_json_fonbet.get('score_1st', '').replace(' ', '')) and \
+                        elif re.match('\([\d|\d\d]:[\d|\d\d]\)', math_json_fonbet.get('score_1st', '')) and \
                                 round(math_json_fonbet.get('minute', ''), 2) > 45.0:
                             period = 2
 
