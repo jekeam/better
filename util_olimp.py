@@ -90,7 +90,7 @@ def get_matches_olimp(proxies, proxy, time_out):
     global olimp_head
 
     try:
-        http_type = 'http' if 'https' in proxy else 'http'
+        http_type = 'http'  # if 'https' in proxy else 'http'
         url = olimp_url_https if 'https' in proxy else olimp_url
         proxies = {http_type: proxy}
         # prnts('Olimp set proxy: ' + proxy, 'hide')
@@ -208,7 +208,7 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out, pair_mathes):
     olimp_stake_head.pop('Accept-Language', None)
 
     try:
-        http_type = 'http' if 'https' in proxy else 'http'
+        http_type = 'http'  # if 'https' in proxy else 'http'
         url = olimp_url_https if 'https' in proxy else olimp_url
         proxies = {http_type: proxy}
         # prnts('Olimp: set proxy by ' + str(match_id) + ': ' + str(proxy), 'hide')

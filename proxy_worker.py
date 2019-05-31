@@ -68,7 +68,7 @@ def check_proxy_olimp(proxies_for_check, valid_proxies):
     for prx in proxies_for_check:
         try:
             x = 0
-            http_type = 'http' # if 'https' in prx else 'http'
+            http_type = 'http'  # if 'https' in prx else 'http'
             url = olimp_url_https if 'https' in prx else olimp_url
             proxies = {http_type: prx}
             resp = requests.post(
