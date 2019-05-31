@@ -16,3 +16,5 @@ venv
 *.olimp
 test.py
 *.db
+*.png
+*.filepart
