@@ -394,11 +394,11 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
                     if is_fork:  # or True
                         time_break_fonbet = False
                         period = 1
-                        if re.match('\([\d|\d\d]:[\d|\d\d]\)', math_json_fonbet.get('score_1st', '')) and \
+                        if re.match('\(\d+:\d+\)', math_json_fonbet.get('score_1st', '').replace(' ', '')) and \
                                 str(math_json_fonbet.get('time', '')) == '45:00' and \
                                 round(math_json_fonbet.get('minute', ''), 2) == 45.0:
                             time_break_fonbet = True
-                        elif re.match('\([\d|\d\d]:[\d|\d\d]\)', math_json_fonbet.get('score_1st', '')) and \
+                        elif re.match('\(\d+:\d+\)', math_json_fonbet.get('score_1st', '').replace(' ', '')) and \
                                 round(math_json_fonbet.get('minute', ''), 2) > 45.0:
                             period = 2
 
@@ -521,6 +521,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
                                 'time_req_olimp': ol_time_req,
                                 'time_req_fonbet': fb_time_req,
                                 'l': L,
+                                'l_fisrt': L,
                                 'pair_math': pair_math,
                                 'bk1_score': math_json_olimp.get('score', ''),
                                 'bk2_score': math_json_fonbet.get('score', ''),
