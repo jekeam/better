@@ -68,15 +68,15 @@ def check_proxy_olimp(proxies_for_check, valid_proxies):
     for prx in proxies_for_check:
         try:
             x = 0
-            http_type = 'http' if 'https' in prx else 'http'
-            url = olimp_url_https if 'https' in prx else olimp_url
+            http_type = 'https' if 'https' in prx else 'http'
+            url = olimp_url_https if 'https' in http_type else olimp_url
             proxies = {http_type: prx}
             resp = requests.post(
                 url + '/api/slice/',
                 headers=olimp_head_ll,
                 data=olimp_data_ll,
                 proxies=proxies,
-                timeout=TIME_OUT,
+                timeout=TIME_OUT*2,
                 verify=False
             )
             resp.json()
@@ -121,7 +121,7 @@ def check_proxies_olimp(proxies_list):
     mgr = mp.Manager()
     valid_proxies_list = mgr.list()
 
-    n_chunks = 30
+    n_chunks = 90
     chunks = [proxies_list[i::n_chunks] for i in range(n_chunks)]
 
     prcs = []
@@ -140,7 +140,7 @@ def check_proxies_fonbet(proxies_list):
     mgr = mp.Manager()
     valid_proxies_list = mgr.list()
 
-    n_chunks = 30
+    n_chunks = 90
     chunks = [proxies_list[i::n_chunks] for i in range(n_chunks)]
 
     prcs = []
@@ -285,9 +285,10 @@ if __name__ == '__main__':
     proxy_list = []
     proxy_list_olimp = []
     proxy_list_fonbet = []
-    proxy_list = join_proxies_to_file(5000)
+    proxy_list = join_proxies_to_file(1)
 
-    proxy_list_olimp = check_proxies_olimp(proxy_list)
+    proxy_list2 = list(filter(lambda p: 'https' not in p, proxy_list))
+    proxy_list_olimp = check_proxies_olimp(proxy_list2)
     save_list(proxy_list_olimp, ol_fl)
 
     proxy_list_fonbet = check_proxies_fonbet(proxy_list)
