@@ -69,7 +69,7 @@ def check_proxy_olimp(proxies_for_check, valid_proxies):
         try:
             x = 0
             http_type = 'https' if 'https' in prx else 'http'
-            url = olimp_url_https if 'https' in http_type else olimp_url
+            url = olimp_url # olimp_url_https if 'https' in http_type else olimp_url
             proxies = {http_type: prx}
             resp = requests.post(
                 url + '/api/slice/',
@@ -287,7 +287,7 @@ if __name__ == '__main__':
     proxy_list_fonbet = []
     proxy_list = join_proxies_to_file(1)
 
-    proxy_list2 = list(filter(lambda p: 'https' not in p, proxy_list))
+    proxy_list2 = list(filter(lambda p: 'https' in p, proxy_list))
     proxy_list_olimp = check_proxies_olimp(proxy_list2)
     save_list(proxy_list_olimp, ol_fl)
 
