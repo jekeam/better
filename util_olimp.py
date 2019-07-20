@@ -5,7 +5,7 @@ from proxy_worker import del_proxy
 import re
 import time
 from exceptions import OlimpMatchСompleted, TimeOut
-from utils import prnts, get_vector, MINUTE_COMPLITE
+from utils import prnts, get_vector, MINUTE_COMPLITE, get_param
 
 url_autorize = "https://{}.olimp-proxy.ru/api/{}"
 payload = {"lang_id": "0", "platforma": "ANDROID1"}
@@ -23,8 +23,8 @@ def get_xtoken_bet(payload):
     return {"X-TOKEN": md5(to_encode.encode()).hexdigest()}
 
 
-olimp_url = 'http://176.223.129.133:10600'
-olimp_url_https = 'https://176.223.129.133'
+olimp_url = 'http://' + get_param('server_olimp') + ':10600'
+olimp_url_https = 'https://' + get_param('server_olimp')
 olimp_url_random = 'https://{}.olimp-proxy.ru'  # c 10 по 18й
 
 olimp_secret_key = 'b2c59ba4-7702-4b12-bef5-0908391851d9'

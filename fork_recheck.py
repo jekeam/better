@@ -2,7 +2,7 @@
 import requests
 from olimp import get_xtoken, to_abb
 import re
-from utils import prnt
+from utils import prnt, get_param
 
 cnt_fail = 0
 
@@ -102,7 +102,7 @@ opposition = {
 
 def get_olimp_info(id_matche, olimp_k):
     olimp_secret_key = 'b2c59ba4-7702-4b12-bef5-0908391851d9'
-    olimp_new_url = 'http://176.223.129.133:10600'
+    olimp_new_url = 'http://' + get_param('server_olimp') + ':10600'
     bet_into = {}
 
     olimp_data.update({'id': id_matche})
