@@ -102,7 +102,7 @@ opposition = {
 
 def get_olimp_info(id_matche, olimp_k):
     olimp_secret_key = 'b2c59ba4-7702-4b12-bef5-0908391851d9'
-    olimp_new_url = 'http://' + get_param('server_olimp') + ':10600'
+    olimp_new_url = 'http://' + get_param('server_olimp') + ':10674'
     bet_into = {}
 
     olimp_data.update({'id': id_matche})
