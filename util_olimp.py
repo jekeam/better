@@ -8,8 +8,9 @@ from exceptions import OlimpMatchСompleted, TimeOut
 from utils import prnts, get_vector, MINUTE_COMPLITE, get_param
 
 url_autorize = "https://{}.olimp-proxy.ru/api/{}"
-payload = {"lang_id": "0", "platforma": "ANDROID1"}
+payload = {"lang_id": "0", "platforma": "ANDROID2"}
 head = {
+    'X-CUPIS': '1',
     'Content-Type': 'application/x-www-form-urlencoded',
     'Connection': 'Keep-Alive',
     'Accept-Encoding': 'gzip',
@@ -30,6 +31,7 @@ olimp_url_random = 'https://{}.olimp-proxy.ru'  # c 13 по 18й
 olimp_secret_key = 'b2c59ba4-7702-4b12-bef5-0908391851d9'
 
 olimp_head = {
+    'X-CUPIS': '1',
     'Content-Type': 'application/x-www-form-urlencoded',
     'Connection': 'Keep-Alive',
     'Accept-Encoding': 'gzip',
@@ -40,7 +42,7 @@ olimp_data = {
     "live": 1,
     # "sport_id": 1,
     "sport_id": 1,
-    "platforma": "ANDROID1",
+    "platforma": "ANDROID2",
     "lang_id": 0,
     "time_shift": 0
 }

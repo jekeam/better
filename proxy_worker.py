@@ -17,7 +17,7 @@ from utils import DEBUG
 # disable warning
 urllib3.disable_warnings()
 
-TIME_OUT = 2
+TIME_OUT = 10
 
 UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3163.100 Safari/537.36'
 
@@ -79,15 +79,14 @@ def check_proxy_olimp(proxies_for_check, valid_proxies):
                 timeout=TIME_OUT,
                 verify=False
             )
+            assert resp.status_code == 200
             resp.json()
-            print(
-                'o valid: ' + str(prx), str(resp.status_code)
-            )
+            print('o valid: ' + str(prx), str(resp.status_code))
             x = x + 1
             if prx not in valid_proxies:
                 valid_proxies.append(prx)
         except ValueError as e:
-            print('o invalid: ' + str(prx), str(e), str(resp.text))
+            print('o invalid: ' + str(prx), str(e))
         except Exception as e:
             pass
             print('o invalid: ' + str(prx), str(e))
@@ -161,7 +160,7 @@ async def save(proxies, proxy_list):
         proxy = await proxies.get()
         if proxy is None:
             break
-        proto = 'https' if 'https' in proxy.types.lower() else 'http'
+        proto = 'https' if 'HTTPS' in proxy.types else 'http'
         row = '%s://%s:%d' % (proto, proxy.host, proxy.port)
         proxy_list.append(row)
         x = x + 1
