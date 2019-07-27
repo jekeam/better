@@ -186,7 +186,7 @@ def get_proxies(n):
     proxies = asyncio.Queue()
     broker = Broker(proxies, timeout=TIME_OUT)
     tasks = asyncio.gather(
-        broker.find(types=['HTTP', 'HTTPS'], limit=n),  # , countries=['RU','UA','US','DE']
+        broker.find(types=['HTTPS'], limit=n),  # , countries=['RU','UA','US','DE'] 'HTTP',
         save(proxies, proxy_list)
     )
     loop = asyncio.get_event_loop()
