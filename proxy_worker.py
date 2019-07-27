@@ -161,7 +161,7 @@ async def save(proxies, proxy_list):
         proxy = await proxies.get()
         if proxy is None:
             break
-        proto = 'https' if 'https' in proxy.types.lower() else 'http'
+        proto = 'https' if 'HTTPS' in proxy.types else 'http'
         row = '%s://%s:%d' % (proto, proxy.host, proxy.port)
         proxy_list.append(row)
         x = x + 1
