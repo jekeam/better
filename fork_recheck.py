@@ -36,7 +36,6 @@ abbreviations = {
     "Т2мен": "ТМ2({})"
 }
 olimp_stake_head = {
-    'X-CUPIS': '1',
     'Content-Type': 'application/x-www-form-urlencoded',
     'Connection': 'Keep-Alive',
     'Accept-Encoding': 'gzip',
@@ -46,7 +45,7 @@ olimp_data = {
     "live": "1",
     "sport_id": "1",
     "session": "",
-    "platforma": "ANDROID2",
+    "platforma": "ANDROID1",
     "lang_id": "0",
     "time_shift": 0
 }
