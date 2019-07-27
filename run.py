@@ -21,9 +21,9 @@ import copy
 import sys
 import traceback
 
-TIMEOUT_MATCHS = 10
-TIMEOUT_MATCH = 10
-TIMEOUT_MATCH_MINUS = 9
+TIMEOUT_MATCHS = 15
+TIMEOUT_MATCH = 15
+TIMEOUT_MATCH_MINUS = 13
 
 if not DEBUG:
     SERVER_IP = get_param('server_ip')
