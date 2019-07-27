@@ -23,7 +23,7 @@ import traceback
 
 TIMEOUT_MATCHS = 10
 TIMEOUT_MATCH = 10
-TIMEOUT_MATCH_MINUS = 2.5
+TIMEOUT_MATCH_MINUS = 4
 
 if not DEBUG:
     SERVER_IP = get_param('server_ip')
@@ -83,19 +83,32 @@ def get_fonbet(resp, arr_matchs):
 def start_seeker_matchs_olimp(proxies, gen_proxi_olimp, arr_matchs):
     global TIMEOUT_MATCHS
     proxy = gen_proxi_olimp.next()
+    fail_proxy = 0
     while True:
         try:
             resp, time_resp = get_matches_olimp(proxies, proxy, TIMEOUT_MATCHS)
             get_olimp(resp, arr_matchs)
         except TimeOut as e:
-            proxy = gen_proxi_olimp.next()
             err_str = 'Timeout: Олимп, ошибка призапросе списока матчей'
             prnts(err_str)
             time_resp = TIMEOUT_MATCHS
+
+            if fail_proxy >= 3:
+                proxy = gen_proxi_olimp.next()
+            else:
+                fail_proxy = fail_proxy + 1
+                time.sleep(3)
+
         except Exception as e:
-            proxy = gen_proxi_olimp.next()
             prnts('Exception: Олимп, ошибка при запросе списка матчей: ' + str(e) + ' ' + proxy)
             time_resp = TIMEOUT_MATCHS
+
+            if fail_proxy >= 3:
+                proxy = gen_proxi_olimp.next()
+                fail_proxy = 0
+            else:
+                fail_proxy = fail_proxy + 1
+                time.sleep(3)
 
         time_sleep = max(0, (TIMEOUT_MATCHS - time_resp))
 
@@ -163,6 +176,7 @@ def start_seeker_top_matchs_fonbet(gen_proxi_fonbet, arr_fonbet_top_matchs, pair
 def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi_olimp, pair_mathes, mathes_complite, stat_req_ol):
     global TIMEOUT_MATCH, TIMEOUT_MATCH_MINUS
 
+    fail_proxy = 0
     proxy_size = 10
     proxy = []
     i = 0
@@ -193,8 +207,14 @@ def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi
             prnts('Exception: Олимп, ошибка при запросе матча ' + str(match_id_olimp) + ': ' +
                   str(e) + ' ' + ps.get_cur_proxy() + ' ' +
                   str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
-            ps.rep_cur_proxy(gen_proxi_olimp.next())
             time_resp = TIMEOUT_MATCH
+
+            if fail_proxy >= 3:
+                ps.rep_cur_proxy(gen_proxi_olimp.next())
+                fail_proxy = 0
+            else:
+                fail_proxy = fail_proxy + 1
+                time.sleep(3)
 
         time_sleep = max(0, (TIMEOUT_MATCH - abs(TIMEOUT_MATCH_MINUS + time_resp)))
 
