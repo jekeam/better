@@ -285,7 +285,7 @@ if __name__ == '__main__':
     proxy_list = []
     proxy_list_olimp = []
     proxy_list_fonbet = []
-    proxy_list = join_proxies_to_file(100)
+    proxy_list = join_proxies_to_file(300)
 
     proxy_list2 = list(filter(lambda p: 'https' in p, proxy_list))
     proxy_list_olimp = check_proxies_olimp(proxy_list2)
