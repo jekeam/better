@@ -68,7 +68,7 @@ def check_proxy_olimp(proxies_for_check, valid_proxies):
     for prx in proxies_for_check:
         try:
             x = 0
-            http_type = 'https' if 'https' in prx else 'http'
+            http_type = 'https' if 'https' in prx.lower() else 'http'
             url = olimp_url  # olimp_url_https if 'https' in http_type else olimp_url
             proxies = {http_type: prx}
             resp = requests.post(
@@ -121,7 +121,7 @@ def check_proxies_olimp(proxies_list):
     mgr = mp.Manager()
     valid_proxies_list = mgr.list()
 
-    n_chunks = 90
+    n_chunks = 150
     chunks = [proxies_list[i::n_chunks] for i in range(n_chunks)]
 
     prcs = []
@@ -140,7 +140,7 @@ def check_proxies_fonbet(proxies_list):
     mgr = mp.Manager()
     valid_proxies_list = mgr.list()
 
-    n_chunks = 90
+    n_chunks = 150
     chunks = [proxies_list[i::n_chunks] for i in range(n_chunks)]
 
     prcs = []
@@ -161,7 +161,7 @@ async def save(proxies, proxy_list):
         proxy = await proxies.get()
         if proxy is None:
             break
-        proto = 'https' if 'HTTPS' in proxy.types else 'http'
+        proto = 'https' if 'https' in proxy.types.lower() else 'http'
         row = '%s://%s:%d' % (proto, proxy.host, proxy.port)
         proxy_list.append(row)
         x = x + 1
@@ -291,5 +291,5 @@ if __name__ == '__main__':
     proxy_list_olimp = check_proxies_olimp(proxy_list2)
     save_list(proxy_list_olimp, ol_fl)
 
-    proxy_list_fonbet = check_proxies_fonbet(proxy_list)
-    save_list(proxy_list_fonbet, fb_fl)
+    # proxy_list_fonbet = check_proxies_fonbet(proxy_list)
+    # save_list(proxy_list_fonbet, fb_fl)
