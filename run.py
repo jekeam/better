@@ -54,6 +54,28 @@ def get_olimp(resp, arr_matchs):
 
 
 def get_fonbet(resp, arr_matchs):
+    
+#for val in resp.get('sports'):
+    #if val.get('kind') == 'sport':
+        #print(str(val.get('id')) + ' ' + val.get('name'))
+         
+# 1 Football
+# 3 Basketball
+# 4 Tennis
+# 9 Volleyball
+# 41963 Lottery
+# 11624 Beach volley
+# 29086 Esports
+# 3088 Table tennis
+# 1439 Field hockey
+# 19936 Sports simulators
+# 11630 Badminton
+# 44943 Rocket League
+# 40479 Cyberfootball
+# 45827 Cybertennis
+# 11627 Floorball
+# 40481 Cyberbasket
+            
     arr_matchs_copy = copy.deepcopy(arr_matchs)
     for key in arr_matchs_copy.keys():
         arr_matchs.pop(key)
