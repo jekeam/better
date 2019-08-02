@@ -76,7 +76,7 @@ def check_proxy_olimp(proxies_for_check, valid_proxies):
                 url + '/api/slice/',
                 headers=olimp_head_ll,
                 data=olimp_data_ll,
-                proxies=proxies,
+                # proxies=proxies,
                 timeout=TIME_OUT,
                 verify=False
             )

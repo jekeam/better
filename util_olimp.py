@@ -109,7 +109,7 @@ def get_matches_olimp(proxies, proxy, time_out):
             headers=olimp_head_ll,
             timeout=time_out,
             verify=False,
-            proxies=proxies,
+            # proxies=proxies,
         )
         try:
             res = resp.json()
@@ -220,7 +220,7 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out, pair_mathes):
             headers=olimp_stake_head,
             timeout=time_out,
             verify=False,
-            proxies=proxies
+            # proxies=proxies
         )
         try:
             res = resp.json()
