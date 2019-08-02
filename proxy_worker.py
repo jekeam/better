@@ -197,7 +197,7 @@ def get_proxies(n):
     return proxy_list
 
 
-def get_proxy_from_file(filename=None):
+def get_proxy_from_file(filename=None, uniq=True):
     proxys = []
     proxy_uniq = []
     cd()
@@ -216,7 +216,9 @@ def get_proxy_from_file(filename=None):
     for proxy in proxys:
         if proxy not in proxy_uniq:
             proxy_uniq.append(proxy)
-    proxys = proxy_uniq
+
+    if uniq:
+        proxys = proxy_uniq
 
     return proxys
 

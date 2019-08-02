@@ -616,7 +616,7 @@ if __name__ == '__main__':
     proxy_filename_olimp = 'olimp.proxy'
     proxy_filename_fonbet = 'fonbet.proxy'
 
-    proxies_olimp = get_proxy_from_file(proxy_filename_olimp)
+    proxies_olimp = get_proxy_from_file(proxy_filename_olimp, uniq=False)
     proxies_fonbet = get_proxy_from_file(proxy_filename_fonbet)
 
     gen_proxi_olimp = createBatchGenerator(get_next_proxy(copy.deepcopy(proxies_olimp)))
