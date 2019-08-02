@@ -76,7 +76,7 @@ def check_proxy_olimp(proxies_for_check, valid_proxies):
                 url + '/api/slice/',
                 headers=olimp_head_ll,
                 data=olimp_data_ll,
-                # proxies=proxies,
+                proxies=proxies,
                 timeout=TIME_OUT,
                 verify=False
             )
@@ -293,7 +293,6 @@ if __name__ == '__main__':
 
     #OL
     proxy_list = list(filter(lambda p: 'https:' in p, proxy_list))
-    proxy_list_olimp = check_proxies_olimp(proxy_list)
     proxy_list_olimp = check_proxies_olimp(proxy_list)
     save_list(proxy_list_olimp, ol_fl)
 

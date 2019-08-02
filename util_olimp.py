@@ -5,6 +5,7 @@ from proxy_worker import del_proxy
 import re
 import time
 from utils import prnts, get_vector, MINUTE_COMPLITE, get_param
+from exceptions import *
 
 url_autorize = "https://{}.olimp-proxy.ru/api/{}"
 payload = {"lang_id": "0", "platforma": "ANDROID1"}
@@ -109,7 +110,7 @@ def get_matches_olimp(proxies, proxy, time_out):
             headers=olimp_head_ll,
             timeout=time_out,
             verify=False,
-            # proxies=proxies,
+            proxies=proxies,
         )
         try:
             res = resp.json()
@@ -220,7 +221,7 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out, pair_mathes):
             headers=olimp_stake_head,
             timeout=time_out,
             verify=False,
-            # proxies=proxies
+            proxies=proxies
         )
         try:
             res = resp.json()
