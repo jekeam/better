@@ -286,7 +286,7 @@ if __name__ == '__main__':
     proxy_list = []
     proxy_list_olimp = []
     proxy_list_fonbet = []
-    proxy_list = join_proxies_to_file(50)
+    proxy_list = join_proxies_to_file(5000)
     
     prnts('cnt https: ' + str(len(list(filter(lambda p: 'https' in p, proxy_list)))))
     prnts('cnt http: ' + str(len(list(filter(lambda p: 'http:' in p, proxy_list)))))
