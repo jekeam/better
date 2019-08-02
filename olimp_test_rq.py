@@ -1,5 +1,5 @@
 import requests
-
+n=0
 with open('olimp.1.proxy', 'r') as f:
     x = f.readlines()
     for p in x:
@@ -14,5 +14,7 @@ with open('olimp.1.proxy', 'r') as f:
                 timeout=3
             )
             print(p, resp.status_code)
+            n = n+1
         except:
             print(p, 'err')
+print(n)
