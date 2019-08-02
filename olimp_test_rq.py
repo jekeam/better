@@ -1,4 +1,8 @@
 import requests
+
+import urllib3
+urllib3.disable_warnings()
+
 n=0
 with open('olimp.1.proxy', 'r') as f:
     x = f.readlines()
