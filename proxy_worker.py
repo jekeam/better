@@ -18,7 +18,7 @@ from utils import DEBUG
 urllib3.disable_warnings()
 
 TIME_OUT = 2
-CHUNKS = 50
+CHUNKS = 20
 
 UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3163.100 Safari/537.36'
 
@@ -81,9 +81,7 @@ def check_proxy_olimp(proxies_for_check, valid_proxies):
                 verify=False
             )
             resp.json()
-            print(
-                'o valid: ' + str(prx), str(resp.status_code)
-            )
+            print('o valid: ' + str(prx), str(resp.status_code))
             x = x + 1
             if prx not in valid_proxies:
                 valid_proxies.append(prx)
@@ -286,21 +284,19 @@ if __name__ == '__main__':
     proxy_list = []
     proxy_list_olimp = []
     proxy_list_fonbet = []
-    proxy_list = join_proxies_to_file(80)
+    proxy_list = join_proxies_to_file(20)
     
     prnts('cnt https: ' + str(len(list(filter(lambda p: 'https' in p, proxy_list)))))
     prnts('cnt http: ' + str(len(list(filter(lambda p: 'http:' in p, proxy_list)))))
     prnts('cnt all: '+ str(len( proxy_list)))
     time.sleep(5)
-    
-    #FB
-    
-    # proxy_list_fonbet = check_proxies_fonbet(proxy_list)
-    # save_list(proxy_list_fonbet, fb_fl)
 
-    
     #OL
-    # proxy_list = list(filter(lambda p: 'http:' in p, proxy_list))
-    # proxy_list_olimp = check_proxies_olimp(proxy_list)
+    proxy_list = list(filter(lambda p: 'https:' in p, proxy_list))
+    proxy_list_olimp = check_proxies_olimp(proxy_list)
     proxy_list_olimp = check_proxies_olimp(proxy_list)
     save_list(proxy_list_olimp, ol_fl)
+
+    #FB
+    proxy_list_fonbet = check_proxies_fonbet(proxy_list)
+    save_list(proxy_list_fonbet, fb_fl)

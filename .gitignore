@@ -19,3 +19,4 @@ test.py
 *.png
 *.filepart
 __pycache__
+*.txt1
