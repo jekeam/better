@@ -122,7 +122,7 @@ def start_seeker_matchs_olimp(proxies, gen_proxi_olimp, arr_matchs):
                 time.sleep(3)
 
         except Exception as e:
-            prnts('Exception: Олимп, ошибка при запросе списка матчей: ' + str(e) + ' ' + proxy)
+            prnts('Exception: Олимп, ошибка при запросе списка матчей: ' + proxy + str(e))
             time_resp = TIMEOUT_MATCHS
 
             if fail_proxy >= 3:
