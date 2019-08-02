@@ -294,7 +294,7 @@ if __name__ == '__main__':
     #OL
     proxy_list = list(filter(lambda p: 'https:' in p, proxy_list))
     proxy_list_olimp = check_proxies_olimp(proxy_list)
-    save_list(proxy_list_olimp, ol_fl)
+    # save_list(proxy_list_olimp, ol_fl)
 
     #FB
     proxy_list_fonbet = check_proxies_fonbet(proxy_list)
