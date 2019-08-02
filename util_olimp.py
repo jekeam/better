@@ -4,7 +4,6 @@ import requests
 from proxy_worker import del_proxy
 import re
 import time
-from exceptions import OlimpMatchСompleted, TimeOut
 from utils import prnts, get_vector, MINUTE_COMPLITE, get_param
 
 url_autorize = "https://{}.olimp-proxy.ru/api/{}"
