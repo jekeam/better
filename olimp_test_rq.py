@@ -2,7 +2,9 @@ import requests
 
 with open('olimp.1.proxy', 'r') as f:
     x = f.readlines()
+    print(x)
     for p in x:
+        print(p)
         url = 'https://olimpkzapi.ru/api/slice/' if 'https' in p else 'http://olimpkzapi.ru/api/slice/'
         resp = requests.post(
             url,
