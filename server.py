@@ -8,7 +8,7 @@ import threading
 mutex = threading.Lock()
 
 
-def run_server(SERVER_IP, data_json, pair_mathes, arr_fonbet_top_matchs):
+def run_server(SERVER_IP, SERVER_PORT, data_json, pair_mathes, arr_fonbet_top_matchs):
     class HttpProcessor(BaseHTTPRequestHandler):
         def __init__(self, data_json, bar, qux, *args, **kwargs):
             self.data = json.dumps(data_json, ensure_ascii=False)
@@ -46,5 +46,5 @@ def run_server(SERVER_IP, data_json, pair_mathes, arr_fonbet_top_matchs):
                 mutex.release()
 
     handler = partial(HttpProcessor, data_json, 0, 0)
-    serv = HTTPServer((SERVER_IP, 80), handler)
+    serv = HTTPServer((SERVER_IP, SERVER_PORT), handler)
     serv.serve_forever()

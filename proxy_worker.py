@@ -17,8 +17,8 @@ from utils import DEBUG
 # disable warning
 urllib3.disable_warnings()
 
-TIME_OUT = 2
-CHUNKS = 150
+TIME_OUT = 20
+CHUNKS = 20
 
 UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3163.100 Safari/537.36'
 
@@ -286,18 +286,18 @@ if __name__ == '__main__':
     proxy_list = []
     proxy_list_olimp = []
     proxy_list_fonbet = []
-    proxy_list = join_proxies_to_file(5000)
-    
+    proxy_list = join_proxies_to_file(1)
+
     prnts('cnt https: ' + str(len(list(filter(lambda p: 'https' in p, proxy_list)))))
     prnts('cnt http: ' + str(len(list(filter(lambda p: 'http:' in p, proxy_list)))))
-    prnts('cnt all: '+ str(len( proxy_list)))
+    prnts('cnt all: ' + str(len(proxy_list)))
     time.sleep(3)
 
-    #FB
-    proxy_list_fonbet = check_proxies_fonbet(proxy_list)
-    save_list(proxy_list_fonbet, fb_fl)
+    # FB
+    # proxy_list_fonbet = check_proxies_fonbet(proxy_list)
+    # save_list(proxy_list_fonbet, fb_fl)
 
     # OL
-    # proxy_list = list(filter(lambda p: 'https:' in p, proxy_list))
-    # proxy_list_olimp = check_proxies_olimp(proxy_list)
-    # save_list(proxy_list_olimp, ol_fl)
+    proxy_list = list(filter(lambda p: 'https:' in p, proxy_list))
+    proxy_list_olimp = check_proxies_olimp(proxy_list)
+    save_list(proxy_list_olimp, ol_fl)
