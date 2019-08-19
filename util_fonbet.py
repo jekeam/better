@@ -6,7 +6,7 @@ from exceptions import FonbetMatchСompleted
 from utils import prnts, get_vector, MINUTE_COMPLITE
 import re
 
-url_fonbet = 'https://line-02.ccf4ab51771cacd46d.com'
+url_fonbet = 'https://line-01.ccf4ab51771cacd46d.com'
 url_fonbet_matchs = url_fonbet + '/live/currentLine/en/?2lzf1earo8wjksbh22s'
 url_fonbet_top_matchs = url_fonbet + '/line/topEvents3?place=live&sysId=1&lang=rus&salt=246d6zw3qmkjvjxy8dp'
 # url_fonbet_match = 'https://23.111.80.222/line/eventView?eventId='
