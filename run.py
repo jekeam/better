@@ -55,17 +55,19 @@ def get_olimp(resp, arr_matchs):
 
 def get_fonbet(resp, arr_matchs):
     
-    # for val in resp.get('sports'):
-    #     if val.get('kind') == 'sport':
-    #         print(str(val.get('id')) + ' ' + val.get('name'))
+    for val in resp.get('sports'):
+        if val.get('kind') == 'sport':
+            print(str(val.get('id')) + ' ' + val.get('name'))
          
 # 1 Football
+# 2 Hockey
 # 3 Basketball
 # 4 Tennis
 # 9 Volleyball
+# 1434 Futsal
 # 41963 Lottery
 # 11624 Beach volley
-# 29086 Esports
+# 29086 Esports          ??
 # 3088 Table tennis
 # 1439 Field hockey
 # 19936 Sports simulators
@@ -76,6 +78,14 @@ def get_fonbet(resp, arr_matchs):
 # 11627 Floorball
 # 40481 Cyberbasket
 #       eSports
+
+
+
+
+
+
+
+
             
     arr_matchs_copy = copy.deepcopy(arr_matchs)
     for key in arr_matchs_copy.keys():
@@ -396,8 +406,11 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
             is_top = False
             if int(pair_math[0]) in arr_fonbet_top_matchs or int(pair_math[1]) in arr_fonbet_top_matchs:
                 is_top = True
-            # print(bets_olimp)
-            # time.sleep(15)
+                
+            print(bets_fonbet)
+            time.sleep(15)
+            # see exp/bets_olimp.json
+            
             math_json_olimp = bets_olimp.get(pair_math[0], {})
             math_json_fonbet = bets_fonbet.get(pair_math[1], {})
 

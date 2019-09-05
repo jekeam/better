@@ -41,6 +41,26 @@
 Guadalajara Chivas vs Correcaminos, а у вас:
 Guadalajara-Chivas vs Correcaminos UAT и мы их соотнесем друг к другу.
 
+Примеры ИД и названия видов спорта из Фонбета:
+1 Football
+2 Hockey
+3 Basketball
+4 Tennis
+9 Volleyball
+1434 Futsal
+41963 Lottery
+11624 Beach volley
+29086 Esports  
+3088 Table tennis
+1439 Field hockey
+19936 Sports simulators
+11630 Badminton
+44943 Rocket League
+40479 Cyberfootball
+45827 Cybertennis
+11627 Floorball
+40481 Cyberbasket
+
 
 
 Шаг 2 - Получение катировок по событию(матчу)

@@ -1,0 +1,1762 @@
+{
+  "16393771": {
+    "sport_id": 1,
+    "sport_name": "Football",
+    "league": "Football. WC-2022. Asia. Qualifying rounds",
+    "name": "Guam – Maldives",
+    "priority": 4,
+    "score": "0:0",
+    "score_1st": "",
+    "time": "14:12",
+    "minute": 14.2,
+    "time_req": 1567662385,
+    "kofs": {
+      "12": {
+        "time_req": 1567662385,
+        "event": 16393771,
+        "value": 1.4,
+        "param": "",
+        "factor": "1571",
+        "score": "0:0",
+        "vector": "UP",
+        "hist": {
+          "time_change": 1567662375.8168864,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            1.4
+          ]
+        }
+      },
+      "ТБ(1.5)": {
+        "time_req": 1567662385,
+        "event": 16393771,
+        "value": 1.55,
+        "param": 150,
+        "factor": "930",
+        "score": "0:0",
+        "vector": "UP",
+        "hist": {
+          "time_change": 1567662375.8166964,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            1.55
+          ]
+        }
+      },
+      "ТМ(1.5)": {
+        "time_req": 1567662385,
+        "event": 16393771,
+        "value": 2.4,
+        "param": 150,
+        "factor": "931",
+        "score": "0:0",
+        "vector": "DOWN",
+        "hist": {
+          "time_change": 1567662375.8167472,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            2.4
+          ]
+        }
+      },
+      "П1": {
+        "time_req": 1567662385,
+        "event": 16393771,
+        "value": 4.2,
+        "param": "",
+        "factor": "921",
+        "score": "0:0",
+        "vector": "UP",
+        "hist": {
+          "time_change": 1567662375.816776,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            4.2
+          ]
+        }
+      },
+      "Н": {
+        "time_req": 1567662385,
+        "event": 16393771,
+        "value": 2.9,
+        "param": "",
+        "factor": "922",
+        "score": "0:0",
+        "vector": "DOWN",
+        "hist": {
+          "time_change": 1567662375.8168054,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            2.9
+          ]
+        }
+      },
+      "П2": {
+        "time_req": 1567662385,
+        "event": 16393771,
+        "value": 2.07,
+        "param": "",
+        "factor": "923",
+        "score": "0:0",
+        "vector": "UP",
+        "hist": {
+          "time_change": 1567662375.8168333,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            2.07
+          ]
+        }
+      },
+      "П1Н": {
+        "time_req": 1567662385,
+        "event": 16393771,
+        "value": 1.7,
+        "param": "",
+        "factor": "924",
+        "score": "0:0",
+        "vector": "DOWN",
+        "hist": {
+          "time_change": 1567662375.8168597,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            1.7
+          ]
+        }
+      },
+      "П2Н": {
+        "time_req": 1567662385,
+        "event": 16393771,
+        "value": 1.2,
+        "param": "",
+        "factor": "925",
+        "score": "0:0",
+        "vector": "DOWN",
+        "hist": {
+          "time_change": 1567662375.816914,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            1.2
+          ]
+        }
+      },
+      "КЗ1": {
+        "time_req": 1567662385,
+        "event": 16393771,
+        "value": 1.75,
+        "param": "",
+        "factor": "4235",
+        "score": "0:0",
+        "vector": "UP",
+        "hist": {
+          "time_change": 1567662375.8169637,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            1.75
+          ]
+        }
+      },
+      "КНЗ1": {
+        "time_req": 1567662385,
+        "event": 16393771,
+        "value": 1.95,
+        "param": "",
+        "factor": "4236",
+        "score": "0:0",
+        "vector": "DOWN",
+        "hist": {
+          "time_change": 1567662375.8169906,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            1.95
+          ]
+        }
+      },
+      "КЗ2": {
+        "time_req": 1567662385,
+        "event": 16393771,
+        "value": 1.35,
+        "param": "",
+        "factor": "4238",
+        "score": "0:0",
+        "vector": "UP",
+        "hist": {
+          "time_change": 1567662375.817037,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            1.35
+          ]
+        }
+      },
+      "КНЗ2": {
+        "time_req": 1567662385,
+        "event": 16393771,
+        "value": 2.95,
+        "param": "",
+        "factor": "4239",
+        "score": "0:0",
+        "vector": "DOWN",
+        "hist": {
+          "time_change": 1567662375.817075,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            2.95
+          ]
+        }
+      },
+      "ОЗД": {
+        "time_req": 1567662385,
+        "event": 16393771,
+        "value": 2.35,
+        "param": "",
+        "factor": "4241",
+        "score": "0:0",
+        "vector": "UP",
+        "hist": {
+          "time_change": 1567662375.8171287,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            2.35
+          ]
+        }
+      },
+      "ОЗН": {
+        "time_req": 1567662385,
+        "event": 16393771,
+        "value": 1.52,
+        "param": "",
+        "factor": "4242",
+        "score": "0:0",
+        "vector": "DOWN",
+        "hist": {
+          "time_change": 1567662375.8171554,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            1.52
+          ]
+        }
+      },
+      "ТБ(0.5)": {
+        "time_req": 1567662385,
+        "event": 16393771,
+        "value": 1.11,
+        "param": 50,
+        "factor": "1696",
+        "score": "0:0",
+        "vector": "UP",
+        "hist": {
+          "time_change": 1567662375.8174603,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            1.11
+          ]
+        }
+      },
+      "ТМ(0.5)": {
+        "time_req": 1567662385,
+        "event": 16393771,
+        "value": 6.1,
+        "param": 50,
+        "factor": "1697",
+        "score": "0:0",
+        "vector": "DOWN",
+        "hist": {
+          "time_change": 1567662375.81749,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            6.1
+          ]
+        }
+      },
+      "ТБ(2.5)": {
+        "time_req": 1567662385,
+        "event": 16393771,
+        "value": 2.6,
+        "param": 250,
+        "factor": "1727",
+        "score": "0:0",
+        "vector": "UP",
+        "hist": {
+          "time_change": 1567662375.8175337,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            2.6
+          ]
+        }
+      },
+      "ТМ(2.5)": {
+        "time_req": 1567662385,
+        "event": 16393771,
+        "value": 1.45,
+        "param": 250,
+        "factor": "1728",
+        "score": "0:0",
+        "vector": "DOWN",
+        "hist": {
+          "time_change": 1567662375.8175642,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            1.45
+          ]
+        }
+      },
+      "ТБ(3.5)": {
+        "time_req": 1567662385,
+        "event": 16393771,
+        "value": 5.1,
+        "param": 350,
+        "factor": "1730",
+        "score": "0:0",
+        "vector": "UP",
+        "hist": {
+          "time_change": 1567662375.8176126,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            5.1
+          ]
+        }
+      },
+      "ТМ(3.5)": {
+        "time_req": 1567662385,
+        "event": 16393771,
+        "value": 1.15,
+        "param": 350,
+        "factor": "1731",
+        "score": "0:0",
+        "vector": "DOWN",
+        "hist": {
+          "time_change": 1567662375.8176427,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            1.15
+          ]
+        }
+      },
+      "ТБ1(0.5)": {
+        "time_req": 1567662385,
+        "event": 16393771,
+        "value": 1.75,
+        "param": 50,
+        "factor": "1809",
+        "score": "0:0",
+        "vector": "UP",
+        "hist": {
+          "time_change": 1567662375.8176908,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            1.75
+          ]
+        }
+      },
+      "ТМ1(0.5)": {
+        "time_req": 1567662385,
+        "event": 16393771,
+        "value": 2,
+        "param": 50,
+        "factor": "1810",
+        "score": "0:0",
+        "vector": "DOWN",
+        "hist": {
+          "time_change": 1567662375.8177195,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            2
+          ]
+        }
+      },
+      "ТБ1(1.5)": {
+        "time_req": 1567662385,
+        "event": 16393771,
+        "value": 4.5,
+        "param": 150,
+        "factor": "1812",
+        "score": "0:0",
+        "vector": "UP",
+        "hist": {
+          "time_change": 1567662375.817766,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            4.5
+          ]
+        }
+      },
+      "ТМ1(1.5)": {
+        "time_req": 1567662385,
+        "event": 16393771,
+        "value": 1.18,
+        "param": 150,
+        "factor": "1813",
+        "score": "0:0",
+        "vector": "DOWN",
+        "hist": {
+          "time_change": 1567662375.817794,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            1.18
+          ]
+        }
+      },
+      "ТБ2(0.5)": {
+        "time_req": 1567662385,
+        "event": 16393771,
+        "value": 1.35,
+        "param": 50,
+        "factor": "1854",
+        "score": "0:0",
+        "vector": "UP",
+        "hist": {
+          "time_change": 1567662375.8178418,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            1.35
+          ]
+        }
+      },
+      "ТМ2(0.5)": {
+        "time_req": 1567662385,
+        "event": 16393771,
+        "value": 3,
+        "param": 50,
+        "factor": "1871",
+        "score": "0:0",
+        "vector": "DOWN",
+        "hist": {
+          "time_change": 1567662375.8178694,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            3
+          ]
+        }
+      },
+      "ТБ2(1.5)": {
+        "time_req": 1567662385,
+        "event": 16393771,
+        "value": 2.55,
+        "param": 150,
+        "factor": "1873",
+        "score": "0:0",
+        "vector": "UP",
+        "hist": {
+          "time_change": 1567662375.817924,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            2.55
+          ]
+        }
+      },
+      "ТМ2(1.5)": {
+        "time_req": 1567662385,
+        "event": 16393771,
+        "value": 1.48,
+        "param": 150,
+        "factor": "1874",
+        "score": "0:0",
+        "vector": "DOWN",
+        "hist": {
+          "time_change": 1567662375.817951,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            1.48
+          ]
+        }
+      },
+      "ТБ2(2.5)": {
+        "time_req": 1567662385,
+        "event": 16393771,
+        "value": 6.2,
+        "param": 250,
+        "factor": "1880",
+        "score": "0:0",
+        "vector": "UP",
+        "hist": {
+          "time_change": 1567662375.818006,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            6.2
+          ]
+        }
+      },
+      "ТМ2(2.5)": {
+        "time_req": 1567662385,
+        "event": 16393771,
+        "value": 1.1,
+        "param": 250,
+        "factor": "1881",
+        "score": "0:0",
+        "vector": "DOWN",
+        "hist": {
+          "time_change": 1567662375.8180335,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            1.1
+          ]
+        }
+      }
+    }
+  },
+  "16424248": {
+    "sport_id": 1,
+    "sport_name": "Football",
+    "league": "Football. U23. Iran. Premier League",
+    "name": "Arvand Charkh Shemiran U23 – Moghavemat Tehran U23",
+    "priority": 1,
+    "score": "0:1",
+    "score_1st": "",
+    "time": "8:11",
+    "minute": 8.183333333333334,
+    "time_req": 1567662385,
+    "kofs": {
+      "12": {
+        "time_req": 1567662385,
+        "event": 16424248,
+        "value": 1.13,
+        "param": "",
+        "factor": "1571",
+        "score": "0:1",
+        "vector": "DOWN",
+        "hist": {
+          "time_change": 1567662375.8223734,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            1.13
+          ]
+        }
+      },
+      "ТБ(3.5)": {
+        "time_req": 1567662385,
+        "event": 16424248,
+        "value": 1.67,
+        "param": 350,
+        "factor": "930",
+        "score": "0:1",
+        "vector": "UP",
+        "hist": {
+          "time_change": 1567662375.822205,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            1.67
+          ]
+        }
+      },
+      "ТМ(3.5)": {
+        "time_req": 1567662385,
+        "event": 16424248,
+        "value": 2.07,
+        "param": 350,
+        "factor": "931",
+        "score": "0:1",
+        "vector": "DOWN",
+        "hist": {
+          "time_change": 1567662375.822241,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            2.07
+          ]
+        }
+      },
+      "П1": {
+        "time_req": 1567662385,
+        "event": 16424248,
+        "value": 9,
+        "param": "",
+        "factor": "921",
+        "score": "0:1",
+        "vector": "UP",
+        "hist": {
+          "time_change": 1567662375.8222618,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            9
+          ]
+        }
+      },
+      "Н": {
+        "time_req": 1567662385,
+        "event": 16424248,
+        "value": 5.2,
+        "param": "",
+        "factor": "922",
+        "score": "0:1",
+        "vector": "UP",
+        "hist": {
+          "time_change": 1567662375.82229,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            5.2
+          ]
+        }
+      },
+      "П2": {
+        "time_req": 1567662385,
+        "event": 16424248,
+        "value": 1.3,
+        "param": "",
+        "factor": "923",
+        "score": "0:1",
+        "vector": "DOWN",
+        "hist": {
+          "time_change": 1567662375.8223202,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            1.3
+          ]
+        }
+      },
+      "П1Н": {
+        "time_req": 1567662385,
+        "event": 16424248,
+        "value": 3.2,
+        "param": "",
+        "factor": "924",
+        "score": "0:1",
+        "vector": "UP",
+        "hist": {
+          "time_change": 1567662375.8223467,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            3.2
+          ]
+        }
+      },
+      "П2Н": {
+        "time_req": 1567662385,
+        "event": 16424248,
+        "value": 1.03,
+        "param": "",
+        "factor": "925",
+        "score": "0:1",
+        "vector": "DOWN",
+        "hist": {
+          "time_change": 1567662375.8223999,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            1.03
+          ]
+        }
+      },
+      "КЗ1": {
+        "time_req": 1567662385,
+        "event": 16424248,
+        "value": 1.4,
+        "param": "",
+        "factor": "4235",
+        "score": "0:1",
+        "vector": "UP",
+        "hist": {
+          "time_change": 1567662375.8224478,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            1.4
+          ]
+        }
+      },
+      "КНЗ1": {
+        "time_req": 1567662385,
+        "event": 16424248,
+        "value": 2.7,
+        "param": "",
+        "factor": "4236",
+        "score": "0:1",
+        "vector": "DOWN",
+        "hist": {
+          "time_change": 1567662375.8224745,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            2.7
+          ]
+        }
+      },
+      "ТБ(1.5)": {
+        "time_req": 1567662385,
+        "event": 16424248,
+        "value": 1.04,
+        "param": 150,
+        "factor": "1696",
+        "score": "0:1",
+        "vector": "UP",
+        "hist": {
+          "time_change": 1567662375.822526,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            1.04
+          ]
+        }
+      },
+      "ТМ(1.5)": {
+        "time_req": 1567662385,
+        "event": 16424248,
+        "value": 9,
+        "param": 150,
+        "factor": "1697",
+        "score": "0:1",
+        "vector": "DOWN",
+        "hist": {
+          "time_change": 1567662375.8225567,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            9
+          ]
+        }
+      },
+      "ТБ(2.5)": {
+        "time_req": 1567662385,
+        "event": 16424248,
+        "value": 1.22,
+        "param": 250,
+        "factor": "1727",
+        "score": "0:1",
+        "vector": "UP",
+        "hist": {
+          "time_change": 1567662375.8225992,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            1.22
+          ]
+        }
+      },
+      "ТМ(2.5)": {
+        "time_req": 1567662385,
+        "event": 16424248,
+        "value": 3.85,
+        "param": 250,
+        "factor": "1728",
+        "score": "0:1",
+        "vector": "DOWN",
+        "hist": {
+          "time_change": 1567662375.822628,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            3.85
+          ]
+        }
+      },
+      "ТБ(4.5)": {
+        "time_req": 1567662385,
+        "event": 16424248,
+        "value": 2.7,
+        "param": 450,
+        "factor": "1730",
+        "score": "0:1",
+        "vector": "UP",
+        "hist": {
+          "time_change": 1567662375.822671,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            2.7
+          ]
+        }
+      },
+      "ТМ(4.5)": {
+        "time_req": 1567662385,
+        "event": 16424248,
+        "value": 1.4,
+        "param": 450,
+        "factor": "1731",
+        "score": "0:1",
+        "vector": "DOWN",
+        "hist": {
+          "time_change": 1567662375.8226998,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            1.4
+          ]
+        }
+      },
+      "ТБ(5.5)": {
+        "time_req": 1567662385,
+        "event": 16424248,
+        "value": 5,
+        "param": 550,
+        "factor": "1733",
+        "score": "0:1",
+        "vector": "UP",
+        "hist": {
+          "time_change": 1567662375.8227427,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            5
+          ]
+        }
+      },
+      "ТМ(5.5)": {
+        "time_req": 1567662385,
+        "event": 16424248,
+        "value": 1.13,
+        "param": 550,
+        "factor": "1734",
+        "score": "0:1",
+        "vector": "DOWN",
+        "hist": {
+          "time_change": 1567662375.8227715,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            1.13
+          ]
+        }
+      },
+      "ТБ1(0.5)": {
+        "time_req": 1567662385,
+        "event": 16424248,
+        "value": 1.4,
+        "param": 50,
+        "factor": "1809",
+        "score": "0:1",
+        "vector": "UP",
+        "hist": {
+          "time_change": 1567662375.822993,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            1.4
+          ]
+        }
+      },
+      "ТМ1(0.5)": {
+        "time_req": 1567662385,
+        "event": 16424248,
+        "value": 2.7,
+        "param": 50,
+        "factor": "1810",
+        "score": "0:1",
+        "vector": "DOWN",
+        "hist": {
+          "time_change": 1567662375.8230278,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            2.7
+          ]
+        }
+      },
+      "ТБ1(1.5)": {
+        "time_req": 1567662385,
+        "event": 16424248,
+        "value": 2.85,
+        "param": 150,
+        "factor": "1812",
+        "score": "0:1",
+        "vector": "UP",
+        "hist": {
+          "time_change": 1567662375.823084,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            2.85
+          ]
+        }
+      },
+      "ТМ1(1.5)": {
+        "time_req": 1567662385,
+        "event": 16424248,
+        "value": 1.37,
+        "param": 150,
+        "factor": "1813",
+        "score": "0:1",
+        "vector": "DOWN",
+        "hist": {
+          "time_change": 1567662375.8231115,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            1.37
+          ]
+        }
+      },
+      "ТБ1(2.5)": {
+        "time_req": 1567662385,
+        "event": 16424248,
+        "value": 6.7,
+        "param": 250,
+        "factor": "1815",
+        "score": "0:1",
+        "vector": "UP",
+        "hist": {
+          "time_change": 1567662375.8231559,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            6.7
+          ]
+        }
+      },
+      "ТМ1(2.5)": {
+        "time_req": 1567662385,
+        "event": 16424248,
+        "value": 1.07,
+        "param": 250,
+        "factor": "1816",
+        "score": "0:1",
+        "vector": "DOWN",
+        "hist": {
+          "time_change": 1567662375.8231826,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            1.07
+          ]
+        }
+      },
+      "ТБ2(1.5)": {
+        "time_req": 1567662385,
+        "event": 16424248,
+        "value": 1.17,
+        "param": 150,
+        "factor": "1854",
+        "score": "0:1",
+        "vector": "UP",
+        "hist": {
+          "time_change": 1567662375.8232276,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            1.17
+          ]
+        }
+      },
+      "ТМ2(1.5)": {
+        "time_req": 1567662385,
+        "event": 16424248,
+        "value": 4.4,
+        "param": 150,
+        "factor": "1871",
+        "score": "0:1",
+        "vector": "DOWN",
+        "hist": {
+          "time_change": 1567662375.823254,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            4.4
+          ]
+        }
+      },
+      "ТБ2(2.5)": {
+        "time_req": 1567662385,
+        "event": 16424248,
+        "value": 1.8,
+        "param": 250,
+        "factor": "1873",
+        "score": "0:1",
+        "vector": "UP",
+        "hist": {
+          "time_change": 1567662375.8232965,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            1.8
+          ]
+        }
+      },
+      "ТМ2(2.5)": {
+        "time_req": 1567662385,
+        "event": 16424248,
+        "value": 1.9,
+        "param": 250,
+        "factor": "1874",
+        "score": "0:1",
+        "vector": "DOWN",
+        "hist": {
+          "time_change": 1567662375.8233347,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            1.9
+          ]
+        }
+      },
+      "ТБ2(3.5)": {
+        "time_req": 1567662385,
+        "event": 16424248,
+        "value": 3.4,
+        "param": 350,
+        "factor": "1880",
+        "score": "0:1",
+        "vector": "UP",
+        "hist": {
+          "time_change": 1567662375.8233788,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            3.4
+          ]
+        }
+      },
+      "ТМ2(3.5)": {
+        "time_req": 1567662385,
+        "event": 16424248,
+        "value": 1.27,
+        "param": 350,
+        "factor": "1881",
+        "score": "0:1",
+        "vector": "DOWN",
+        "hist": {
+          "time_change": 1567662375.823406,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            1.27
+          ]
+        }
+      }
+    }
+  },
+  "16424252": {
+    "sport_id": 1,
+    "sport_name": "Football",
+    "league": "Football. U23. Iran. Premier League",
+    "name": "Raad Sorkh Iranian U23 – Naft Iranian U23",
+    "priority": 1,
+    "score": "0:0",
+    "score_1st": "",
+    "time": "9:31",
+    "minute": 9.516666666666667,
+    "time_req": 1567662385,
+    "kofs": {
+      "12": {
+        "time_req": 1567662385,
+        "event": 16424252,
+        "value": 1.27,
+        "param": "",
+        "factor": "1571",
+        "score": "0:0",
+        "vector": "UP",
+        "hist": {
+          "time_change": 1567662375.8258154,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            1.27
+          ]
+        }
+      },
+      "ТБ(2.5)": {
+        "time_req": 1567662385,
+        "event": 16424252,
+        "value": 1.92,
+        "param": 250,
+        "factor": "930",
+        "score": "0:0",
+        "vector": "UP",
+        "hist": {
+          "time_change": 1567662384.8656557,
+          "avg_change": [
+            8,
+            9
+          ],
+          "order": [
+            1.9,
+            1.92
+          ]
+        }
+      },
+      "ТМ(2.5)": {
+        "time_req": 1567662385,
+        "event": 16424252,
+        "value": 1.78,
+        "param": 250,
+        "factor": "931",
+        "score": "0:0",
+        "vector": "DOWN",
+        "hist": {
+          "time_change": 1567662384.8656926,
+          "avg_change": [
+            8,
+            9
+          ],
+          "order": [
+            1.8,
+            1.78
+          ]
+        }
+      },
+      "П1": {
+        "time_req": 1567662385,
+        "event": 16424252,
+        "value": 2.3,
+        "param": "",
+        "factor": "921",
+        "score": "0:0",
+        "vector": "UP",
+        "hist": {
+          "time_change": 1567662375.825707,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            2.3
+          ]
+        }
+      },
+      "Н": {
+        "time_req": 1567662385,
+        "event": 16424252,
+        "value": 3.4,
+        "param": "",
+        "factor": "922",
+        "score": "0:0",
+        "vector": "DOWN",
+        "hist": {
+          "time_change": 1567662375.825735,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            3.4
+          ]
+        }
+      },
+      "П2": {
+        "time_req": 1567662385,
+        "event": 16424252,
+        "value": 2.85,
+        "param": "",
+        "factor": "923",
+        "score": "0:0",
+        "vector": "UP",
+        "hist": {
+          "time_change": 1567662375.825762,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            2.85
+          ]
+        }
+      },
+      "П1Н": {
+        "time_req": 1567662385,
+        "event": 16424252,
+        "value": 1.37,
+        "param": "",
+        "factor": "924",
+        "score": "0:0",
+        "vector": "DOWN",
+        "hist": {
+          "time_change": 1567662375.8257885,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            1.37
+          ]
+        }
+      },
+      "П2Н": {
+        "time_req": 1567662385,
+        "event": 16424252,
+        "value": 1.55,
+        "param": "",
+        "factor": "925",
+        "score": "0:0",
+        "vector": "DOWN",
+        "hist": {
+          "time_change": 1567662375.8258424,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            1.55
+          ]
+        }
+      },
+      "КЗ1": {
+        "time_req": 1567662385,
+        "event": 16424252,
+        "value": 1.3,
+        "param": "",
+        "factor": "4235",
+        "score": "0:0",
+        "vector": "UP",
+        "hist": {
+          "time_change": 1567662375.8259022,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            1.3
+          ]
+        }
+      },
+      "КНЗ1": {
+        "time_req": 1567662385,
+        "event": 16424252,
+        "value": 3.25,
+        "param": "",
+        "factor": "4236",
+        "score": "0:0",
+        "vector": "DOWN",
+        "hist": {
+          "time_change": 1567662384.865943,
+          "avg_change": [
+            8,
+            9
+          ],
+          "order": [
+            3.3,
+            3.25
+          ]
+        }
+      },
+      "КЗ2": {
+        "time_req": 1567662385,
+        "event": 16424252,
+        "value": 1.37,
+        "param": "",
+        "factor": "4238",
+        "score": "0:0",
+        "vector": "UP",
+        "hist": {
+          "time_change": 1567662375.8259864,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            1.37
+          ]
+        }
+      },
+      "КНЗ2": {
+        "time_req": 1567662385,
+        "event": 16424252,
+        "value": 2.85,
+        "param": "",
+        "factor": "4239",
+        "score": "0:0",
+        "vector": "DOWN",
+        "hist": {
+          "time_change": 1567662375.8260133,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            2.85
+          ]
+        }
+      },
+      "ОЗД": {
+        "time_req": 1567662385,
+        "event": 16424252,
+        "value": 1.83,
+        "param": "",
+        "factor": "4241",
+        "score": "0:0",
+        "vector": "UP",
+        "hist": {
+          "time_change": 1567662384.8660722,
+          "avg_change": [
+            8,
+            9
+          ],
+          "order": [
+            1.82,
+            1.83
+          ]
+        }
+      },
+      "ОЗН": {
+        "time_req": 1567662385,
+        "event": 16424252,
+        "value": 1.87,
+        "param": "",
+        "factor": "4242",
+        "score": "0:0",
+        "vector": "DOWN",
+        "hist": {
+          "time_change": 1567662384.8660996,
+          "avg_change": [
+            8,
+            9
+          ],
+          "order": [
+            1.88,
+            1.87
+          ]
+        }
+      },
+      "ТБ(0.5)": {
+        "time_req": 1567662385,
+        "event": 16424252,
+        "value": 1.05,
+        "param": 50,
+        "factor": "1696",
+        "score": "0:0",
+        "vector": "UP",
+        "hist": {
+          "time_change": 1567662375.8263736,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            1.05
+          ]
+        }
+      },
+      "ТМ(0.5)": {
+        "time_req": 1567662385,
+        "event": 16424252,
+        "value": 8,
+        "param": 50,
+        "factor": "1697",
+        "score": "0:0",
+        "vector": "DOWN",
+        "hist": {
+          "time_change": 1567662384.86642,
+          "avg_change": [
+            8,
+            9
+          ],
+          "order": [
+            8.5,
+            8
+          ]
+        }
+      },
+      "ТБ(1.5)": {
+        "time_req": 1567662385,
+        "event": 16424252,
+        "value": 1.3,
+        "param": 150,
+        "factor": "1727",
+        "score": "0:0",
+        "vector": "UP",
+        "hist": {
+          "time_change": 1567662375.8264437,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            1.3
+          ]
+        }
+      },
+      "ТМ(1.5)": {
+        "time_req": 1567662385,
+        "event": 16424252,
+        "value": 3.2,
+        "param": 150,
+        "factor": "1728",
+        "score": "0:0",
+        "vector": "DOWN",
+        "hist": {
+          "time_change": 1567662384.8664958,
+          "avg_change": [
+            8,
+            9
+          ],
+          "order": [
+            3.25,
+            3.2
+          ]
+        }
+      },
+      "ТБ(3.5)": {
+        "time_req": 1567662385,
+        "event": 16424252,
+        "value": 3.35,
+        "param": 350,
+        "factor": "1730",
+        "score": "0:0",
+        "vector": "UP",
+        "hist": {
+          "time_change": 1567662384.866541,
+          "avg_change": [
+            8,
+            9
+          ],
+          "order": [
+            3.3,
+            3.35
+          ]
+        }
+      },
+      "ТМ(3.5)": {
+        "time_req": 1567662385,
+        "event": 16424252,
+        "value": 1.28,
+        "param": 350,
+        "factor": "1731",
+        "score": "0:0",
+        "vector": "DOWN",
+        "hist": {
+          "time_change": 1567662375.8265438,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            1.28
+          ]
+        }
+      },
+      "ТБ(4.5)": {
+        "time_req": 1567662385,
+        "event": 16424252,
+        "value": 6,
+        "param": 450,
+        "factor": "1733",
+        "score": "0:0",
+        "vector": "UP",
+        "hist": {
+          "time_change": 1567662384.866616,
+          "avg_change": [
+            8,
+            9
+          ],
+          "order": [
+            5.9,
+            6
+          ]
+        }
+      },
+      "ТМ(4.5)": {
+        "time_req": 1567662385,
+        "event": 16424252,
+        "value": 1.09,
+        "param": 450,
+        "factor": "1734",
+        "score": "0:0",
+        "vector": "DOWN",
+        "hist": {
+          "time_change": 1567662384.8666508,
+          "avg_change": [
+            8,
+            9
+          ],
+          "order": [
+            1.1,
+            1.09
+          ]
+        }
+      },
+      "ТБ1(0.5)": {
+        "time_req": 1567662385,
+        "event": 16424252,
+        "value": 1.3,
+        "param": 50,
+        "factor": "1809",
+        "score": "0:0",
+        "vector": "UP",
+        "hist": {
+          "time_change": 1567662375.8266733,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            1.3
+          ]
+        }
+      },
+      "ТМ1(0.5)": {
+        "time_req": 1567662385,
+        "event": 16424252,
+        "value": 3.25,
+        "param": 50,
+        "factor": "1810",
+        "score": "0:0",
+        "vector": "DOWN",
+        "hist": {
+          "time_change": 1567662384.8667295,
+          "avg_change": [
+            8,
+            9
+          ],
+          "order": [
+            3.3,
+            3.25
+          ]
+        }
+      },
+      "ТБ1(1.5)": {
+        "time_req": 1567662385,
+        "event": 16424252,
+        "value": 2.25,
+        "param": 150,
+        "factor": "1812",
+        "score": "0:0",
+        "vector": "UP",
+        "hist": {
+          "time_change": 1567662375.826745,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            2.25
+          ]
+        }
+      },
+      "ТМ1(1.5)": {
+        "time_req": 1567662385,
+        "event": 16424252,
+        "value": 1.57,
+        "param": 150,
+        "factor": "1813",
+        "score": "0:0",
+        "vector": "DOWN",
+        "hist": {
+          "time_change": 1567662375.8267722,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            1.57
+          ]
+        }
+      },
+      "ТБ1(2.5)": {
+        "time_req": 1567662385,
+        "event": 16424252,
+        "value": 4.9,
+        "param": 250,
+        "factor": "1815",
+        "score": "0:0",
+        "vector": "UP",
+        "hist": {
+          "time_change": 1567662375.8268473,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            4.9
+          ]
+        }
+      },
+      "ТМ1(2.5)": {
+        "time_req": 1567662385,
+        "event": 16424252,
+        "value": 1.14,
+        "param": 250,
+        "factor": "1816",
+        "score": "0:0",
+        "vector": "DOWN",
+        "hist": {
+          "time_change": 1567662375.826877,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            1.14
+          ]
+        }
+      },
+      "ТБ2(0.5)": {
+        "time_req": 1567662385,
+        "event": 16424252,
+        "value": 1.37,
+        "param": 50,
+        "factor": "1854",
+        "score": "0:0",
+        "vector": "UP",
+        "hist": {
+          "time_change": 1567662375.8269353,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            1.37
+          ]
+        }
+      },
+      "ТМ2(0.5)": {
+        "time_req": 1567662385,
+        "event": 16424252,
+        "value": 2.85,
+        "param": 50,
+        "factor": "1871",
+        "score": "0:0",
+        "vector": "DOWN",
+        "hist": {
+          "time_change": 1567662375.826974,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            2.85
+          ]
+        }
+      },
+      "ТБ2(1.5)": {
+        "time_req": 1567662385,
+        "event": 16424252,
+        "value": 2.65,
+        "param": 150,
+        "factor": "1873",
+        "score": "0:0",
+        "vector": "UP",
+        "hist": {
+          "time_change": 1567662384.8670335,
+          "avg_change": [
+            8,
+            9
+          ],
+          "order": [
+            2.6,
+            2.65
+          ]
+        }
+      },
+      "ТМ2(1.5)": {
+        "time_req": 1567662385,
+        "event": 16424252,
+        "value": 1.42,
+        "param": 150,
+        "factor": "1874",
+        "score": "0:0",
+        "vector": "DOWN",
+        "hist": {
+          "time_change": 1567662384.8670635,
+          "avg_change": [
+            8,
+            9
+          ],
+          "order": [
+            1.43,
+            1.42
+          ]
+        }
+      },
+      "ТБ2(2.5)": {
+        "time_req": 1567662385,
+        "event": 16424252,
+        "value": 6.5,
+        "param": 250,
+        "factor": "1880",
+        "score": "0:0",
+        "vector": "UP",
+        "hist": {
+          "time_change": 1567662375.82709,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            6.5
+          ]
+        }
+      },
+      "ТМ2(2.5)": {
+        "time_req": 1567662385,
+        "event": 16424252,
+        "value": 1.08,
+        "param": 250,
+        "factor": "1881",
+        "score": "0:0",
+        "vector": "DOWN",
+        "hist": {
+          "time_change": 1567662375.8271172,
+          "avg_change": [
+            9
+          ],
+          "order": [
+            1.08
+          ]
+        }
+      }
+    }
+  }
+}
