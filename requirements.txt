@@ -8,3 +8,4 @@ pytz
 beautifulsoup4
 tornado
 asyncio
+pika
