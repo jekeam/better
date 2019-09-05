@@ -55,9 +55,9 @@ def get_olimp(resp, arr_matchs):
 
 def get_fonbet(resp, arr_matchs):
     
-#for val in resp.get('sports'):
-    #if val.get('kind') == 'sport':
-        #print(str(val.get('id')) + ' ' + val.get('name'))
+    # for val in resp.get('sports'):
+    #     if val.get('kind') == 'sport':
+    #         print(str(val.get('id')) + ' ' + val.get('name'))
          
 # 1 Football
 # 3 Basketball
@@ -75,6 +75,7 @@ def get_fonbet(resp, arr_matchs):
 # 45827 Cybertennis
 # 11627 Floorball
 # 40481 Cyberbasket
+#       eSports
             
     arr_matchs_copy = copy.deepcopy(arr_matchs)
     for key in arr_matchs_copy.keys():
@@ -316,6 +317,7 @@ def starter_bets(bets_olimp, bets_fonbet, pair_mathes, mathes_complite, mathes_i
 
 
 def compare_teams(team1_bk1, team2_bk1, team1_bk2, team2_bk2):
+    # TODO add event group
     if team1_bk1 and team2_bk1 and team1_bk2 and team2_bk2:
         team1_bk1 = re.sub('[^A-z 0-9]', '', team1_bk1.lower()).replace(' ', '')
         team2_bk1 = re.sub('[^A-z 0-9]', '', team2_bk1.lower()).replace(' ', '')
@@ -324,6 +326,7 @@ def compare_teams(team1_bk1, team2_bk1, team1_bk2, team2_bk2):
         if 1.7 < \
                 SequenceMatcher(None, team1_bk1, team1_bk2).ratio() + \
                 SequenceMatcher(None, team2_bk1, team2_bk2).ratio():
+            # print(team1_bk1, team2_bk1, team1_bk2, team2_bk2, sep=';')
             return True
     else:
         return False
@@ -393,7 +396,8 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
             is_top = False
             if int(pair_math[0]) in arr_fonbet_top_matchs or int(pair_math[1]) in arr_fonbet_top_matchs:
                 is_top = True
-
+            # print(bets_olimp)
+            # time.sleep(15)
             math_json_olimp = bets_olimp.get(pair_math[0], {})
             math_json_fonbet = bets_fonbet.get(pair_math[1], {})
 
