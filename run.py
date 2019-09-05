@@ -317,6 +317,7 @@ def starter_bets(bets_olimp, bets_fonbet, pair_mathes, mathes_complite, mathes_i
 
 
 def compare_teams(team1_bk1, team2_bk1, team1_bk2, team2_bk2):
+    print(team1_bk1, team2_bk1, team1_bk2, team2_bk2)
     if team1_bk1 and team2_bk1 and team1_bk2 and team2_bk2:
         team1_bk1 = re.sub('[^A-z 0-9]', '', team1_bk1.lower()).replace(' ', '')
         team2_bk1 = re.sub('[^A-z 0-9]', '', team2_bk1.lower()).replace(' ', '')
