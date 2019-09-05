@@ -326,7 +326,7 @@ def compare_teams(team1_bk1, team2_bk1, team1_bk2, team2_bk2):
         if 1.7 < \
                 SequenceMatcher(None, team1_bk1, team1_bk2).ratio() + \
                 SequenceMatcher(None, team2_bk1, team2_bk2).ratio():
-            print(team1_bk1, team2_bk1, team1_bk2, team2_bk2, sep=';')
+            # print(team1_bk1, team2_bk1, team1_bk2, team2_bk2, sep=';')
             return True
     else:
         return False
@@ -396,8 +396,8 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
             is_top = False
             if int(pair_math[0]) in arr_fonbet_top_matchs or int(pair_math[1]) in arr_fonbet_top_matchs:
                 is_top = True
-            print(bets_olimp)
-            time.sleep(15)
+            # print(bets_olimp)
+            # time.sleep(15)
             math_json_olimp = bets_olimp.get(pair_math[0], {})
             math_json_fonbet = bets_fonbet.get(pair_math[1], {})
 
