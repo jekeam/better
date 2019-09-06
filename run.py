@@ -9,7 +9,7 @@ from difflib import SequenceMatcher
 import re
 from exceptions import *
 from server import run_server
-from utils import prnts, DEBUG, find_max_mode, opposition, MINUTE_COMPLITE, serv_log, get_param
+from utils import prnts, DEBUG, find_max_mode, opposition, MINUTE_COMPLITE, serv_log, get_param, sport_list
 from proxy_switcher import ProxySwitcher
 import json
 import os.path
@@ -36,6 +36,14 @@ prnts('TIMEOUT_MATCH_MINUS: ' + str(TIMEOUT_MATCH_MINUS))
 prnts('MINUTE_COMPLITE: ' + str(MINUTE_COMPLITE))
 prnts('SERVER_IP: ' + str(SERVER_IP))
 
+def if_exists(jsos_list: dict, key_name: str, val: str):
+    for m in jsos_list:
+        if m.get(key_name) == val:
+            return True
+    return False
+    
+    
+
 
 def get_olimp(resp, arr_matchs):
     # Очистим дстарые данные
@@ -55,62 +63,62 @@ def get_olimp(resp, arr_matchs):
 
 def get_fonbet(resp, arr_matchs):
     
-    for val in resp.get('sports'):
-        if val.get('kind') == 'sport':
-            print(str(val.get('id')) + ' ' + val.get('name'))
-         
-# 1 Football
-# 2 Hockey
-# 3 Basketball
-# 4 Tennis
-# 9 Volleyball
-# 1434 Futsal
-# 41963 Lottery
-# 11624 Beach volley
-# 29086 Esports          ??
-# 3088 Table tennis
-# 1439 Field hockey
-# 19936 Sports simulators
-# 11630 Badminton
-# 44943 Rocket League
-# 40479 Cyberfootball
-# 45827 Cybertennis
-# 11627 Floorball
-# 40481 Cyberbasket
-#       eSports
-
-
-
-
-
-
-
-
+    # for val in resp.get('sports'):
+    #     if val.get('kind') == 'sport':
+    #         print(str(val.get('id')) + ' ' + val.get('name'))
+    #         # 1 Football
+    #         # 2 Hockey
+    #         # 3 Basketball
+    #         # 4 Tennis
+    #         # 9 Volleyball
+    #         # 1434 Futsal
+    #         # 41963 Lottery
+    #         # 11624 Beach volley
+    #         # 29086 Esports
+    #         # 3088 Table tennis
+    #         # 1439 Field hockey
+    #         # 19936 Sports simulators
+    #         # 11630 Badminton
+    #         # 44943 Rocket League
+    #         # 40479 Cyberfootball
+    #         # 45827 Cybertennis
+    #         # 11627 Floorball
+    #         # 40481 Cyberbasket
             
     arr_matchs_copy = copy.deepcopy(arr_matchs)
     for key in arr_matchs_copy.keys():
         arr_matchs.pop(key)
     # получим все события по футболу
-    events = [[sport['name'], sport['id']] for sport in resp['sports'] if
-              'Football' in sport['name'] and sport['id'] != 1]
-    idEvents = [e[1] for e in events]
-
+    events = [
+        {
+            'bk': 'fonbet', 
+            'name': sport['name'], 
+            'id': sport['id'], 
+            'sportId': sport['parentId']
+        } for sport in resp['sports'] if sport['kind'] == 'segment' and if_exists(sport_list, 'fonbet', sport['parentId'])
+    ]
+    
     # получим список ид всех матчей по событиям
-    if idEvents:
-        idMatches = [event['id'] for event in resp['events'] if event.get('sportId') in idEvents]
+    idEvents = [{'id' : e.get('id'), 'sportId': e.get('sportId')} for e in events]
+    for idEvent in idEvents:
+        idMatches = [{'id': event['id'], 'sportId': idEvent['sportId']} for event in resp['events'] if if_exists(idEvents, 'id', event.get('sportId'))]
 
     # полчим все инфу по ид матча
     if idEvents and idMatches:
         for mid in idMatches:
             for event in resp['events']:
-                if event['id'] == mid and event['kind'] == 1:
+                if event['id'] == mid.get('id') and if_exists(idEvents, 'id', event['sportId']):
                     arr_matchs[str(event['id'])] = {
+                        'bk_name': 'fonbet',
+                        'sport_id': mid.get('sportId'),
+                        'name': event['name'],
                         'team1': event.get('team1', ''),
                         'team2': event.get('team2', ''),
                     }
         # for mid in idMatches:
         # for event in resp['events']:
         # if event['id'] == mid and event['kind'] > 1 and event['name'] in ['1st half', '2nd half', 'corners']:
+    print(arr_matchs)
 
 
 def start_seeker_matchs_olimp(proxies, gen_proxi_olimp, arr_matchs):
@@ -295,7 +303,7 @@ def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_p
         time_sleep = max(0, (TIMEOUT_MATCH - (TIMEOUT_MATCH_MINUS + time_resp)))
 
         if DEBUG:
-            prnts(str('Фонбет, матч ' + str(match_id_fonbet) + '. Время ответа: ' + str(time_resp) +
+            prnts(str('Фон��ет, матч ' + str(match_id_fonbet) + '. Время ответа: ' + str(time_resp) +
                       ', запрос через ' + str(time_sleep)) + ' ' + ps.get_cur_proxy())
 
         time.sleep(time_sleep)
@@ -407,8 +415,8 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
             if int(pair_math[0]) in arr_fonbet_top_matchs or int(pair_math[1]) in arr_fonbet_top_matchs:
                 is_top = True
                 
-            print(bets_fonbet)
-            time.sleep(15)
+            # print(bets_fonbet)
+            # time.sleep(15)
             # see exp/bets_olimp.json
             
             math_json_olimp = bets_olimp.get(pair_math[0], {})
@@ -642,9 +650,11 @@ if __name__ == '__main__':
     proxy_saver = threading.Thread(target=start_proxy_saver, args=(proxies_olimp, proxies_fonbet, proxy_filename_olimp, proxy_filename_fonbet,))
     proxy_saver.start()
 
-    # json by mathes
-    arr_olimp_matchs = dict()
+    # arr_BKNAME_matchs Список матчей, TODO, Педелать на универсальный формат, 1 для всех БК
+    arr_olimp_matchs = dict() 
     arr_fonbet_matchs = dict()
+    arr_matchs = dict()
+    
     arr_fonbet_top_matchs = []
     mathes_complite = []
 

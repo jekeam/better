@@ -13,6 +13,19 @@ MINUTE_COMPLITE = 88
 package_dir = os.path.dirname(__file__)
 dtOld = datetime.datetime.now()
 
+sport_list = [
+    {
+        'name': 'Football',
+        'olimp': 1,
+        'fonbet': 1
+    },
+    {
+        'name': 'Esports',
+        'olimp': 29086,
+        'fonbet': 29086
+    }
+]
+
 opposition = {
     '1ТБ': '1ТМ',
     '1ТМ': '1ТБ',
