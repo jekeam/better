@@ -110,6 +110,7 @@ def get_fonbet(resp, arr_matchs):
     if idEvents and idMatches:
         for mid in idMatches:
             for event in resp['events']:
+                print(event)
                 if event['id'] == mid.get('id') and event['kind'] == 1:
                     arr_matchs[str(event['id'])] = {
                         'bk_name': 'fonbet',
