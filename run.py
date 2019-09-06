@@ -36,10 +36,13 @@ prnts('TIMEOUT_MATCH_MINUS: ' + str(TIMEOUT_MATCH_MINUS))
 prnts('MINUTE_COMPLITE: ' + str(MINUTE_COMPLITE))
 prnts('SERVER_IP: ' + str(SERVER_IP))
 
-def if_exists(jsos_list: dict, key_name: str, val: str):
+def if_exists(jsos_list: dict, key_name: str, val: str, get_key: str=None):
     for m in jsos_list:
         if m.get(key_name) == val:
-            return True
+            if not get_key:
+                return True
+            else:
+                return m.get(get_key, 'error: key name:{} in {} not found'.format(get_key, m))
     return False
     
     
@@ -111,6 +114,7 @@ def get_fonbet(resp, arr_matchs):
                     arr_matchs[str(event['id'])] = {
                         'bk_name': 'fonbet',
                         'sport_id': mid.get('sportId'),
+                        'sport_name': if_exists(sport_list, 'fonbet', mid.get('sportId'), 'name'),
                         'name': event['name'],
                         'team1': event.get('team1', ''),
                         'team2': event.get('team2', ''),
