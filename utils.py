@@ -7,6 +7,9 @@ import requests
 import datetime
 import statistics
 
+def print_j(j):
+    print(dumps(j, ensure_ascii=False, indent=4))
+
     
 MINUTE_COMPLITE = 88
 
@@ -21,7 +24,7 @@ sport_list = [
     },
     {
         'name': 'Esports',
-        'olimp': 29086,
+        'olimp': 112,
         'fonbet': 29086
     }
 ]

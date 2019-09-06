@@ -9,7 +9,7 @@ from difflib import SequenceMatcher
 import re
 from exceptions import *
 from server import run_server
-from utils import prnts, DEBUG, find_max_mode, opposition, MINUTE_COMPLITE, serv_log, get_param, sport_list
+from utils import prnts, DEBUG, find_max_mode, opposition, MINUTE_COMPLITE, serv_log, get_param, sport_list,                   print_j
 from proxy_switcher import ProxySwitcher
 import json
 import os.path
@@ -55,13 +55,19 @@ def get_olimp(resp, arr_matchs):
         arr_matchs.pop(key)
     if resp:
         for liga_info in resp:
-            for math_info in liga_info.get('it'):
-                match_id_str = str(math_info.get('id'))
-                # math_block = True if math_info.get('ms') == 1 else False
-                arr_matchs[match_id_str] = {
-                    'team1': math_info.get('c1', ''),
-                    'team2': math_info.get('c2', ''),
-                }
+            if if_exists(sport_list, 'olimp', liga_info.get('sport_id')):
+                for math_info in liga_info.get('it'):
+                    match_id_str = str(math_info.get('id'))
+                    # math_block = True if math_info.get('ms') == 1 else False
+                    arr_matchs[match_id_str] = {
+                        'bk_name': 'olimp',
+                        'sport_id': liga_info.get('sport_id'),
+                        'sport_name': if_exists(sport_list, 'olimp', liga_info.get('sport_id'), 'name'),
+                        'name': liga_info['cn'],
+                        'team1': math_info.get('c1', ''),
+                        'team2': math_info.get('c2', ''),
+                    }
+    # print_j(arr_matchs)
 
 
 def get_fonbet(resp, arr_matchs):
@@ -98,7 +104,7 @@ def get_fonbet(resp, arr_matchs):
             'event_name': sport['name'], 
             'event_id': sport['id'], 
             'event_sportId': sport['parentId']
-        } for sport in resp['sports'] if sport['kind'] == 'segment' and if_exists(sport_list, 'fonbet', sport['parentId'])
+        } for sport in resp['sports'] if sport['kind'] == 'segment' and if_exists(sport_list, 'fonbet', sport.get('parentId'))
     ]
     
     # получим список ид всех матчей по событиям
@@ -110,8 +116,7 @@ def get_fonbet(resp, arr_matchs):
     if idEvents and idMatches:
         for mid in idMatches:
             for event in resp['events']:
-                print(event)
-                if event['id'] == mid.get('id') and event['kind'] == 1:
+                if event['id'] == mid.get('id') and event.get('parentId', -1) == -1: # Только главные события
                     arr_matchs[str(event['id'])] = {
                         'bk_name': 'fonbet',
                         'sport_id': mid.get('sportId'),
@@ -123,7 +128,8 @@ def get_fonbet(resp, arr_matchs):
         # for mid in idMatches:
         # for event in resp['events']:
         # if event['id'] == mid and event['kind'] > 1 and event['name'] in ['1st half', '2nd half', 'corners']:
-    print(arr_matchs)
+    # print(arr_matchs)
+    # ['16453828': {'bk_name': 'fonbet', 'sport_id': 1, 'sport_name': 'Football', 'name': '', 'team1': 'Nadi', 'team2': 'Suva'}, ....]
 
 
 def start_seeker_matchs_olimp(proxies, gen_proxi_olimp, arr_matchs):
