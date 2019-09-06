@@ -130,13 +130,13 @@ def get_fonbet(resp, arr_matchs):
     # ['16453828': {'bk_name': 'fonbet', 'sport_id': 1, 'sport_name': 'Football', 'name': '', 'team1': 'Nadi', 'team2': 'Suva'}, ....]
 
 
-def start_seeker_matchs_olimp(proxies, gen_proxi_olimp, arr_matchs):
+def start_seeker_matchs_olimp(gen_proxi_olimp, arr_matchs):
     global TIMEOUT_MATCHS
     proxy = gen_proxi_olimp.next()
     fail_proxy = 0
     while True:
         try:
-            resp, time_resp = get_matches_olimp(proxies, proxy, TIMEOUT_MATCHS)
+            resp, time_resp = get_matches_olimp(proxy, TIMEOUT_MATCHS)
             get_olimp(resp, arr_matchs)
         except TimeOut as e:
             err_str = 'Timeout: Олимп, ошибка призапросе списока матчей'
@@ -679,11 +679,15 @@ if __name__ == '__main__':
 
     pair_mathes = []
 
-    olimp_seeker_matchs = threading.Thread(target=start_seeker_matchs_olimp, args=(proxies_olimp, gen_proxi_olimp, arr_olimp_matchs))
+    olimp_seeker_matchs = threading.Thread(target=start_seeker_matchs_olimp, args=(gen_proxi_olimp, arr_matchs))
     olimp_seeker_matchs.start()
 
-    fonbet_seeker_matchs = threading.Thread(target=start_seeker_matchs_fonbet, args=(gen_proxi_fonbet, arr_fonbet_matchs))
+    fonbet_seeker_matchs = threading.Thread(target=start_seeker_matchs_fonbet, args=(gen_proxi_fonbet, arr_matchs))
     fonbet_seeker_matchs.start()
+
+    while True:
+        print_j(arr_matchs)
+        time.sleep(15)
 
     fonbet_seeker_top_matchs = threading.Thread(target=start_seeker_top_matchs_fonbet, args=(gen_proxi_fonbet, arr_fonbet_top_matchs, pair_mathes))
     fonbet_seeker_top_matchs.start()

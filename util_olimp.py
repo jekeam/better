@@ -81,7 +81,7 @@ def olimp_get_xtoken(payload, olimp_secret_key):
     return {"X-TOKEN": md5(to_encode.encode()).hexdigest()}
 
 
-def get_matches_olimp(proxies, proxy, time_out):
+def get_matches_olimp(proxy, time_out):
     global olimp_data
     global olimp_head
 
