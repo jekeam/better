@@ -9,7 +9,7 @@ from difflib import SequenceMatcher
 import re
 from exceptions import *
 from server import run_server
-from utils import prnts, DEBUG, find_max_mode, opposition, MINUTE_COMPLITE, serv_log, get_param, sport_list,                   print_j
+from utils import prnts, DEBUG, find_max_mode, opposition, MINUTE_COMPLITE, serv_log, get_param, sport_list, print_j
 from proxy_switcher import ProxySwitcher
 import json
 import os.path
@@ -36,7 +36,8 @@ prnts('TIMEOUT_MATCH_MINUS: ' + str(TIMEOUT_MATCH_MINUS))
 prnts('MINUTE_COMPLITE: ' + str(MINUTE_COMPLITE))
 prnts('SERVER_IP: ' + str(SERVER_IP))
 
-def if_exists(jsos_list: dict, key_name: str, val: str, get_key: str=None):
+
+def if_exists(jsos_list: dict, key_name: str, val: str, get_key: str = None):
     for m in jsos_list:
         if m.get(key_name) == val:
             if not get_key:
@@ -44,8 +45,6 @@ def if_exists(jsos_list: dict, key_name: str, val: str, get_key: str=None):
             else:
                 return m.get(get_key, 'error: key name:{} in {} not found'.format(get_key, m))
     return False
-    
-    
 
 
 def get_olimp(resp, arr_matchs):
@@ -71,7 +70,6 @@ def get_olimp(resp, arr_matchs):
 
 
 def get_fonbet(resp, arr_matchs):
-    
     # for val in resp.get('sports'):
     #     if val.get('kind') == 'sport':
     #         print(str(val.get('id')) + ' ' + val.get('name'))
@@ -93,30 +91,30 @@ def get_fonbet(resp, arr_matchs):
     #         # 45827 Cybertennis
     #         # 11627 Floorball
     #         # 40481 Cyberbasket
-            
+
     arr_matchs_copy = copy.deepcopy(arr_matchs)
     for key in arr_matchs_copy.keys():
         arr_matchs.pop(key)
     # получим все события по футболу
     events = [
         {
-            'event_bk': 'fonbet', 
-            'event_name': sport['name'], 
-            'event_id': sport['id'], 
+            'event_bk': 'fonbet',
+            'event_name': sport['name'],
+            'event_id': sport['id'],
             'event_sportId': sport['parentId']
         } for sport in resp['sports'] if sport['kind'] == 'segment' and if_exists(sport_list, 'fonbet', sport.get('parentId'))
     ]
-    
+
     # получим список ид всех матчей по событиям
     idMatches = list()
-    idEvents = [{'event_id' : e.get('event_id'), 'event_sportId': e.get('event_sportId')} for e in events]
+    idEvents = [{'event_id': e.get('event_id'), 'event_sportId': e.get('event_sportId')} for e in events]
     for idEvent in idEvents:
         idMatches.append([{'id': event['id'], 'sportId': idEvent['event_sportId']} for event in resp['events'] if event['sportId'] == idEvent['event_id']][0])
     # полчим все инфу по ид матча
     if idEvents and idMatches:
         for mid in idMatches:
             for event in resp['events']:
-                if event['id'] == mid.get('id') and event.get('parentId', -1) == -1: # Только главные события
+                if event['id'] == mid.get('id') and event.get('parentId', -1) == -1:  # Только главные события
                     arr_matchs[str(event['id'])] = {
                         'bk_name': 'fonbet',
                         'sport_id': mid.get('sportId'),
@@ -425,11 +423,11 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
             is_top = False
             if int(pair_math[0]) in arr_fonbet_top_matchs or int(pair_math[1]) in arr_fonbet_top_matchs:
                 is_top = True
-                
+
             # print(bets_fonbet)
             # time.sleep(15)
             # see exp/bets_olimp.json
-            
+
             math_json_olimp = bets_olimp.get(pair_math[0], {})
             math_json_fonbet = bets_fonbet.get(pair_math[1], {})
 
@@ -662,10 +660,10 @@ if __name__ == '__main__':
     proxy_saver.start()
 
     # arr_BKNAME_matchs Список матчей, TODO, Педелать на универсальный формат, 1 для всех БК
-    arr_olimp_matchs = dict() 
+    arr_olimp_matchs = dict()
     arr_fonbet_matchs = dict()
     arr_matchs = dict()
-    
+
     arr_fonbet_top_matchs = []
     mathes_complite = []
 
