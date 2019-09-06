@@ -94,23 +94,23 @@ def get_fonbet(resp, arr_matchs):
     # получим все события по футболу
     events = [
         {
-            'bk': 'fonbet', 
-            'name': sport['name'], 
-            'id': sport['id'], 
-            'sportId': sport['parentId']
+            'event_bk': 'fonbet', 
+            'event_name': sport['name'], 
+            'event_id': sport['id'], 
+            'event_sportId': sport['parentId']
         } for sport in resp['sports'] if sport['kind'] == 'segment' and if_exists(sport_list, 'fonbet', sport['parentId'])
     ]
     
     # получим список ид всех матчей по событиям
-    idEvents = [{'id' : e.get('id'), 'sportId': e.get('sportId')} for e in events]
+    idMatches = list()
+    idEvents = [{'event_id' : e.get('event_id'), 'event_sportId': e.get('event_sportId')} for e in events]
     for idEvent in idEvents:
-        idMatches = [{'id': event['id'], 'sportId': idEvent['sportId']} for event in resp['events'] if if_exists(idEvents, 'id', event.get('sportId'))]
-
+        idMatches.append([{'id': event['id'], 'sportId': idEvent['event_sportId']} for event in resp['events'] if event['sportId'] == idEvent['event_id']][0])
     # полчим все инфу по ид матча
     if idEvents and idMatches:
         for mid in idMatches:
             for event in resp['events']:
-                if event['id'] == mid.get('id') and if_exists(idEvents, 'id', event['sportId']):
+                if event['id'] == mid.get('id') and event['kind'] == 1:
                     arr_matchs[str(event['id'])] = {
                         'bk_name': 'fonbet',
                         'sport_id': mid.get('sportId'),
