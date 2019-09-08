@@ -454,9 +454,9 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
 
             curr_opposition = copy.deepcopy(opposition)
 
-            print(pair_math)
-            print(math_json_olimp)
-            print(math_json_fonbet)
+            # print(pair_math)
+            # print(math_json_olimp)
+            # print(math_json_fonbet)
 
             for kof_type in math_json_olimp.get('kofs', {}):
                 if '(' in kof_type:
