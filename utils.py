@@ -8,23 +8,26 @@ import datetime
 import statistics
 
 
-def print_j(j):
-    print(dumps(j, ensure_ascii=False, indent=4))
+def print_j(j, ret=False):
+    if not ret:
+        print(dumps(j, ensure_ascii=False, indent=4))
+    else:
+        return dumps(j, ensure_ascii=False, indent=2)
 
 
-MINUTE_COMPLITE = 88
+# MINUTE_COMPLITE = 88
 
 package_dir = os.path.dirname(__file__)
 dtOld = datetime.datetime.now()
 
 
-def if_exists(jsos_list: dict, key_name: str, val: str, get_key: str = None):
+def if_exists(jsos_list: dict, key_name: str, val: str, get_key: str = ''):
     for m in jsos_list:
         if m.get(key_name) == val:
-            if not get_key:
+            if get_key == '':
                 return True
             else:
-                return m.get(get_key, 'error: key name:{} in {} not found'.format(get_key, m))
+                return m.get(get_key)
     return False
 
 
@@ -33,28 +36,30 @@ sport_list = [
         'name': 'football',
         'olimp': 1,
         'fonbet': 1,
-        'minute_complite': 90,
+        'min': 90,
     },
-    # {
-    #     'name': 'esports',
-    #     'olimp': 112,
-    #     'fonbet': 29086
-    # },
-    # {
-    #     'name': 'volleyball',
-    #     'olimp': 10,
-    #     'fonbet': 9
-    # },
+    {
+        'name': 'esports',
+        'olimp': 112,
+        'fonbet': 29086
+    },
+    {
+        'name': 'volleyball',
+        'olimp': 10,
+        'fonbet': 9
+    },
     {
         'name': 'basketball',
         'olimp': 5,
-        'fonbet': 3
+        'fonbet': 3,
+        'min': 40,
     },
-    # {
-    #     'name': 'hockey',
-    #     'olimp': 2,
-    #     'fonbet': 2
-    # }
+    {
+        'name': 'hockey',
+        'olimp': 2,
+        'fonbet': 2,
+        'min': 60,
+    }
 ]
 
 opposition = {

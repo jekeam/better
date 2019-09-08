@@ -9,7 +9,7 @@ from difflib import SequenceMatcher
 import re
 from exceptions import *
 from server import run_server
-from utils import prnts, DEBUG, find_max_mode, opposition, MINUTE_COMPLITE, serv_log, get_param, sport_list, if_exists, print_j
+from utils import prnts, DEBUG, find_max_mode, opposition, serv_log, get_param, sport_list, if_exists, print_j
 from proxy_switcher import ProxySwitcher
 import json
 import os.path
@@ -33,8 +33,8 @@ else:
 prnts('TIMEOUT_MATCHS: ' + str(TIMEOUT_MATCHS))
 prnts('TIMEOUT_MATCH: ' + str(TIMEOUT_MATCH))
 prnts('TIMEOUT_MATCH_MINUS: ' + str(TIMEOUT_MATCH_MINUS))
-prnts('MINUTE_COMPLITE: ' + str(MINUTE_COMPLITE))
 prnts('SERVER_IP: ' + str(SERVER_IP))
+prnts('SPORT_LIST: ' + print_j(sport_list, 'return var'))
 
 
 def get_olimp(resp, arr_matchs):
@@ -132,6 +132,8 @@ def get_fonbet(resp, arr_matchs):
             for event in resp['events']:
                 # Только главные события
                 if event['id'] == mid.get('id'):  # and event.get('parentId', -1) == -1 # Пока вырезал все дочерние события выше see row: 123
+                    # print(sport_list)
+                    # print(if_exists(sport_list, 'fonbet', mid.get('sportId'), 'name'))
                     arr_matchs[str(event['id'])] = {
                         'bk_name': 'fonbet',
                         'sport_id': mid.get('sportId'),
@@ -398,18 +400,22 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                                 # Проверим что ид матча 2 нет в списке
                                 if 'yes' not in list(map(lambda id: 'yes' if bk2_match_id in id else 'no', pair_mathes)):
                                     # Проверим что матч не завершен:
+                                    # print(bk1_match_id, bk2_match_id, mathes_complite, sep=';')
                                     if bk1_match_id in mathes_complite or bk2_match_id in mathes_complite:
                                         # prnts('Матчи завершены: ' + str(bk1_match_id) + '-' + str(bk2_match_id))
                                         pass
                                     else:
-                                        match_name = bk1_match_info.get('sport_name') + ': ' + \
+                                        # print_j(bk1_match_info)
+                                        # print_j(bk2_match_info)
+                                        match_name = bk1_match_info.get('sport_name', 'X') + ': ' + \
                                                      str(bk1_match_id) + ' ' + \
-                                                     bk1_match_info.get('team1') + ' vs ' + \
-                                                     bk1_match_info.get('team2') + ' | ' + \
+                                                     bk1_match_info.get('team1', 'X') + ' vs ' + \
+                                                     bk1_match_info.get('team2', 'X') + ' | ' + \
                                                      str(bk2_match_id) + ' ' + \
-                                                     bk2_match_info.get('team1') + ' vs ' + \
-                                                     bk2_match_info.get('team2')
-
+                                                     bk2_match_info.get('team1', 'X') + ' vs ' + \
+                                                     bk2_match_info.get('team2', 'X')
+                                        # print(match_name)
+                                        # time.sleep(15)
                                         if compare_teams(
                                                 bk1_match_info.get('team1'),
                                                 bk1_match_info.get('team2'),
@@ -498,7 +504,8 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
                     if is_fork:  # or True
 
                         time_break_fonbet = False
-                        
+                        period = 0
+
                         if event_type == 'football':
                             period = 1
                             if re.match('\(\d+:\d+\)', math_json_fonbet.get('score_1st', '').replace(' ', '')) and \
@@ -508,18 +515,18 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
                             elif re.match('\(\d+:\d+\)', math_json_fonbet.get('score_1st', '').replace(' ', '')) and \
                                     round(math_json_fonbet.get('minute', ''), 2) > 45.0:
                                 period = 2
-                        elif event_type == 'basketball':
+                        elif event_type in ['basketball', 'volleyball']:
                             if 'timeout' in math_json_fonbet.get('score_1st', '').lower():
                                 time_break_fonbet = True
 
-                        prnts('{}, {}, {}, {}, {}'.format(
-                            pair_math,
-                            math_json_fonbet.get('time', ''),
-                            round(math_json_fonbet.get('minute', ''), 2),
-                            math_json_fonbet.get('score_1st', ''),
-                            time_break_fonbet),
-                            filename='timebreake.log'
-                        )
+                        # prnts('{}, {}, {}, {}, {}'.format(
+                        #     pair_math,
+                        #     math_json_fonbet.get('time', ''),
+                        #     round(math_json_fonbet.get('minute', ''), 2),
+                        #     math_json_fonbet.get('score_1st', ''),
+                        #     time_break_fonbet),
+                        #     filename='timebreake.log'
+                        # )
                         # created_fork = forks.get(bet_key, {}).get('created_fork', '')
                         # ol_time_chage = k_olimp.get('hist', {}).get('time_change')
                         # fb_time_chage = k_fonbet.get('hist', {}).get('time_change')

@@ -3,7 +3,7 @@ import requests
 from proxy_worker import del_proxy
 import time
 from exceptions import FonbetMatchСompleted
-from utils import prnts, get_vector, MINUTE_COMPLITE, print_j
+from utils import prnts, get_vector, print_j, if_exists, sport_list
 import re
 
 url_fonbet = 'https://line-01.ccf4ab51771cacd46d.com'
@@ -165,7 +165,7 @@ def get_match_fonbet(match_id, proxi_list, proxy, time_out, pair_mathes):
 
 def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair_mathes):
     global VICTS, TTO, TTU, TT1O, TT1U, TT2O, TT2U
-    global MINUTE_COMPLITE
+    global sport_list
 
     match_exists = False
     for pair_match in pair_mathes:
@@ -208,12 +208,15 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
                 timer = event.get('timer', '00:00')
                 minute = event.get('timerSeconds', 0) / 60
 
-                if minute >= MINUTE_COMPLITE:
-                    err_str = 'Фонбет: матч ' + str(match_id) + ' завершен, т.к. больше 88 минуты прошло.'
-                    raise FonbetMatchСompleted(err_str)
-
                 skId = event.get('skId')
                 skName = event.get('skName')
+
+                minute_complite = if_exists(sport_list, 'fonbet', skId, 'min')
+                if minute_complite:
+                    if minute >= (minute_complite - 2):
+                        err_str = 'Фонбет: матч, ' + skName + ' - ' + str(match_id) + ' завершен, т.к. ' + str(minute_complite - 2) + ' минут прошло.'
+                        raise FonbetMatchСompleted(err_str)
+
                 sport_name = event.get('sportName')
                 name = event.get('name')
                 priority = event.get('priority')

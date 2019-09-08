@@ -4,7 +4,7 @@ import requests
 from proxy_worker import del_proxy
 import re
 import time
-from utils import prnts, get_vector, MINUTE_COMPLITE, get_param, if_exists, sport_list, print_j
+from utils import prnts, get_vector, get_param, if_exists, sport_list, print_j
 from exceptions import *
 
 url_autorize = "https://{}.olimp-proxy.ru/api/{}"
@@ -273,13 +273,15 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out, pair_mathes):
 
 
 def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_mathes):
-    global MINUTE_COMPLITE
+    global sport_list
     key_id = str(match_id)
 
     match_exists = False
     for pair_match in pair_mathes:
         if match_id in pair_match:
             match_exists = True
+            minute_complite = if_exists(sport_list, 'name', pair_match[2], 'min')
+            my_sport_name = pair_match[2]
     if match_exists is False:
         err_str = 'Олимп: матч ' + str(match_id) + ' не найден в спике активных, поток get_bets_olimp завершен.'
         raise OlimpMatchСompleted(err_str)
@@ -295,15 +297,16 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
 
             timer = resp.get('t', '')
 
-            minute = -1
+            minute = -1  # (2:0) Перерыв
             try:
                 minute = int(re.findall('\d{1,2}\\"', resp.get('sc', ''))[0].replace('"', ''))
             except:
                 pass
 
-            if minute >= MINUTE_COMPLITE:
-                err_str = 'Олимп: матч ' + str(match_id) + ' завершен, т.к. больше 88 минуты прошло.'
-                raise OlimpMatchСompleted(err_str)
+            if minute_complite:
+                if minute >= (int(minute_complite) - 2):
+                    err_str = 'Олимп: матч, ' + my_sport_name + ' - ' + str(match_id) + ' завершен, т.к. ' + str(minute_complite - 2) + ' минут прошло.'
+                    raise OlimpMatchСompleted(err_str)
 
             skId = resp.get('sport_id')
             skName = resp.get('sn')
