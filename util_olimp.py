@@ -4,7 +4,7 @@ import requests
 from proxy_worker import del_proxy
 import re
 import time
-from utils import prnts, get_vector, MINUTE_COMPLITE, get_param
+from utils import prnts, get_vector, MINUTE_COMPLITE, get_param, if_exists, sport_list, print_j
 from exceptions import *
 
 url_autorize = "https://{}.olimp-proxy.ru/api/{}"
@@ -187,6 +187,7 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out, pair_mathes):
     for pair_match in pair_mathes:
         if match_id in pair_match:
             match_exists = True
+            sport_id = if_exists(sport_list, 'name', pair_match[2], 'olimp')
     if match_exists is False:
         err_str = 'Олимп: матч ' + str(match_id) + ' не найден в спике активных, поток get_match_olimp завершен.'
         raise OlimpMatchСompleted(err_str)
@@ -195,6 +196,7 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out, pair_mathes):
 
     olimp_data_m.update({'id': match_id})
     olimp_data_m.update({'lang_id': 0})
+    olimp_data_m.update({'sport_id': sport_id})
 
     olimp_stake_head = olimp_head.copy()
 

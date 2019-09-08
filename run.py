@@ -9,7 +9,7 @@ from difflib import SequenceMatcher
 import re
 from exceptions import *
 from server import run_server
-from utils import prnts, DEBUG, find_max_mode, opposition, MINUTE_COMPLITE, serv_log, get_param, sport_list, print_j
+from utils import prnts, DEBUG, find_max_mode, opposition, MINUTE_COMPLITE, serv_log, get_param, sport_list, if_exists, print_j
 from proxy_switcher import ProxySwitcher
 import json
 import os.path
@@ -37,16 +37,6 @@ prnts('MINUTE_COMPLITE: ' + str(MINUTE_COMPLITE))
 prnts('SERVER_IP: ' + str(SERVER_IP))
 
 
-def if_exists(jsos_list: dict, key_name: str, val: str, get_key: str = None):
-    for m in jsos_list:
-        if m.get(key_name) == val:
-            if not get_key:
-                return True
-            else:
-                return m.get(get_key, 'error: key name:{} in {} not found'.format(get_key, m))
-    return False
-
-
 def get_olimp(resp, arr_matchs):
     # Очистим дстарые данные
     arr_matchs_copy = copy.deepcopy(arr_matchs)
@@ -55,6 +45,22 @@ def get_olimp(resp, arr_matchs):
             arr_matchs.pop(key)
     if resp:
         for liga_info in resp:
+
+            # print(str(liga_info.get('sport_id')) + ' ' + liga_info.get('sn'))
+            # 1 Soccer
+            # 3 Tennis
+            # 5 Basketball
+            # 2 Ice Hockey
+            # 10 Volleyball
+            # 112 eSports
+            # 40 Table Tennis
+            # 9 Handball
+            # 41 Water Polo
+            # 11 Futsal
+            # 8 Bandy
+            # 51 Badminton
+            # 60 Beach Volleyball
+            # 126 Pool
             if if_exists(sport_list, 'olimp', liga_info.get('sport_id')):
                 for math_info in liga_info.get('it'):
                     match_id_str = str(math_info.get('id'))
@@ -113,12 +119,15 @@ def get_fonbet(resp, arr_matchs):
     idMatches = list()
     idEvents = [{'event_id': e.get('event_id'), 'event_sportId': e.get('event_sportId')} for e in events]
     for idEvent in idEvents:
-        idMatches.append([{'id': event['id'], 'sportId': idEvent['event_sportId']} for event in resp['events'] if event['sportId'] == idEvent['event_id']][0])
-    # полчим все инфу по ид матча
+        idMatches.append(
+            [{'id': event['id'], 'sportId': idEvent['event_sportId']} for event in resp['events'] if event['sportId'] == idEvent['event_id'] and event.get('parentId', -1) == -1][0]
+        )
+        # полчим все инфу по ид матча
     if idEvents and idMatches:
         for mid in idMatches:
             for event in resp['events']:
-                if event['id'] == mid.get('id') and event.get('parentId', -1) == -1:  # Только главные события
+                # Только главные события
+                if event['id'] == mid.get('id'):  # and event.get('parentId', -1) == -1 # Пока вырезал все дочерние события выше see row: 123
                     arr_matchs[str(event['id'])] = {
                         'bk_name': 'fonbet',
                         'sport_id': mid.get('sportId'),
@@ -131,7 +140,7 @@ def get_fonbet(resp, arr_matchs):
         # for mid in idMatches:
         # for event in resp['events']:
         # if event['id'] == mid and event['kind'] > 1 and event['name'] in ['1st half', '2nd half', 'corners']:
-    # print(arr_matchs)
+    # print_j(arr_matchs)
     # ['16453828': {'bk_name': 'fonbet', 'sport_id': 1, 'sport_name': 'Football', 'name': '', 'team1': 'Nadi', 'team2': 'Suva'}, ....]
 
 
@@ -207,10 +216,10 @@ def start_seeker_top_matchs_fonbet(gen_proxi_fonbet, arr_fonbet_top_matchs, pair
             for event in resp.get('events'):
                 match_id = event.get('id')
                 if match_id not in arr_fonbet_top_matchs and match_id in list_pair_mathes:
-                    prnts('TOP Event added: ' + str(match_id) + ', ' + event.get('eventName', '') + ', ' + str(event.get('skId', '')) + ', ' + str(event.get('skName', '')))
+                    prnts('TOP Event added: ' + str(event.get('skId', '')) + '-' + str(event.get('skName', '')) + ': ' + str(match_id) + ', ' + event.get('eventName', ''))
                     arr_fonbet_top_matchs.append(match_id)
                 elif match_id in arr_fonbet_top_matchs and match_id not in list_pair_mathes:
-                    prnts('TOP Event deleted: ' + str(match_id) + ', ' + event.get('eventName', '') + ', ' + str(event.get('skId', '')) + ', ' + str(event.get('skName', '')))
+                    prnts('TOP Event deleted: ' + str(event.get('skId', '')) + '-' + str(event.get('skName', '')) + ': ' + str(match_id) + ', ' + event.get('eventName', ''))
                     arr_fonbet_top_matchs.remove(match_id)
         except Exception as e:
             prnts('Фонбет, ошибка при запросе списка TOP матчей: ' + str(e) + ' ' + proxy)
@@ -348,22 +357,21 @@ def starter_bets(bets_olimp, bets_fonbet, pair_mathes, mathes_complite, mathes_i
 
 
 def compare_teams(team1_bk1, team2_bk1, team1_bk2, team2_bk2):
-    # TODO add event group
     if team1_bk1 and team2_bk1 and team1_bk2 and team2_bk2:
         team1_bk1 = re.sub('[^A-z 0-9]', '', team1_bk1.lower()).replace(' ', '')
         team2_bk1 = re.sub('[^A-z 0-9]', '', team2_bk1.lower()).replace(' ', '')
         team1_bk2 = re.sub('[^A-z 0-9]', '', team1_bk2.lower()).replace(' ', '')
         team2_bk2 = re.sub('[^A-z 0-9]', '', team2_bk2.lower()).replace(' ', '')
-        if 1.7 < \
-                SequenceMatcher(None, team1_bk1, team1_bk2).ratio() + \
-                SequenceMatcher(None, team2_bk1, team2_bk2).ratio():
+        rate = SequenceMatcher(None, team1_bk1, team1_bk2).ratio() + SequenceMatcher(None, team2_bk1, team2_bk2).ratio()
+        # print(str(rate) + ': ' + team1_bk1 + ' |' + team1_bk2)
+        if 1.7 < rate:
             # print(team1_bk1, team2_bk1, team1_bk2, team2_bk2, sep=';')
             return True
     else:
         return False
 
 
-def start_compare_matches(pair_mathes, arr_matchs, mathes_complite):
+def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
     json_bk1_copy = dict()
     json_bk2_copy = dict()
     while True:
@@ -416,7 +424,7 @@ def start_compare_matches(pair_mathes, arr_matchs, mathes_complite):
             time.sleep(15)
         except Exception as e:
             exc_type, exc_value, exc_traceback = sys.exc_info()
-            prnts('Error start_compare_matches: ' +
+            prnts('Error start_event_mapping: ' +
                   str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
 
 
@@ -442,8 +450,13 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
 
             math_json_olimp = bets_olimp.get(pair_math[0], {})
             math_json_fonbet = bets_fonbet.get(pair_math[1], {})
+            event_type = pair_math[2]
 
             curr_opposition = copy.deepcopy(opposition)
+
+            print(pair_math)
+            print(math_json_olimp)
+            print(math_json_fonbet)
 
             for kof_type in math_json_olimp.get('kofs', {}):
                 if '(' in kof_type:
@@ -456,14 +469,14 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
 
             for kof_type_olimp, kof_type_fonbet in curr_opposition.items():
 
-                bet_key = str(pair_math[0]) + '@' + str(pair_math[1]) + '@' + \
-                          kof_type_olimp + '@' + kof_type_fonbet
+                bet_key = str(pair_math[0]) + '@' + str(pair_math[1]) + '@' + kof_type_olimp + '@' + kof_type_fonbet
 
                 k_olimp = math_json_olimp.get('kofs', {}).get(kof_type_olimp, {})
                 k_fonbet = math_json_fonbet.get('kofs', {}).get(kof_type_fonbet, {})
 
                 v_olimp = k_olimp.get('value', 0.0)
                 v_fonbet = k_fonbet.get('value', 0.0)
+                # print(kof_type_fonbet, str(v_fonbet), kof_type_olimp, str(v_olimp), sep=";")
 
                 if DEBUG:
                     v_olimp = v_olimp + 1
@@ -478,7 +491,6 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
 
                     L = (1 / float(v_olimp)) + (1 / float(v_fonbet))
                     is_fork = True if L < 1 and deff_time < 7 else False
-
                     if is_fork:  # or True
                         time_break_fonbet = False
                         period = 1
@@ -527,8 +539,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
                                 # 'fb_time_change_total': math_json_fonbet.get('time_change_total', 0),
                                 # 'fb_avg_change_total': math_json_fonbet.get('avg_change_total', []),
                                 'live_fork': live_fork,
-                                'live_fork_total': forks_meta.get(bet_key, dict()).get('live_fork_total', 0) + live_fork
-
+                                'live_fork_total': forks_meta.get(bet_key, dict()).get('live_fork_total', 0) + live_fork,
                             })
 
                             if True:
@@ -544,7 +555,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
                                     if not os.path.isfile(file_forks):
                                         with open(file_forks, 'w', encoding='utf-8') as csv:
                                             csv.write(
-                                                'time;time_create;created_fork;cut_time;ol_time;fb_time;live_fork;live_fork_total;'
+                                                'event_type;time;time_create;created_fork;cut_time;ol_time;fb_time;live_fork;live_fork_total;'
                                                 'match_ol;match_fb;kof_ol;kof_fb;name;l;bk1_score;bk2_score;'
                                                 'vect_ol;vect_fb;time;'
                                                 'minute;ol_kof;ol_avg_change;fb_kof;fb_avg_change;'
@@ -560,6 +571,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
                                     if os.path.isfile(file_forks):
                                         with open(file_forks, 'a', encoding='utf-8') as csv:
                                             csv.write(
+                                                event_type + ';' +
                                                 str(round(time.time())) + ';' +
                                                 str(forks.get(bet_key).get('create_fork')) + ';' +
                                                 str(forks.get(bet_key).get('created_fork')) + ';' +
@@ -623,7 +635,8 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
                                 'live_fork_total': forks_meta.get(bet_key, dict()).get('live_fork_total', 0),
                                 'create_fork': round(max(ol_time_chage, fb_time_chage)),
                                 'created_fork': created_fork,
-                                'is_top': is_top
+                                'is_top': is_top,
+                                'event_type': event_type
                             }
                     else:
                         try:
@@ -671,10 +684,6 @@ if __name__ == '__main__':
     proxy_saver = threading.Thread(target=start_proxy_saver, args=(proxies_olimp, proxies_fonbet, proxy_filename_olimp, proxy_filename_fonbet,))
     proxy_saver.start()
 
-    # TODO DEL
-    arr_olimp_matchs = dict()
-    arr_fonbet_matchs = dict()
-
     arr_matchs = dict()
 
     arr_fonbet_top_matchs = []
@@ -712,8 +721,8 @@ if __name__ == '__main__':
     fonbet_seeker_top_matchs.start()
 
     # Event mapping
-    compare_matches = threading.Thread(target=start_compare_matches, args=(pair_mathes, arr_matchs, mathes_complite))
-    compare_matches.start()
+    event_mapping = threading.Thread(target=start_event_mapping, args=(pair_mathes, arr_matchs, mathes_complite))
+    event_mapping.start()
 
     mathes_id_is_work = []
     starter_bets = threading.Thread(
@@ -734,7 +743,7 @@ if __name__ == '__main__':
     proxy_saver.join()
     olimp_seeker_matchs.join()
     fonbet_seeker_matchs.join()
-    compare_matches.join()
+    event_mapping.join()
     starter_forks.join()
     started_stat_req.join()
     server.join()

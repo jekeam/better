@@ -7,14 +7,26 @@ import requests
 import datetime
 import statistics
 
+
 def print_j(j):
     print(dumps(j, ensure_ascii=False, indent=4))
 
-    
+
 MINUTE_COMPLITE = 88
 
 package_dir = os.path.dirname(__file__)
 dtOld = datetime.datetime.now()
+
+
+def if_exists(jsos_list: dict, key_name: str, val: str, get_key: str = None):
+    for m in jsos_list:
+        if m.get(key_name) == val:
+            if not get_key:
+                return True
+            else:
+                return m.get(get_key, 'error: key name:{} in {} not found'.format(get_key, m))
+    return False
+
 
 sport_list = [
     {
@@ -26,6 +38,16 @@ sport_list = [
         'name': 'Esports',
         'olimp': 112,
         'fonbet': 29086
+    },
+    {
+        'name': 'Volleyball',
+        'olimp': 10,
+        'fonbet': 9
+    },
+    {
+        'name': 'Basketball',
+        'olimp': 5,
+        'fonbet': 3
     }
 ]
 
@@ -78,11 +100,13 @@ opposition = {
     'ННН': 'ННД'
 }
 
+
 def get_param(param):
     global package_dir
     with open(os.path.join(package_dir, "account.json")) as file:
         json = load(file)
     return json.get(param)
+
 
 if get_param('debug'):
     DEBUG = True
@@ -195,6 +219,7 @@ def get_account_summ():
         json = load(file)
     return json.get('summ', None)
 
+
 def prnt(vstr=None, hide=None):
     if vstr:
         global dtOld
@@ -215,12 +240,13 @@ def serv_log(filename: str, vstr: str):
     Outfile = open(filename + '.log', "a+", encoding='utf-8')
     Outfile.write(vstr + '\n')
     Outfile.close()
-    
+
+
 def client_log(filename: str, vstr: str):
     prnt(vstr)
     Outfile = open(filename + '.log', "a+", encoding='utf-8')
     Outfile.write(vstr + '\n')
-    Outfile.close()    
+    Outfile.close()
 
 
 def prnts(vstr=None, hide=None):
