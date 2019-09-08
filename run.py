@@ -556,7 +556,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
                                         with open(file_forks, 'w', encoding='utf-8') as csv:
                                             csv.write(
                                                 'event_type;time;time_create;created_fork;cut_time;ol_time;fb_time;live_fork;live_fork_total;'
-                                                'match_ol;match_fb;kof_ol;kof_fb;name;l;bk1_score;bk2_score;'
+                                                'match_ol;match_fb;kof_ol;kof_fb;name;l;l_first;bk1_score;bk2_score;'
                                                 'vect_ol;vect_fb;time;'
                                                 'minute;ol_kof;ol_avg_change;fb_kof;fb_avg_change;'
                                                 'time_break_fonbet;is_top;'
@@ -582,7 +582,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
                                                 str(forks_meta.get(bet_key, dict()).get('live_fork_total', 0) + live_fork) + ';' +
                                                 str(bet_key.split('@')[0]) + ';' + str(bet_key.split('@')[1]) + ';' +
                                                 str(bet_key.split('@')[2]) + ';' + str(bet_key.split('@')[3]) + ';' +
-                                                math_json_olimp.get('name', '') + ';' + str(L) + ';' +
+                                                math_json_olimp.get('name', '') + ';' + str(L) + ';' + str(forks.get(bet_key).get('l_fisrt')) + ';' +
                                                 math_json_olimp.get('score', '') + ';' +
                                                 math_json_fonbet.get('score', '') + ';' +
                                                 str(k_olimp.get('vector')) + ';' +
@@ -681,7 +681,7 @@ if __name__ == '__main__':
     gen_proxi_olimp = createBatchGenerator(get_next_proxy(copy.deepcopy(proxies_olimp)))
     gen_proxi_fonbet = createBatchGenerator(get_next_proxy(copy.deepcopy(proxies_fonbet)))
 
-    proxy_saver = threading.Thread(target=start_proxy_saver, args=(proxies_olimp, proxies_fonbet, proxy_filename_olimp, proxy_filename_fonbet,))
+    proxy_saver = threading.Thread(target=start_proxy_saver, args=(proxies_olimp, proxies_fonbet, proxy_filename_olimp, proxy_filename_fonbet))
     proxy_saver.start()
 
     arr_matchs = dict()

@@ -25,8 +25,9 @@ UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like 
 
 # не подошел для многопоточности
 def get_next_proxy(proxi_list):
-    for i in proxi_list:
-        # prnts('Get next proxy: ' + i , 'hide')
+    for n, i in list(enumerate(proxi_list)):
+        # prnts('Get next proxy: ' + i, 'hide')
+        prnts('Proxy left: ' + str(len(proxi_list) - n) + '/' + str(len(proxi_list)))
         yield i.strip()
 
 
@@ -255,10 +256,10 @@ def join_proxies_to_file(n=50):
     return proxy_from_file
 
 
-def start_proxy_saver(proxies_olimp, proxies_fonbet, proxy_filename_olimp, proxy_filename_fonbet):
+def start_proxy_saver(proxies_olimp, proxies_fonbet, proxy_filename_olimp, proxy_filename_fonbet):  # , gen_proxi_olimp, gen_proxi_fonbet
     while True:
-        prnts('Proxies by Olimp: ' + str(len(proxies_olimp)))  # , 'hide'
-        prnts('Proxies by Fonbet: ' + str(len(proxies_fonbet)))
+        prnts('Proxies by Olimp: ' + str(len(proxies_olimp)))  # + '/' + str(gen_proxi_olimp.__next__()))  # , 'hide'
+        prnts('Proxies by Fonbet: ' + str(len(proxies_fonbet)))  # + '/' + str(gen_proxi_fonbet.__next__()))
 
         save_list(proxies_olimp, proxy_filename_olimp)
         save_list(proxies_fonbet, proxy_filename_fonbet)
@@ -287,13 +288,13 @@ if __name__ == '__main__':
     proxy_list_olimp = []
     proxy_list_fonbet = []
     proxy_list = join_proxies_to_file(5000)
-    
+
     prnts('cnt https: ' + str(len(list(filter(lambda p: 'https' in p, proxy_list)))))
     prnts('cnt http: ' + str(len(list(filter(lambda p: 'http:' in p, proxy_list)))))
-    prnts('cnt all: '+ str(len( proxy_list)))
+    prnts('cnt all: ' + str(len(proxy_list)))
     time.sleep(3)
 
-    #FB
+    # FB
     proxy_list_fonbet = check_proxies_fonbet(proxy_list)
     save_list(proxy_list_fonbet, fb_fl)
 
