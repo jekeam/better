@@ -51,7 +51,8 @@ def get_olimp(resp, arr_matchs):
     # Очистим дстарые данные
     arr_matchs_copy = copy.deepcopy(arr_matchs)
     for key in arr_matchs_copy.keys():
-        arr_matchs.pop(key)
+        if arr_matchs.get('olimp', '') != '':
+            arr_matchs.pop(key)
     if resp:
         for liga_info in resp:
             if if_exists(sport_list, 'olimp', liga_info.get('sport_id')):
@@ -65,6 +66,7 @@ def get_olimp(resp, arr_matchs):
                         'name': liga_info['cn'],
                         'team1': math_info.get('c1', ''),
                         'team2': math_info.get('c2', ''),
+                        'start_timestamp': math_info.get('t', 0)
                     }
     # print_j(arr_matchs)
 
@@ -94,7 +96,9 @@ def get_fonbet(resp, arr_matchs):
 
     arr_matchs_copy = copy.deepcopy(arr_matchs)
     for key in arr_matchs_copy.keys():
-        arr_matchs.pop(key)
+        if arr_matchs.get('fonbet', '') != '':
+            arr_matchs.pop(key)
+
     # получим все события по футболу
     events = [
         {
@@ -122,6 +126,7 @@ def get_fonbet(resp, arr_matchs):
                         'name': event['name'],
                         'team1': event.get('team1', ''),
                         'team2': event.get('team2', ''),
+                        'start_timestamp': event.get('startTime', 0)
                     }
         # for mid in idMatches:
         # for event in resp['events']:
@@ -196,18 +201,17 @@ def start_seeker_top_matchs_fonbet(gen_proxi_fonbet, arr_fonbet_top_matchs, pair
     global TIMEOUT_MATCHS
     proxy = gen_proxi_fonbet.next()
     while True:
-        list_pair_mathes = [int(item) for sublist in pair_mathes for item in sublist]
+        list_pair_mathes = [int(item) for sublist in pair_mathes for item in sublist if item.isdigit()]
         try:
             resp, time_resp = get_matches_fonbet(proxy, TIMEOUT_MATCHS, top=True)
             for event in resp.get('events'):
-                if event.get('skId') == 1:
-                    match_id = event.get('id')
-                    if match_id not in arr_fonbet_top_matchs and match_id in list_pair_mathes:
-                        prnts('TOP матч добавлен: ' + str(match_id) + ', ' + event.get('eventName'))
-                        arr_fonbet_top_matchs.append(match_id)
-                    elif match_id in arr_fonbet_top_matchs and match_id not in list_pair_mathes:
-                        prnts('TOP матч удален: ' + str(match_id) + ', ' + event.get('eventName'))
-                        arr_fonbet_top_matchs.remove(match_id)
+                match_id = event.get('id')
+                if match_id not in arr_fonbet_top_matchs and match_id in list_pair_mathes:
+                    prnts('TOP Event added: ' + str(match_id) + ', ' + event.get('eventName', '') + ', ' + str(event.get('skId', '')) + ', ' + str(event.get('skName', '')))
+                    arr_fonbet_top_matchs.append(match_id)
+                elif match_id in arr_fonbet_top_matchs and match_id not in list_pair_mathes:
+                    prnts('TOP Event deleted: ' + str(match_id) + ', ' + event.get('eventName', '') + ', ' + str(event.get('skId', '')) + ', ' + str(event.get('skName', '')))
+                    arr_fonbet_top_matchs.remove(match_id)
         except Exception as e:
             prnts('Фонбет, ошибка при запросе списка TOP матчей: ' + str(e) + ' ' + proxy)
             proxy = gen_proxi_fonbet.next()
@@ -312,7 +316,7 @@ def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_p
         time_sleep = max(0, (TIMEOUT_MATCH - (TIMEOUT_MATCH_MINUS + time_resp)))
 
         if DEBUG:
-            prnts(str('Фон��ет, матч ' + str(match_id_fonbet) + '. Время ответа: ' + str(time_resp) +
+            prnts(str('Фонбет, матч ' + str(match_id_fonbet) + '. Время ответа: ' + str(time_resp) +
                       ', запрос через ' + str(time_sleep)) + ' ' + ps.get_cur_proxy())
 
         time.sleep(time_sleep)
@@ -322,7 +326,7 @@ def starter_bets(bets_olimp, bets_fonbet, pair_mathes, mathes_complite, mathes_i
                  proxies_olimp, gen_proxi_olimp, proxies_fonbet, gen_proxi_fonbet, stat_req_olimp, stat_req_fonbet):
     while True:
         for pair_match in pair_mathes:
-            match_id_olimp, match_id_fonbet = pair_match
+            match_id_olimp, match_id_fonbet, event_type = pair_match
 
             if match_id_olimp not in mathes_id_is_work:
                 mathes_id_is_work.append(match_id_olimp)
@@ -359,12 +363,20 @@ def compare_teams(team1_bk1, team2_bk1, team1_bk2, team2_bk2):
         return False
 
 
-def start_compare_matches(pair_mathes, json_bk1, json_bk2, mathes_complite):
+def start_compare_matches(pair_mathes, arr_matchs, mathes_complite):
+    json_bk1_copy = dict()
+    json_bk2_copy = dict()
     while True:
         try:
-            prnts('Найдено матчей: ' + str(len(pair_mathes)) + ' ' + str(pair_mathes))
-            json_bk1_copy = copy.deepcopy(json_bk1)
-            json_bk2_copy = copy.deepcopy(json_bk2)
+            prnts('Events found: ' + str(len(pair_mathes)) + ' ' + str(pair_mathes))
+            for key, val in arr_matchs.items():
+                if val.get('bk_name', '') == 'olimp':
+                    json_bk1_copy[key] = val
+
+            for key, val in arr_matchs.items():
+                if val.get('bk_name', '') == 'fonbet':
+                    json_bk2_copy[key] = val
+
             for bk1_match_id, bk1_match_info in json_bk1_copy.items():
                 if [bk1_name for bk1_name in bk1_match_info.values() if bk1_name is not None]:
                     # Проверим что ид матча 1 нет в списке
@@ -378,7 +390,8 @@ def start_compare_matches(pair_mathes, json_bk1, json_bk2, mathes_complite):
                                         # prnts('Матчи завершены: ' + str(bk1_match_id) + '-' + str(bk2_match_id))
                                         pass
                                     else:
-                                        match_name = str(bk1_match_id) + ' ' + \
+                                        match_name = bk1_match_info.get('sport_name') + ': ' + \
+                                                     str(bk1_match_id) + ' ' + \
                                                      bk1_match_info.get('team1') + ' vs ' + \
                                                      bk1_match_info.get('team2') + ' | ' + \
                                                      str(bk2_match_id) + ' ' + \
@@ -390,17 +403,16 @@ def start_compare_matches(pair_mathes, json_bk1, json_bk2, mathes_complite):
                                                 bk1_match_info.get('team2'),
                                                 bk2_match_info.get('team1'),
                                                 bk2_match_info.get('team2')
-                                        ):
+                                        ) and bk1_match_info.get('sport_name') == bk2_match_info.get('sport_name'):
                                             # if re.search('(u\d{2}|\(w\)|\(r\)|\(res\)|\(Reserves\)|-stud\.), match_name.lower()):
                                             #     serv_log('match_list', 'Матч исключен: ' + match_name)
                                             #     pass
                                             if DEBUG:  # and str(bk2_match_id) == '13706641':
-                                                serv_log('match_list', 'Матч добавлен: ' + match_name)
-                                                pair_mathes.append([bk1_match_id, bk2_match_id])
+                                                serv_log('match_list', 'Event added: ' + match_name)
+                                                pair_mathes.append([bk1_match_id, bk2_match_id, bk1_match_info.get('sport_name')])
                                             elif not DEBUG:
-                                                serv_log('match_list', 'Матч добавлен: ' + match_name)
-                                                pair_mathes.append([bk1_match_id, bk2_match_id])
-
+                                                serv_log('match_list', 'Event added: ' + match_name)
+                                                pair_mathes.append([bk1_match_id, bk2_match_id, bk1_match_info.get('sport_name')])
             time.sleep(15)
         except Exception as e:
             exc_type, exc_value, exc_traceback = sys.exc_info()
@@ -659,15 +671,17 @@ if __name__ == '__main__':
     proxy_saver = threading.Thread(target=start_proxy_saver, args=(proxies_olimp, proxies_fonbet, proxy_filename_olimp, proxy_filename_fonbet,))
     proxy_saver.start()
 
-    # arr_BKNAME_matchs Список матчей, TODO, Педелать на универсальный формат, 1 для всех БК
+    # TODO DEL
     arr_olimp_matchs = dict()
     arr_fonbet_matchs = dict()
+
     arr_matchs = dict()
 
     arr_fonbet_top_matchs = []
+    # Completed Events
     mathes_complite = []
 
-    # json by bets math
+    # json by bets event
     bets_fonbet = dict()
     bets_olimp = dict()
 
@@ -677,22 +691,28 @@ if __name__ == '__main__':
     stat_req_olimp = []
     stat_req_fonbet = []
 
+    # List of event "at work"
     pair_mathes = []
 
+    # get event list by olimp
     olimp_seeker_matchs = threading.Thread(target=start_seeker_matchs_olimp, args=(gen_proxi_olimp, arr_matchs))
     olimp_seeker_matchs.start()
 
+    # get event list by fonbet
     fonbet_seeker_matchs = threading.Thread(target=start_seeker_matchs_fonbet, args=(gen_proxi_fonbet, arr_matchs))
     fonbet_seeker_matchs.start()
+    time.sleep(4)
 
-    while True:
-        print_j(arr_matchs)
-        time.sleep(15)
+    # while True:
+    #     print_j(arr_matchs)
+    #     time.sleep(15)
 
+    # List of TOP events
     fonbet_seeker_top_matchs = threading.Thread(target=start_seeker_top_matchs_fonbet, args=(gen_proxi_fonbet, arr_fonbet_top_matchs, pair_mathes))
     fonbet_seeker_top_matchs.start()
 
-    compare_matches = threading.Thread(target=start_compare_matches, args=(pair_mathes, arr_olimp_matchs, arr_fonbet_matchs, mathes_complite))
+    # Event mapping
+    compare_matches = threading.Thread(target=start_compare_matches, args=(pair_mathes, arr_matchs, mathes_complite))
     compare_matches.start()
 
     mathes_id_is_work = []
