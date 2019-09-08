@@ -34,21 +34,21 @@ sport_list = [
         'olimp': 1,
         'fonbet': 1
     },
-    {
-        'name': 'Esports',
-        'olimp': 112,
-        'fonbet': 29086
-    },
-    {
-        'name': 'Volleyball',
-        'olimp': 10,
-        'fonbet': 9
-    },
-    {
-        'name': 'Basketball',
-        'olimp': 5,
-        'fonbet': 3
-    }
+    # {
+    #     'name': 'Esports',
+    #     'olimp': 112,
+    #     'fonbet': 29086
+    # },
+    # {
+    #     'name': 'Volleyball',
+    #     'olimp': 10,
+    #     'fonbet': 9
+    # },
+    # {
+    #     'name': 'Basketball',
+    #     'olimp': 5,
+    #     'fonbet': 3
+    # }
 ]
 
 opposition = {
