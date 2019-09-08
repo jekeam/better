@@ -30,25 +30,31 @@ def if_exists(jsos_list: dict, key_name: str, val: str, get_key: str = None):
 
 sport_list = [
     {
-        'name': 'Football',
+        'name': 'football',
         'olimp': 1,
-        'fonbet': 1
+        'fonbet': 1,
+        'minute_complite': 90,
     },
-    # {
-    #     'name': 'Esports',
-    #     'olimp': 112,
-    #     'fonbet': 29086
-    # },
-    # {
-    #     'name': 'Volleyball',
-    #     'olimp': 10,
-    #     'fonbet': 9
-    # },
-    # {
-    #     'name': 'Basketball',
-    #     'olimp': 5,
-    #     'fonbet': 3
-    # }
+    {
+        'name': 'esports',
+        'olimp': 112,
+        'fonbet': 29086
+    },
+    {
+        'name': 'volleyball',
+        'olimp': 10,
+        'fonbet': 9
+    },
+    {
+        'name': 'basketball',
+        'olimp': 5,
+        'fonbet': 3
+    },
+    {
+        'name': 'hockey',
+        'olimp': 2,
+        'fonbet': 2
+    }
 ]
 
 opposition = {

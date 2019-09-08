@@ -65,6 +65,7 @@ def get_olimp(resp, arr_matchs):
                 for math_info in liga_info.get('it'):
                     match_id_str = str(math_info.get('id'))
                     # math_block = True if math_info.get('ms') == 1 else False
+                    # print_j(liga_info)
                     arr_matchs[match_id_str] = {
                         'bk_name': 'olimp',
                         'sport_id': liga_info.get('sport_id'),
@@ -479,8 +480,8 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
                 # print(kof_type_fonbet, str(v_fonbet), kof_type_olimp, str(v_olimp), sep=";")
 
                 if DEBUG:
-                    v_olimp = v_olimp + 1
-                    v_fonbet = v_fonbet + 1
+                    v_olimp = v_olimp * 2
+                    v_fonbet = v_fonbet * 2
 
                 if v_olimp > 0.0 and v_fonbet > 0.0:
 
@@ -608,6 +609,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
                             created_fork = ''
                             ol_time_chage = k_olimp.get('hist', {}).get('time_change')
                             fb_time_chage = k_fonbet.get('hist', {}).get('time_change')
+                            # print('{}, {}, {}, {}, {}'.format(event_type, fb_time_chage, ol_time_chage, k_fonbet, k_olimp))
                             if ol_time_chage and fb_time_chage:
                                 if ol_time_chage > fb_time_chage:
                                     created_fork = 'olimp'
