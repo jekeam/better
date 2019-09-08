@@ -75,7 +75,7 @@ def get_olimp(resp, arr_matchs):
                         'team2': math_info.get('c2', ''),
                         'start_timestamp': math_info.get('t', 0)
                     }
-    # print_j(arr_matchs)
+    # print_j(arr_matchs) # 50940691
 
 
 def get_fonbet(resp, arr_matchs):
@@ -119,11 +119,14 @@ def get_fonbet(resp, arr_matchs):
     # получим список ид всех матчей по событиям
     idMatches = list()
     idEvents = [{'event_id': e.get('event_id'), 'event_sportId': e.get('event_sportId')} for e in events]
+
     for idEvent in idEvents:
-        idMatches.append(
-            [{'id': event['id'], 'sportId': idEvent['event_sportId']} for event in resp['events'] if event['sportId'] == idEvent['event_id'] and event.get('parentId', -1) == -1][0]
-        )
+        # print(idEvent['event_id'])
+        # print([{'id': event['id'], 'sportId': idEvent['event_sportId']} for event in resp['events'] if event.get('parentId', -1) == -1])
+        for x in [{'id': event['id'], 'sportId': idEvent['event_sportId']} for event in resp['events'] if event['sportId'] == idEvent['event_id'] and event.get('parentId', -1) == -1]:
+            idMatches.append(x)
         # полчим все инфу по ид матча
+    # print(idEvents)
     if idEvents and idMatches:
         for mid in idMatches:
             for event in resp['events']:
