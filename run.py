@@ -126,7 +126,7 @@ def get_fonbet(resp, arr_matchs):
         for x in [{'id': event['id'], 'sportId': idEvent['event_sportId']} for event in resp['events'] if event['sportId'] == idEvent['event_id'] and event.get('parentId', -1) == -1]:
             idMatches.append(x)
         # полчим все инфу по ид матча
-    # print(idEvents)
+    # print_j(resp['events'])
     if idEvents and idMatches:
         for mid in idMatches:
             for event in resp['events']:
@@ -496,16 +496,30 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
                     L = (1 / float(v_olimp)) + (1 / float(v_fonbet))
                     is_fork = True if L < 1 and deff_time < 7 else False
                     if is_fork:  # or True
-                        time_break_fonbet = False
-                        period = 1
-                        if re.match('\(\d+:\d+\)', math_json_fonbet.get('score_1st', '').replace(' ', '')) and \
-                                str(math_json_fonbet.get('time', '')) == '45:00' and \
-                                round(math_json_fonbet.get('minute', ''), 2) == 45.0:
-                            time_break_fonbet = True
-                        elif re.match('\(\d+:\d+\)', math_json_fonbet.get('score_1st', '').replace(' ', '')) and \
-                                round(math_json_fonbet.get('minute', ''), 2) > 45.0:
-                            period = 2
 
+                        time_break_fonbet = False
+                        
+                        if event_type == 'football':
+                            period = 1
+                            if re.match('\(\d+:\d+\)', math_json_fonbet.get('score_1st', '').replace(' ', '')) and \
+                                    str(math_json_fonbet.get('time', '')) == '45:00' and \
+                                    round(math_json_fonbet.get('minute', ''), 2) == 45.0:
+                                time_break_fonbet = True
+                            elif re.match('\(\d+:\d+\)', math_json_fonbet.get('score_1st', '').replace(' ', '')) and \
+                                    round(math_json_fonbet.get('minute', ''), 2) > 45.0:
+                                period = 2
+                        elif event_type == 'basketball':
+                            if 'timeout' in math_json_fonbet.get('score_1st', '').lower():
+                                time_break_fonbet = True
+
+                        prnts('{}, {}, {}, {}, {}'.format(
+                            pair_math,
+                            math_json_fonbet.get('time', ''),
+                            round(math_json_fonbet.get('minute', ''), 2),
+                            math_json_fonbet.get('score_1st', ''),
+                            time_break_fonbet),
+                            filename='timebreake.log'
+                        )
                         # created_fork = forks.get(bet_key, {}).get('created_fork', '')
                         # ol_time_chage = k_olimp.get('hist', {}).get('time_change')
                         # fb_time_chage = k_fonbet.get('hist', {}).get('time_change')

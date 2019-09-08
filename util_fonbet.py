@@ -123,6 +123,9 @@ def get_match_fonbet(match_id, proxi_list, proxy, time_out, pair_mathes):
         )
         try:
             res = resp.json()
+            # print_j(res)
+
+
         except Exception as e:
             err_str = 'Fonbet error by ' + str(match_id) + ': ' + str(e)
             prnts(err_str)
@@ -130,6 +133,8 @@ def get_match_fonbet(match_id, proxi_list, proxy, time_out, pair_mathes):
 
         if res.get("result") != "error":
             return res, resp.elapsed.total_seconds()
+        elif res.get("place", "live") == "notActive":
+            raise FonbetMatchСompleted('0 Фонбет, матч ' + str(match_id) + ' завершен, поток выключен!')
         else:
             if 'Event not found' in res.get("errorMessage"):
                 raise FonbetMatchСompleted('1 Фонбет, матч ' + str(match_id) + ' завершен, поток выключен!')

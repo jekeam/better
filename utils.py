@@ -35,26 +35,26 @@ sport_list = [
         'fonbet': 1,
         'minute_complite': 90,
     },
-    {
-        'name': 'esports',
-        'olimp': 112,
-        'fonbet': 29086
-    },
-    {
-        'name': 'volleyball',
-        'olimp': 10,
-        'fonbet': 9
-    },
+    # {
+    #     'name': 'esports',
+    #     'olimp': 112,
+    #     'fonbet': 29086
+    # },
+    # {
+    #     'name': 'volleyball',
+    #     'olimp': 10,
+    #     'fonbet': 9
+    # },
     {
         'name': 'basketball',
         'olimp': 5,
         'fonbet': 3
     },
-    {
-        'name': 'hockey',
-        'olimp': 2,
-        'fonbet': 2
-    }
+    # {
+    #     'name': 'hockey',
+    #     'olimp': 2,
+    #     'fonbet': 2
+    # }
 ]
 
 opposition = {
@@ -255,7 +255,7 @@ def client_log(filename: str, vstr: str):
     Outfile.close()
 
 
-def prnts(vstr=None, hide=None):
+def prnts(vstr=None, hide=None, filename='server.log'):
     if vstr:
         global dtOld
         dtDeff = round((datetime.datetime.now() - dtOld).total_seconds())
@@ -265,7 +265,7 @@ def prnts(vstr=None, hide=None):
             dtOld = datetime.datetime.now()
             print(strLog)
 
-        Outfile = open('server.log', "a+", encoding='utf-8')
+        Outfile = open(filename, "a+", encoding='utf-8')
         Outfile.write(strLog + '\n')
         Outfile.close()
 
