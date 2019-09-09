@@ -36,7 +36,7 @@ prnts('TIMEOUT_MATCHS: ' + str(TIMEOUT_MATCHS))
 prnts('TIMEOUT_MATCH: ' + str(TIMEOUT_MATCH))
 prnts('TIMEOUT_MATCH_MINUS: ' + str(TIMEOUT_MATCH_MINUS))
 prnts('SERVER_IP: ' + str(SERVER_IP))
-prnts('SERVER_IP: ' + str(SERVER_PORT))
+prnts('SERVER_PORT: ' + str(SERVER_PORT))
 prnts('SPORT_LIST: ' + print_j(sport_list, 'return var'))
 
 
