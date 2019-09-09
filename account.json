@@ -1,8 +1,9 @@
 {
-  "server_ip_test": "149.154.70.53",
+  "server_ip_test": "172.31.44.82",
   "server_ip": "62.109.10.57",
+  "server_port": 8888,
   "server_olimp": "olimpkzapi.ru",
   "api2.olimp.bet": "api2.olimp.bet",
   "api2.olimp.bet2": "5.3.3.17 olimpkzapi.ru",
-  "debug": 0
+  "debug": 1
 }

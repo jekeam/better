@@ -29,11 +29,14 @@ if not DEBUG:
     SERVER_IP = get_param('server_ip')
 else:
     SERVER_IP = get_param('server_ip_test')
+    
+SERVER_PORT = get_param('server_port')
 
 prnts('TIMEOUT_MATCHS: ' + str(TIMEOUT_MATCHS))
 prnts('TIMEOUT_MATCH: ' + str(TIMEOUT_MATCH))
 prnts('TIMEOUT_MATCH_MINUS: ' + str(TIMEOUT_MATCH_MINUS))
 prnts('SERVER_IP: ' + str(SERVER_IP))
+prnts('SERVER_IP: ' + str(SERVER_PORT))
 prnts('SPORT_LIST: ' + print_j(sport_list, 'return var'))
 
 
@@ -763,7 +766,11 @@ if __name__ == '__main__':
     started_stat_req = threading.Thread(target=stat_req, args=(stat_req_olimp, stat_req_fonbet))
     started_stat_req.start()
 
-    server = threading.Thread(target=run_server, args=(SERVER_IP, forks, pair_mathes, arr_fonbet_top_matchs))
+    while True:
+        print_j(forks)
+        time.sleep(5)
+
+    server = threading.Thread(target=run_server, args=(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_fonbet_top_matchs))
     server.start()
 
     proxy_saver.join()
