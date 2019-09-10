@@ -33,12 +33,12 @@ def run_server(SERVER_IP, SERVER_PORT, data_json, pair_mathes, arr_fonbet_top_ma
                 self.send_response(200)
                 self.send_header('content-type', 'application/json')
                 self.end_headers()
-                self.wfile.write(str(len(pair_mathes)).encode('utf-8'))
+                self.wfile.write(str(pair_mathes).encode('utf-8'))
             elif self.path == '/get_cnt_top_matches':
                 self.send_response(200)
                 self.send_header('content-type', 'application/json')
                 self.end_headers()
-                self.wfile.write(str(len(arr_fonbet_top_matchs)).encode('utf-8'))
+                self.wfile.write(str(arr_fonbet_top_matchs).encode('utf-8'))
             else:
                 mutex.acquire()
                 with open('access.log', 'a+', encoding='utf-8') as f:
