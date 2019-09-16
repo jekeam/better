@@ -410,13 +410,13 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                                     else:
                                         # print_j(bk1_match_info)
                                         # print_j(bk2_match_info)
-                                        match_name = str(bk1_match_info.get('sport_name', 'X')) + ': ' + \
+                                        match_name = bk1_match_info.get('sport_name', 'X') + ': ' + \
                                                      str(bk1_match_id) + ' ' + \
-                                                     str(bk1_match_info.get('team1', 'X')) + ' vs ' + \
-                                                     str(bk1_match_info.get('team2', 'X') + ' | ' + \
+                                                     bk1_match_info.get('team1', 'X') + ' vs ' + \
+                                                     bk1_match_info.get('team2', 'X') + ' | ' + \
                                                      str(bk2_match_id) + ' ' + \
-                                                     str(bk2_match_info.get('team1', 'X')) + ' vs ' + \
-                                                     str(bk2_match_info.get('team2', 'X'))
+                                                     bk2_match_info.get('team1', 'X') + ' vs ' + \
+                                                     bk2_match_info.get('team2', 'X')
                                         # print(match_name)
                                         # time.sleep(15)
                                         if compare_teams(
