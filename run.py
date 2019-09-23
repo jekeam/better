@@ -29,7 +29,7 @@ if not DEBUG:
     SERVER_IP = get_param('server_ip')
 else:
     SERVER_IP = get_param('server_ip_test')
-    
+
 SERVER_PORT = get_param('server_port')
 
 prnts('TIMEOUT_MATCHS: ' + str(TIMEOUT_MATCHS))
@@ -408,37 +408,33 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                                         # prnts('Матчи завершены: ' + str(bk1_match_id) + '-' + str(bk2_match_id))
                                         pass
                                     else:
-                                        # print_j(bk1_match_info)
-                                        # print_j(bk2_match_info)
-                                        match_name = bk1_match_info.get('sport_name', 'X') + ': ' + \
-                                                     str(bk1_match_id) + ' ' + \
-                                                     bk1_match_info.get('team1', 'X') + ' vs ' + \
-                                                     bk1_match_info.get('team2', 'X') + ' | ' + \
-                                                     str(bk2_match_id) + ' ' + \
-                                                     bk2_match_info.get('team1', 'X') + ' vs ' + \
-                                                     bk2_match_info.get('team2', 'X')
-                                        # print(match_name)
-                                        # time.sleep(15)
                                         if compare_teams(
                                                 bk1_match_info.get('team1'),
                                                 bk1_match_info.get('team2'),
                                                 bk2_match_info.get('team1'),
                                                 bk2_match_info.get('team2')
                                         ) and bk1_match_info.get('sport_name') == bk2_match_info.get('sport_name'):
-                                            # if re.search('(u\d{2}|\(w\)|\(r\)|\(res\)|\(Reserves\)|-stud\.), match_name.lower()):
-                                            #     serv_log('match_list', 'Матч исключен: ' + match_name)
-                                            #     pass
+
+                                            match_name = str(bk1_match_info.get('sport_name')) + ': ' + \
+                                                         str(bk1_match_id) + ' ' + \
+                                                         str(bk1_match_info.get('team1')) + ' vs ' + \
+                                                         str(bk1_match_info.get('team2')) + ' | ' + \
+                                                         str(bk2_match_id) + ' ' + \
+                                                         str(bk2_match_info.get('team1')) + ' vs ' + \
+                                                         str(bk2_match_info.get('team2'))
+
                                             if DEBUG:  # and str(bk2_match_id) == '13706641':
                                                 serv_log('match_list', 'Event added: ' + match_name)
                                                 pair_mathes.append([bk1_match_id, bk2_match_id, bk1_match_info.get('sport_name')])
                                             elif not DEBUG:
                                                 serv_log('match_list', 'Event added: ' + match_name)
                                                 pair_mathes.append([bk1_match_id, bk2_match_id, bk1_match_info.get('sport_name')])
-            time.sleep(15)
         except Exception as e:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             prnts('Error start_event_mapping: ' +
                   str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
+        finally:
+            time.sleep(15)
 
 
 def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbet_top_matchs):
