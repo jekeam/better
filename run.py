@@ -613,7 +613,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
                                                 'match_ol;match_fb;kof_ol;kof_fb;name;l;l_first;bk1_score;bk2_score;'
                                                 'vect_ol;vect_fb;time;'
                                                 'minute;ol_kof;ol_avg_change;fb_kof;fb_avg_change;'
-                                                'time_break_fonbet;is_top;'
+                                                'time_break_fonbet;is_top;is_hot;'
                                                 'period;'
                                                 # 'ol_avg_change_total;fb_avg_change_total;'
                                                 'ol_time_change;'
@@ -649,6 +649,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
                                                 str(k_fonbet.get('hist', {}).get('avg_change', [])) + ';' +
                                                 str(time_break_fonbet) + ';' +
                                                 str(is_top) + ';' +
+                                                str(k_fonbet.get('is_hot')) + ';' +
                                                 str(period) + ';' +
                                                 # str(math_json_olimp.get('avg_change_total', [])) + ';' +
                                                 # str(math_json_fonbet.get('avg_change_total', [])) + ';' +
@@ -691,6 +692,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
                                 'create_fork': round(max(ol_time_chage, fb_time_chage)),
                                 'created_fork': created_fork,
                                 'is_top': is_top,
+                                'is_hot': k_fonbet.get('is_hot'),
                                 'event_type': event_type
                             }
                     else:
