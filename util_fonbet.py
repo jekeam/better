@@ -163,7 +163,7 @@ def get_match_fonbet(match_id, proxi_list, proxy, time_out, pair_mathes):
         raise ValueError(err_str)
 
 
-def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair_mathes):
+def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair_mathes, arr_fonbet_top_kofs):
     global VICTS, TTO, TTU, TT1O, TT1U, TT2O, TT2U
     global sport_list
 
@@ -305,6 +305,10 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
                                             kof_order.append(value)
                                             avg_change.append(0)
 
+                                        is_hot = False
+                                        if int(factorId) in arr_fonbet_top_kofs.get(key_id, []):
+                                            is_hot = True
+
                                         bets_fonbet[key_id]['kofs'].update(
                                             {
                                                 coef:
@@ -316,6 +320,7 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
                                                         'factor': factorId,
                                                         'score': score,
                                                         'vector': get_vector(coef, sc1, sc2),
+                                                        'is_hot': is_hot,
                                                         'hist': {
                                                             'time_change': time_change,
                                                             'avg_change': avg_change,
@@ -324,6 +329,8 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
                                                     }
                                             }
                                         )
+                                        # if is_hot:
+                                        #     print(bets_fonbet[key_id])
 
                                 for stake in TT:
                                     coef = half + str(stake[0].format(p))  # + num_team
@@ -345,6 +352,10 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
                                             kof_order.append(value)
                                             avg_change.append(0)
 
+                                        is_hot = False
+                                        if int(factorId) in arr_fonbet_top_kofs.get(key_id, []):
+                                            is_hot = True
+
                                         bets_fonbet[key_id]['kofs'].update(
                                             {
                                                 coef:
@@ -356,6 +367,7 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
                                                         'factor': factorId,
                                                         'score': score,
                                                         'vector': get_vector(coef, sc1, sc2),
+                                                        'is_hot': is_hot,
                                                         'hist': {
                                                             'time_change': time_change,
                                                             'avg_change': avg_change,

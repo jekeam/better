@@ -224,7 +224,7 @@ def start_seeker_matchs_fonbet(gen_proxi_fonbet, arr_matchs):
         time.sleep(time_sleep)
 
 
-def start_seeker_top_matchs_fonbet(gen_proxi_fonbet, arr_fonbet_top_matchs, pair_mathes):
+def start_seeker_top_matchs_fonbet(gen_proxi_fonbet, arr_fonbet_top_matchs, pair_mathes, arr_fonbet_top_kofs):
     global TIMEOUT_MATCHS
     proxy = gen_proxi_fonbet.next()
     while True:
@@ -239,6 +239,17 @@ def start_seeker_top_matchs_fonbet(gen_proxi_fonbet, arr_fonbet_top_matchs, pair
                 elif match_id in arr_fonbet_top_matchs and match_id not in list_pair_mathes:
                     prnts('TOP Event deleted: ' + str(event.get('skId', '')) + '-' + str(event.get('skName', '')) + ': ' + str(match_id) + ', ' + event.get('eventName', ''))
                     arr_fonbet_top_matchs.remove(match_id)
+
+                for row in event.get('markets'):
+                    for cell in row.get('rows'):
+                        for c in cell.get('cells'):
+                            factor_id = c.get('factorId')
+                            event_id_str = str(c.get('eventId'))
+                            if factor_id:
+                                if not arr_fonbet_top_kofs.get(event_id_str, []):
+                                    arr_fonbet_top_kofs[event_id_str] = []
+                                arr_fonbet_top_kofs[event_id_str].append(factor_id)
+
         except Exception as e:
             prnts('Фонбет, ошибка при запросе списка TOP матчей: ' + str(e) + ' ' + proxy)
             proxy = gen_proxi_fonbet.next()
@@ -304,7 +315,7 @@ def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi
         time.sleep(time_sleep)
 
 
-def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_proxi_fonbet, pair_mathes, mathes_complite, stat_req_fb):
+def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_proxi_fonbet, pair_mathes, mathes_complite, stat_req_fb, arr_fonbet_top_kofs):
     global TIMEOUT_MATCH, TIMEOUT_MATCH_MINUS
 
     proxy_size = 5
@@ -317,7 +328,7 @@ def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_p
 
     while True:
         try:
-            time_resp = get_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, ps.get_next_proxy(), TIMEOUT_MATCH, pair_mathes)
+            time_resp = get_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, ps.get_next_proxy(), TIMEOUT_MATCH, pair_mathes, arr_fonbet_top_kofs)
             stat_req_fb.append(round(time_resp, 2))
         except FonbetMatchСompleted as e:
             cnt = 0
@@ -349,7 +360,8 @@ def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_p
 
 
 def starter_bets(bets_olimp, bets_fonbet, pair_mathes, mathes_complite, mathes_id_is_work,
-                 proxies_olimp, gen_proxi_olimp, proxies_fonbet, gen_proxi_fonbet, stat_req_olimp, stat_req_fonbet):
+                 proxies_olimp, gen_proxi_olimp, proxies_fonbet, gen_proxi_fonbet, stat_req_olimp, stat_req_fonbet,
+                 arr_fonbet_top_kofs):
     while True:
         for pair_match in pair_mathes:
             match_id_olimp, match_id_fonbet, event_type = pair_match
@@ -367,7 +379,7 @@ def starter_bets(bets_olimp, bets_fonbet, pair_mathes, mathes_complite, mathes_i
 
                 start_seeker_fonbet_bets_by_id = threading.Thread(
                     target=start_seeker_bets_fonbet,
-                    args=(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_proxi_fonbet, pair_mathes, mathes_complite, stat_req_fonbet))
+                    args=(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_proxi_fonbet, pair_mathes, mathes_complite, stat_req_fonbet, arr_fonbet_top_kofs))
                 start_seeker_fonbet_bets_by_id.start()
 
         time.sleep(20)
@@ -730,6 +742,7 @@ if __name__ == '__main__':
     arr_matchs = dict()
 
     arr_fonbet_top_matchs = []
+    arr_fonbet_top_kofs = {}
     # Completed Events
     mathes_complite = []
 
@@ -760,7 +773,7 @@ if __name__ == '__main__':
     #     time.sleep(15)
 
     # List of TOP events
-    fonbet_seeker_top_matchs = threading.Thread(target=start_seeker_top_matchs_fonbet, args=(gen_proxi_fonbet, arr_fonbet_top_matchs, pair_mathes))
+    fonbet_seeker_top_matchs = threading.Thread(target=start_seeker_top_matchs_fonbet, args=(gen_proxi_fonbet, arr_fonbet_top_matchs, pair_mathes, arr_fonbet_top_kofs))
     fonbet_seeker_top_matchs.start()
 
     # Event mapping
@@ -771,7 +784,8 @@ if __name__ == '__main__':
     starter_bets = threading.Thread(
         target=starter_bets,
         args=(bets_olimp, bets_fonbet, pair_mathes, mathes_complite, mathes_id_is_work,
-              proxies_olimp, gen_proxi_olimp, proxies_fonbet, gen_proxi_fonbet, stat_req_olimp, stat_req_fonbet))
+              proxies_olimp, gen_proxi_olimp, proxies_fonbet, gen_proxi_fonbet, stat_req_olimp, stat_req_fonbet,
+              arr_fonbet_top_kofs))
     starter_bets.start()
 
     starter_forks = threading.Thread(target=get_forks, args=(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbet_top_matchs))
