@@ -246,8 +246,8 @@ def prnt(vstr=None, hide=None):
         Outfile.close()
 
 
-def serv_log(filename: str, vstr: str):
-    prnts(vstr)
+def serv_log(filename: str, vstr: str, hide=False):
+    prnts(vstr, hide)
     Outfile = open(filename + '.log', "a+", encoding='utf-8')
     Outfile.write(vstr + '\n')
     Outfile.close()
