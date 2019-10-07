@@ -82,6 +82,9 @@ def get_olimp(resp, arr_matchs):
 
 
 def get_fonbet(resp, arr_matchs):
+    # with open('resp.json', 'w') as f:
+    #     f.write( json.dumps(resp, ensure_ascii=False) )
+    
     # for val in resp.get('sports'):
     #     if val.get('kind') == 'sport':
     #         print(str(val.get('id')) + ' ' + val.get('name'))
@@ -126,7 +129,7 @@ def get_fonbet(resp, arr_matchs):
     for idEvent in idEvents:
         # print(idEvent['event_id'])
         # print([{'id': event['id'], 'sportId': idEvent['event_sportId']} for event in resp['events'] if event.get('parentId', -1) == -1])
-        for x in [{'id': event['id'], 'sportId': idEvent['event_sportId']} for event in resp['events'] if event['sportId'] == idEvent['event_id'] and event.get('parentId', -1) == -1]:
+        for x in [{'id': event['id'], 'sportId': idEvent['event_sportId'], 'isHot': event.get('state', {}).get('inHotList', False)} for event in resp['events'] if event['sportId'] == idEvent['event_id'] and event.get('parentId', -1) == -1]:
             idMatches.append(x)
         # полчим все инфу по ид матча
     # print_j(resp['events'])
@@ -144,7 +147,8 @@ def get_fonbet(resp, arr_matchs):
                         'name': event['name'],
                         'team1': event.get('team1', ''),
                         'team2': event.get('team2', ''),
-                        'start_timestamp': event.get('startTime', 0)
+                        'start_timestamp': event.get('startTime', 0),
+                        'isHot': mid.get('isHot')
                     }
         # for mid in idMatches:
         # for event in resp['events']:
