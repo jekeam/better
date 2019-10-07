@@ -377,7 +377,7 @@ def compare_teams(team1_bk1, team2_bk1, team1_bk2, team2_bk2):
         r2 = SequenceMatcher(None, team2_bk1, team2_bk2).ratio()
         rate = r1 + r2
         
-        serv_log('compare_teams_raw', str(rate) + '; ' +str(r1) + '; ' +str(r2) + '; ' + fstr.format(team1_bk1, team2_bk1, team1_bk2, team2_bk2))
+        serv_log('compare_teams_raw', str(rate) + '; ' +str(r1) + '; ' +str(r2) + '; ' + fstr.format(team1_bk1, team2_bk1, team1_bk2, team2_bk2), 'hide')
         if 1.7 < rate:
             # print(team1_bk1, team2_bk1, team1_bk2, team2_bk2, sep=';')
             return True
