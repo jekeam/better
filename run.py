@@ -368,9 +368,6 @@ def starter_bets(bets_olimp, bets_fonbet, pair_mathes, mathes_complite, mathes_i
         time.sleep(20)
 
 
-raw_strs = list()
-
-
 def compare_teams(team1_bk1, team2_bk1, team1_bk2, team2_bk2):
     global raw_strs
     fstr = team1_bk1 + ';{};' + team2_bk1 + ';{};' + team1_bk2 + ';{};' + team2_bk2 + ';{};'
@@ -384,10 +381,6 @@ def compare_teams(team1_bk1, team2_bk1, team1_bk2, team2_bk2):
         r2 = SequenceMatcher(None, team2_bk1, team2_bk2).ratio()
         rate = r1 + r2
 
-        raw_str = str(rate) + '; ' + str(r1) + '; ' + str(r2) + '; ' + fstr.format(team1_bk1, team2_bk1, team1_bk2, team2_bk2)
-        if raw_strs not in raw_strs:
-            raw_strs.append(raw_str)
-            serv_log('compare_teams_raw', raw_str, True, False)
         if 1.7 < rate:
             # print(team1_bk1, team2_bk1, team1_bk2, team2_bk2, sep=';')
             return True
@@ -444,7 +437,7 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                                             serv_log('compare_teams', 'add;' + match_name)
                                             pair_mathes.append([bk1_match_id, bk2_match_id, bk1_match_info.get('sport_name')])
                                         else:
-                                            if bk1_match_id not in not_compate or bk2_match_id not in not_compate:
+                                            if (bk1_match_id not in not_compate or bk2_match_id not in not_compate) and bk1_match_info.get('sport_name') == bk2_match_info.get('sport_name'):
                                                 not_compate.append(bk1_match_id)
                                                 not_compate.append(bk2_match_id)
                                                 serv_log('compare_teams', 'del;' + match_name)
