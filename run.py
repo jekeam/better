@@ -84,7 +84,7 @@ def get_olimp(resp, arr_matchs):
 def get_fonbet(resp, arr_matchs):
     # with open('resp.json', 'w') as f:
     #     f.write( json.dumps(resp, ensure_ascii=False) )
-    
+
     # for val in resp.get('sports'):
     #     if val.get('kind') == 'sport':
     #         print(str(val.get('id')) + ' ' + val.get('name'))
@@ -368,19 +368,26 @@ def starter_bets(bets_olimp, bets_fonbet, pair_mathes, mathes_complite, mathes_i
         time.sleep(20)
 
 
+raw_strs = list()
+
+
 def compare_teams(team1_bk1, team2_bk1, team1_bk2, team2_bk2):
+    global raw_strs
     fstr = team1_bk1 + ';{};' + team2_bk1 + ';{};' + team1_bk2 + ';{};' + team2_bk2 + ';{};'
     if team1_bk1 and team2_bk1 and team1_bk2 and team2_bk2:
         team1_bk1 = re.sub('[^A-z 0-9]', '', str(team1_bk1).lower()).replace(' ', '')
         team2_bk1 = re.sub('[^A-z 0-9]', '', str(team2_bk1).lower()).replace(' ', '')
         team1_bk2 = re.sub('[^A-z 0-9]', '', str(team1_bk2).lower()).replace(' ', '')
         team2_bk2 = re.sub('[^A-z 0-9]', '', str(team2_bk2).lower()).replace(' ', '')
-        
+
         r1 = SequenceMatcher(None, team1_bk1, team1_bk2).ratio()
         r2 = SequenceMatcher(None, team2_bk1, team2_bk2).ratio()
         rate = r1 + r2
-        
-        serv_log('compare_teams_raw', str(rate) + '; ' +str(r1) + '; ' +str(r2) + '; ' + fstr.format(team1_bk1, team2_bk1, team1_bk2, team2_bk2), True)
+
+        raw_str = str(rate) + '; ' + str(r1) + '; ' + str(r2) + '; ' + fstr.format(team1_bk1, team2_bk1, team1_bk2, team2_bk2)
+        if raw_strs not in raw_strs:
+            raw_strs.append(raw_str)
+            serv_log('compare_teams_raw', raw_str, True)
         if 1.7 < rate:
             # print(team1_bk1, team2_bk1, team1_bk2, team2_bk2, sep=';')
             return True
@@ -417,15 +424,15 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                                         # prnts('Матчи завершены: ' + str(bk1_match_id) + '-' + str(bk2_match_id))
                                         pass
                                     else:
-                                        
+
                                         match_name = str(bk1_match_info.get('sport_name')) + ';' + \
-                                                         str(bk1_match_id) + ';' + \
-                                                         str(bk1_match_info.get('team1')) + ';' + \
-                                                         str(bk1_match_info.get('team2')) + ';' + \
-                                                         str(bk2_match_id) + ';' + \
-                                                         str(bk2_match_info.get('team1')) + ';' + \
-                                                         str(bk2_match_info.get('team2')) + ';'
-                                        
+                                                     str(bk1_match_id) + ';' + \
+                                                     str(bk1_match_info.get('team1')) + ';' + \
+                                                     str(bk1_match_info.get('team2')) + ';' + \
+                                                     str(bk2_match_id) + ';' + \
+                                                     str(bk2_match_info.get('team1')) + ';' + \
+                                                     str(bk2_match_info.get('team2')) + ';'
+
                                         if compare_teams(
                                                 bk1_match_info.get('team1'),
                                                 bk1_match_info.get('team2'),
@@ -439,7 +446,7 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                                                 not_compate.append(bk1_match_id)
                                                 not_compate.append(bk2_match_id)
                                                 serv_log('compare_teams', 'del;' + match_name)
-                                            
+
         except Exception as e:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             prnts('Error start_event_mapping: ' +
