@@ -408,27 +408,26 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                                         # prnts('Матчи завершены: ' + str(bk1_match_id) + '-' + str(bk2_match_id))
                                         pass
                                     else:
+                                        
+                                        match_name = str(bk1_match_info.get('sport_name')) + ';' + \
+                                                         str(bk1_match_id) + ';' + \
+                                                         str(bk1_match_info.get('team1')) + ';' + \
+                                                         str(bk1_match_info.get('team2')) + ';' + \
+                                                         str(bk2_match_id) + ';' + \
+                                                         str(bk2_match_info.get('team1')) + ';' + \
+                                                         str(bk2_match_info.get('team2')) + ';'
+                                        
                                         if compare_teams(
                                                 bk1_match_info.get('team1'),
                                                 bk1_match_info.get('team2'),
                                                 bk2_match_info.get('team1'),
                                                 bk2_match_info.get('team2')
                                         ) and bk1_match_info.get('sport_name') == bk2_match_info.get('sport_name'):
-
-                                            match_name = str(bk1_match_info.get('sport_name')) + ': ' + \
-                                                         str(bk1_match_id) + ' ' + \
-                                                         str(bk1_match_info.get('team1')) + ' vs ' + \
-                                                         str(bk1_match_info.get('team2')) + ' | ' + \
-                                                         str(bk2_match_id) + ' ' + \
-                                                         str(bk2_match_info.get('team1')) + ' vs ' + \
-                                                         str(bk2_match_info.get('team2'))
-
-                                            if DEBUG:  # and str(bk2_match_id) == '13706641':
-                                                serv_log('match_list', 'Event added: ' + match_name)
-                                                pair_mathes.append([bk1_match_id, bk2_match_id, bk1_match_info.get('sport_name')])
-                                            elif not DEBUG:
-                                                serv_log('match_list', 'Event added: ' + match_name)
-                                                pair_mathes.append([bk1_match_id, bk2_match_id, bk1_match_info.get('sport_name')])
+                                            serv_log('compare_teams', 'add;' + match_name)
+                                            pair_mathes.append([bk1_match_id, bk2_match_id, bk1_match_info.get('sport_name')])
+                                        else:
+                                            serv_log('compare_teams', 'del;' + match_name)
+                                            
         except Exception as e:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             prnts('Error start_event_mapping: ' +
