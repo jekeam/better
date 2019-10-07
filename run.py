@@ -383,6 +383,7 @@ def compare_teams(team1_bk1, team2_bk1, team1_bk2, team2_bk2):
 def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
     json_bk1_copy = dict()
     json_bk2_copy = dict()
+    not_compate = list()
     while True:
         try:
             prnts('Events found: ' + str(len(pair_mathes)) + ' ' + str(pair_mathes))
@@ -426,7 +427,10 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                                             serv_log('compare_teams', 'add;' + match_name)
                                             pair_mathes.append([bk1_match_id, bk2_match_id, bk1_match_info.get('sport_name')])
                                         else:
-                                            serv_log('compare_teams', 'del;' + match_name)
+                                            if bk1_match_id not in not_compate and bk2_match_id not in not_compate:
+                                                not_compate.append(bk1_match_id)
+                                                not_compate.append(bk2_match_id)
+                                                serv_log('compare_teams', 'del;' + match_name)
                                             
         except Exception as e:
             exc_type, exc_value, exc_traceback = sys.exc_info()
