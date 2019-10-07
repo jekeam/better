@@ -83,7 +83,7 @@ def get_olimp(resp, arr_matchs):
 
 def get_fonbet(resp, arr_matchs):
     # with open('resp.json', 'w') as f:
-    #     f.write( json.dumps(resp, ensure_ascii=False) )
+    #     f.write(json.dumps(resp, ensure_ascii=False))
 
     # for val in resp.get('sports'):
     #     if val.get('kind') == 'sport':
@@ -150,6 +150,11 @@ def get_fonbet(resp, arr_matchs):
                         'start_timestamp': event.get('startTime', 0),
                         'isHot': mid.get('isHot')
                     }
+                    # if mid.get('isHot'):
+                    #     print('hot: ' + str(event['priority']) + ' ' + str(arr_matchs[str(event['id'])]))
+                    # else:
+                    #     print('no: ' + str(event['priority']) + ' ' + str(arr_matchs[str(event['id'])]))
+
         # for mid in idMatches:
         # for event in resp['events']:
         # if event['id'] == mid and event['kind'] > 1 and event['name'] in ['1st half', '2nd half', 'corners']:
