@@ -427,7 +427,7 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                                             serv_log('compare_teams', 'add;' + match_name)
                                             pair_mathes.append([bk1_match_id, bk2_match_id, bk1_match_info.get('sport_name')])
                                         else:
-                                            if bk1_match_id not in not_compate and bk2_match_id not in not_compate:
+                                            if bk1_match_id not in not_compate or bk2_match_id not in not_compate:
                                                 not_compate.append(bk1_match_id)
                                                 not_compate.append(bk2_match_id)
                                                 serv_log('compare_teams', 'del;' + match_name)
