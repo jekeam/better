@@ -387,7 +387,7 @@ def compare_teams(team1_bk1, team2_bk1, team1_bk2, team2_bk2):
         raw_str = str(rate) + '; ' + str(r1) + '; ' + str(r2) + '; ' + fstr.format(team1_bk1, team2_bk1, team1_bk2, team2_bk2)
         if raw_strs not in raw_strs:
             raw_strs.append(raw_str)
-            serv_log('compare_teams_raw', raw_str, True)
+            serv_log('compare_teams_raw', raw_str, True, False)
         if 1.7 < rate:
             # print(team1_bk1, team2_bk1, team1_bk2, team2_bk2, sep=';')
             return True
