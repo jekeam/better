@@ -391,6 +391,8 @@ def compare_teams(team1_bk1, team2_bk1, team1_bk2, team2_bk2):
         if 1.7 < rate:
             # print(team1_bk1, team2_bk1, team1_bk2, team2_bk2, sep=';')
             return True
+        else:
+            return False
     else:
         return False
 
