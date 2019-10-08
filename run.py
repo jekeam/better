@@ -385,19 +385,27 @@ def starter_bets(bets_olimp, bets_fonbet, pair_mathes, mathes_complite, mathes_i
         time.sleep(20)
 
 
-def compare_teams(team1_bk1, team2_bk1, team1_bk2, team2_bk2):
-
+def compare_teams(team1_bk1, team2_bk1, team1_bk2, team2_bk2, debug=False):
+    if debug:
+        fstr = team1_bk1 + '->{};' + team2_bk1 + '->{};' + team1_bk2 + '->{};' + team2_bk2 + '->{};'
     if team1_bk1 and team2_bk1 and team1_bk2 and team2_bk2:
         team1_bk1 = re.sub('[^A-z 0-9]', '', str(team1_bk1).lower()).replace(' ', '')
         team2_bk1 = re.sub('[^A-z 0-9]', '', str(team2_bk1).lower()).replace(' ', '')
         team1_bk2 = re.sub('[^A-z 0-9]', '', str(team1_bk2).lower()).replace(' ', '')
         team2_bk2 = re.sub('[^A-z 0-9]', '', str(team2_bk2).lower()).replace(' ', '')
+        if debug:
+            fstr = fstr.format(team1_bk1, team2_bk1, team1_bk2, team2_bk2)
+            print(fstr)
 
         r1 = SequenceMatcher(None, team1_bk1, team1_bk2).ratio()
         r2 = SequenceMatcher(None, team2_bk1, team2_bk2).ratio()
         rate = r1 + r2
+        need = 1.7
 
-        if 1.7 < rate:
+        if debug:
+            print('k1: {}, k2: {}. All: {}, need: {}'.format(r1, r2, rate, need))
+
+        if need < rate:
             # print(team1_bk1, team2_bk1, team1_bk2, team2_bk2, sep=';')
             return True
         else:
