@@ -417,6 +417,10 @@ def compare_teams(team1_bk1, team2_bk1, team1_bk2, team2_bk2, debug=False):
 def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
     json_bk1_copy = dict()
     json_bk2_copy = dict()
+    
+    str1_temp = ''
+    str2_temp = ''
+    
     not_compare = list()
     while True:
         try:
@@ -429,9 +433,13 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                 if val.get('bk_name', '') == 'fonbet':
                     json_bk2_copy[key] = val
 
-            prnts(dumps(json_bk1_copy, ensure_ascii=False))
-            prnts(' ')
-            prnts(dumps(json_bk2_copy, ensure_ascii=False))
+            if str1_temp != dumps(json_bk1_copy, ensure_ascii=False):
+                str1_temp = dumps(json_bk1_copy, ensure_ascii=False)
+                prnts(str1_temp)
+            if str2_temp != dumps(json_bk2_copy, ensure_ascii=False):
+                str2_temp = dumps(json_bk2_copy, ensure_ascii=False)
+                prnts(str2_temp)
+            
             for bk1_match_id, bk1_match_info in json_bk1_copy.items():
                 if [bk1_name for bk1_name in bk1_match_info.values() if bk1_name is not None]:
                     # Проверим что ид матча 1 нет в списке
