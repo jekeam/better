@@ -417,7 +417,7 @@ def compare_teams(team1_bk1, team2_bk1, team1_bk2, team2_bk2, debug=False):
 def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
     json_bk1_copy = dict()
     json_bk2_copy = dict()
-    not_compate = list()
+    not_compare = list()
     while True:
         try:
             prnts('Events found: ' + str(len(pair_mathes)) + ' ' + str(pair_mathes))
@@ -429,6 +429,9 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                 if val.get('bk_name', '') == 'fonbet':
                     json_bk2_copy[key] = val
 
+            prnts(dumps(json_bk1_copy, ensure_ascii=False))
+            print(' ')
+            prnts(dumps(json_bk2_copy, ensure_ascii=False))
             for bk1_match_id, bk1_match_info in json_bk1_copy.items():
                 if [bk1_name for bk1_name in bk1_match_info.values() if bk1_name is not None]:
                     # Проверим что ид матча 1 нет в списке
@@ -438,9 +441,7 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                                 # Проверим что ид матча 2 нет в списке
                                 if 'yes' not in list(map(lambda id: 'yes' if bk2_match_id in id else 'no', pair_mathes)):
                                     # Проверим что матч не завершен:
-                                    # print(bk1_match_id, bk2_match_id, mathes_complite, sep=';')
                                     if bk1_match_id in mathes_complite or bk2_match_id in mathes_complite:
-                                        # prnts('Матчи завершены: ' + str(bk1_match_id) + '-' + str(bk2_match_id))
                                         pass
                                     else:
 
@@ -461,9 +462,9 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                                             serv_log('compare_teams', 'add;' + match_name)
                                             pair_mathes.append([bk1_match_id, bk2_match_id, bk1_match_info.get('sport_name')])
                                         else:
-                                            if (bk1_match_id not in not_compate or bk2_match_id not in not_compate) and bk1_match_info.get('sport_name') == bk2_match_info.get('sport_name'):
-                                                not_compate.append(bk1_match_id)
-                                                not_compate.append(bk2_match_id)
+                                            if (bk1_match_id not in not_compare or bk2_match_id not in not_compare) and bk1_match_info.get('sport_name') == bk2_match_info.get('sport_name'):
+                                                not_compare.append(bk1_match_id)
+                                                not_compare.append(bk2_match_id)
                                                 serv_log('compare_teams', 'del;' + match_name)
 
         except Exception as e:

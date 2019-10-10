@@ -4,14 +4,15 @@ def compare_teams(team1_bk1, team2_bk1, team1_bk2, team2_bk2, debug=False, need=
     import re
     
     if debug:
-        fstr = team1_bk1 + '->{}\n' + team1_bk2 + '->{}\n\n' + team2_bk1 + '->{}\n' + team2_bk2 + '->{}'
+        # fstr = team1_bk1 + '->{}\n' + team1_bk2 + '->{}\n\n' + team2_bk1 + '->{}\n' + team2_bk2 + '->{}'
+        fstr = team1_bk1 + ' || ' + team1_bk2 + '\n' + team2_bk1 + ' || ' + team2_bk2
     if team1_bk1 and team2_bk1 and team1_bk2 and team2_bk2:
         team1_bk1 = re.sub('[^A-z 0-9]', '', str(team1_bk1).lower()).replace(' ', '')
         team2_bk1 = re.sub('[^A-z 0-9]', '', str(team2_bk1).lower()).replace(' ', '')
         team1_bk2 = re.sub('[^A-z 0-9]', '', str(team1_bk2).lower()).replace(' ', '')
         team2_bk2 = re.sub('[^A-z 0-9]', '', str(team2_bk2).lower()).replace(' ', '')
         if debug:
-            fstr = fstr.format(team1_bk1, team1_bk2, team2_bk1, team2_bk2)
+            # fstr = fstr.format(team1_bk1, team1_bk2, team2_bk1, team2_bk2)
             print(fstr)
 
         r1 = SequenceMatcher(None, team1_bk1, team1_bk2).ratio()
@@ -19,7 +20,7 @@ def compare_teams(team1_bk1, team2_bk1, team1_bk2, team2_bk2, debug=False, need=
         rate = r1 + r2
 
         if debug:
-            print('k1: {}, k2: {}. All: {}, need: {}, res: {}'.format(r1, r2, rate, need, need < rate))
+            print('k1: {}, k2: {}. All: {}, need: {}, res: {}\n\n'.format(r1, r2, round(rate, 2), need, need < rate))
         if need < rate:
             return True
 
