@@ -430,7 +430,7 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                     json_bk2_copy[key] = val
 
             prnts(dumps(json_bk1_copy, ensure_ascii=False))
-            print(' ')
+            prnts(' ')
             prnts(dumps(json_bk2_copy, ensure_ascii=False))
             for bk1_match_id, bk1_match_info in json_bk1_copy.items():
                 if [bk1_name for bk1_name in bk1_match_info.values() if bk1_name is not None]:

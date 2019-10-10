@@ -1,4 +1,9 @@
 if '__main__'==__name__:
+    
+    def Diff(li1, li2): 
+        li_dif = [i for i in li1 + li2 if i not in li1 or i not in li2] 
+        return li_dif 
+    
     import time
     from diff_matches import compare_teams
     import re
@@ -7,9 +12,9 @@ if '__main__'==__name__:
         sj = f.readlines()
         sj = list(set(sj))
         
-        sj = list(filter(lambda s: 'Altay Ust-Kamenogorsk' in s and 'Sibirskie Snipery' in s and 'Altay U-K' in s and 'Siberian Snipers' in s, sj))
-        for x in sj:
-            print(x.strip())
+        # sj = list(filter(lambda s: 'Ba;Labasa;' in s and 'Ba FC;Labasa;' in s, sj))
+        # for x in sj:
+        #     print(x.strip())
         
         # if '' in add_str:
         #         print(add_str)
@@ -31,11 +36,11 @@ if '__main__'==__name__:
             e = s.strip().split(';')
             # print(e)
             # time.sleep(5)
-            if compare_teams(e[3], e[4], e[6], e[7], debug=True, need=need_new):
+            if compare_teams(e[3], e[4], e[6], e[7], debug=False, need=need_new):
                 add_new_str = e[3] + ' - ' + e[4] + ' | ' + e[6] + ' - ' + e[7]
                 add_new.append(add_new_str)
                 
-        print('Найдено ситуаций: ' + str(len(add_new)) + '\n')
-        # for n in add_new:
-        #     if n not in add:
-        #         print(n)
+        print('Найдено новых ситуаций: ' + str(len( Diff(add, add_new) )))
+        for n in add_new:
+            if n not in add:
+                print(n)
