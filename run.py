@@ -417,10 +417,10 @@ def compare_teams(team1_bk1, team2_bk1, team1_bk2, team2_bk2, debug=False):
 def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
     json_bk1_copy = dict()
     json_bk2_copy = dict()
-    
+
     str1_temp = ''
     str2_temp = ''
-    
+
     not_compare = list()
     while True:
         try:
@@ -439,7 +439,7 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
             if str2_temp != dumps(json_bk2_copy, ensure_ascii=False):
                 str2_temp = dumps(json_bk2_copy, ensure_ascii=False)
                 prnts(str2_temp)
-            
+
             for bk1_match_id, bk1_match_info in json_bk1_copy.items():
                 if [bk1_name for bk1_name in bk1_match_info.values() if bk1_name is not None]:
                     # Проверим что ид матча 1 нет в списке
@@ -470,9 +470,9 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                                             serv_log('compare_teams', 'add;' + match_name)
                                             pair_mathes.append([bk1_match_id, bk2_match_id, bk1_match_info.get('sport_name')])
                                         else:
-                                            if (bk1_match_id not in not_compare or bk2_match_id not in not_compare) and bk1_match_info.get('sport_name') == bk2_match_info.get('sport_name'):
-                                                not_compare.append(bk1_match_id)
-                                                not_compare.append(bk2_match_id)
+                                            pair_uniq_str = str(bk1_match_id) + str(bk2_match_id)
+                                            if pair_uniq_str not in not_compare and bk1_match_info.get('sport_name') == bk2_match_info.get('sport_name'):
+                                                not_compare.append(pair_uniq_str)
                                                 serv_log('compare_teams', 'del;' + match_name)
 
         except Exception as e:
