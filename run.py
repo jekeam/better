@@ -470,9 +470,8 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                                             serv_log('compare_teams', 'add;' + match_name)
                                             pair_mathes.append([bk1_match_id, bk2_match_id, bk1_match_info.get('sport_name')])
                                         else:
-                                            pair_uniq_str = str(bk1_match_id) + str(bk2_match_id)
-                                            if pair_uniq_str not in not_compare and bk1_match_info.get('sport_name') == bk2_match_info.get('sport_name'):
-                                                not_compare.append(pair_uniq_str)
+                                            if match_name not in not_compare and bk1_match_info.get('sport_name') == bk2_match_info.get('sport_name'):
+                                                not_compare.append(match_name)
                                                 serv_log('compare_teams', 'del;' + match_name)
 
         except Exception as e:
