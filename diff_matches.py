@@ -21,8 +21,8 @@ def compare_teams(team1_bk1, team2_bk1, team1_bk2, team2_bk2, debug=False, need=
 
         if debug:
             print('k1: {}, k2: {}. All: {}, need: {}, res: {}\n\n'.format(r1, r2, round(rate, 2), need, need < rate))
-        if need < rate:
-            return True
+        
+        return rate
 
 if __name__=='__main__':
     
