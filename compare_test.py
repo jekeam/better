@@ -43,7 +43,7 @@ if '__main__' == __name__:
             e = s.strip().split(';')
             ed = s.strip().split(';')[0]
             if ed == 'add':
-                add_str = e[3] + ' - ' + e[4] + ' | ' + e[6] + ' - ' + e[7]
+                add_str = e[3] + ' - ' + e[4] + ';' + e[6] + ' - ' + e[7]
                 add.append(add_str)
         
 
@@ -65,12 +65,13 @@ if '__main__' == __name__:
             cur_val = compare_teams(e[3], e[4], e[6], e[7], debug=False, need=need_new)
             nn.append(cur_val)
             if cur_val > need_new:
-                add_new_str = e[3] + ' - ' + e[4] + ' | ' + e[6] + ' - ' + e[7]
+                add_new_str = e[3] + ' - ' + e[4] + ';' + e[6] + ' - ' + e[7]
                 add_new.append(add_new_str)
 
         print('Найдено новых ситуаций: ' + str(len(Diff(add, add_new))))
+        print('Название в БК1;БК2; Верно ли сопоставилось;')
         for n in add_new:
             if n not in add:
-                print(n)
+                print(n + ';')
         
         # print(list(filter(lambda x: x > 1, nn)))
