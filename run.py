@@ -433,7 +433,7 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                     json_bk2_copy[key] = val
 
             ss = ''
-            for val in arr_matchs:
+            for key, val in arr_matchs.items():
                 ss = ss + str(val) + ','
             if ss != str_temp:
                 str_temp = ss
