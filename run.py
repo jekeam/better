@@ -418,6 +418,7 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
     need = 1.7
 
     not_compare = list()
+    temp_str = ''
     while True:
         try:
             prnts('Events found: ' + str(len(pair_mathes)) + ' ' + str(pair_mathes))
@@ -472,9 +473,19 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                                         'rate': rate,
                                         'match_name': match_name
                                     })
-            filter_rate = list(map(lambda l: l if l.get('rate', 0) > need else serv_log('compare_teams', 'del;' + l.get('match_name')), bk_rate_ord))
+            vstr = ''
+
+            def set_vstr(s):
+                global vstr
+                vstr = vstr + s + '\n'
+
+            filter_rate = list(map(lambda l: l if l.get('rate', 0) > need else set_vstr('del;' + l.get('match_name')), bk_rate_ord))
             filter_rate = list(filter(lambda x: x is not None, filter_rate))
             filter_rate.sort(key=sort_by_rate, reverse=True)
+
+            if vstr != temp_str:
+                temp_str = vstr
+                serv_log('compare_teams', temp_str)
 
             for e in filter_rate:
                 pair = []
