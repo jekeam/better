@@ -434,6 +434,7 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
 
             ss = ''
             for key, val in arr_matchs.items():
+                print(val)
                 ss = ss + str(val) + ','
             if ss != str_temp:
                 str_temp = ss

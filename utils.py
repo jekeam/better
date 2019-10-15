@@ -261,12 +261,14 @@ def client_log(filename: str, vstr: str):
     Outfile.close()
 
 
-def prnts(vstr=None, hide=None, filename='server.log'):
+def prnts(vstr=None, hide=None, filename='server.log', hide_time=False):
     if vstr:
         global dtOld
         dtDeff = round((datetime.datetime.now() - dtOld).total_seconds())
-        strLog = datetime.datetime.now().strftime('%d %H:%M:%S.%f ') + '[' + str(dtDeff).rjust(2, '0') + ']    ' + \
-                 str(vstr)
+        if hide_time:
+            strLog = str(vstr)
+        else:
+            strLog = datetime.datetime.now().strftime('%d %H:%M:%S.%f ') + '[' + str(dtDeff).rjust(2, '0') + ']    ' + str(vstr)
         if not hide:
             dtOld = datetime.datetime.now()
             print(strLog)
