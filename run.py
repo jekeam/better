@@ -385,7 +385,11 @@ def starter_bets(bets_olimp, bets_fonbet, pair_mathes, mathes_complite, mathes_i
         time.sleep(20)
 
 
-def compare_teams(team1_bk1, team2_bk1, team1_bk2, team2_bk2, debug=False):
+def sort_by_rate(val):
+    return val.get('rate', 0)
+
+
+def get_rate(team1_bk1, team2_bk1, team1_bk2, team2_bk2, debug=False):
     if debug:
         fstr = team1_bk1 + '->{};' + team2_bk1 + '->{};' + team1_bk2 + '->{};' + team2_bk2 + '->{};'
     if team1_bk1 and team2_bk1 and team1_bk2 and team2_bk2:
@@ -397,33 +401,27 @@ def compare_teams(team1_bk1, team2_bk1, team1_bk2, team2_bk2, debug=False):
             fstr = fstr.format(team1_bk1, team2_bk1, team1_bk2, team2_bk2)
             print(fstr)
 
-        r1 = SequenceMatcher(None, team1_bk1, team1_bk2).ratio()
-        r2 = SequenceMatcher(None, team2_bk1, team2_bk2).ratio()
-        rate = r1 + r2
-        need = 1.7
+        r1 = round(SequenceMatcher(None, team1_bk1, team1_bk2).ratio(), 3)
+        r2 = round(SequenceMatcher(None, team2_bk1, team2_bk2).ratio(), 3)
+        rate = round(r1 + r2, 3)
 
         if debug:
-            print('k1: {}, k2: {}. All: {}, need: {}'.format(r1, r2, rate, need))
+            print('k1: {}, k2: {}. All: {}'.format(r1, r2, rate))
 
-        if need < rate:
-            # print(team1_bk1, team2_bk1, team1_bk2, team2_bk2, sep=';')
-            return True
-        else:
-            return False
-    else:
-        return False
+        return r1, r2, rate
 
 
 def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
     json_bk1_copy = dict()
     json_bk2_copy = dict()
 
-    str_temp = ''
+    need = 1.7
 
     not_compare = list()
     while True:
         try:
             prnts('Events found: ' + str(len(pair_mathes)) + ' ' + str(pair_mathes))
+            bk_rate_ord = list()
             for key, val in arr_matchs.items():
                 if val.get('bk_name', '') == 'olimp':
                     json_bk1_copy[key] = val
@@ -432,55 +430,78 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                 if val.get('bk_name', '') == 'fonbet':
                     json_bk2_copy[key] = val
 
-            ss = ''
-            for key, val in arr_matchs.items():
-                print(val)
-                ss = ss + str(val) + ','
-            if ss != str_temp:
-                str_temp = ss
-                for key, val in arr_matchs.items():
-                    Outfile = open('json_compare.log', "a+", encoding='utf-8')
-                    Outfile.write(dumps({key: val}, ensure_ascii=False) + ',\n')
-                    Outfile.close()
-
             for bk1_match_id, bk1_match_info in json_bk1_copy.items():
                 if [bk1_name for bk1_name in bk1_match_info.values() if bk1_name is not None]:
-                    # Проверим что ид матча 1 нет в списке
-                    if 'yes' not in list(map(lambda id: 'yes' if bk1_match_id in id else 'no', pair_mathes)):
-                        for bk2_match_id, bk2_match_info in json_bk2_copy.items():
-                            if [bk2_name for bk2_name in bk2_match_info.values() if bk2_name is not None]:
-                                # Проверим что ид матча 2 нет в списке
-                                if 'yes' not in list(map(lambda id: 'yes' if bk2_match_id in id else 'no', pair_mathes)):
-                                    # Проверим что матч не завершен:
-                                    if bk1_match_id in mathes_complite or bk2_match_id in mathes_complite:
-                                        pass
-                                    else:
 
-                                        match_name = str(bk1_match_info.get('sport_name')) + ';' + \
-                                                     str(bk1_match_id) + ';' + \
-                                                     str(bk1_match_info.get('team1')) + ';' + \
-                                                     str(bk1_match_info.get('team2')) + ';' + \
-                                                     str(bk2_match_id) + ';' + \
-                                                     str(bk2_match_info.get('team1')) + ';' + \
-                                                     str(bk2_match_info.get('team2')) + ';'
+                    for bk2_match_id, bk2_match_info in json_bk2_copy.items():
+                        if [bk2_name for bk2_name in bk2_match_info.values() if bk2_name is not None]:
 
-                                        if compare_teams(
-                                                bk1_match_info.get('team1'),
-                                                bk1_match_info.get('team2'),
-                                                bk2_match_info.get('team1'),
-                                                bk2_match_info.get('team2')
-                                        ) and bk1_match_info.get('sport_name') == bk2_match_info.get('sport_name'):
-                                            serv_log('compare_teams', 'add;' + match_name)
-                                            pair_mathes.append([bk1_match_id, bk2_match_id, bk1_match_info.get('sport_name')])
-                                        else:
-                                            if match_name not in not_compare and bk1_match_info.get('sport_name') == bk2_match_info.get('sport_name'):
-                                                not_compare.append(match_name)
-                                                serv_log('compare_teams', 'del;' + match_name)
+                            # Проверим что матч не завершен:
+                            if bk1_match_id in mathes_complite or bk2_match_id in mathes_complite:
+                                pass
+                            else:
 
+                                match_name = str(bk1_match_info.get('sport_name')) + ';' + \
+                                             str(bk1_match_id) + ';' + \
+                                             str(bk1_match_info.get('team1')) + ';' + \
+                                             str(bk1_match_info.get('team2')) + ';' + \
+                                             str(bk2_match_id) + ';' + \
+                                             str(bk2_match_info.get('team1')) + ';' + \
+                                             str(bk2_match_info.get('team2')) + ';'
+
+                                if bk1_match_info.get('sport_name') == bk2_match_info.get('sport_name'):
+                                    r1, r2, rate = get_rate(
+                                        bk1_match_info.get('team1'),
+                                        bk1_match_info.get('team2'),
+                                        bk2_match_info.get('team1'),
+                                        bk2_match_info.get('team2')
+                                    )
+                                    bk_rate_ord.append({
+                                        str(bk1_match_id): {
+                                            'bk1_t1': bk1_match_info.get('team1'),
+                                            'bk1_t2': bk1_match_info.get('team2'),
+                                            'rate': r1,
+                                            'sport_name': bk1_match_info.get('sport_name')
+                                        },
+                                        str(bk2_match_id): {
+                                            'bk2_t1': bk2_match_info.get('team1'),
+                                            'bk2_t2': bk2_match_info.get('team2'),
+                                            'rate': r2,
+                                            'sport_name': bk2_match_info.get('sport_name')
+                                        },
+                                        'rate': rate,
+                                        'match_name': match_name
+                                    })
+            filter_rate = list(map(lambda l: l if l.get('rate', 0) > need else serv_log('compare_teams', 'del;' + l.get('match_name')), bk_rate_ord))
+            filter_rate = list(filter(lambda x: x is not None, filter_rate))
+            filter_rate.sort(key=sort_by_rate, reverse=True)
+
+            for e in filter_rate:
+                pair = []
+                for m, v in e.items():
+                    try:
+                        if v.get('sport_name'):
+                            pair.append(m)
+                            if v.get('sport_name') not in pair:
+                                pair.append(v.get('sport_name'))
+                    except:
+                        pass
+                pair.sort()
+                pair.append(e.get('match_name'))
+
+                one_line = []
+                for p in pair_mathes:
+                    for i in p:
+                        one_line.append(i)
+                if pair[0] in one_line or pair[1] in one_line or pair[0] in mathes_complite or pair[1] in mathes_complite:
+                    pass
+                else:
+                    pair_mathes.append(pair)
+                    serv_log('compare_teams', 'add;' + pair[3])
+            # print(pair_mathes)
         except Exception as e:
             exc_type, exc_value, exc_traceback = sys.exc_info()
-            prnts('Error start_event_mapping: ' +
-                  str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
+            prnts('Error start_event_mapping: ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
         finally:
             time.sleep(15)
 
