@@ -438,7 +438,10 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                 ss = ss + str(val) + ','
             if ss != str_temp:
                 str_temp = ss
-                prnts(str_temp, filename='json_compare.log', hide_time=True)
+                for key, val in arr_matchs.items():
+                    Outfile = open('json_compare.log', "a+", encoding='utf-8')
+                    Outfile.write(dumps(val, ensure_ascii=False) + '\n')
+                    Outfile.close()
 
             for bk1_match_id, bk1_match_info in json_bk1_copy.items():
                 if [bk1_name for bk1_name in bk1_match_info.values() if bk1_name is not None]:
