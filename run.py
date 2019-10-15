@@ -364,7 +364,8 @@ def starter_bets(bets_olimp, bets_fonbet, pair_mathes, mathes_complite, mathes_i
                  arr_fonbet_top_kofs):
     while True:
         for pair_match in pair_mathes:
-            match_id_olimp, match_id_fonbet, event_type = pair_match
+            print(pair_match)
+            match_id_olimp, match_id_fonbet, event_type, passs = pair_match
 
             if match_id_olimp not in mathes_id_is_work:
                 mathes_id_is_work.append(match_id_olimp)
@@ -411,9 +412,6 @@ def get_rate(team1_bk1, team2_bk1, team1_bk2, team2_bk2, debug=False):
         return r1, r2, rate
 
 
-vstr = ''
-
-
 def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
     json_bk1_copy = dict()
     json_bk2_copy = dict()
@@ -421,7 +419,6 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
     need = 1.7
 
     not_compare = list()
-    temp_str = ''
     while True:
         try:
             prnts('Events found: ' + str(len(pair_mathes)) + ' ' + str(pair_mathes))
@@ -477,17 +474,15 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                                         'match_name': match_name
                                     })
 
-            def set_vstr(s):
-                global vstr
-                vstr = vstr + s + '\n'
-
-            filter_rate = list(map(lambda l: l if l.get('rate', 0) > need else set_vstr('del;' + l.get('match_name')), bk_rate_ord))
+            filter_rate = list(
+                map(lambda l: l
+                if l.get('rate', 0) > need
+                else not_compare.append('del;' + l.get('match_name')) and serv_log('compare_teams', 'del;' + l.get('match_name'))
+                if 'del;' + l.get('match_name') not in not_compare
+                else None
+                    , bk_rate_ord))
             filter_rate = list(filter(lambda x: x is not None, filter_rate))
             filter_rate.sort(key=sort_by_rate, reverse=True)
-
-            if vstr != temp_str:
-                temp_str = vstr
-                serv_log('compare_teams', temp_str)
 
             for e in filter_rate:
                 pair = []
@@ -500,6 +495,7 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                     except:
                         pass
                 pair.sort()
+                pair = [pair[1], pair[0], pair[2]]
                 pair.append(e.get('match_name'))
 
                 one_line = []
