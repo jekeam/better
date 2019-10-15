@@ -1,4 +1,6 @@
 import statistics
+
+
 def find_max_mode(list1):
     list_table = statistics._counts(list1)
     len_table = len(list_table)
@@ -12,8 +14,10 @@ def find_max_mode(list1):
         max_mode = max(new_list)
     return max_mode
 
+
 if '__main__' == __name__:
     import sys
+
 
     def Diff(li1, li2):
         li_dif = [i for i in li1 + li2 if i not in li1 or i not in li2]
@@ -28,9 +32,9 @@ if '__main__' == __name__:
         sj = f.readlines()
         sj = list(set(sj))
 
-        sj = list(filter(lambda s: 'Universitario' in s, sj))
-        for x in sj:
-            print(x.strip())
+        # sj = list(filter(lambda s: 'Universitario' in s, sj))
+        # for x in sj:
+        #     print(x.strip())
 
         # if '' in add_str:
         #         print(add_str)
@@ -45,7 +49,6 @@ if '__main__' == __name__:
             if ed == 'add':
                 add_str = e[3] + ' - ' + e[4] + ';' + e[6] + ' - ' + e[7]
                 add.append(add_str)
-        
 
         print('Найдено ситуаций: ' + str(len(add)))
 
@@ -73,5 +76,5 @@ if '__main__' == __name__:
         for n in add_new:
             if n not in add:
                 print(n + ';')
-        
+
         # print(list(filter(lambda x: x > 1, nn)))
