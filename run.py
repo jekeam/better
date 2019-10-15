@@ -435,10 +435,10 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
 
             if str1_temp != dumps(json_bk1_copy, ensure_ascii=False):
                 str1_temp = dumps(json_bk1_copy, ensure_ascii=False)
-                prnts(str1_temp)
+                prnts(str1_temp, filename='json_compare.log')
             if str2_temp != dumps(json_bk2_copy, ensure_ascii=False):
                 str2_temp = dumps(json_bk2_copy, ensure_ascii=False)
-                prnts(str2_temp)
+                prnts(str2_temp, filename='json_compare.log')
 
             for bk1_match_id, bk1_match_info in json_bk1_copy.items():
                 if [bk1_name for bk1_name in bk1_match_info.values() if bk1_name is not None]:
