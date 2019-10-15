@@ -416,7 +416,7 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
     json_bk1_copy = dict()
     json_bk2_copy = dict()
 
-    need = 1.7
+    need = 1.5
 
     not_compare = list()
     while True:
