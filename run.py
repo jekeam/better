@@ -411,6 +411,9 @@ def get_rate(team1_bk1, team2_bk1, team1_bk2, team2_bk2, debug=False):
         return r1, r2, rate
 
 
+vstr = ''
+
+
 def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
     json_bk1_copy = dict()
     json_bk2_copy = dict()
@@ -473,7 +476,6 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                                         'rate': rate,
                                         'match_name': match_name
                                     })
-            vstr = ''
 
             def set_vstr(s):
                 global vstr
