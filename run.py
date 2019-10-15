@@ -440,7 +440,7 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                 str_temp = ss
                 for key, val in arr_matchs.items():
                     Outfile = open('json_compare.log', "a+", encoding='utf-8')
-                    Outfile.write(dumps(val, ensure_ascii=False) + '\n')
+                    Outfile.write(dumps(val, ensure_ascii=False) + ',\n')
                     Outfile.close()
 
             for bk1_match_id, bk1_match_info in json_bk1_copy.items():
