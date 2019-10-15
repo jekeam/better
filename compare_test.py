@@ -28,9 +28,9 @@ if '__main__' == __name__:
         sj = f.readlines()
         sj = list(set(sj))
 
-        # sj = list(filter(lambda s: 'Ba;Labasa;' in s and 'Ba FC;Labasa;' in s, sj))
-        # for x in sj:
-        #     print(x.strip())
+        sj = list(filter(lambda s: 'Universitario' in s, sj))
+        for x in sj:
+            print(x.strip())
 
         # if '' in add_str:
         #         print(add_str)
