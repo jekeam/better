@@ -52,6 +52,6 @@ def run_server(SERVER_IP, SERVER_PORT, data_json, pair_mathes, arr_fonbet_top_ma
                     f.write('ip: ' + ip_adr + ', path: ' + self.path + '\n')
                 mutex.release()
 
-    handler = partial(HttpProcessor, data_json, 0, 0, 0)
+    handler = partial(HttpProcessor, data_json, 0, 0)
     serv = HTTPServer((SERVER_IP, SERVER_PORT), handler)
     serv.serve_forever()
