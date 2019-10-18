@@ -12,7 +12,7 @@ mutex = threading.Lock()
 
 def run_server(SERVER_IP, SERVER_PORT, data_json, pair_mathes, arr_fonbet_top_matchs, first_data):
     class HttpProcessor(BaseHTTPRequestHandler):
-        def __init__(self, data_json, bar, qux, *args, **kwargs):
+        def __init__(self, data_json, bar, qux, first_data, *args, **kwargs):
             prnts('first_data: ' + str(first_data))
             self.data = json.dumps(data_json, ensure_ascii=False)
             self.bar = bar
