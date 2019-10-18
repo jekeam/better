@@ -16,7 +16,7 @@ def run_server(SERVER_IP, SERVER_PORT, data_json, pair_mathes, arr_fonbet_top_ma
 
             self.data = json.dumps(data_json, ensure_ascii=False)
 
-            prnts(type(json_empt) + ' ' + str(type(self.data)))
+            prnts(str(type(json_empt)) + ' ' + str(type(self.data)))
             prnts('dual: ' + str(json_empt == self.data) + ', len empt: ' + str(len(json_empt)) + ', len data: ' + str(len(self.data)))
             prnts('json_empt: ' + str(json_empt))
             prnts('json_empt: ' + str(self.data))
