@@ -18,18 +18,18 @@ def run_server(SERVER_IP, SERVER_PORT, data_json, pair_mathes, arr_fonbet_top_ma
 
             self.data_str = json.dumps(data_json, ensure_ascii=False)
 
-            self.end_time = int(time.time()) + 20
-            prnts(str(type(json_empt)) + ' ' + str(type(self.data_str)))
-            prnts('dual: ' + str(json_empt == self.data_str) + ', len empt: ' + str(len(json_empt)) + ', len data: ' + str(len(self.data_str)))
-            # prnts('json_empt: ' + str(json_empt))
-            # prnts('data: ' + str(self.data_str))
-            while json_empt == self.data_str and int(time.time()) < self.end_time:
-                if int(time.time()) % 5 == 0:
-                    prnts('wait...')
-                    prnts('self.end_time: ' + str(self.end_time))
-                    time.sleep(0.5)
-            json_empt = self.data_str
-            prnts(str(type(json_empt)) + ' ' + str(type(self.data_str)))
+            # self.end_time = int(time.time()) + 20
+            # prnts(str(type(json_empt)) + ' ' + str(type(self.data_str)))
+            # prnts('dual: ' + str(json_empt == self.data_str) + ', len empt: ' + str(len(json_empt)) + ', len data: ' + str(len(self.data_str)))
+            # # prnts('json_empt: ' + str(json_empt))
+            # # prnts('data: ' + str(self.data_str))
+            # while json_empt == self.data_str and int(time.time()) < self.end_time:
+            #     if int(time.time()) % 5 == 0:
+            #         prnts('wait...')
+            #         prnts('self.end_time: ' + str(self.end_time))
+            #         time.sleep(0.5)
+            # json_empt = self.data_str
+            # prnts(str(type(json_empt)) + ' ' + str(type(self.data_str)))
 
             # empty params
             self.bar = bar
