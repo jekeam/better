@@ -10,19 +10,11 @@ from utils import prnts
 mutex = threading.Lock()
 
 
-def run_server(SERVER_IP, SERVER_PORT, data_json, pair_mathes, arr_fonbet_top_matchs):
+def run_server(SERVER_IP, SERVER_PORT, data_json, pair_mathes, arr_fonbet_top_matchs, first_data):
     class HttpProcessor(BaseHTTPRequestHandler):
-        def __init__(self, data_raw, bar, qux, *args, **kwargs):
-
-            self.end_time = int(time.time()) + 20
-            prnts('START WAIT DATA len: ' + str(len(data_json)) + ', ' + self.data_raw_old == data_raw)
-            while len(data_raw) == 0 and int(time.time()) < self.end_time:
-                time.sleep(0.1)
-                if int(time.time()) % 5 == 0:
-                    print('WAIT DATA.....')
-            self.data_raw_old = data_raw
-            print('GET DATA len: ' + str(len(data_raw)) + ', ' + self.data_raw_old == data_raw)
-            self.data = json.dumps(data_raw, ensure_ascii=False)
+        def __init__(self, data_json, bar, qux, *args, **kwargs):
+            prnts('first_data: ' + str(first_data))
+            self.data = json.dumps(data_json, ensure_ascii=False)
             self.bar = bar
             self.qux = qux
             # BaseHTTPRequestHandler calls do_GET **inside** __init__ !!!
@@ -56,6 +48,7 @@ def run_server(SERVER_IP, SERVER_PORT, data_json, pair_mathes, arr_fonbet_top_ma
                     f.write('ip: ' + ip_adr + ', path: ' + self.path + '\n')
                 mutex.release()
 
-    handler = partial(HttpProcessor, data_json, 0, 0)
+    first_data = ''
+    handler = partial(HttpProcessor, data_json, 0, 0, first_data)
     serv = HTTPServer((SERVER_IP, SERVER_PORT), handler)
     serv.serve_forever()
