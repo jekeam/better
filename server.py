@@ -16,7 +16,7 @@ def run_server(SERVER_IP, SERVER_PORT, data_json, pair_mathes, arr_fonbet_top_ma
 
             self.data = json.dumps(data_json, ensure_ascii=False)
 
-            prnts('dual: ' + str(json_empt == self.data))
+            prnts('dual: ' + str(json_empt == self.data) + ', len empt: ' + str(len(json_empt)) + ', len data: ' + str(len(self.data)))
             while json_empt == self.data:
                 prnts('wait...')
                 time.sleep(0.5)
