@@ -10,10 +10,10 @@ from utils import prnts
 mutex = threading.Lock()
 
 
-def run_server(SERVER_IP, SERVER_PORT, data_json, pair_mathes, arr_fonbet_top_matchs, first_data):
+def run_server(SERVER_IP, SERVER_PORT, data_json, pair_mathes, arr_fonbet_top_matchs):
     class HttpProcessor(BaseHTTPRequestHandler):
-        def __init__(self, data_json, bar, qux, first_data, *args, **kwargs):
-            prnts('first_data: ' + str(first_data))
+        def __init__(self, data_json, bar, qux, *args, **kwargs):
+            prnts('Check: ' + str(self.data == json.dumps(data_json, ensure_ascii=False)))
             self.data = json.dumps(data_json, ensure_ascii=False)
             self.bar = bar
             self.qux = qux
@@ -48,7 +48,6 @@ def run_server(SERVER_IP, SERVER_PORT, data_json, pair_mathes, arr_fonbet_top_ma
                     f.write('ip: ' + ip_adr + ', path: ' + self.path + '\n')
                 mutex.release()
 
-    first_data = ''
-    handler = partial(HttpProcessor, data_json, 0, 0, first_data)
+    handler = partial(HttpProcessor, data_json, 0, 0)
     serv = HTTPServer((SERVER_IP, SERVER_PORT), handler)
     serv.serve_forever()
