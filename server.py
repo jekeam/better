@@ -4,6 +4,8 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 import platform
 import threading
+import time
+from utils import prnts
 
 mutex = threading.Lock()
 
@@ -11,6 +13,15 @@ mutex = threading.Lock()
 def run_server(SERVER_IP, SERVER_PORT, data_json, pair_mathes, arr_fonbet_top_matchs):
     class HttpProcessor(BaseHTTPRequestHandler):
         def __init__(self, data_json, bar, qux, *args, **kwargs):
+                
+            end_time = int(time.time()) + 20
+            prnts('START WAIT DATA')
+            while len(data_json) == 0 and int(time.time()) < end_time:
+                time.sleep(0.1)
+                if int(time.time()) % 5 == 0:
+                    print('WAIT DATA.....')
+            print('GET DATA')
+                
             self.data = json.dumps(data_json, ensure_ascii=False)
             self.bar = bar
             self.qux = qux
