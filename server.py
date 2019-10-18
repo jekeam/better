@@ -8,22 +8,24 @@ import time
 from utils import prnts
 
 mutex = threading.Lock()
+json_empt = 'json_empt'
 
 
-def run_server(SERVER_IP, SERVER_PORT, data_json, pair_mathes, arr_fonbet_top_matchs, json_empt):
+def run_server(SERVER_IP, SERVER_PORT, data_json, pair_mathes, arr_fonbet_top_matchs):
     class HttpProcessor(BaseHTTPRequestHandler):
-        def __init__(self, data_json, bar, qux, json_empt, *args, **kwargs):
+        def __init__(self, data_json, bar, qux, *args, **kwargs):
+            global json_empt
 
-            self.data = json.dumps(data_json, ensure_ascii=False)
+            self.data_str = json.dumps(data_json, ensure_ascii=False)
 
-            prnts(str(type(json_empt)) + ' ' + str(type(self.data)))
-            prnts('dual: ' + str(json_empt == self.data) + ', len empt: ' + str(len(json_empt)) + ', len data: ' + str(len(self.data)))
+            prnts(str(type(json_empt)) + ' ' + str(type(self.data_str)))
+            prnts('dual: ' + str(json_empt == self.data_str) + ', len empt: ' + str(len(json_empt)) + ', len data: ' + str(len(self.data_str)))
             prnts('json_empt: ' + str(json_empt))
-            prnts('json_empt: ' + str(self.data))
-            while json_empt == self.data:
+            prnts('data: ' + str(self.data_str))
+            while json_empt == self.data_str:
                 prnts('wait...')
                 time.sleep(0.5)
-            json_empt = self.data
+            json_empt = self.data_str
 
             # empty params
             self.bar = bar
@@ -42,7 +44,7 @@ def run_server(SERVER_IP, SERVER_PORT, data_json, pair_mathes, arr_fonbet_top_ma
                 self.send_response(200)
                 self.send_header('content-type', 'application/json')
                 self.end_headers()
-                self.wfile.write(str(self.data).encode('utf-8'))
+                self.wfile.write(str(self.data_str).encode('utf-8'))
             elif self.path == '/get_cnt_matches':
                 self.send_response(200)
                 self.send_header('content-type', 'application/json')
