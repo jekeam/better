@@ -844,7 +844,8 @@ if __name__ == '__main__':
     started_stat_req = threading.Thread(target=stat_req, args=(stat_req_olimp, stat_req_fonbet))
     started_stat_req.start()
 
-    server = threading.Thread(target=run_server, args=(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_fonbet_top_matchs))
+    json_empt = 'json_empt'
+    server = threading.Thread(target=run_server, args=(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_fonbet_top_matchs, json_empt))
     server.start()
 
     proxy_saver.join()
