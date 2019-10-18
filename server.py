@@ -12,15 +12,19 @@ mutex = threading.Lock()
 
 def run_server(SERVER_IP, SERVER_PORT, data_json, pair_mathes, arr_fonbet_top_matchs, json_empt):
     class HttpProcessor(BaseHTTPRequestHandler):
-        def __init__(self, data_json, bar, qux, *args, **kwargs):
+        def __init__(self, data_json, bar, qux, json_empt, *args, **kwargs):
+
             self.data = json.dumps(data_json, ensure_ascii=False)
-            # prnts('dual: ' + str(json_empt == self.data))
-            # if json_empt != self.data:
-            #     json_empt = self.data
+
+            prnts('dual: ' + str(json_empt == self.data))
+            while json_empt == self.data:
+                prnts('wait...')
+                time.sleep(0.5)
+            json_empt = self.data
+
+            # empty params
             self.bar = bar
             self.qux = qux
-            print('self.bar: ' + str(self.bar) + ', self.qux: ' + str(self.qux))
-            print('json_empt: ' + str(json_empt))
             # BaseHTTPRequestHandler calls do_GET **inside** __init__ !!!
             # So we have to call super().__init__ after setting attributes.
             super().__init__(*args, **kwargs)
@@ -52,6 +56,6 @@ def run_server(SERVER_IP, SERVER_PORT, data_json, pair_mathes, arr_fonbet_top_ma
                     f.write('ip: ' + ip_adr + ', path: ' + self.path + '\n')
                 mutex.release()
 
-    handler = partial(HttpProcessor, data_json, 0, 0)
+    handler = partial(HttpProcessor, data_json, 0, 0, json_empt)
     serv = HTTPServer((SERVER_IP, SERVER_PORT), handler)
     serv.serve_forever()
