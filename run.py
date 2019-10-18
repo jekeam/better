@@ -364,7 +364,7 @@ def starter_bets(bets_olimp, bets_fonbet, pair_mathes, mathes_complite, mathes_i
                  arr_fonbet_top_kofs):
     while True:
         for pair_match in pair_mathes:
-            print(pair_match)
+            # print(pair_match)
             match_id_olimp, match_id_fonbet, event_type, passs = pair_match
 
             if match_id_olimp not in mathes_id_is_work:
