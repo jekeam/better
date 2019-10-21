@@ -18,7 +18,7 @@ from utils import DEBUG
 urllib3.disable_warnings()
 
 TIME_OUT = 2
-CHUNKS = 150
+CHUNKS = 25
 
 UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3163.100 Safari/537.36'
 
@@ -168,7 +168,7 @@ async def save(proxies, proxy_list):
         prnts(x)
 
 
-def save_list(proxies, filename=None):
+def save_list(proxies, filename=None, clone=1):
     """Save proxies to a file."""
     if not filename:
         global proxy_file_name
@@ -177,6 +177,10 @@ def save_list(proxies, filename=None):
     cd()
 
     with open(filename, 'w') as f:
+        
+        if clone>1:
+            proxies = proxies*clone
+        
         for p in proxies:
             f.write(p + '\n')
 
@@ -295,9 +299,9 @@ if __name__ == '__main__':
     time.sleep(3)
 
     # FB
-    # proxy_list_fonbet = check_proxies_fonbet(proxy_list)
-    # save_list(proxy_list_fonbet, fb_fl)
-
-    # OL
     proxy_list_fonbet = check_proxies_fonbet(proxy_list)
     save_list(proxy_list_fonbet, fb_fl)
+
+    # OL
+    proxy_list_olimp = check_proxies_olimp(proxy_list)
+    save_list(proxy_list_olimp, ol_fl, clone=10)
