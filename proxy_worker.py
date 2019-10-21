@@ -303,5 +303,6 @@ if __name__ == '__main__':
     save_list(proxy_list_fonbet, fb_fl)
 
     # OL
+    proxy_list = (list(filter(lambda p: 'https' in p, proxy_list)))
     proxy_list_olimp = check_proxies_olimp(proxy_list)
     save_list(proxy_list_olimp, ol_fl, clone=10)
