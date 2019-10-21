@@ -8,29 +8,32 @@ import time
 from utils import prnts
 
 mutex = threading.Lock()
-# json_empt = 'json_empt'
+json_empt = 'json_empt'
 
 
 def run_server(SERVER_IP, SERVER_PORT, data_json, pair_mathes, arr_fonbet_top_matchs):
     class HttpProcessor(BaseHTTPRequestHandler):
         def __init__(self, data_json, bar, qux, *args, **kwargs):
-            # global json_empt
+            global json_empt
 
-            prnts('pre data_str: ' + str(len(data_json)) + ', ' + str(data_json))
-
-            self.end_time = int(time.time()) + 20
-            while int(time.time()) < self.end_time and not data_json:
-                if int(time.time()) % 5 == 0:
-                    prnts('wait...')
-                    prnts('self.end_time: ' + str(self.end_time))
-                    time.sleep(0.5)
             self.data_str = json.dumps(data_json, ensure_ascii=False)
-            prnts('post data_str: ' + str(len(self.data_str)) + ', ' + str(self.data_str))
-            
+
+            # self.end_time = int(time.time()) + 20
+            # prnts(str(type(json_empt)) + ' ' + str(type(self.data_str)))
+            # prnts('dual: ' + str(json_empt == self.data_str) + ', len empt: ' + str(len(json_empt)) + ', len data: ' + str(len(self.data_str)))
+            # # prnts('json_empt: ' + str(json_empt))
+            # # prnts('data: ' + str(self.data_str))
+            # while json_empt == self.data_str and int(time.time()) < self.end_time:
+            #     if int(time.time()) % 5 == 0:
+            #         prnts('wait...')
+            #         prnts('self.end_time: ' + str(self.end_time))
+            #         time.sleep(0.5)
+            # json_empt = self.data_str
+            # prnts(str(type(json_empt)) + ' ' + str(type(self.data_str)))
+
             # empty params
             self.bar = bar
             self.qux = qux
-            
             # BaseHTTPRequestHandler calls do_GET **inside** __init__ !!!
             # So we have to call super().__init__ after setting attributes.
             super().__init__(*args, **kwargs)
