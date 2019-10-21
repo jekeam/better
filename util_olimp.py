@@ -170,7 +170,6 @@ def to_abb(sbet):
     value = re.findall('\((.*)\)', sbet)[0]
     key = re.sub('\((.*)\)', '', sbet)
     abr = ''
-    # error to_add("ХунтеларК.(Аякс)(0.5)бол"), value=Аякс)(0.5, key=ХунтеларК.бол
     try:
         abr = abbreviations[key].format(value)
     except Exception as e:
