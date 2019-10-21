@@ -379,7 +379,7 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
                                            if c.replace(' ', '') in abbreviations.keys()
                                            else c.replace(' ', '')
                                            if '(' not in c.replace(' ', '')
-                                           else to_abb(c.replace(' ', ''))
+                                           else to_abb(c.replace(' ', '').replace('\t', ''))
                                            for c in [key_r]
                                        ][0])
 
