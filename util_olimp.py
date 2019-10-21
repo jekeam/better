@@ -173,8 +173,7 @@ def to_abb(sbet):
     try:
         abr = abbreviations[key].format(value)
     except Exception as e:
-        # pass
-        prnts('error: ' + str(e) + ', to_add("' + sbet + '"), value=' + value + ', key=' + key)
+        prnts('error: ' + str(e) + ', to_abb("' + sbet + '"), value=' + value + ', key=' + key)
     return abr
 
 
@@ -379,7 +378,7 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
                                            if c.replace(' ', '') in abbreviations.keys()
                                            else c.replace(' ', '')
                                            if '(' not in c.replace(' ', '')
-                                           else to_abb(c.replace(' ', '').replace('\t', ''))
+                                           else to_abb(c)
                                            for c in [key_r]
                                        ][0])
 
