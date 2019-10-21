@@ -173,9 +173,9 @@ def to_abb(sbet):
     # error to_add("ХунтеларК.(Аякс)(0.5)бол"), value=Аякс)(0.5, key=ХунтеларК.бол
     try:
         abr = abbreviations[key].format(value)
-    except:
+    except Exception as e:
         # pass
-        prnts('error to_add("' + sbet + '"), value=' + value + ', key=' + key)
+        prnts('error: ' + str(e) + ', to_add("' + sbet + '"), value=' + value + ', key=' + key)
     return abr
 
 
