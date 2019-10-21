@@ -353,26 +353,26 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
                 }
 
             for c in resp.get('it', []):
-                if c.get('n', '') in ['Основные', 'Голы', 'Инд.тотал', 'Доп.тотал', 'Исходы по таймам']:  # 'Угловые'
+                if c.get('n', '').replace(' ', '').lower() in ['основные', 'голы', 'угловые', 'инд.тотал', 'доп.тотал', 'исходыпотаймам']:
                     for d in c.get('i', []):
-                        if 'Обе забьют: ' \
-                                in d.get('n', '') \
-                                or 'забьет: ' \
-                                in d.get('n', '') \
-                                or 'Никто не забьет: ' \
-                                in d.get('n', '') \
-                                or 'Победа ' \
+                        if 'обе забьют: '.lower() \
+                                in d.get('n', '').lower() \
+                                or 'забьет: '.lower() \
+                                in d.get('n', '').lower() \
+                                or 'никто не забьет: '.lower() \
+                                in d.get('n', '').lower() \
+                                or 'победа '.lower() \
                                 in d.get('n', '') \
                                 or d.get('n', '').endswith(' бол') \
                                 or d.get('n', '').endswith(' мен') \
-                                or 'Первая не проиграет' \
-                                in d.get('n', '') \
-                                or 'Вторая не проиграет' \
-                                in d.get('n', '') \
-                                or 'Ничьей не будет' \
-                                in d.get('n', '') \
-                                or 'Ничья' \
-                                in d.get('n', ''):
+                                or 'первая не проиграет'.lower() \
+                                in d.get('n', '').lower() \
+                                or 'вторая не проиграет'.lower() \
+                                in d.get('n', '').lower() \
+                                or 'ничьей не будет' \
+                                in d.get('n', '').lower() \
+                                or 'ничья'.lower() \
+                                in d.get('n', '').lower():
                             key_r = d.get('n', '').replace(resp.get('c1', ''), 'Т1').replace(resp.get('c2', ''), 'Т2')
                             coef = str([
                                            abbreviations[c.replace(' ', '')]
