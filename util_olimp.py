@@ -166,6 +166,7 @@ def get_xtoken(payload, olimp_secret_key):
 
 
 def to_abb(sbet):
+    sbet = sbet.replace(' ', '')
     value = re.findall('\((.*)\)', sbet)[0]
     key = re.sub('\((.*)\)', '', sbet)
     abr = ''
