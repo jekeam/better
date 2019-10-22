@@ -18,11 +18,12 @@ def run_server(SERVER_IP, SERVER_PORT, data_json, pair_mathes, arr_fonbet_top_ma
 
             # prnts('pre data_str: ' + str(len(data_json)) + ', ' + str(data_json))
 
-            self.end_time = int(time.time()) + 20
-            while int(time.time()) < self.end_time and not data_json:
-                if int(time.time()) % 5 == 0:
-                    # prnts('wait...' + str(self.end_time-int(time.time())))
-                    time.sleep(0.5)
+            if self.path == '/get_forks':
+                self.end_time = int(time.time()) + 20
+                while int(time.time()) < self.end_time and not data_json:
+                    if int(time.time()) % 5 == 0:
+                        # prnts('wait...' + str(self.end_time-int(time.time())))
+                        time.sleep(0.5)
             self.data_str = json.dumps(data_json, ensure_ascii=False)
             # prnts('post data_str: ' + str(len(self.data_str)) + ', ' + str(self.data_str))
             
