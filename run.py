@@ -393,11 +393,16 @@ def sort_by_rate(val):
 def get_rate(team1_bk1, team2_bk1, team1_bk2, team2_bk2, debug=False):
     if debug:
         fstr = team1_bk1 + '->{};' + team2_bk1 + '->{};' + team1_bk2 + '->{};' + team2_bk2 + '->{};'
+    team1_bk1 = str(team1_bk1).lower()
+    team2_bk1 = str(team2_bk1).lower()
+    team1_bk2 = str(team1_bk2).lower()
+    team2_bk2 = str(team2_bk2).lower()
+    
     if team1_bk1 and team2_bk1 and team1_bk2 and team2_bk2:
-        team1_bk1 = re.sub('[^A-z 0-9]', '', str(team1_bk1).lower()).replace(' ', '')
-        team2_bk1 = re.sub('[^A-z 0-9]', '', str(team2_bk1).lower()).replace(' ', '')
-        team1_bk2 = re.sub('[^A-z 0-9]', '', str(team1_bk2).lower()).replace(' ', '')
-        team2_bk2 = re.sub('[^A-z 0-9]', '', str(team2_bk2).lower()).replace(' ', '')
+        team1_bk1 = re.sub('[^A-z 0-9]', '', team1_bk1).replace(' ', '')
+        team2_bk1 = re.sub('[^A-z 0-9]', '', team2_bk1).replace(' ', '')
+        team1_bk2 = re.sub('[^A-z 0-9]', '', team1_bk2).replace(' ', '')
+        team2_bk2 = re.sub('[^A-z 0-9]', '', team2_bk2).replace(' ', '')
         if debug:
             fstr = fstr.format(team1_bk1, team2_bk1, team1_bk2, team2_bk2)
             print(fstr)

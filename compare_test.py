@@ -32,9 +32,9 @@ if '__main__' == __name__:
         sj = f.readlines()
         sj = list(set(sj))
 
-        # sj = list(filter(lambda s: 'Universitario' in s, sj))
-        # for x in sj:
-        #     print(x.strip())
+        sj = list(filter(lambda s: 'Shakhtar Donetsk' in s, sj))
+        for x in sj:
+            print(x.strip())
 
         # if '' in add_str:
         #         print(add_str)
@@ -70,6 +70,9 @@ if '__main__' == __name__:
             if cur_val > need_new:
                 add_new_str = e[3] + ' - ' + e[4] + ';' + e[6] + ' - ' + e[7]
                 add_new.append(add_new_str)
+                
+        for x in add_new:
+            print(x)
 
         print('Найдено новых ситуаций: ' + str(len(Diff(add, add_new))))
         print('Название в БК1;БК2; Верно ли сопоставилось;')
