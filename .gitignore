@@ -20,3 +20,4 @@ test.py
 *.filepart
 __pycache__
 *.txt1
+test2.py
