@@ -32,9 +32,9 @@ if '__main__' == __name__:
         sj = f.readlines()
         sj = list(set(sj))
 
-        sj = list(filter(lambda s: 'Shakhtar Donetsk' in s, sj))
-        for x in sj:
-            print(x.strip())
+        # sj = list(filter(lambda s: 'Vilafranquense' in s, sj))
+        # for x in sj:
+        #     print(x.strip())
 
         # if '' in add_str:
         #         print(add_str)

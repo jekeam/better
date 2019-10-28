@@ -47,6 +47,7 @@ def get_olimp(resp, arr_matchs):
         if arr_matchs.get('olimp', '') != '':
             arr_matchs.pop(key)
     if resp:
+        print(json.dumps(resp))
         for liga_info in resp:
 
             # print(str(liga_info.get('sport_id')) + ' ' + liga_info.get('sn'))

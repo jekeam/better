@@ -25,6 +25,8 @@ base_payload = {
     "sysId": 4
 }
 
+BASE_LINE = [921, 922, 923, 924, 1571, 925]
+
 # VICTORIES
 VICTS = [['П1', 921], ['Н', 922], ['П2', 923], ['П1Н', 924], ['12', 1571], ['П2Н', 925],
          ['ОЗД', 4241], ['ОЗН', 4242], ['КЗ1', 4235], ['КНЗ1', 4236], ['КЗ2', 4238], ['КНЗ2', 4239]]
@@ -164,7 +166,7 @@ def get_match_fonbet(match_id, proxi_list, proxy, time_out, pair_mathes):
 
 
 def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair_mathes, arr_fonbet_top_kofs):
-    global VICTS, TTO, TTU, TT1O, TT1U, TT2O, TT2U
+    global VICTS, TTO, TTU, TT1O, TT1U, TT2O, TT2U, BASE_LINE
     global sport_list
 
     match_exists = False
@@ -308,6 +310,10 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
                                         is_hot = False
                                         if int(factorId) in arr_fonbet_top_kofs.get(key_id, []):
                                             is_hot = True
+                                            
+                                        is_base_line = False
+                                        if int(factorId) in BASE_LINE:
+                                            is_base_line = True
 
                                         bets_fonbet[key_id]['kofs'].update(
                                             {
@@ -318,6 +324,7 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
                                                         'value': value,
                                                         'param': '',
                                                         'factor': factorId,
+                                                        'base_line': is_base_line,
                                                         'score': score,
                                                         'vector': get_vector(coef, sc1, sc2),
                                                         'is_hot': is_hot,
