@@ -707,8 +707,8 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
                                                 str(k_fonbet.get('hist', {}).get('avg_change', [])) + ';' +
                                                 str(time_break_fonbet) + ';' +
                                                 str(is_top) + ';' +
-                                                str(k_fonbet.get('is_hot')) + ';' +
-                                                str(k_fonbet.get('base_line')) + ';' +
+                                                str(k_fonbet.get('is_hot', False)) + ';' +
+                                                str(k_fonbet.get('base_line', False)) + ';' +
                                                 str(period) + ';' +
                                                 # str(math_json_olimp.get('avg_change_total', [])) + ';' +
                                                 # str(math_json_fonbet.get('avg_change_total', [])) + ';' +
