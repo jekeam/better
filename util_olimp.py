@@ -352,7 +352,8 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
                 }
 
             for c in resp.get('it', []):
-                if c.get('n', '').replace(' ', '').lower() in ['основные', 'голы', 'угловые', 'инд.тотал', 'доп.тотал', 'исходыпотаймам']:
+                # if c.get('n', '').replace(' ', '').lower() in ['основные', 'голы', 'угловые', 'инд.тотал', 'доп.тотал', 'исходыпотаймам']:
+                if c.get('n', '').replace(' ', '').lower() in ['основные', 'голы', 'инд.тотал', 'доп.тотал', 'исходыпотаймам']:
                     for d in c.get('i', []):
                         if 'обе забьют: '.lower() \
                                 in d.get('n', '').lower() \
@@ -422,6 +423,10 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
                                 )
                             except:
                                 pass
+            if key_id == '52495128':
+                print(key_id)
+                print(bets_olimp)
+                print(resp)
         else:
             # try:
             #     bets_olimp.pop(key_id)
