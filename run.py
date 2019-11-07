@@ -425,13 +425,16 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
     json_bk1_copy = dict()
     json_bk2_copy = dict()
 
-    need = 1.5
+    need = 1.55
 
     not_compare = list()
+    
+    # print(arr_matchs)
     while True:
         try:
             prnts('Events found: ' + str(len(pair_mathes)) + ' ' + str(pair_mathes))
-            bk_rate_ord = list()
+            bk_rate_list = list()
+            bk_rate_sorted = list()
             for key, val in arr_matchs.items():
                 if val.get('bk_name', '') == 'olimp':
                     json_bk1_copy[key] = val
@@ -466,7 +469,7 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                                         bk2_match_info.get('team1'),
                                         bk2_match_info.get('team2')
                                     )
-                                    bk_rate_ord.append({
+                                    bk_rate_list.append({
                                         str(bk1_match_id): {
                                             'bk1_t1': bk1_match_info.get('team1'),
                                             'bk1_t2': bk1_match_info.get('team2'),
@@ -482,18 +485,23 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                                         'rate': rate,
                                         'match_name': match_name
                                     })
+                    
+            for bkr in bk_rate_list:
+                if bkr.get('rate', 0) > need:
+                    bk_rate_sorted.append(bkr)
+                else:
+                    if 'del;' + bkr.get('match_name') not in not_compare:
+                        serv_log('compare_teams', 'del;' + bkr.get('match_name'))
+                        not_compare.append('del;' + bkr.get('match_name'))
+            
+            
+            bk_rate_sorted = list(filter(lambda x: x is not None, bk_rate_sorted))
+            bk_rate_sorted.sort(key=sort_by_rate, reverse=True)
+            # print('------------')
+            # for x in filter_rate:
+            #     print(x)
 
-            filter_rate = list(
-                map(lambda l: l
-                if l.get('rate', 0) > need
-                else not_compare.append('del;' + l.get('match_name')) and serv_log('compare_teams', 'del;' + l.get('match_name'))
-                if 'del;' + l.get('match_name') not in not_compare
-                else None
-                    , bk_rate_ord))
-            filter_rate = list(filter(lambda x: x is not None, filter_rate))
-            filter_rate.sort(key=sort_by_rate, reverse=True)
-
-            for e in filter_rate:
+            for e in bk_rate_sorted:
                 pair = []
                 for m, v in e.items():
                     try:
