@@ -18,7 +18,7 @@ from utils import DEBUG
 urllib3.disable_warnings()
 
 TIME_OUT = 3
-CHUNKS = 20
+CHUNKS = 500
 
 UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3163.100 Safari/537.36'
 
@@ -303,7 +303,7 @@ if __name__ == '__main__':
     save_list(proxy_list_fonbet, fb_fl)
 
     # OL
-    proxy_list = get_proxy_from_file('proxy_by_olimp.txt')
+    proxy_list = get_proxy_from_file('proxy_for_olimp.txt')
     proxy_list = (list(filter(lambda p: 'https' in p, proxy_list)))
     proxy_list_olimp = check_proxies_olimp(proxy_list)
-    save_list(proxy_list_olimp, ol_fl, clone=20)
+    save_list(proxy_list_olimp, ol_fl, clone=2000)
