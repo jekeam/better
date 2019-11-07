@@ -426,6 +426,7 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
     json_bk2_copy = dict()
 
     need = 1.55
+    prnts('start_event_mapping, need: ' + str(need))
 
     not_compare = list()
     
