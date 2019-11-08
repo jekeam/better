@@ -26,6 +26,12 @@ if 1 == 1:
     df[idx].to_csv(cur_date_str + '_forks_simple.csv', encoding='utf-8', sep=';')
     os.remove(file_forks_raw)
     
+    if os.path.isfile('server.log'):
+        try:
+            os.rename('server.log', cur_date_str + '_' + 'server.log')
+        except Exception as e:
+            pass
+    
 else:
     dir = 'D:\\YandexDisk\\Парсинг\\better\\logs\\*.csv'
 
