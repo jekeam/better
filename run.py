@@ -425,7 +425,7 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
     json_bk1_copy = dict()
     json_bk2_copy = dict()
 
-    need = 1.55
+    need = 1.5
     prnts('start_event_mapping, need: ' + str(need))
 
     not_compare = list()
@@ -498,12 +498,10 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
             
             bk_rate_sorted = list(filter(lambda x: x is not None, bk_rate_sorted))
             bk_rate_sorted.sort(key=sort_by_rate, reverse=True)
-            # print('------------')
-            # for x in filter_rate:
-            #     print(x)
 
             for e in bk_rate_sorted:
                 pair = []
+                main_rate = e.get('rate',0)
                 for m, v in e.items():
                     try:
                         if v.get('sport_name'):
@@ -515,17 +513,37 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                 pair.sort()
                 pair = [pair[1], pair[0], pair[2]]
                 pair.append(e.get('match_name'))
-
-                one_line = []
-                for p in pair_mathes:
-                    for i in p:
-                        one_line.append(i)
-                if pair[0] in one_line or pair[1] in one_line or pair[0] in mathes_complite or pair[1] in mathes_complite:
+                pair.append(e.get('rate'))
+                
+                if pair[0] in mathes_complite or pair[1] in mathes_complite:
                     pass
                 else:
-                    pair_mathes.append(pair)
-                    serv_log('compare_teams', 'add;' + pair[3])
-            # print(pair_mathes)
+                    if pair not in pair_mathes:
+                        conflict = False
+                        is_exists = False
+                        for p in pair_mathes:
+                            id1, id2 = pair[0], pair[1]
+                            if id1 in p:
+                                if pair[4] > p[4]:
+                                    print('Math conflict: ' + str(id1) + ', p: ' + str(p) + ', need: ' + str(pair))
+                                    conflict = True
+                                else:
+                                    is_exists = True
+                            if id2 in p:
+                                if pair[4] > p[4]:
+                                    print('Math conflict: ' + str(id2) + ', p: ' + str(p) + ', need: ' + str(pair))
+                                    conflict = True
+                                else:
+                                    is_exists = True
+                            if conflict:
+                                pair_mathes.remove(p)
+                                serv_log('compare_teams', 'del;' + str(p[3]) + 'conflict')
+                                pair_mathes.append(pair)
+                                serv_log('compare_teams', 'add;' + pair[3] + 'conflict')
+                        if not conflict and not is_exists:
+                            pair_mathes.append(pair)
+                            serv_log('compare_teams', 'add;' + pair[3])
+                
         except Exception as e:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             prnts('Error start_event_mapping: ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
