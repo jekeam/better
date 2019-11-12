@@ -230,7 +230,10 @@ def start_seeker_top_matchs_fonbet(gen_proxi_fonbet, arr_fonbet_top_matchs, pair
     proxy = gen_proxi_fonbet.next()
     while True:
         try:
-            list_pair_mathes = [int(item) for sublist in pair_mathes for item in sublist if item.isdigit()]
+            list_pair_mathes = []
+            for m in pair_mathes:
+                list_pair_mathes.append(int(m[0]))
+                list_pair_mathes.append(int(m[1]))
         except Exception as e:
             prnts('Фонбет, ошибка при запросе списка TOP матчей: ' + str(e) + ' ' + proxy)
             raise ValueError(e)
@@ -370,7 +373,7 @@ def starter_bets(bets_olimp, bets_fonbet, pair_mathes, mathes_complite, mathes_i
     while True:
         for pair_match in pair_mathes:
             # print(pair_match)
-            match_id_olimp, match_id_fonbet, event_type, passs = pair_match
+            match_id_olimp, match_id_fonbet, event_type, passs, pass2 = pair_match
 
             if match_id_olimp not in mathes_id_is_work:
                 mathes_id_is_work.append(match_id_olimp)
