@@ -129,7 +129,8 @@ def get_fonbet(resp, arr_matchs):
     for idEvent in idEvents:
         # print(idEvent['event_id'])
         # print([{'id': event['id'], 'sportId': idEvent['event_sportId']} for event in resp['events'] if event.get('parentId', -1) == -1])
-        for x in [{'id': event['id'], 'sportId': idEvent['event_sportId'], 'isHot': event.get('state', {}).get('inHotList', False)} for event in resp['events'] if event['sportId'] == idEvent['event_id'] and event.get('parentId', -1) == -1]:
+        for x in [{'id': event['id'], 'sportId': idEvent['event_sportId'], 'isHot': event.get('state', {}).get('inHotList', False)} for event in resp['events'] if
+                  event['sportId'] == idEvent['event_id'] and event.get('parentId', -1) == -1]:
             idMatches.append(x)
         # полчим все инфу по ид матча
     # print_j(resp['events'])
@@ -228,7 +229,11 @@ def start_seeker_top_matchs_fonbet(gen_proxi_fonbet, arr_fonbet_top_matchs, pair
     global TIMEOUT_MATCHS
     proxy = gen_proxi_fonbet.next()
     while True:
-        list_pair_mathes = [int(item) for sublist in pair_mathes for item in sublist if item.isdigit()]
+        try:
+            list_pair_mathes = [int(item) for sublist in pair_mathes for item in sublist if item.isdigit()]
+        except Exception as e:
+            prnts('Фонбет, ошибка при запросе списка TOP матчей: ' + str(e) + ' ' + proxy)
+            raise ValueError(e)
         try:
             resp, time_resp = get_matches_fonbet(proxy, TIMEOUT_MATCHS, top=True)
             for event in resp.get('events'):
@@ -429,7 +434,7 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
     prnts('start_event_mapping, need: ' + str(need))
 
     not_compare = list()
-    
+
     # print(arr_matchs)
     while True:
         try:
@@ -486,7 +491,7 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                                         'rate': rate,
                                         'match_name': match_name
                                     })
-                    
+
             for bkr in bk_rate_list:
                 if bkr.get('rate', 0) > need:
                     bk_rate_sorted.append(bkr)
@@ -494,14 +499,13 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                     if 'del;' + bkr.get('match_name') not in not_compare:
                         serv_log('compare_teams', 'del;' + bkr.get('match_name'))
                         not_compare.append('del;' + bkr.get('match_name'))
-            
-            
+
             bk_rate_sorted = list(filter(lambda x: x is not None, bk_rate_sorted))
             bk_rate_sorted.sort(key=sort_by_rate, reverse=True)
 
             for e in bk_rate_sorted:
                 pair = []
-                main_rate = e.get('rate',0)
+                main_rate = e.get('rate', 0)
                 for m, v in e.items():
                     try:
                         if v.get('sport_name'):
@@ -514,7 +518,7 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                 pair = [pair[1], pair[0], pair[2]]
                 pair.append(e.get('match_name'))
                 pair.append(e.get('rate'))
-                
+
                 if pair[0] in mathes_complite or pair[1] in mathes_complite:
                     pass
                 else:
@@ -543,7 +547,7 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                         if not conflict and not is_exists:
                             pair_mathes.append(pair)
                             serv_log('compare_teams', 'add;' + pair[3])
-                
+
         except Exception as e:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             prnts('Error start_event_mapping: ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
