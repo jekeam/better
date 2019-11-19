@@ -563,8 +563,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
 
     def forks_meta_upd(forks_meta, forks):
         # Перед удалением сохраним время жизни вылки
-        live_fork_total = forks_meta.get(bet_key, {}).get('live_fork_total', 0) + \
-                          forks.get(bet_key, {}).get('live_fork', 0)
+        live_fork_total = forks_meta.get(bet_key, {}).get('live_fork_total', 0) + forks.get(bet_key, {}).get('live_fork', 0)
         forks_meta[bet_key] = {'live_fork_total': live_fork_total}
 
     while True:
@@ -596,6 +595,10 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
                         tot_abrr + '({})'.format(tot_val):
                             opposition[tot_abrr] + '({})'.format(tot_val)
                     })
+
+            if event_type in ('volleyball','tennis'):
+                curr_opposition.update({'П1':'П2'})
+                curr_opposition.update({'П2':'П1'})
 
             for kof_type_olimp, kof_type_fonbet in curr_opposition.items():
 
@@ -639,25 +642,6 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
                             if 'timeout' in math_json_fonbet.get('score_1st', '').lower():
                                 time_break_fonbet = True
 
-                        # prnts('{}, {}, {}, {}, {}'.format(
-                        #     pair_math,
-                        #     math_json_fonbet.get('time', ''),
-                        #     round(math_json_fonbet.get('minute', ''), 2),
-                        #     math_json_fonbet.get('score_1st', ''),
-                        #     time_break_fonbet),
-                        #     filename='timebreake.log'
-                        # )
-                        # created_fork = forks.get(bet_key, {}).get('created_fork', '')
-                        # ol_time_chage = k_olimp.get('hist', {}).get('time_change')
-                        # fb_time_chage = k_fonbet.get('hist', {}).get('time_change')
-                        # if ol_time_chage and fb_time_chage:
-                        #     if ol_time_chage > fb_time_chage:
-                        #         created_fork = 'olimp'
-                        #     elif fb_time_chage > ol_time_chage:
-                        #         created_fork = 'fonbet'
-
-                        # TODO: котровка, например с олимпа ушла, и осталась брошена не в 0, в результате в bets_olimp, показывает неактуальную вилку. Надо или тут разбирать и удалять либо там?
-                        # UPD 02/05/19 - Вроде не актуально
                         if forks.get(bet_key, '') != '' and deff_time < 3.8:
 
                             live_fork = round(time.time() - forks.get(bet_key, {}).get('create_fork'))

@@ -43,16 +43,16 @@ sport_list = [
     #     'olimp': 112,
     #     'fonbet': 29086
     # },
-    # {
-    #     'name': 'volleyball',
-    #     'olimp': 10,
-    #     'fonbet': 9
-    # },
-    # {
-    #     'name': 'Tennis',
-    #     'olimp': 3,
-    #     'fonbet': 4
-    # },
+    {
+        'name': 'volleyball',
+        'olimp': 10,
+        'fonbet': 9
+    },
+    {
+        'name': 'tennis',
+        'olimp': 3,
+        'fonbet': 4
+    },
     # {
     #     'name': 'basketball',
     #     'olimp': 5,
