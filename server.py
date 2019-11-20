@@ -6,6 +6,7 @@ import platform
 import threading
 import time
 from utils import prnts
+from urllib.parse import unquote
 
 mutex = threading.Lock()
 # json_empt = 'json_empt'
@@ -48,6 +49,7 @@ def run_server(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_fonbet_top_matchs
                     if 'fonbet_maxbet_fact' in self.path:
                         # expected format request like "/set/fonbet_maxbet_fact/4/100"
                         blank, action, param_name, key, group_id, value = self.path.split('/')
+                        key = unquote(key)
                         prnts('action: {}, param_name: {}, key: {}, group_id: {}, value: {}'.format(action, param_name, key, group_id, value))
                         forks[key][param_name].update({str(group_id) : int(value)})
                 except Exception as e:
