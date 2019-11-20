@@ -45,7 +45,8 @@ def run_server(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_fonbet_top_matchs
                 try:
                     # expected format request like "/set/fonbet_maxbet_fact/4/100"
                     action, param_name, key, group_id, value = self.path.split('/')
-                    forks[key][param_name].update({str(group_id) : int(value)})
+                    prnts('action: {}, param_name: {}, key: {}, group_id: {}, value: {}'.format(action, param_name, key, group_id, value))
+                    # forks[key][param_name].update({str(group_id) : int(value)})
                 except Exception as e:
                     prnts(e)
             else:
