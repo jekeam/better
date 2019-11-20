@@ -45,16 +45,18 @@ def run_server(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_fonbet_top_matchs
             elif '/set/' in self.path:
                 prnts(self.path)
                 status = 'ok'
+                branch = ''
                 try:
-                    if 'fonbet_maxbet_fact' in self.path:
+                    branch = 'fonbet_maxbet_fact'
+                    if branch in self.path:
                         # expected format request like "/set/fonbet_maxbet_fact/4/100"
                         blank, action, param_name, key, group_id, value = self.path.split('/')
                         key = unquote(key)
-                        prnts('action: {}, param_name: {}, key: {}, group_id: {}, value: {}'.format(action, param_name, key, group_id, value))
+                        prnts(branch + ': action: {}, param_name: {}, key: {}, group_id: {}, value: {}'.format(action, param_name, key, group_id, value))
                         forks[key][param_name].update({str(group_id) : int(value)})
                 except Exception as e:
                     prnts(e)
-                    status = 'err: ' + str(e)
+                    status = branch + ' err: ' + str(e)
                 finally:
                     self.send_response(200)
                     self.send_header('content-type', 'application/json')
