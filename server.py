@@ -43,6 +43,7 @@ def run_server(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_fonbet_top_matchs
                 self.wfile.write(str(arr_fonbet_top_matchs).encode('utf-8'))
             elif '/set/' in self.path:
                 prnts(self.path)
+                status = 'ok'
                 try:
                     if 'fonbet_maxbet_fact' in self.path:
                         # expected format request like "/set/fonbet_maxbet_fact/4/100"
@@ -50,7 +51,13 @@ def run_server(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_fonbet_top_matchs
                         prnts('action: {}, param_name: {}, key: {}, group_id: {}, value: {}'.format(action, param_name, key, group_id, value))
                         forks[key][param_name].update({str(group_id) : int(value)})
                 except Exception as e:
+                    status = 'err'
                     prnts(e)
+                finally:
+                    self.send_response(200)
+                    self.send_header('content-type', 'application/json')
+                    self.end_headers()
+                    self.wfile.write(str(status).encode('utf-8'))
             else:
                 mutex.acquire()
                 with open('access.log', 'a+', encoding='utf-8') as f:
