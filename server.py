@@ -42,11 +42,13 @@ def run_server(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_fonbet_top_matchs
                 self.end_headers()
                 self.wfile.write(str(arr_fonbet_top_matchs).encode('utf-8'))
             elif '/set/' in self.path:
+                prnts(self.path)
                 try:
-                    # expected format request like "/set/fonbet_maxbet_fact/4/100"
-                    action, param_name, key, group_id, value = self.path.split('/')
-                    prnts('action: {}, param_name: {}, key: {}, group_id: {}, value: {}'.format(action, param_name, key, group_id, value))
-                    # forks[key][param_name].update({str(group_id) : int(value)})
+                    if 'fonbet_maxbet_fact' in self.path:
+                        # expected format request like "/set/fonbet_maxbet_fact/4/100"
+                        blank, action, param_name, key, group_id, value = self.path.split('/')
+                        prnts('action: {}, param_name: {}, key: {}, group_id: {}, value: {}'.format(action, param_name, key, group_id, value))
+                        forks[key][param_name].update({str(group_id) : int(value)})
                 except Exception as e:
                     prnts(e)
             else:
