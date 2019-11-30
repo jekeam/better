@@ -310,7 +310,7 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
                                         is_hot = False
                                         if int(factorId) in arr_fonbet_top_kofs.get(key_id, []):
                                             is_hot = True
-                                            
+
                                         is_base_line = False
                                         if int(factorId) in BASE_LINE:
                                             is_base_line = True
@@ -393,13 +393,14 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
         #         bets_fonbet[key_id].update({'avg_change_total': avg_change_total})
 
         try:
-            for i, j in bets_fonbet.get(key_id, {}).get('kofs', {}).copy().items():
-                if round(float(time.time() - float(j.get('time_req', 0)))) > 2.8 and j.get('value', 0) > 0:
-                    try:
-                        bets_fonbet[key_id]['kofs'][i]['value'] = 0
-                        prnts('Фонбет, данные по котировке из БК не получены более 2.8 сек., знач. выставил в 0: ' + key_id + ' ' + str(i), 'hide')
-                    except Exception as e:
-                        prnts('Фонбет, ошибка 1 при удалении старой котирофки: ' + str(e))
+            for key_id_in, j in bets_fonbet.copy().items():
+                for i, j in j.get('kofs', {}).items():
+                    if round(float(time.time() - float(j.get('time_req', 0)))) > 2.8 and j.get('value', 0) > 0:
+                        try:
+                            bets_fonbet[key_id_in]['kofs'][i]['value'] = 0
+                            prnts('Фонбет, данные по котировке из БК не получены более 2.8 сек., знач. выставил в 0: ' + key_id_in + ' ' + str(i), 'hide')
+                        except Exception as e:
+                            prnts('Фонбет, ошибка 1 при удалении старой котирофки: ' + str(e))
         except Exception as e:
             prnts('Фонбет, ошибка 2 при удалении старой котирофки: ' + str(e))
         return time_resp + (time.time() - time_start_proc)
