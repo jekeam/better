@@ -49,7 +49,7 @@ def get_olimp(resp, arr_matchs):
     if resp:
         for liga_info in resp:
 
-            # print(str(liga_info.get('sport_id')) + ' ' + liga_info.get('sn'))
+            # prnts(str(liga_info.get('sport_id')) + ' ' + liga_info.get('sn'))
             # 1 Soccer
             # 3 Tennis
             # 5 Basketball
@@ -87,7 +87,7 @@ def get_fonbet(resp, arr_matchs):
 
     # for val in resp.get('sports'):
     #     if val.get('kind') == 'sport':
-    #         print(str(val.get('id')) + ' ' + val.get('name'))
+    #         prnts(str(val.get('id')) + ' ' + val.get('name'))
     #         # 1 Football
     #         # 2 Hockey
     #         # 3 Basketball
@@ -127,8 +127,8 @@ def get_fonbet(resp, arr_matchs):
     idEvents = [{'event_id': e.get('event_id'), 'event_sportId': e.get('event_sportId')} for e in events]
 
     for idEvent in idEvents:
-        # print(idEvent['event_id'])
-        # print([{'id': event['id'], 'sportId': idEvent['event_sportId']} for event in resp['events'] if event.get('parentId', -1) == -1])
+        # prnts(idEvent['event_id'])
+        # prnts([{'id': event['id'], 'sportId': idEvent['event_sportId']} for event in resp['events'] if event.get('parentId', -1) == -1])
         for x in [{'id': event['id'], 'sportId': idEvent['event_sportId'], 'isHot': event.get('state', {}).get('inHotList', False)} for event in resp['events'] if
                   event['sportId'] == idEvent['event_id'] and event.get('parentId', -1) == -1]:
             idMatches.append(x)
@@ -139,8 +139,8 @@ def get_fonbet(resp, arr_matchs):
             for event in resp['events']:
                 # Только главные события
                 if event['id'] == mid.get('id'):  # and event.get('parentId', -1) == -1 # Пока вырезал все дочерние события выше see row: 123
-                    # print(sport_list)
-                    # print(if_exists(sport_list, 'fonbet', mid.get('sportId'), 'name'))
+                    # prnts(sport_list)
+                    # prnts(if_exists(sport_list, 'fonbet', mid.get('sportId'), 'name'))
                     arr_matchs[str(event['id'])] = {
                         'bk_name': 'fonbet',
                         'sport_id': mid.get('sportId'),
@@ -152,9 +152,9 @@ def get_fonbet(resp, arr_matchs):
                         'isHot': mid.get('isHot')
                     }
                     # if mid.get('isHot'):
-                    #     print('hot: ' + str(event['priority']) + ' ' + str(arr_matchs[str(event['id'])]))
+                    #     prnts('hot: ' + str(event['priority']) + ' ' + str(arr_matchs[str(event['id'])]))
                     # else:
-                    #     print('no: ' + str(event['priority']) + ' ' + str(arr_matchs[str(event['id'])]))
+                    #     prnts('no: ' + str(event['priority']) + ' ' + str(arr_matchs[str(event['id'])]))
 
         # for mid in idMatches:
         # for event in resp['events']:
@@ -318,7 +318,7 @@ def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi
         time_sleep = max(0, (TIMEOUT_MATCH - abs(TIMEOUT_MATCH_MINUS + time_resp)))
 
         if DEBUG:
-            prnts('Олимп, матч ' + str(match_id_olimp) + '. Время ответа: ' + str(time_resp) + ', запрос через ' + str(time_sleep) + ' ' + ps.get_cur_proxy())
+            prnts('Олимп, матч ' + str(match_id_olimp) + '. Время ответа: ' + str(time_resp) + ', запрос через ' + str(time_sleep) + ' ' + ps.get_cur_proxy(), 'hide')
 
         time.sleep(time_sleep)
 
@@ -361,8 +361,7 @@ def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_p
         time_sleep = max(0, (TIMEOUT_MATCH - (TIMEOUT_MATCH_MINUS + time_resp)))
 
         if DEBUG:
-            prnts(str('Фонбет, матч ' + str(match_id_fonbet) + '. Время ответа: ' + str(time_resp) +
-                      ', запрос через ' + str(time_sleep)) + ' ' + ps.get_cur_proxy())
+            prnts(str('Фонбет, матч ' + str(match_id_fonbet) + '. Время ответа: ' + str(time_resp) + ', запрос через ' + str(time_sleep)) + ' ' + ps.get_cur_proxy(), 'hide')
 
         time.sleep(time_sleep)
 
@@ -372,7 +371,7 @@ def starter_bets(bets_olimp, bets_fonbet, pair_mathes, mathes_complite, mathes_i
                  arr_fonbet_top_kofs):
     while True:
         for pair_match in pair_mathes:
-            # print(pair_match)
+            # prnts(pair_match)
             match_id_olimp, match_id_fonbet, event_type, passs, pass2 = pair_match
 
             if match_id_olimp not in mathes_id_is_work:
@@ -417,14 +416,14 @@ def get_rate(team1_bk1, team2_bk1, team1_bk2, team2_bk2, debug=False):
         team2_bk2 = re.sub('[^A-z 0-9]', '', team2_bk2).replace(' ', '')
         if debug:
             fstr = fstr.format(team1_bk1, team2_bk1, team1_bk2, team2_bk2)
-            print(fstr)
+            prnts(fstr)
 
         r1 = round(SequenceMatcher(None, team1_bk1, team1_bk2).ratio(), 3)
         r2 = round(SequenceMatcher(None, team2_bk1, team2_bk2).ratio(), 3)
         rate = round(r1 + r2, 3)
 
         if debug:
-            print('k1: {}, k2: {}. All: {}'.format(r1, r2, rate))
+            prnts('k1: {}, k2: {}. All: {}'.format(r1, r2, rate))
 
         return r1, r2, rate
 
@@ -438,7 +437,7 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
 
     not_compare = list()
 
-    # print(arr_matchs)
+    # prnts(arr_matchs)
     while True:
         try:
             prnts('Events found: ' + str(len(pair_mathes)) + ' ' + str(pair_mathes))
@@ -532,13 +531,13 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                             id1, id2 = pair[0], pair[1]
                             if id1 in p:
                                 if pair[4] > p[4]:
-                                    print('Math conflict: ' + str(id1) + ', p: ' + str(p) + ', need: ' + str(pair))
+                                    prnts('Math conflict: ' + str(id1) + ', p: ' + str(p) + ', need: ' + str(pair))
                                     conflict = True
                                 else:
                                     is_exists = True
                             if id2 in p:
                                 if pair[4] > p[4]:
-                                    print('Math conflict: ' + str(id2) + ', p: ' + str(p) + ', need: ' + str(pair))
+                                    prnts('Math conflict: ' + str(id2) + ', p: ' + str(p) + ', need: ' + str(pair))
                                     conflict = True
                                 else:
                                     is_exists = True
@@ -573,8 +572,8 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
                 is_top = False
                 if int(pair_math[0]) in arr_fonbet_top_matchs or int(pair_math[1]) in arr_fonbet_top_matchs:
                     is_top = True
-                # print(bets_fonbet)
-                time.sleep(15)
+                # prnts(bets_fonbet)
+                # time.sleep(15)
                 # see exp/bets_olimp.json
 
                 math_json_olimp = bets_olimp.get(pair_math[0], {})
@@ -583,9 +582,9 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
 
                 curr_opposition = copy.deepcopy(opposition)
 
-                # print(pair_math)
-                # print(math_json_olimp)
-                # print(math_json_fonbet)
+                # prnts(pair_math)
+                # prnts(math_json_olimp)
+                # prnts(math_json_fonbet)
 
                 for kof_type in math_json_olimp.get('kofs', {}):
                     if '(' in kof_type:
@@ -623,7 +622,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
                         deff_time = max((cur_time - ol_time_req), (cur_time - fb_time_req))
 
                         L = (1 / float(v_olimp)) + (1 / float(v_fonbet))
-                        is_fork = True if L < 1 and deff_time < 7 else False
+                        is_fork = True if L < 1 and deff_time < 4 else False
                         if is_fork:  # or True
 
                             time_break_fonbet = False
@@ -642,9 +641,10 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
                                 if 'timeout' in math_json_fonbet.get('score_1st', '').lower():
                                     time_break_fonbet = True
 
-                            if forks.get(bet_key, '') != '' and deff_time < 3.8:
+                            if forks.get(bet_key, '') != '':
 
                                 live_fork = round(time.time() - forks.get(bet_key, {}).get('create_fork'))
+                                # print('live_fork: ' + str(live_fork))
 
                                 forks[bet_key].update({
                                     # 'created_fork': created_fork,
@@ -671,75 +671,74 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
                                     'live_fork_total': forks_meta.get(bet_key, dict()).get('live_fork_total', 0) + live_fork,
                                 })
 
-                                if True:
-                                    if True:  # and '46136612' in bet_key:
-                                        file_forks = 'forks.csv'
+                                if True:  # and '46136612' in bet_key:
+                                    file_forks = 'forks.csv'
 
-                                        if DEBUG:
-                                            prnts('\n')
-                                            str_js = json.dumps(forks.get(bet_key), ensure_ascii=False)
-                                            prnts('forks: ' + bet_key + ' ' + str(str_js))
-                                            prnts('\n')
+                                    if DEBUG:
+                                        prnts('\n')
+                                        str_js = json.dumps(forks.get(bet_key), ensure_ascii=False)
+                                        prnts('forks: ' + bet_key + ' ' + str(str_js))
+                                        prnts('\n')
 
-                                        if not os.path.isfile(file_forks):
-                                            with open(file_forks, 'w', encoding='utf-8') as csv:
-                                                csv.write(
-                                                    'event_type;time;time_create;created_fork;cut_time;ol_time;fb_time;live_fork;live_fork_total;'
-                                                    'match_ol;match_fb;kof_ol;kof_fb;name;l;l_first;bk1_score;bk2_score;'
-                                                    'vect_ol;vect_fb;time;'
-                                                    'minute;ol_kof;ol_avg_change;fb_kof;fb_avg_change;'
-                                                    'time_break_fonbet;is_top;is_hot;base_line;'
-                                                    'period;'
-                                                    # 'ol_avg_change_total;fb_avg_change_total;'
-                                                    'ol_time_change;'
-                                                    'ol_kof_order;'
-                                                    'fb_time_change;'
-                                                    'fb_kof_order'
-                                                    '\n'
-                                                )
-                                        if os.path.isfile(file_forks):
-                                            with open(file_forks, 'a', encoding='utf-8') as csv:
-                                                csv.write(
-                                                    event_type + ';' +
-                                                    str(round(time.time())) + ';' +
-                                                    str(forks.get(bet_key).get('create_fork')) + ';' +
-                                                    str(forks.get(bet_key).get('created_fork')) + ';' +
-                                                    str(cur_time) + ';' +
-                                                    str(math_json_olimp.get('time_req', '')) + ';' +
-                                                    str(math_json_fonbet.get('time_req', '')) + ';' +
-                                                    str(live_fork) + ';' +
-                                                    str(forks_meta.get(bet_key, dict()).get('live_fork_total', 0) + live_fork) + ';' +
-                                                    str(bet_key.split('@')[0]) + ';' + str(bet_key.split('@')[1]) + ';' +
-                                                    str(bet_key.split('@')[2]) + ';' + str(bet_key.split('@')[3]) + ';' +
-                                                    math_json_olimp.get('name', '') + ';' + str(L) + ';' + str(forks.get(bet_key).get('l_fisrt')) + ';' +
-                                                    math_json_olimp.get('score', '') + ';' +
-                                                    math_json_fonbet.get('score', '') + ';' +
-                                                    str(k_olimp.get('vector')) + ';' +
-                                                    str(k_fonbet.get('vector')) + ';' +
-                                                    str(math_json_fonbet.get('time', '00:00')) + ';' +
-                                                    str(math_json_fonbet.get('minute', 0)) + ';' +
-                                                    str(k_olimp.get('value')) + ';' +
-                                                    str(k_olimp.get('hist', {}).get('avg_change', [])) + ';' +
-                                                    str(k_fonbet.get('value')) + ';' +
-                                                    str(k_fonbet.get('hist', {}).get('avg_change', [])) + ';' +
-                                                    str(time_break_fonbet) + ';' +
-                                                    str(is_top) + ';' +
-                                                    str(k_fonbet.get('is_hot', False)) + ';' +
-                                                    str(k_fonbet.get('base_line', False)) + ';' +
-                                                    str(period) + ';' +
-                                                    # str(math_json_olimp.get('avg_change_total', [])) + ';' +
-                                                    # str(math_json_fonbet.get('avg_change_total', [])) + ';' +
-                                                    str(k_olimp.get('hist', {}).get('time_change', '')) + ';' +
-                                                    str(k_olimp.get('hist', {}).get('order', [])) + ';' +
-                                                    str(k_fonbet.get('hist', {}).get('time_change', '')) + ';' +
-                                                    str(k_fonbet.get('hist', {}).get('order', [])) +
-                                                    '\n'
-                                                )
+                                    if not os.path.isfile(file_forks):
+                                        with open(file_forks, 'w', encoding='utf-8') as csv:
+                                            csv.write(
+                                                'event_type;time;time_create;created_fork;cut_time;ol_time;fb_time;live_fork;live_fork_total;'
+                                                'match_ol;match_fb;kof_ol;kof_fb;name;l;l_first;bk1_score;bk2_score;'
+                                                'vect_ol;vect_fb;time;'
+                                                'minute;ol_kof;ol_avg_change;fb_kof;fb_avg_change;'
+                                                'time_break_fonbet;is_top;is_hot;base_line;'
+                                                'period;'
+                                                # 'ol_avg_change_total;fb_avg_change_total;'
+                                                'ol_time_change;'
+                                                'ol_kof_order;'
+                                                'fb_time_change;'
+                                                'fb_kof_order'
+                                                '\n'
+                                            )
+                                    else:
+                                        with open(file_forks, 'a', encoding='utf-8') as csv:
+                                            csv.write(
+                                                event_type + ';' +
+                                                str(round(time.time())) + ';' +
+                                                str(forks.get(bet_key).get('create_fork')) + ';' +
+                                                str(forks.get(bet_key).get('created_fork')) + ';' +
+                                                str(cur_time) + ';' +
+                                                str(math_json_olimp.get('time_req', '')) + ';' +
+                                                str(math_json_fonbet.get('time_req', '')) + ';' +
+                                                str(live_fork) + ';' +
+                                                str(forks_meta.get(bet_key, dict()).get('live_fork_total', 0) + live_fork) + ';' +
+                                                str(bet_key.split('@')[0]) + ';' + str(bet_key.split('@')[1]) + ';' +
+                                                str(bet_key.split('@')[2]) + ';' + str(bet_key.split('@')[3]) + ';' +
+                                                math_json_olimp.get('name', '') + ';' + str(L) + ';' + str(forks.get(bet_key).get('l_fisrt')) + ';' +
+                                                math_json_olimp.get('score', '') + ';' +
+                                                math_json_fonbet.get('score', '') + ';' +
+                                                str(k_olimp.get('vector')) + ';' +
+                                                str(k_fonbet.get('vector')) + ';' +
+                                                str(math_json_fonbet.get('time', '00:00')) + ';' +
+                                                str(math_json_fonbet.get('minute', 0)) + ';' +
+                                                str(k_olimp.get('value')) + ';' +
+                                                str(k_olimp.get('hist', {}).get('avg_change', [])) + ';' +
+                                                str(k_fonbet.get('value')) + ';' +
+                                                str(k_fonbet.get('hist', {}).get('avg_change', [])) + ';' +
+                                                str(time_break_fonbet) + ';' +
+                                                str(is_top) + ';' +
+                                                str(k_fonbet.get('is_hot', False)) + ';' +
+                                                str(k_fonbet.get('base_line', False)) + ';' +
+                                                str(period) + ';' +
+                                                # str(math_json_olimp.get('avg_change_total', [])) + ';' +
+                                                # str(math_json_fonbet.get('avg_change_total', [])) + ';' +
+                                                str(k_olimp.get('hist', {}).get('time_change', '')) + ';' +
+                                                str(k_olimp.get('hist', {}).get('order', [])) + ';' +
+                                                str(k_fonbet.get('hist', {}).get('time_change', '')) + ';' +
+                                                str(k_fonbet.get('hist', {}).get('order', [])) +
+                                                '\n'
+                                            )
                             else:
                                 created_fork = ''
                                 ol_time_chage = k_olimp.get('hist', {}).get('time_change')
                                 fb_time_chage = k_fonbet.get('hist', {}).get('time_change')
-                                # print('{}, {}, {}, {}, {}'.format(event_type, fb_time_chage, ol_time_chage, k_fonbet, k_olimp))
+                                # prnts('{}, {}, {}, {}, {}'.format(event_type, fb_time_chage, ol_time_chage, k_fonbet, k_olimp))
                                 if ol_time_chage and fb_time_chage:
                                     if ol_time_chage > fb_time_chage:
                                         created_fork = 'olimp'
