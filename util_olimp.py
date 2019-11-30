@@ -117,7 +117,7 @@ def get_matches_olimp(proxy, time_out):
             prnts(err_str)
             raise ValueError('Exception: ' + str(e))
 
-        if res.get("error").get('err_code') == 0:
+        if res.get("error").get('err_code', 999) in (0, 511):
             return res.get('data'), resp.elapsed.total_seconds()
         else:
             err_str = res.get("error")
@@ -229,7 +229,8 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out, pair_mathes):
             prnts(err_str)
             raise ValueError(err_str)
         # {"error": {"err_code": 404, "err_desc": "Прием ставок приостановлен"}, "data": null}
-        if res.get("error").get('err_code', 999) in (0, 404):
+        # {"error": {"err_code": 511, "err_desc": "Sign access denied"}, "data": null}
+        if res.get("error").get('err_code', 999) in (0, 404, 511):
             return res.get('data'), resp.elapsed.total_seconds()
         else:
             err = res.get("error")
