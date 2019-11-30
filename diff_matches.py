@@ -1,3 +1,4 @@
+# coding:utf-8
 def compare_teams(team1_bk1, team2_bk1, team1_bk2, team2_bk2, debug=False, need=1.7):
     from difflib import SequenceMatcher
     import sys
