@@ -574,7 +574,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
                 if int(pair_math[0]) in arr_fonbet_top_matchs or int(pair_math[1]) in arr_fonbet_top_matchs:
                     is_top = True
                 # print(bets_fonbet)
-                time.sleep(15)
+                # time.sleep(15)
                 # see exp/bets_olimp.json
 
                 math_json_olimp = bets_olimp.get(pair_math[0], {})
