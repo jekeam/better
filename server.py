@@ -9,6 +9,8 @@ from utils import prnts
 from urllib.parse import unquote
 
 mutex = threading.Lock()
+
+
 # json_empt = 'json_empt'
 
 
@@ -18,7 +20,7 @@ def run_server(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_fonbet_top_matchs
             self.data_str = json.dumps(forks, ensure_ascii=False)
             self.bar = bar
             self.qux = qux
-            
+
             super().__init__(*args, **kwargs)
 
         def do_GET(self):
@@ -53,7 +55,10 @@ def run_server(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_fonbet_top_matchs
                         blank, action, param_name, key, group_id, value = self.path.split('/')
                         key = unquote(key)
                         prnts(branch + ': action: {}, param_name: {}, key: {}, group_id: {}, value: {}'.format(action, param_name, key, group_id, value))
-                        forks[key][param_name].update({str(group_id) : int(value)})
+                        old_val = forks.get(key, {}).get(param_name, {}).get(group_id, 0)
+                        max_val = max(old_val, int(value))
+                        forks[key][param_name].update({str(group_id): max_val})
+                        prnts(branch + ': group_id:{}, old_val:{}, cur_val:{}, max_val: {}'.format(group_id, old_val, value, max_val))
                 except Exception as e:
                     prnts(e)
                     status = branch + ' err: ' + str(e)
