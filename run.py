@@ -569,24 +569,24 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
     while True:
         try:
             for pair_math in pair_mathes:
-    
+
                 is_top = False
                 if int(pair_math[0]) in arr_fonbet_top_matchs or int(pair_math[1]) in arr_fonbet_top_matchs:
                     is_top = True
                 # print(bets_fonbet)
                 time.sleep(15)
                 # see exp/bets_olimp.json
-    
+
                 math_json_olimp = bets_olimp.get(pair_math[0], {})
                 math_json_fonbet = bets_fonbet.get(pair_math[1], {})
                 event_type = pair_math[2]
-    
+
                 curr_opposition = copy.deepcopy(opposition)
-    
+
                 # print(pair_math)
                 # print(math_json_olimp)
                 # print(math_json_fonbet)
-    
+
                 for kof_type in math_json_olimp.get('kofs', {}):
                     if '(' in kof_type:
                         tot_abrr = re.sub('\((.*)\)', '', kof_type)
@@ -595,40 +595,40 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
                             tot_abrr + '({})'.format(tot_val):
                                 opposition[tot_abrr] + '({})'.format(tot_val)
                         })
-    
-                if event_type in ('volleyball','tennis', 'basketball'):
-                    curr_opposition.update({'П1':'П2'})
-                    curr_opposition.update({'П2':'П1'})
-    
+
+                if event_type in ('volleyball', 'tennis', 'basketball'):
+                    curr_opposition.update({'П1': 'П2'})
+                    curr_opposition.update({'П2': 'П1'})
+
                 for kof_type_olimp, kof_type_fonbet in curr_opposition.items():
-    
+
                     bet_key = str(pair_math[0]) + '@' + str(pair_math[1]) + '@' + kof_type_olimp + '@' + kof_type_fonbet
-    
+
                     k_olimp = math_json_olimp.get('kofs', {}).get(kof_type_olimp, {})
                     k_fonbet = math_json_fonbet.get('kofs', {}).get(kof_type_fonbet, {})
-    
+
                     v_olimp = k_olimp.get('value', 0.0)
                     v_fonbet = k_fonbet.get('value', 0.0)
                     # print(kof_type_fonbet, str(v_fonbet), kof_type_olimp, str(v_olimp), sep=";")
-    
+
                     if DEBUG:
                         v_olimp = v_olimp * 2
                         v_fonbet = v_fonbet * 2
-    
+
                     if v_olimp > 0.0 and v_fonbet > 0.0:
-    
+
                         ol_time_req = math_json_olimp.get('time_req', 0)
                         fb_time_req = math_json_fonbet.get('time_req', 0)
                         cur_time = round(time.time())
                         deff_time = max((cur_time - ol_time_req), (cur_time - fb_time_req))
-    
+
                         L = (1 / float(v_olimp)) + (1 / float(v_fonbet))
                         is_fork = True if L < 1 and deff_time < 7 else False
                         if is_fork:  # or True
-    
+
                             time_break_fonbet = False
                             period = 0
-    
+
                             if event_type == 'football':
                                 period = 1
                                 if re.match('\(\d+:\d+\)', math_json_fonbet.get('score_1st', '').replace(' ', '')) and \
@@ -641,11 +641,11 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
                             elif event_type in ['basketball', 'volleyball']:
                                 if 'timeout' in math_json_fonbet.get('score_1st', '').lower():
                                     time_break_fonbet = True
-    
+
                             if forks.get(bet_key, '') != '' and deff_time < 3.8:
-    
+
                                 live_fork = round(time.time() - forks.get(bet_key, {}).get('create_fork'))
-    
+
                                 forks[bet_key].update({
                                     # 'created_fork': created_fork,
                                     'time_last_upd': cur_time,
@@ -670,17 +670,17 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
                                     'live_fork': live_fork,
                                     'live_fork_total': forks_meta.get(bet_key, dict()).get('live_fork_total', 0) + live_fork,
                                 })
-    
+
                                 if True:
                                     if True:  # and '46136612' in bet_key:
                                         file_forks = 'forks.csv'
-    
+
                                         if DEBUG:
                                             prnts('\n')
                                             str_js = json.dumps(forks.get(bet_key), ensure_ascii=False)
                                             prnts('forks: ' + bet_key + ' ' + str(str_js))
                                             prnts('\n')
-    
+
                                         if not os.path.isfile(file_forks):
                                             with open(file_forks, 'w', encoding='utf-8') as csv:
                                                 csv.write(
@@ -745,7 +745,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
                                         created_fork = 'olimp'
                                     if fb_time_chage > ol_time_chage:
                                         created_fork = 'fonbet'
-    
+
                                 forks[bet_key] = {
                                     'time_last_upd': cur_time,
                                     'name': math_json_fonbet.get('name', ''),
@@ -790,7 +790,6 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
             prnts('Error forks: ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
         finally:
             time.sleep(1)
-        
 
 
 def stat_req(stat_req_olimp, stat_req_fonbet):
