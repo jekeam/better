@@ -14,7 +14,7 @@ mutex = threading.Lock()
 # json_empt = 'json_empt'
 
 
-def run_server(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_fonbet_top_matchs):
+def run_server(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_fonbet_top_matchs, bets_olimp, bets_fonbet):
     class HttpProcessor(BaseHTTPRequestHandler):
         def __init__(self, forks, bar, qux, *args, **kwargs):
             self.data_str = json.dumps(forks, ensure_ascii=False)
@@ -44,6 +44,16 @@ def run_server(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_fonbet_top_matchs
                 self.send_header('content-type', 'application/json')
                 self.end_headers()
                 self.wfile.write(str(arr_fonbet_top_matchs).encode('utf-8'))
+            elif self.path == '/fonbet':
+                self.send_response(200)
+                self.send_header('content-type', 'application/json')
+                self.end_headers()
+                self.wfile.write(str(bets_fonbet).encode('utf-8'))
+            elif self.path == '/olimp':
+                self.send_response(200)
+                self.send_header('content-type', 'application/json')
+                self.end_headers()
+                self.wfile.write(str(bets_olimp).encode('utf-8'))
             elif '/set/' in self.path:
                 prnts(self.path)
                 status = 'ok'
