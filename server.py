@@ -51,7 +51,7 @@ def run_server(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_fonbet_top_matchs
 
                 try:
                     state = {}
-                    balnk, math_id = self.path.split('/')
+                    balnk, balnk2, math_id = self.path.split('/')
                     info = bets_fonbet.get(math_id)
                     state['name'] = info.get('name')
                     state['time'] = info.get('time')
