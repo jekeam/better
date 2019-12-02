@@ -12,6 +12,19 @@ mutex = threading.Lock()
 
 
 # json_empt = 'json_empt'
+def get_state(arr):
+    state = {}
+    info = arr
+    state['name'] = info.get('name')
+    state['time'] = info.get('time')
+    state['last_update'] = str((int(time.time()) - info.get('time_req')))
+    state['kofs'] = {}
+    for kof_name, kof_info in info.get('kofs', {}).items():
+        state['kofs'].update({kof_name: {
+            'last_update': str(int(time.time()) - kof_info.get('time_req')),
+            'val': kof_info.get('value')
+        }})
+    return state
 
 
 def run_server(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_fonbet_top_matchs, bets_olimp, bets_fonbet):
@@ -44,26 +57,16 @@ def run_server(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_fonbet_top_matchs
                 self.send_header('content-type', 'application/json')
                 self.end_headers()
                 self.wfile.write(str(arr_fonbet_top_matchs).encode('utf-8'))
-            elif '/fonbet/' in self.path:
+            elif '/fonbet/' in self.path or '/olimp/' in self.path:
                 prnts(self.path)
                 answer = 'ok'
                 branch = ''
-
                 try:
-                    state = {}
-                    balnk, balnk2, math_id = self.path.split('/')
-                    info = bets_fonbet.get(math_id)
-                    state['name'] = info.get('name')
-                    state['time'] = info.get('time')
-                    state['last_update'] = str((int(time.time()) - info.get('time_req')))
-
-                    for kof_name, kof_info in info.get('kofs', {}).items():
-                        state['kofs'][kof_name] = {
-                            'last_update': str((int(time.time()) - kof_info.get('time_req'))),
-                            'val': kof_info.get('value')
-                        }
-
-                    answer = state.copy()
+                    balnk, balnk2, match_id = self.path.split('/')
+                    if '/fonbet/' in self.path:
+                        answer = get_state(bets_fonbet.get(match_id))
+                    elif '/olimp/' in self.path:
+                        answer = get_state(bets_olimp.get(match_id))
                 except Exception as e:
                     prnts(e)
                     answer = branch + ' err: ' + str(e)
@@ -72,9 +75,6 @@ def run_server(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_fonbet_top_matchs
                     self.send_header('content-type', 'application/json')
                     self.end_headers()
                     self.wfile.write(str(answer).encode('utf-8'))
-            elif self.path == '/olimp':
-                pass
-                # bets_olimp
             elif '/set/' in self.path:
                 prnts(self.path)
                 status = 'ok'
