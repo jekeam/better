@@ -17,11 +17,11 @@ def get_state(arr):
     info = arr
     state['name'] = info.get('name')
     state['time'] = info.get('time')
-    state['last_update'] = str((int(time.time()) - info.get('time_req')))
+    state['last_update'] = str((int(time.time() - info.get('time_req'))))
     state['kofs'] = {}
     for kof_name, kof_info in info.get('kofs', {}).items():
         state['kofs'].update({kof_name: {
-            'last_update': str(int(time.time()) - kof_info.get('time_req')),
+            'last_update': str(int(time.time() - kof_info.get('time_req'))),
             'val': kof_info.get('value')
         }})
     return state
