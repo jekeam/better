@@ -63,10 +63,13 @@ def run_server(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_fonbet_top_matchs
                 branch = ''
                 try:
                     balnk, balnk2, match_id = self.path.split('/')
+                    answer = None
                     if '/fonbet/' in self.path:
                         answer = get_state(bets_fonbet.get(match_id))
                     elif '/olimp/' in self.path:
                         answer = get_state(bets_olimp.get(match_id))
+                    if answer:
+                        answer = json.dumps(answer, ensure_ascii=False, indent=4)
                 except Exception as e:
                     prnts(e)
                     answer = branch + ' err: ' + str(e)
