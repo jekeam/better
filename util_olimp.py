@@ -430,10 +430,9 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
                 print(bets_olimp)
                 print(resp)
         else:
-            # try:
-            #     bets_olimp.pop(key_id)
-            # except:
-            #     pass
+            bets_olimp[key_id].update({
+                'time_req': round(time.time())
+            })
             try:
                 for i, j in bets_olimp.get(key_id, {}).get('kofs', {}).copy().items():
                     try:
