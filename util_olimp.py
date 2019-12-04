@@ -364,9 +364,9 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
                                 or 'никто не забьет: '.lower() \
                                 in d.get('n', '').lower() \
                                 or 'победа '.lower() \
-                                in d.get('n', '') \
-                                or d.get('n', '').endswith(' бол') \
-                                or d.get('n', '').endswith(' мен') \
+                                in d.get('n', '').lower() \
+                                or d.get('n', '').lower().endswith(' бол') \
+                                or d.get('n', '').lower().endswith(' мен') \
                                 or 'первая не проиграет'.lower() \
                                 in d.get('n', '').lower() \
                                 or 'вторая не проиграет'.lower() \
@@ -386,6 +386,9 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
                                        ][0])
 
                             value = d.get('v', 0)
+
+                            # if str(match_id) == '53758167':
+                            #     print(d.get('n', ''), value, coef)
 
                             kof_order = bets_olimp[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('order', [])
                             time_change = bets_olimp[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('time_change', time.time())
