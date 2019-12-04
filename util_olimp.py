@@ -428,14 +428,18 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
                                 )
                             except:
                                 pass
-            if key_id == '52495128':
-                print(key_id)
-                print(bets_olimp)
-                print(resp)
+            # if key_id == '52495128':
+            #     print(key_id)
+            #     print(bets_olimp)
+            #     print(resp)
         else:
-            bets_olimp[key_id].update({
-                'time_req': round(time.time())
-            })
+            if bets_olimp.get(key_id):
+                bets_olimp[key_id].update({
+                    'time_req': round(time.time())
+                })
+            else:
+                prnts('Олимп, не смог обновить время time_req, т.к. матч заблокирован и это первое добавление?')
+                
             try:
                 for i, j in bets_olimp.get(key_id, {}).get('kofs', {}).copy().items():
                     try:
