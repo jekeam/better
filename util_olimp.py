@@ -438,7 +438,7 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
                     'time_req': round(time.time())
                 })
             else:
-                prnts('Олимп, не смог обновить время time_req, т.к. матч заблокирован и это первое добавление?')
+                prnts('Олимп, не смог обновить время time_req, т.к. матч ' + str(key_id) + ' заблокирован и это первое добавление?')
                 
             try:
                 for i, j in bets_olimp.get(key_id, {}).get('kofs', {}).copy().items():
