@@ -596,7 +596,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
                                 opposition[tot_abrr] + '({})'.format(tot_val)
                         })
 
-                if event_type in ('volleyball', 'tennis', 'basketball'):
+                if event_type in ('volleyball', 'tennis', 'basketball', 'esports'):
                     curr_opposition.update({'П1': 'П2'})
                     curr_opposition.update({'П2': 'П1'})
 
