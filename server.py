@@ -97,7 +97,7 @@ def run_server(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_fonbet_top_matchs
                         key = unquote(key)
                         prnts(branch + ': action: {}, param_name: {}, key: {}, group_id: {}, value: {}'.format(action, param_name, key, group_id, value))
                         old_val = forks.get(key, {}).get(param_name, {}).get(group_id, 0)
-                        max_val = max(old_val, int(value))
+                        max_val = max(old_val, int(float(value)))
                         forks[key][param_name].update({str(group_id): max_val})
                         prnts(branch + ': group_id:{}, old_val:{}, cur_val:{}, max_val: {}'.format(group_id, old_val, value, max_val))
                 except Exception as e:
