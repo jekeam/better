@@ -18,7 +18,7 @@ from utils import DEBUG
 urllib3.disable_warnings()
 
 TIME_OUT = 3
-CHUNKS = 600
+CHUNKS = 20
 
 UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3163.100 Safari/537.36'
 
@@ -115,6 +115,46 @@ def check_proxy_fonbet(proxies_for_check, valid_proxies):
         except Exception as e:
             pass
             print('f invalid: ' + str(prx), str(e))
+
+
+def check_proxy(proxies_for_check, valid_proxies, url, headers):
+    global TIME_OUT
+
+    for prx in proxies_for_check:
+        http_type = 'https' if 'https' in prx else 'http'
+        try:
+            resp = requests.get(
+                http_type + '://' + url,
+                headers=headers,
+                proxies={http_type: prx},
+                timeout=TIME_OUT,
+                verify=False
+            )
+            print('f valid: ' + str(prx), str(resp.status_code))
+            if prx not in valid_proxies:
+                valid_proxies.append(prx)
+        except Exception as e:
+            pass
+            print('f invalid: ' + str(prx), str(e))
+
+
+def check_proxies(proxies_list, url, headers):
+    mgr = mp.Manager()
+    valid_proxies_list = mgr.list()
+
+    n_chunks = CHUNKS
+    chunks = [proxies_list[i::n_chunks] for i in range(n_chunks)]
+
+    prcs = []
+    for chunk in chunks:
+        p = mp.Process(target=check_proxy, args=(chunk, valid_proxies_list, url, headers))
+        prcs.append(p)
+        p.start()
+
+    for p in prcs:
+        p.join()
+
+    return valid_proxies_list
 
 
 def check_proxies_olimp(proxies_list):
@@ -285,7 +325,24 @@ def cd():
 
 ol_fl = 'proxy_by_olimp.txt'
 fb_fl = 'proxy_by_fonbet.txt'
+pn_fl = 'proxy_by_pinn.txt'
 if __name__ == '__main__':
+    prnts('get api_key from pinnacle')
+    url_pinn = 'www.pinnacle.com'
+    app_key = requests.get('https://' + url_pinn + '/config/app.json').json()['api']['haywire']['apiKey']
+    prnts('pinnacle app_key: ' + app_key)
+    headers_pinn = {
+        'accept': 'application/json',
+        'content-type': 'application/json',
+        'origin': 'https://' + url_pinn,
+        'referer': 'https://' + url_pinn,
+        'sec-fetch-mode': 'cors',
+        'sec-fetch-site': 'same-site',
+        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36',
+        'x-api-key': app_key
+    }
+    url_pinn = 'guest.api.arcadia.pinnacle.com/0.1/sports/29/matchups/live'
+
     prnts('start proxy worker')
 
     proxy_list = []
@@ -298,12 +355,19 @@ if __name__ == '__main__':
     prnts('cnt all: ' + str(len(proxy_list)))
     time.sleep(3)
 
+    #PINNACLE
+    # proxy_list_pinn = get_proxy_from_file('proxy_by_pinn.txt')
+    proxy_list_pinn = proxy_list
+    proxy_list_https = (list(filter(lambda p: 'https' in p, proxy_list_pinn)))
+    proxy_list_pinn = check_proxies(proxy_list_https, url_pinn, headers_pinn)
+    # save_list(proxy_list_pinn, pn_fl)
+
     # FB
-    proxy_list_fonbet = check_proxies_fonbet(proxy_list)
-    save_list(proxy_list_fonbet, fb_fl)
+    # proxy_list_fonbet = check_proxies_fonbet(proxy_list)
+    # save_list(proxy_list_fonbet, fb_fl)
 
     # OL
-    proxy_list = get_proxy_from_file('proxy_for_olimp.txt')
-    proxy_list = (list(filter(lambda p: 'https' in p, proxy_list)))
-    proxy_list_olimp = check_proxies_olimp(proxy_list)
-    save_list(proxy_list_olimp, ol_fl, clone=2000)
+    # proxy_list = get_proxy_from_file('proxy_for_olimp.txt')
+    # proxy_list = (list(filter(lambda p: 'https' in p, proxy_list)))
+    # proxy_list_olimp = check_proxies_olimp(proxy_list)
+    # save_list(proxy_list_olimp, ol_fl, clone=2000)

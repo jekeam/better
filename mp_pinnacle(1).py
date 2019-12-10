@@ -7,8 +7,6 @@ import json
 import sys
 import traceback
 import argparse
-import urllib3
-urllib3.disable_warnings()
 
 WORK_DIR=os.path.dirname(os.path.abspath(__file__))  
 SPORTS={'tennis':33,'soccer':29,'esports':12,'hockey':19,'volleyball':34}
@@ -21,7 +19,7 @@ OUTPUT='pinnacle.json'
 def log(step, *messages):
     message=str(datetime.datetime.now())+' '+step+' '+' '.join([str(m) for m in messages])
     print(message)
-    with open(os.path.join(WORK_DIR,'log.txt'), 'a') as file:
+    with open(os.path.join(WORK_DIR,'pinnacle_log.txt'), 'a') as file:
         file.write(message+'\n')
         file.close()
     return step
@@ -37,6 +35,23 @@ def american_to_decimal(odd):
     else:
         return None
 
+def straight_normalize(straight):
+    designations={'over':'Б','under':'М', 'home':'П1','away':'П2','draw':'Н', None:''}
+    periods={1:'1', 2:'2', 0:'', None:''}
+    types={'team_total':'ИТ','total':'Т','moneyline':'','spread':'', None:''}
+    sides={'home':'1','away':'2', None:''}
+    
+    if straight.get('type', '') == 'team_total':
+        return {periods[straight.get('period')]+types[straight.get('type')]+designations[straight.get('designation')]+sides[straight.get('side')]:straight}
+    if straight.get('type', '') == 'total':
+        return {periods[straight.get('period')]+types[straight.get('type')]+designations[straight.get('designation')]:straight}
+    if straight.get('type', '') == 'moneyline':
+        return {designations[straight.get('designation')]:straight}
+    if straight.get('type', '') == 'spread':
+        return {}
+    else:
+        return {}
+
 def get_odds(sess, app_key, p_matchup_id, p_odds, prxy):
     straight_head={
         'accept': 'application/json',
@@ -49,15 +64,23 @@ def get_odds(sess, app_key, p_matchup_id, p_odds, prxy):
         'sec-fetch-mode': 'cors',
         'sec-fetch-site': 'same-site',
         'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36',
-        'x-api-key': app_key
-    }
+        'x-api-key': app_key}
     try:
         straight=proxy_request(sess, requests.Request('GET', 'https://guest.api.arcadia.pinnacle.com/0.1/matchups/{}/markets/related/straight'.format(p_matchup_id), headers=straight_head), prxy)
         straight=straight.json()  
-        res=[]
+        res={}
         for bet in filter(lambda x: x['matchupId'] == p_matchup_id, straight):
             for price in bet.get('prices', []):
-                res.append([p_matchup_id, bet.get('type'), price.get('designation'), price.get('points'), american_to_decimal(price.get('price')), 'UP' if price.get('price') > 0 else 'DOWN'])
+                res.update(straight_normalize({
+                            'match_id':p_matchup_id, 
+                            'type':bet.get('type'), 
+                            'side':bet.get('side'), 
+                            'period':bet.get('period'), 
+                            'designation':price.get('designation'), 
+                            'points':price.get('points'), 
+                            'price':american_to_decimal(price.get('price')), 
+                            'vector':'UP' if price.get('price') > 0 else 'DOWN'
+                            }))
         p_odds[p_matchup_id]=res
     except:
         p_odds[p_matchup_id]=None
@@ -80,27 +103,27 @@ def get_matchups(sess, app_key, sprt_nm, sprt_id, prxy):
         'x-api-key': app_key
         }
 
-    live_url = 'https://guest.api.arcadia.pinnacle.com/0.1/sports/{}/matchups/live'.format(sprt_id)
-    live=proxy_request(sess, requests.Request('GET', live_url, headers=head), prxy).json()
+    live=proxy_request(sess, requests.Request('GET', 'https://guest.api.arcadia.pinnacle.com/0.1/sports/{}/matchups/live'.format(sprt_id), headers=head), prxy).json()
 
     data={}
     for l in live:
-        data[l.get('id')]={
-            'match_id':l.get('id'),
-            'league':l.get('league',{}).get('group') + '-'+ l.get('league',{}).get('name'),
-            'team_alignment1':l.get('participants',[{}])[0].get('alignment'),
-            'team_name1':l.get('participants',[{}])[0].get('name'),
-            'team_alignment2':l.get('participants',[{},{}])[1].get('alignment'),
-            'team_name2':l.get('participants',[{},{}])[1].get('name'),
-            'name':l.get('participants',[{},{}])[0].get('name')+'-'+l.get('participants',[{},{}])[0].get('name'),
-            'score':str(l.get('participants',[{},{}])[0].get('score'))+':'+str(l.get('participants',[{},{}])[0].get('score')),
-            'state':l.get('state',{}).get('state'),
-            'minute':float(l.get('state',{}).get('minutes',0)),
-            'cur_time':int(datetime.datetime.now().timestamp()),
-            'sport_id':sprt_id,
-            'sport_name':sprt_nm,
-            'time_start':int(datetime.datetime.strptime(l.get('startTime'), '%Y-%m-%dT%H:%M:%SZ').timestamp())
-            }
+        if l.get('liveMode', '') == 'live_delay':
+            data[l.get('id')]={
+                'match_id':l.get('id'),
+                'league':l.get('league',{}).get('group') + '-'+ l.get('league',{}).get('name'),
+                'team_alignment1':l.get('participants',[{}])[0].get('alignment'),
+                'team_name1':l.get('participants',[{}])[0].get('name'),
+                'team_alignment2':l.get('participants',[{},{}])[1].get('alignment'),
+                'team_name2':l.get('participants',[{},{}])[1].get('name'),
+                'name':l.get('participants',[{},{}])[0].get('name')+'-'+l.get('participants',[{},{}])[0].get('name'),
+                'score':str(l.get('participants',[{},{}])[0].get('score'))+':'+str(l.get('participants',[{},{}])[0].get('score')),
+                'state':l.get('state',{}).get('state'),
+                'minute':float(l.get('state',{}).get('minutes',0)),
+                'cur_time':int(datetime.datetime.now().timestamp()),
+                'sport_id':sprt_id,
+                'sport_name':sprt_nm,
+                'time_start':int(datetime.datetime.strptime(l.get('startTime'), '%Y-%m-%dT%H:%M:%SZ').timestamp())
+                }
     
     return data
 
@@ -117,11 +140,9 @@ def proxy_request(sess, req, proxy_list, n_proxy_to_use=PROXY_TO_USE, timeout=PR
                     }
                 
                 return sess.send(prepped, proxies=proxies, timeout=timeout, verify=False)
-            except requests.exceptions.ConnectTimeout as e:
-                print(e)
+            except requests.exceptions.ConnectTimeout:
                 continue
-            except requests.exceptions.ProxyError as e:
-                print(e)
+            except requests.exceptions.ProxyError:
                 continue
     else:
         prepped=req.prepare()
@@ -146,7 +167,7 @@ if __name__ == '__main__':
     
         parser = argparse.ArgumentParser()
         parser.add_argument("-n", dest='n', type=str, help="SPORT_NAME", default='soccer')
-        parser.add_argument("-pl", dest='pl', type=str, help="PROXY_FILE", default='proxy_by_pinn.txt')
+        parser.add_argument("-pl", dest='pl', type=str, help="PROXY_FILE", default='')
         parser.add_argument("-tm", dest='tm', type=int, help="PROXY_REQUEST_TIMEOUT", default=3)
         parser.add_argument("-pn", dest='pn',type=int, help="PROXY_TO_USE", default=10)
         parser.add_argument("-o", dest='o', type=str, help="OUTPUT", default='pinnacle.json')
@@ -166,6 +187,8 @@ if __name__ == '__main__':
         first_proxies=None
         if proxylist:
             one_proxy=proxylist[-PROXY_TO_USE:-1]
+        else:
+            one_proxy=None
         
         step=log('CREATE SESSION')
         session, key = create_session(one_proxy)
@@ -209,6 +232,8 @@ if __name__ == '__main__':
         
         step=log('DURATION', end-start)
         step=log('END', end)
+        
+        session.close()
     except Exception as e:
         ex_type, ex, tb = sys.exc_info()
         log(step, 'ERROR', traceback.print_tb(tb), ex_type, e)
