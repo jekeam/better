@@ -90,7 +90,10 @@ def run_server(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_fonbet_top_matchs
                         elif '/olimp/' in self.path:
                             answer = bets_olimp.get(match_id, {}).get('kofs', {}).get(kof)
                     if answer:
-                        answer.pop('hist')
+                        try:
+                            answer.pop('hist')
+                        except:
+                            pass
                         answer = json.dumps(answer, ensure_ascii=False, indent=4)
                 except Exception as e:
                     exc_type, exc_value, exc_traceback = sys.exc_info()
