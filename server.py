@@ -14,23 +14,24 @@ mutex = threading.Lock()
 # json_empt = 'json_empt'
 def get_state(arr):
     state = {}
-    info = arr
-    state['name'] = info.get('name')
-    state['time'] = info.get('time')
-    state['last_update'] = str((int(time.time() - info.get('time_req'))))
-    state['kofs'] = {}
-    for kof_name, kof_info in info.get('kofs', {}).items():
-        val = kof_info.get('value')
-        if val == 0:
-            try:
-                state['kofs'].pop(kof_name)
-            except:
-                pass
-        else:
-            state['kofs'].update({kof_name: {
-                'last_update': str(int(time.time() - kof_info.get('time_req'))),
-                'val': val
-            }})
+    if arr:
+        info = arr
+        state['name'] = info.get('name')
+        state['time'] = info.get('time')
+        state['last_update'] = str((int(time.time() - info.get('time_req'))))
+        state['kofs'] = {}
+        for kof_name, kof_info in info.get('kofs', {}).items():
+            val = kof_info.get('value')
+            if val == 0:
+                try:
+                    state['kofs'].pop(kof_name)
+                except:
+                    pass
+            else:
+                state['kofs'].update({kof_name: {
+                    'last_update': str(int(time.time() - kof_info.get('time_req'))),
+                    'val': val
+                }})
     return state
 
 
