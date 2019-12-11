@@ -65,24 +65,24 @@ def run_server(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_fonbet_top_matchs
                 self.end_headers()
                 self.wfile.write(str(arr_fonbet_top_matchs).encode('utf-8'))
             elif '/fonbet/' in self.path or '/olimp/' in self.path:
-                prnts(self.path)
                 cnt_par = str(self.path).count('/')
+                prnts('get path: {}, cnt_par: {}, arr: {}'.format(self.path, cnt_par, str(self.path.split('/'))))
                 answer = 'ok'
                 branch = ''
                 try:
                     answer = None
                     if cnt_par == 2:
-                        balnk, balnk2, match_id = self.path.split('/')
+                        balnk, bk_name, match_id = self.path.split('/')
                         if '/fonbet/' in self.path:
                             answer = get_state(bets_fonbet.get(match_id, {}))
                         elif '/olimp/' in self.path:
                             answer = get_state(bets_olimp.get(match_id, {}))
                     elif cnt_par == 3:
-                        balnk, balnk2, match_id, kof = self.path.split('/')
+                        balnk, bk_name, match_id, kof = self.path.split('/')
                         if '/fonbet/' in self.path:
-                            answer = get_state(bets_fonbet.get(match_id, {}).get('kofs', {}).get(kof))
+                            answer = bets_fonbet.get(match_id, {}).get('kofs', {}).get(kof)
                         elif '/olimp/' in self.path:
-                            answer = get_state(bets_olimp.get(match_id, {}).get('kofs', {}).get(kof))
+                            answer = bets_olimp.get(match_id, {}).get('kofs', {}).get(kof)
                     if answer:
                         answer = json.dumps(answer, ensure_ascii=False, indent=4)
                 except Exception as e:
