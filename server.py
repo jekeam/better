@@ -7,6 +7,8 @@ import threading
 import time
 from utils import prnts
 from urllib.parse import unquote
+import sys
+import traceback
 
 mutex = threading.Lock()
 
@@ -49,7 +51,9 @@ def run_server(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_fonbet_top_matchs
             try:
                 ip_adr = str(self.client_address[0])
             except Exception as e:
-                prnts(str(e))
+                exc_type, exc_value, exc_traceback = sys.exc_info()
+                err_str = str(traceback.format_exception(exc_type, exc_value, exc_traceback))
+                prnts(err_str)
             if self.path == '/get_forks':
                 self.send_response(200)
                 self.send_header('content-type', 'application/json')
@@ -88,8 +92,9 @@ def run_server(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_fonbet_top_matchs
                     if answer:
                         answer = json.dumps(answer, ensure_ascii=False, indent=4)
                 except Exception as e:
-                    prnts(e)
-                    answer = branch + ' err: ' + str(e)
+                    exc_type, exc_value, exc_traceback = sys.exc_info()
+                    answer = branch + ': ' + str(traceback.format_exception(exc_type, exc_value, exc_traceback))
+                    prnts(answer)
                 finally:
                     self.send_response(200)
                     self.send_header('content-type', 'application/json')
@@ -111,8 +116,9 @@ def run_server(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_fonbet_top_matchs
                         forks[key][param_name].update({str(group_id): max_val})
                         prnts(branch + ': group_id:{}, old_val:{}, cur_val:{}, max_val: {}'.format(group_id, old_val, value, max_val))
                 except Exception as e:
-                    prnts(e)
-                    status = branch + ' err: ' + str(e)
+                    exc_type, exc_value, exc_traceback = sys.exc_info()
+                    status = branch + ': ' + str(traceback.format_exception(exc_type, exc_value, exc_traceback))
+                    prnts(status)
                 finally:
                     self.send_response(200)
                     self.send_header('content-type', 'application/json')
