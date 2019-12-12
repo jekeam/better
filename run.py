@@ -765,16 +765,31 @@ def stat_req(stat_req_olimp, stat_req_fonbet):
 
 if __name__ == '__main__':
     prnts('DEBUG: ' + str(DEBUG))
+    # STEP 1 - Proxy Saver
     proxy_filename_olimp = 'olimp.proxy'
     proxy_filename_fonbet = 'fonbet.proxy'
+    proxy_filename_pinnacle = 'pinnacle.proxy'
 
     proxies_olimp = get_proxy_from_file(proxy_filename_olimp, uniq=False)
     proxies_fonbet = get_proxy_from_file(proxy_filename_fonbet)
+    proxies_pinncale = get_proxy_from_file(proxy_filename_pinnacle)
 
     gen_proxi_olimp = createBatchGenerator(get_next_proxy(copy.deepcopy(proxies_olimp)))
     gen_proxi_fonbet = createBatchGenerator(get_next_proxy(copy.deepcopy(proxies_fonbet)))
+    gen_proxi_pinnale = createBatchGenerator(get_next_proxy(copy.deepcopy(proxies_pinncale)))
 
-    proxy_saver = threading.Thread(target=start_proxy_saver, args=(proxies_olimp, proxies_fonbet, proxy_filename_olimp, proxy_filename_fonbet))
+    proxy_saver = threading.Thread(
+        target=start_proxy_saver,
+        args=(
+            proxies_olimp,
+            proxies_fonbet,
+            proxies_pinncale,
+
+            proxy_filename_olimp,
+            proxy_filename_fonbet,
+            proxy_filename_pinnacle
+        )
+    )
     proxy_saver.start()
 
     arr_matchs = dict()
