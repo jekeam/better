@@ -18,7 +18,7 @@ from utils import DEBUG
 urllib3.disable_warnings()
 
 TIME_OUT = 3
-CHUNKS = 20
+CHUNKS = 500
 
 UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3163.100 Safari/537.36'
 
@@ -313,9 +313,9 @@ def start_proxy_saver(proxies_olimp, proxies_fonbet, proxy_filename_olimp, proxy
 proxy_file_name = 'proxieslist.txt'
 
 
-def proxy_push(ol_fl, fb_fl):
-    copyfile(ol_fl, 'olimp.proxy')
-    copyfile(fb_fl, 'fonbet.proxy')
+def proxy_push(bk_name):
+    bk_name = bk_name.lower()
+    copyfile('proxy_by_' + bk_name + '.txt',  bk_name + '.proxy')
 
 
 def cd():
@@ -325,23 +325,25 @@ def cd():
 
 ol_fl = 'proxy_by_olimp.txt'
 fb_fl = 'proxy_by_fonbet.txt'
-pn_fl = 'proxy_by_pinn.txt'
+pn_fl = 'proxy_by_pinnacle.txt'
+
 if __name__ == '__main__':
     prnts('get api_key from pinnacle')
-    url_pinn = 'www.pinnacle.com'
-    app_key = requests.get('https://' + url_pinn + '/config/app.json').json()['api']['haywire']['apiKey']
+    url_pinnacle = 'www.pinnacle.com'
+    app_key = requests.get('https://' + url_pinnacle + '/config/app.json').json()['api']['haywire']['apiKey']
     prnts('pinnacle app_key: ' + app_key)
-    headers_pinn = {
+    headers_pinnacle = {
         'accept': 'application/json',
         'content-type': 'application/json',
-        'origin': 'https://' + url_pinn,
-        'referer': 'https://' + url_pinn,
+        'origin': 'https://' + url_pinnacle,
+        'referer': 'https://' + url_pinnacle,
         'sec-fetch-mode': 'cors',
         'sec-fetch-site': 'same-site',
         'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36',
         'x-api-key': app_key
     }
-    url_pinn = 'guest.api.arcadia.pinnacle.com/0.1/sports/29/matchups/live'
+    # url_pinnacle = 'guest.api.arcadia.pinnacle.com/0.1/sports/29/matchups/live'
+    url_pinnacle = 'guest.api.arcadia.pinnacle.com/0.1/sports/29/markets/live/straight?primaryOnly=false'
 
     prnts('start proxy worker')
 
@@ -356,18 +358,18 @@ if __name__ == '__main__':
     time.sleep(3)
 
     #PINNACLE
-    # proxy_list_pinn = get_proxy_from_file('proxy_by_pinn.txt')
-    proxy_list_pinn = proxy_list
-    proxy_list_https = (list(filter(lambda p: 'https' in p, proxy_list_pinn)))
-    proxy_list_pinn = check_proxies(proxy_list_https, url_pinn, headers_pinn)
-    # save_list(proxy_list_pinn, pn_fl)
+    # proxy_list_pinnacle = get_proxy_from_file('proxy_by_pinnacle.txt')
+    proxy_list_pinnacle = proxy_list
+    proxy_list_https = (list(filter(lambda p: 'https' in p, proxy_list_pinnacle)))
+    proxy_list_pinnacle = check_proxies(proxy_list_https, url_pinnacle, headers_pinnacle)
+    save_list(proxy_list_pinnacle, pn_fl)
 
     # FB
-    # proxy_list_fonbet = check_proxies_fonbet(proxy_list)
-    # save_list(proxy_list_fonbet, fb_fl)
+    proxy_list_fonbet = check_proxies_fonbet(proxy_list)
+    save_list(proxy_list_fonbet, fb_fl)
 
     # OL
-    # proxy_list = get_proxy_from_file('proxy_for_olimp.txt')
-    # proxy_list = (list(filter(lambda p: 'https' in p, proxy_list)))
-    # proxy_list_olimp = check_proxies_olimp(proxy_list)
-    # save_list(proxy_list_olimp, ol_fl, clone=2000)
+    proxy_list = get_proxy_from_file('proxy_for_olimp.txt')
+    proxy_list = (list(filter(lambda p: 'https' in p, proxy_list)))
+    proxy_list_olimp = check_proxies_olimp(proxy_list)
+    save_list(proxy_list_olimp, ol_fl, clone=2000)

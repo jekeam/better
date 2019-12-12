@@ -1,4 +1,7 @@
 # coding: utf-8
-from proxy_worker import proxy_push, ol_fl, fb_fl
+from proxy_worker import proxy_push
+from utils import bk_fork_name
 
-proxy_push(ol_fl, fb_fl)
+
+for bk_name in bk_fork_name:
+    proxy_push(bk_name)
