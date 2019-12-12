@@ -48,22 +48,6 @@ def get_olimp(resp, arr_matchs):
             arr_matchs.pop(key)
     if resp:
         for liga_info in resp:
-
-            # prnts(str(liga_info.get('sport_id')) + ' ' + liga_info.get('sn'))
-            # 1 Soccer
-            # 3 Tennis
-            # 5 Basketball
-            # 2 Ice Hockey
-            # 10 Volleyball
-            # 112 eSports
-            # 40 Table Tennis
-            # 9 Handball
-            # 41 Water Polo
-            # 11 Futsal
-            # 8 Bandy
-            # 51 Badminton
-            # 60 Beach Volleyball
-            # 126 Pool
             if if_exists(sport_list, 'olimp', liga_info.get('sport_id')):
                 for math_info in liga_info.get('it'):
                     match_id_str = str(math_info.get('id'))
@@ -82,31 +66,6 @@ def get_olimp(resp, arr_matchs):
 
 
 def get_fonbet(resp, arr_matchs):
-    # with open('resp.json', 'w') as f:
-    #     f.write(json.dumps(resp, ensure_ascii=False))
-
-    # for val in resp.get('sports'):
-    #     if val.get('kind') == 'sport':
-    #         prnts(str(val.get('id')) + ' ' + val.get('name'))
-    #         # 1 Football
-    #         # 2 Hockey
-    #         # 3 Basketball
-    #         # 4 Tennis
-    #         # 9 Volleyball
-    #         # 1434 Futsal
-    #         # 41963 Lottery
-    #         # 11624 Beach volley
-    #         # 29086 Esports
-    #         # 3088 Table tennis
-    #         # 1439 Field hockey
-    #         # 19936 Sports simulators
-    #         # 11630 Badminton
-    #         # 44943 Rocket League
-    #         # 40479 Cyberfootball
-    #         # 45827 Cybertennis
-    #         # 11627 Floorball
-    #         # 40481 Cyberbasket
-
     arr_matchs_copy = copy.deepcopy(arr_matchs)
     for key in arr_matchs_copy.keys():
         if arr_matchs.get('fonbet', '') != '':
@@ -151,16 +110,6 @@ def get_fonbet(resp, arr_matchs):
                         'start_timestamp': event.get('startTime', 0),
                         'isHot': mid.get('isHot')
                     }
-                    # if mid.get('isHot'):
-                    #     prnts('hot: ' + str(event['priority']) + ' ' + str(arr_matchs[str(event['id'])]))
-                    # else:
-                    #     prnts('no: ' + str(event['priority']) + ' ' + str(arr_matchs[str(event['id'])]))
-
-        # for mid in idMatches:
-        # for event in resp['events']:
-        # if event['id'] == mid and event['kind'] > 1 and event['name'] in ['1st half', '2nd half', 'corners']:
-    # print_j(arr_matchs)
-    # ['16453828': {'bk_name': 'fonbet', 'sport_id': 1, 'sport_name': 'Football', 'name': '', 'team1': 'Nadi', 'team2': 'Suva'}, ....]
 
 
 def start_seeker_matchs_olimp(gen_proxi_olimp, arr_matchs):
