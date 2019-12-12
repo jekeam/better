@@ -30,7 +30,7 @@ def if_exists(jsos_list: dict, key_name: str, val: str, get_key: str = ''):
                 return m.get(get_key)
     return False
 
-bk_fork_name = ['olimp', 'fonbet', 'pinnacle']
+bk_working = ['olimp', 'fonbet']#, 'pinnacle']
 
 sport_list = [
     {

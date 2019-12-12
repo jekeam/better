@@ -9,7 +9,7 @@ from difflib import SequenceMatcher
 import re
 from exceptions import *
 from server import run_server
-from utils import prnts, DEBUG, find_max_mode, opposition, serv_log, get_param, sport_list, if_exists, print_j
+from utils import prnts, DEBUG, find_max_mode, opposition, serv_log, get_param, sport_list, if_exists, print_j, bk_working
 from proxy_switcher import ProxySwitcher
 import json
 import os.path
@@ -110,33 +110,38 @@ def get_fonbet(resp, arr_matchs):
                         'start_timestamp': event.get('startTime', 0),
                         'isHot': mid.get('isHot')
                     }
-
-
-def start_seeker_matchs_olimp(gen_proxi_olimp, arr_matchs):
+        
+def start_seeker_matchs(bk_name, gen_proxi, arr_matchs):
     global TIMEOUT_MATCHS
-    proxy = gen_proxi_olimp.next()
+    proxy = gen_proxi[bk_name].next()
     fail_proxy = 0
     while True:
         try:
-            resp, time_resp = get_matches_olimp(proxy, TIMEOUT_MATCHS)
-            get_olimp(resp, arr_matchs)
+            if bk_name == 'olimp':
+                resp, time_resp = get_matches_olimp(proxy, TIMEOUT_MATCHS)
+                get_olimp(resp, arr_matchs)
+            elif bk_name == 'fonbet':
+                resp, time_resp = get_matches_fonbet(proxy, TIMEOUT_MATCHS)
+                get_fonbet(resp, arr_matchs)
+            elif bk_name == 'pinnacle':
+                prnts('TODO')
         except TimeOut as e:
-            err_str = 'Timeout: Олимп, ошибка призапросе списока матчей'
+            err_str = 'Timeout: ' + bk_name + ', ошибка призапросе списока матчей'
             prnts(err_str)
             time_resp = TIMEOUT_MATCHS
 
             if fail_proxy >= 3:
-                proxy = gen_proxi_olimp.next()
+                proxy = gen_proxi[bk_name].next()
             else:
                 fail_proxy = fail_proxy + 1
                 time.sleep(3)
 
         except Exception as e:
-            prnts('Exception: Олимп, ошибка при запросе списка матчей: ' + proxy + str(e))
+            prnts('Exception: ' + bk_name + ', ошибка при запросе списка матчей: ' + proxy + str(e))
             time_resp = TIMEOUT_MATCHS
 
             if fail_proxy >= 3:
-                proxy = gen_proxi_olimp.next()
+                proxy = gen_proxi[bk_name].next()
                 fail_proxy = 0
             else:
                 fail_proxy = fail_proxy + 1
@@ -144,34 +149,11 @@ def start_seeker_matchs_olimp(gen_proxi_olimp, arr_matchs):
 
         time_sleep = max(0, (TIMEOUT_MATCHS - time_resp))
 
-        if DEBUG:
-            pass
-            # prnts('Олимп, поиск матчей, время ответа: ' + str(time_resp) + ', запрос через ' +
-            #       str(time_sleep) + ' ' + proxy)
+        # if DEBUG:
+            # pass
+            # prnts('Олимп, поиск матчей, время ответа: ' + str(time_resp) + ', запрос через ' + str(time_sleep) + ' ' + proxy)
 
-        time.sleep(time_sleep)
-
-
-def start_seeker_matchs_fonbet(gen_proxi_fonbet, arr_matchs):
-    global TIMEOUT_MATCHS
-    proxy = gen_proxi_fonbet.next()
-    while True:
-        try:
-            resp, time_resp = get_matches_fonbet(proxy, TIMEOUT_MATCHS)
-            get_fonbet(resp, arr_matchs)
-        except Exception as e:
-            prnts('Фонбет, ошибка при запросе списка матчей: ' + str(e) + ' ' + proxy)
-            proxy = gen_proxi_fonbet.next()
-            time_resp = TIMEOUT_MATCHS
-
-        time_sleep = max(0, (TIMEOUT_MATCHS - time_resp))
-
-        if DEBUG:
-            pass
-            # prnts('Фонбет, поиск матчей, время ответа: ' + str(time_resp) + ', запрос через ' +
-            #       str(time_sleep) + ' ' + proxy)
-
-        time.sleep(time_sleep)
+        time.sleep(time_sleep)        
 
 
 def start_seeker_top_matchs_fonbet(gen_proxi_fonbet, arr_fonbet_top_matchs, pair_mathes, arr_fonbet_top_kofs):
@@ -762,6 +744,7 @@ def prnt_stat_req(stat_reqs):
 
 if __name__ == '__main__':
     prnts('DEBUG: ' + str(DEBUG))
+    prnts('BK working: ' + str(bk_working))
     # STEP 1 - Proxy Saver
     proxy_filename_olimp = 'olimp.proxy'
     proxy_filename_fonbet = 'fonbet.proxy'
@@ -774,6 +757,15 @@ if __name__ == '__main__':
     gen_proxi_olimp = createBatchGenerator(get_next_proxy(copy.deepcopy(proxies_olimp)))
     gen_proxi_fonbet = createBatchGenerator(get_next_proxy(copy.deepcopy(proxies_fonbet)))
     gen_proxi_pinnale = createBatchGenerator(get_next_proxy(copy.deepcopy(proxies_pinncale)))
+    
+    gen_proxi = {}
+    for bk_name in bk_working:
+        if bk_name == 'fonbet':
+            gen_proxi[bk_name] = gen_proxi_fonbet
+        elif bk_name == 'olimp':
+            gen_proxi[bk_name] = gen_proxi_olimp
+        elif bk_name == 'pinnacle':
+            gen_proxi[bk_name] = gen_proxi_pinnacle
 
     proxy_saver = threading.Thread(
         target=start_proxy_saver,
@@ -803,18 +795,18 @@ if __name__ == '__main__':
     forks = dict()
     forks_meta = dict()
 
+    # STEP 2
     stat_reqs = {}
 
+    # STEP 3
     # List of event "at work"
     pair_mathes = []
-
-    # get event list by olimp
-    olimp_seeker_matchs = threading.Thread(target=start_seeker_matchs_olimp, args=(gen_proxi_olimp, arr_matchs))
-    olimp_seeker_matchs.start()
-
-    # get event list by fonbet
-    fonbet_seeker_matchs = threading.Thread(target=start_seeker_matchs_fonbet, args=(gen_proxi_fonbet, arr_matchs))
-    fonbet_seeker_matchs.start()
+    # get event list by bk
+    bk_seeker_matchs = []
+    for bk_name in bk_working:
+        seeker_matchs = threading.Thread(target=start_seeker_matchs, args=(bk_name, gen_proxi, arr_matchs))
+        bk_seeker_matchs.append(seeker_matchs)
+        seeker_matchs.start()
     time.sleep(4)
 
     # while True:
@@ -847,8 +839,8 @@ if __name__ == '__main__':
     server.start()
 
     proxy_saver.join()
-    olimp_seeker_matchs.join()
-    fonbet_seeker_matchs.join()
+    for bk_seeker_match in bk_seeker_matchs:
+        bk_seeker_match.join()
     event_mapping.join()
     starter_forks.join()
     started_stat_req.join()
