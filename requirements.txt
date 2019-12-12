@@ -10,3 +10,5 @@ tornado
 asyncio
 pika
 argparse
+# Deleted:
+matplotlib
