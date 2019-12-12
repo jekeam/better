@@ -222,7 +222,7 @@ def start_seeker_top_matchs_fonbet(gen_proxi_fonbet, arr_fonbet_top_matchs, pair
         time.sleep(time_sleep)
 
 
-def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi_olimp, pair_mathes, mathes_complite, stat_req_ol):
+def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi_olimp, pair_mathes, mathes_complite, stat_reqs):
     global TIMEOUT_MATCH, TIMEOUT_MATCH_MINUS
 
     fail_proxy = 0
@@ -237,7 +237,10 @@ def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi
     while True:
         try:
             time_resp = get_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, ps.get_next_proxy(), TIMEOUT_MATCH, pair_mathes)
-            stat_req_ol.append(round(time_resp, 2))
+            if stat_reqs.get('olimp') is None:
+               stat_reqs['olimp'] = []
+            else:
+                stat_reqs['olimp'].append(round(time_resp, 2))
         except OlimpMatchСompleted as e:
             cnt = 0
             for pair_match in pair_mathes:
@@ -272,7 +275,7 @@ def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi
         time.sleep(time_sleep)
 
 
-def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_proxi_fonbet, pair_mathes, mathes_complite, stat_req_fb, arr_fonbet_top_kofs):
+def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_proxi_fonbet, pair_mathes, mathes_complite, stat_reqs, arr_fonbet_top_kofs):
     global TIMEOUT_MATCH, TIMEOUT_MATCH_MINUS
 
     proxy_size = 5
@@ -286,7 +289,10 @@ def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_p
     while True:
         try:
             time_resp = get_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, ps.get_next_proxy(), TIMEOUT_MATCH, pair_mathes, arr_fonbet_top_kofs)
-            stat_req_fb.append(round(time_resp, 2))
+            if stat_reqs.get('fonbet') is None:
+               stat_reqs['fonbet'] = []
+            else:
+                stat_reqs['fonbet'].append(round(time_resp, 2))
         except FonbetMatchСompleted as e:
             cnt = 0
             for pair_match in pair_mathes:
@@ -316,7 +322,7 @@ def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_p
 
 
 def starter_bets(bets_olimp, bets_fonbet, pair_mathes, mathes_complite, mathes_id_is_work,
-                 proxies_olimp, gen_proxi_olimp, proxies_fonbet, gen_proxi_fonbet, stat_req_olimp, stat_req_fonbet,
+                 proxies_olimp, gen_proxi_olimp, proxies_fonbet, gen_proxi_fonbet, stat_reqs,
                  arr_fonbet_top_kofs):
     while True:
         for pair_match in pair_mathes:
@@ -328,7 +334,7 @@ def starter_bets(bets_olimp, bets_fonbet, pair_mathes, mathes_complite, mathes_i
 
                 start_seeker_olimp_bets_by_id = threading.Thread(
                     target=start_seeker_bets_olimp,
-                    args=(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi_olimp, pair_mathes, mathes_complite, stat_req_olimp))
+                    args=(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi_olimp, pair_mathes, mathes_complite, stat_reqs))
                 start_seeker_olimp_bets_by_id.start()
 
             if match_id_fonbet not in mathes_id_is_work:
@@ -336,7 +342,7 @@ def starter_bets(bets_olimp, bets_fonbet, pair_mathes, mathes_complite, mathes_i
 
                 start_seeker_fonbet_bets_by_id = threading.Thread(
                     target=start_seeker_bets_fonbet,
-                    args=(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_proxi_fonbet, pair_mathes, mathes_complite, stat_req_fonbet, arr_fonbet_top_kofs))
+                    args=(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_proxi_fonbet, pair_mathes, mathes_complite, stat_reqs, arr_fonbet_top_kofs))
                 start_seeker_fonbet_bets_by_id.start()
 
         time.sleep(20)
@@ -741,21 +747,17 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
             time.sleep(1)
 
 
-def stat_req(stat_req_olimp, stat_req_fonbet):
+def prnt_stat_req(stat_reqs):
     while True:
-        if stat_req_olimp and stat_req_fonbet:
-            prnts('fb cnt:' + str(len(stat_req_fonbet)) +
-                  ' avg:' + str(round(sum(stat_req_fonbet) / len(stat_req_fonbet), 2)) +
-                  ' max:' + str(max(stat_req_fonbet)) +
-                  ' mode:' + str(round(find_max_mode(stat_req_fonbet), 2)) +
-                  ' median:' + str(round(median(stat_req_fonbet), 2)))
-
-            prnts('ol cnt:' + str(len(stat_req_olimp)) +
-                  ' avg:' + str(round(sum(stat_req_olimp) / len(stat_req_olimp), 2)) +
-                  ' max:' + str(max(stat_req_olimp)) +
-                  ' mode:' + str(round(find_max_mode(stat_req_olimp), 2)) +
-                  ' median:' + str(round(median(stat_req_olimp), 2)))
-        time.sleep(60)
+        for bk_name, cnt in stat_reqs.items():
+            prnts(
+                bk_name + 
+                ' cnt:' + str(len(cnt)) +
+                ' avg:' + str(round(sum(cnt) / len(cnt), 2)) +
+                ' max:' + str(max(cnt)) +
+                ' mode:' + str(round(find_max_mode(cnt), 2)) +
+                ' median:' + str(round(median(cnt), 2)))
+        time.sleep(30)
 
 
 if __name__ == '__main__':
@@ -801,8 +803,7 @@ if __name__ == '__main__':
     forks = dict()
     forks_meta = dict()
 
-    stat_req_olimp = []
-    stat_req_fonbet = []
+    stat_reqs = {}
 
     # List of event "at work"
     pair_mathes = []
@@ -832,14 +833,14 @@ if __name__ == '__main__':
     starter_bets = threading.Thread(
         target=starter_bets,
         args=(bets_olimp, bets_fonbet, pair_mathes, mathes_complite, mathes_id_is_work,
-              proxies_olimp, gen_proxi_olimp, proxies_fonbet, gen_proxi_fonbet, stat_req_olimp, stat_req_fonbet,
+              proxies_olimp, gen_proxi_olimp, proxies_fonbet, gen_proxi_fonbet, stat_reqs,
               arr_fonbet_top_kofs))
     starter_bets.start()
 
     starter_forks = threading.Thread(target=get_forks, args=(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbet_top_matchs))
     starter_forks.start()
 
-    started_stat_req = threading.Thread(target=stat_req, args=(stat_req_olimp, stat_req_fonbet))
+    started_stat_req = threading.Thread(target=prnt_stat_req, args=(stat_reqs,))
     started_stat_req.start()
 
     server = threading.Thread(target=run_server, args=(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_fonbet_top_matchs, bets_olimp, bets_fonbet))
