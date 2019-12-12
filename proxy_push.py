@@ -4,4 +4,7 @@ from utils import bk_fork_name
 
 
 for bk_name in bk_fork_name:
-    proxy_push(bk_name)
+    try:
+        proxy_push(bk_name)
+    except:
+        pass
