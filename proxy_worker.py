@@ -18,7 +18,8 @@ from utils import DEBUG
 urllib3.disable_warnings()
 
 TIME_OUT = 3
-CHUNKS = 500
+# CHUNKS = 500
+CHUNKS = 20
 
 UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3163.100 Safari/537.36'
 
