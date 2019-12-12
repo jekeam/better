@@ -1,6 +1,7 @@
 # coding:utf-8
 from util_olimp import *
 from util_fonbet import *
+import util_pinnacle
 from proxy_worker import get_proxy_from_file, start_proxy_saver, createBatchGenerator, get_next_proxy
 import time
 from json import loads, dumps
@@ -110,11 +111,28 @@ def get_fonbet(resp, arr_matchs):
                         'start_timestamp': event.get('startTime', 0),
                         'isHot': mid.get('isHot')
                     }
+                    
+def get_api(bk_name, proxy):
+    if bk_name == 'pinnacle':
+        head={
+            'accept': 'application/json',
+            'content-type': 'application/json',
+            'origin': 'https://www.pinnacle.com',
+            'referer': 'https://www.pinnacle.com',
+            'sec-fetch-mode': 'cors',
+            'sec-fetch-site': 'same-site',
+            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36',
+        }
+        return requests.get(url='https://www.pinnacle.com/config/app.json', proxies=proxy, timeout=10, verify=False).json()['api']['haywire']['apiKey']
         
 def start_seeker_matchs(bk_name, gen_proxi, arr_matchs):
     global TIMEOUT_MATCHS
     proxy = gen_proxi[bk_name].next()
     fail_proxy = 0
+    
+    if 'pinnacle' == bk_name:
+        api_key = get_api(bk_name, proxy)
+    
     while True:
         try:
             if bk_name == 'olimp':
@@ -124,7 +142,8 @@ def start_seeker_matchs(bk_name, gen_proxi, arr_matchs):
                 resp, time_resp = get_matches_fonbet(proxy, TIMEOUT_MATCHS)
                 get_fonbet(resp, arr_matchs)
             elif bk_name == 'pinnacle':
-                prnts('TODO')
+                resp, time_resp = util_pinnacle.get_matches(bk_name, proxy, TIMEOUT_MATCHS, api_key)
+                # get_pinnacle(resp, arr_matchs)
         except TimeOut as e:
             err_str = 'Timeout: ' + bk_name + ', ошибка призапросе списока матчей'
             prnts(err_str)
