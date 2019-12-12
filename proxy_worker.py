@@ -305,7 +305,7 @@ def start_proxy_saver(proxies_olimp, proxies_fonbet, proxies_pinncale, proxy_fil
     while True:
         prnts('Proxies by Olimp: ' + str(len(proxies_olimp)))  # + '/' + str(gen_proxi_olimp.__next__()))  # , 'hide'
         prnts('Proxies by Fonbet: ' + str(len(proxies_fonbet)))  # + '/' + str(gen_proxi_fonbet.__next__()))
-        prnts('Proxies by Fonbet: ' + str(len(proxies_pinncale)))  # + '/' + str(gen_proxi_fonbet.__next__()))
+        prnts('Proxies by pinnacle: ' + str(len(proxies_pinncale)))  # + '/' + str(gen_proxi_fonbet.__next__()))
 
         save_list(proxies_olimp, proxy_filename_olimp)
         save_list(proxies_fonbet, proxy_filename_fonbet)
