@@ -1,4 +1,7 @@
 # coding:utf-8
+class MatchСompleted(Exception):
+    pass
+
 class FonbetMatchСompleted(Exception):
     pass
 
