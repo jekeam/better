@@ -41,14 +41,14 @@ sport_list = [
         'name': 'football',
         'olimp': 1,
         'fonbet': 1,
-        'pinn': 29,
+        'pinnacle': 29,
         'min': 90,
     },
     {
         'name': 'esports',
         'olimp': 112,
         'fonbet': 29086,
-        'pinn': 12,
+        'pinnacle': 12,
     },
      {
          'name': 'volleyball',
@@ -60,21 +60,20 @@ sport_list = [
          'name': 'tennis',
          'olimp': 3,
          'fonbet': 4,
-         'pinn': 33,
+         'pinnacle': 33,
      },
      {
          'name': 'basketball',
          'olimp': 5,
          'fonbet': 3,
-         # TODO
-         'pinn': -1,
+        #  'pinnacle': -1,
          'min': 40,
      },
      {
          'name': 'hockey',
          'olimp': 2,
          'fonbet': 2,
-         'pinn': 19,
+         'pinnacle': 19,
          'min': 60,
      }
 ]

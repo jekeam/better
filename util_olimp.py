@@ -89,7 +89,7 @@ def olimp_get_xtoken(payload, olimp_secret_key):
     return {"X-TOKEN": md5(to_encode.encode()).hexdigest()}
 
 
-def get_matches_olimp(proxy, time_out):
+def get_matches_olimp(proxy, time_out, proxy_list):
     global olimp_data
     global olimp_head
 
@@ -136,17 +136,17 @@ def get_matches_olimp(proxy, time_out):
     except requests.exceptions.Timeout as e:
         err_str = 'Олимп, код ошибки Timeout: ' + str(e)
         prnts(err_str)
-        proxies = del_proxy(proxy, proxies)
+        proxy_list = del_proxy(proxy, proxy_list)
         raise TimeOut(err_str)
     except requests.exceptions.ConnectionError as e:
         err_str = 'Олимп, код ошибки ConnectionError: ' + str(e)
         prnts(err_str)
-        proxies = del_proxy(proxy, proxies)
+        proxy_list = del_proxy(proxy, proxy_list)
         raise ValueError(err_str)
     except requests.exceptions.RequestException as e:
         err_str = 'Олимп, код ошибки RequestException: ' + str(e)
         prnts(err_str)
-        proxies = del_proxy(proxy, proxies)
+        proxy_list = del_proxy(proxy, proxy_list)
         raise ValueError(err_str)
     except ValueError as e:
         if str(e) == '404':
@@ -156,12 +156,12 @@ def get_matches_olimp(proxy, time_out):
             text = resp.text
         err_str = 'Олимп, код ошибки ValueError: ' + str(e) + str(text)
         prnts(err_str)
-        proxi_list = del_proxy(proxy, proxies)
+        proxy_list = del_proxy(proxy, proxy_list)
         raise ValueError(err_str)
     except Exception as e:
         err_str = 'Олимп, код ошибки Exception: ' + str(e)
         prnts(err_str)
-        proxies = del_proxy(proxy, proxies)
+        proxy_list = del_proxy(proxy, proxy_list)
         raise ValueError(err_str)
 
 
