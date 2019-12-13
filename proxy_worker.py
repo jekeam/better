@@ -19,7 +19,7 @@ urllib3.disable_warnings()
 
 TIME_OUT = 3
 # CHUNKS = 500
-CHUNKS = 20
+CHUNKS = 200
 
 UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3163.100 Safari/537.36'
 
@@ -218,10 +218,10 @@ def save_list(proxies, filename=None, clone=1):
     cd()
 
     with open(filename, 'w') as f:
-        
-        if clone>1:
-            proxies = proxies*clone
-        
+
+        if clone > 1:
+            proxies = proxies * clone
+
         for p in proxies:
             f.write(p + '\n')
 
@@ -318,7 +318,7 @@ proxy_file_name = 'proxieslist.txt'
 
 def proxy_push(bk_name):
     bk_name = bk_name.lower()
-    copyfile('proxy_by_' + bk_name + '.txt',  bk_name + '.proxy')
+    copyfile('proxy_by_' + bk_name + '.txt', bk_name + '.proxy')
 
 
 def cd():
@@ -333,7 +333,7 @@ pn_fl = 'proxy_by_pinnacle.txt'
 if __name__ == '__main__':
     prnts('get api_key from pinnacle')
     url_pinnacle = 'www.pinnacle.com'
-    app_key = requests.get('https://' + url_pinnacle + '/config/app.json').json()['api']['haywire']['apiKey']
+    app_key = requests.get('https://pinnacle.bet/config/app.json', verify=False, proxies={'htttps': 'https://Sela89823703090:H5f7LlK@176.114.8.78:45785'}).json()['api']['haywire']['apiKey']
     prnts('pinnacle app_key: ' + app_key)
     headers_pinnacle = {
         'accept': 'application/json',
@@ -360,7 +360,7 @@ if __name__ == '__main__':
     prnts('cnt all: ' + str(len(proxy_list)))
     time.sleep(3)
 
-    #PINNACLE
+    # PINNACLE
     # proxy_list_pinnacle = get_proxy_from_file('proxy_by_pinnacle.txt')
     proxy_list_pinnacle = proxy_list
     proxy_list_https = (list(filter(lambda p: 'https' in p, proxy_list_pinnacle)))
@@ -368,11 +368,11 @@ if __name__ == '__main__':
     save_list(proxy_list_pinnacle, pn_fl)
 
     # FB
-    proxy_list_fonbet = check_proxies_fonbet(proxy_list)
-    save_list(proxy_list_fonbet, fb_fl)
+    # proxy_list_fonbet = check_proxies_fonbet(proxy_list)
+    # save_list(proxy_list_fonbet, fb_fl)
 
     # OL
-    proxy_list = get_proxy_from_file('proxy_for_olimp.txt')
-    proxy_list = (list(filter(lambda p: 'https' in p, proxy_list)))
-    proxy_list_olimp = check_proxies_olimp(proxy_list)
-    save_list(proxy_list_olimp, ol_fl, clone=2000)
+    # proxy_list = get_proxy_from_file('proxy_for_olimp.txt')
+    # proxy_list = (list(filter(lambda p: 'https' in p, proxy_list)))
+    # proxy_list_olimp = check_proxies_olimp(proxy_list)
+    # save_list(proxy_list_olimp, ol_fl, clone=2000)

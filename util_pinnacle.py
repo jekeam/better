@@ -19,11 +19,11 @@ list_matches_head = {
 }
 list_matches_url = 'https://guest.api.arcadia.pinnacle.com/0.1/sports/{}/matchups/live'
 
-api_key = requests.get(
-    url='https://www.pinnacle.com/config/app.json',
-    verify=False,
-    timeout=10,
-).json()['api']['haywire']['apiKey']
+# api_key = requests.get(
+#     url='https://www.pinnacle.com/config/app.json',
+#     verify=False,
+#     timeout=10,
+# ).json()['api']['haywire']['apiKey']
 
 def get_matches(bk_name, proxy, timeout, api_key, proxy_list):
     if bk_name == 'pinnacle':
