@@ -2,7 +2,7 @@
 from util_olimp import *
 from util_fonbet import *
 import util_pinnacle
-from proxy_worker import get_proxy_from_file, start_proxy_saver, createBatchGenerator, get_next_proxy
+from proxy_worker import get_proxy_from_file, start_proxy_saver, createBatchGenerator, get_next_proxy, del_proxy
 import time
 from json import loads, dumps
 import threading
@@ -42,11 +42,12 @@ prnts('SPORT_LIST: ' + print_j(sport_list, 'return var'))
 
 
 def get_olimp(resp, arr_matchs):
-    # Очистим дстарые данные
-    arr_matchs_copy = copy.deepcopy(arr_matchs)
-    for key in arr_matchs_copy.keys():
-        if arr_matchs.get('olimp', '') != '':
-            arr_matchs.pop(key)
+    # # Это не работает.
+    # # Очистим дстарые данные
+    # arr_matchs_copy = copy.deepcopy(arr_matchs)
+    # for key in arr_matchs_copy.keys():
+    #     if arr_matchs.get('olimp', '') != '':
+    #         arr_matchs.pop(key)
     if resp:
         for liga_info in resp:
             if if_exists(sport_list, 'olimp', liga_info.get('sport_id')):
@@ -67,11 +68,11 @@ def get_olimp(resp, arr_matchs):
 
 
 def get_fonbet(resp, arr_matchs):
-    arr_matchs_copy = copy.deepcopy(arr_matchs)
-    for key in arr_matchs_copy.keys():
-        if arr_matchs.get('fonbet', '') != '':
-            arr_matchs.pop(key)
-
+    # # Это не работает.
+    # arr_matchs_copy = copy.deepcopy(arr_matchs)
+    # for key in arr_matchs_copy.keys():
+    #     if arr_matchs.get('fonbet', '') != '':
+    #         arr_matchs.pop(key)
     # получим все события по футболу
     events = [
         {
@@ -112,7 +113,11 @@ def get_fonbet(resp, arr_matchs):
                         'isHot': mid.get('isHot')
                     }
                     
-def get_api(bk_name, proxy):
+def set_matches_pinnacle(bk_name, resp, arr_matchs, match_id_work):
+    for match_id, match_data in resp.items():
+        arr_matchs[str(match_id)] = match_data
+                    
+def get_api(bk_name, proxy, proxy_list):
     if bk_name == 'pinnacle':
         head={
             'accept': 'application/json',
@@ -123,29 +128,57 @@ def get_api(bk_name, proxy):
             'sec-fetch-site': 'same-site',
             'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36',
         }
-        return requests.get(url='https://www.pinnacle.com/config/app.json', proxies=proxy, timeout=10, verify=False).json()['api']['haywire']['apiKey']
+        res = requests.get(url='https://www.pinnacle.com/config/app.json', proxies={'https': proxy}, timeout=10, verify=False)
+        try:
+            return res.json()['api']['haywire']['apiKey']
+        except Exception as e:
+            # print(res.status_code, res.text)
+            raise ValueError(bk_name + ', возникла ошибка при запросе ключа, код ответа ' + str(res.status_code) + ': ' + str(e))
+                
         
-def start_seeker_matchs(bk_name, gen_proxi, arr_matchs):
+def start_seeker_matchs(bk_name, gen_proxi, arr_matchs, proxy_list):
     global TIMEOUT_MATCHS
     proxy = gen_proxi[bk_name].next()
     fail_proxy = 0
     
     if 'pinnacle' == bk_name:
-        api_key = get_api(bk_name, proxy)
-    
+        while True:
+            try:
+                api_key = get_api(bk_name, proxy, proxy_list)
+                prnts('get api_key from ' + bk_name + ': ' +str(api_key))
+                break
+            except Exception as e:
+                prnts(bk_name + ', код ошибки Exception: ' + str(e))
+                proxy_list = del_proxy(proxy, proxy_list)
+                proxy = gen_proxi[bk_name].next()
     while True:
+        match_id_work = []
+        print('arr_matchs: '+str(arr_matchs))
         try:
             if bk_name == 'olimp':
-                resp, time_resp = get_matches_olimp(proxy, TIMEOUT_MATCHS)
+                resp, time_resp = get_matches_olimp(proxy, TIMEOUT_MATCHS, proxy_list)
                 get_olimp(resp, arr_matchs)
             elif bk_name == 'fonbet':
-                resp, time_resp = get_matches_fonbet(proxy, TIMEOUT_MATCHS)
+                resp, time_resp = get_matches_fonbet(proxy, TIMEOUT_MATCHS, proxy_list)
                 get_fonbet(resp, arr_matchs)
             elif bk_name == 'pinnacle':
-                resp, time_resp = util_pinnacle.get_matches(bk_name, proxy, TIMEOUT_MATCHS, api_key)
-                # get_pinnacle(resp, arr_matchs)
+                resp, time_resp = util_pinnacle.get_matches(bk_name, proxy, TIMEOUT_MATCHS, api_key, proxy_list)
+                set_matches_pinnacle(bk_name, resp, arr_matchs, match_id_work)
+                
+            # TODO ?
+            # clear end matches
+            # arr_matchs_copy = copy.deepcopy(arr_matchs)
+            # for key in arr_matchs_copy.keys():
+            #     if key:
+            #         if key not in match_id_work:
+            #             try:
+            #                 arr_matchs.pop(key)
+            #                 print(bk_name + ': матч ' + str(key) + ' не найден в спике активных, матч удален из списка активных матчей.')
+            #             except Exception as e:
+            #                 print(bk_name + ': матч ' + str(key) + ' При попытке удалить матч из списка активных произошла ошибка, его там уже не оказалось.')
+                    
         except TimeOut as e:
-            err_str = 'Timeout: ' + bk_name + ', ошибка призапросе списока матчей'
+            err_str = 'Timeout: ошибка призапросе списока матчей из ' + bk_name
             prnts(err_str)
             time_resp = TIMEOUT_MATCHS
 
@@ -156,7 +189,7 @@ def start_seeker_matchs(bk_name, gen_proxi, arr_matchs):
                 time.sleep(3)
 
         except Exception as e:
-            prnts('Exception: ' + bk_name + ', ошибка при запросе списка матчей: ' + proxy + str(e))
+            prnts('Exception: ошибка при запросе списка матчей из ' + bk_name + ':' + str(e))
             time_resp = TIMEOUT_MATCHS
 
             if fail_proxy >= 3:
@@ -175,7 +208,7 @@ def start_seeker_matchs(bk_name, gen_proxi, arr_matchs):
         time.sleep(time_sleep)        
 
 
-def start_seeker_top_matchs_fonbet(gen_proxi_fonbet, arr_fonbet_top_matchs, pair_mathes, arr_fonbet_top_kofs):
+def start_seeker_top_matchs_fonbet(gen_proxi_fonbet, arr_fonbet_top_matchs, pair_mathes, arr_fonbet_top_kofs, proxy_list):
     global TIMEOUT_MATCHS
     proxy = gen_proxi_fonbet.next()
     while True:
@@ -188,7 +221,7 @@ def start_seeker_top_matchs_fonbet(gen_proxi_fonbet, arr_fonbet_top_matchs, pair
             prnts('Фонбет, ошибка при запросе списка TOP матчей: ' + str(e) + ' ' + proxy)
             raise ValueError(e)
         try:
-            resp, time_resp = get_matches_fonbet(proxy, TIMEOUT_MATCHS, top=True)
+            resp, time_resp = get_matches_fonbet(proxy, TIMEOUT_MATCHS, proxy_list, top=True)
             for event in resp.get('events'):
                 match_id = event.get('id')
                 if match_id not in arr_fonbet_top_matchs and match_id in list_pair_mathes:
@@ -256,9 +289,8 @@ def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi
             raise ValueError('start_seeker_bets_olimp:' + str(e))
         except Exception as e:
             exc_type, exc_value, exc_traceback = sys.exc_info()
-            prnts('Exception: Олимп, ошибка при запросе матча ' + str(match_id_olimp) + ': ' +
-                  str(e) + ' ' + ps.get_cur_proxy() + ' ' +
-                  str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
+            err_str = bk_name + ' error: ' + ps.get_cur_proxy() + ' ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
+            prnts(err_str)                  
             time_resp = TIMEOUT_MATCH
 
             if fail_proxy >= 3:
@@ -393,7 +425,7 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
 
     not_compare = list()
 
-    # prnts(arr_matchs)
+    # prnts('arr_matchs: ' + str(arr_matchs))
     while True:
         try:
             prnts('Events found: ' + str(len(pair_mathes)) + ' ' + str(pair_mathes))
@@ -775,7 +807,7 @@ if __name__ == '__main__':
 
     gen_proxi_olimp = createBatchGenerator(get_next_proxy(copy.deepcopy(proxies_olimp)))
     gen_proxi_fonbet = createBatchGenerator(get_next_proxy(copy.deepcopy(proxies_fonbet)))
-    gen_proxi_pinnale = createBatchGenerator(get_next_proxy(copy.deepcopy(proxies_pinncale)))
+    gen_proxi_pinnacle = createBatchGenerator(get_next_proxy(copy.deepcopy(proxies_pinncale)))
     
     gen_proxi = {}
     for bk_name in bk_working:
@@ -823,7 +855,12 @@ if __name__ == '__main__':
     # get event list by bk
     bk_seeker_matchs = []
     for bk_name in bk_working:
-        seeker_matchs = threading.Thread(target=start_seeker_matchs, args=(bk_name, gen_proxi, arr_matchs))
+        if bk_name == 'olimp':
+            seeker_matchs = threading.Thread(target=start_seeker_matchs, args=(bk_name, gen_proxi, arr_matchs, proxies_olimp))
+        elif bk_name == 'fonbet':
+            seeker_matchs = threading.Thread(target=start_seeker_matchs, args=(bk_name, gen_proxi, arr_matchs, proxies_fonbet))
+        elif bk_name == 'pinnacle':
+            seeker_matchs = threading.Thread(target=start_seeker_matchs, args=(bk_name, gen_proxi, arr_matchs, proxies_pinncale))
         bk_seeker_matchs.append(seeker_matchs)
         seeker_matchs.start()
     time.sleep(4)
@@ -833,7 +870,7 @@ if __name__ == '__main__':
     #     time.sleep(15)
 
     # List of TOP events
-    fonbet_seeker_top_matchs = threading.Thread(target=start_seeker_top_matchs_fonbet, args=(gen_proxi_fonbet, arr_fonbet_top_matchs, pair_mathes, arr_fonbet_top_kofs))
+    fonbet_seeker_top_matchs = threading.Thread(target=start_seeker_top_matchs_fonbet, args=(gen_proxi_fonbet, arr_fonbet_top_matchs, pair_mathes, arr_fonbet_top_kofs, proxies_fonbet))
     fonbet_seeker_top_matchs.start()
 
     # Event mapping

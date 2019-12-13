@@ -42,7 +42,7 @@ TT2O = [['ТБ2({})', 1854], ['ТБ2({})', 1873], ['ТБ2({})', 1880]]
 TT2U = [['ТМ2({})', 1871], ['ТМ2({})', 1874], ['ТМ2({})', 1881]]
 
 
-def get_matches_fonbet(proxy, time_out, top=None):
+def get_matches_fonbet(proxy, time_out, proxy_list, top=None):
     global url_fonbet
     global UA
 
@@ -82,17 +82,17 @@ def get_matches_fonbet(proxy, time_out, top=None):
     except requests.exceptions.ConnectionError as e:
         err_str = 'Фонбет, код ошибки 0: ' + str(e)
         prnts(err_str)
-        proxies = del_proxy(proxy, proxies)
+        proxy_list = del_proxy(proxy, proxy_list)
         raise ValueError(err_str)
     except requests.exceptions.RequestException as e:
         err_str = 'Фонбет, код ошибки 1: ' + str(e)
         prnts(err_str)
-        proxies = del_proxy(proxy, proxies)
+        proxy_list = del_proxy(proxy, proxy_list)
         raise ValueError(err_str)
     except Exception as e:
         err_str = 'Фонбет, код ошибки 2: ' + str(e)
         prnts(err_str)
-        # proxi_list = del_proxy(proxy, proxies)
+        proxy_list = del_proxy(proxy, proxy_list)
         raise ValueError(err_str)
 
 
