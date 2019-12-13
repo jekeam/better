@@ -218,10 +218,10 @@ def save_list(proxies, filename=None, clone=1):
     cd()
 
     with open(filename, 'w') as f:
-
-        if clone > 1:
-            proxies = proxies * clone
-
+        
+        if clone>1:
+            proxies = proxies*clone
+        
         for p in proxies:
             f.write(p + '\n')
 
@@ -305,7 +305,7 @@ def start_proxy_saver(proxies_olimp, proxies_fonbet, proxies_pinncale, proxy_fil
     while True:
         prnts('Proxies by Olimp: ' + str(len(proxies_olimp)))  # + '/' + str(gen_proxi_olimp.__next__()))  # , 'hide'
         prnts('Proxies by Fonbet: ' + str(len(proxies_fonbet)))  # + '/' + str(gen_proxi_fonbet.__next__()))
-        prnts('Proxies by Fonbet: ' + str(len(proxies_pinncale)))  # + '/' + str(gen_proxi_fonbet.__next__()))
+        prnts('Proxies by pinnacle: ' + str(len(proxies_pinncale)))  # + '/' + str(gen_proxi_fonbet.__next__()))
 
         save_list(proxies_olimp, proxy_filename_olimp)
         save_list(proxies_fonbet, proxy_filename_fonbet)
@@ -318,7 +318,7 @@ proxy_file_name = 'proxieslist.txt'
 
 def proxy_push(bk_name):
     bk_name = bk_name.lower()
-    copyfile('proxy_by_' + bk_name + '.txt', bk_name + '.proxy')
+    copyfile('proxy_by_' + bk_name + '.txt',  bk_name + '.proxy')
 
 
 def cd():
@@ -376,4 +376,3 @@ if __name__ == '__main__':
     save_list(proxy_list_pinnacle, pn_fl)
     time.sleep(3)
 
-    

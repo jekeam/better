@@ -116,20 +116,13 @@ def get_fonbet(resp, arr_matchs):
 
 def set_matches_pinnacle(bk_name, resp, arr_matchs, match_id_work):
     for match_id, match_data in resp.items():
-        # match_data 
-
-        # 'bk_name'
-        # 'sport_id',
-        # 'sport_name',
-        # 'name',
-        # 'team1',
-        # 'team2',
-        # 'start_timestamp',
-
+        for key, items in copy.deepcopy(match_data).items():
+            if key not in ('bk_name', 'sport_id', 'sport_name', 'name', 'team1', 'team2', 'start_timestamp'):
+                match_data.pop(key)
         arr_matchs[str(match_id)] = match_data
 
 
-def get_api(bk_name, proxy, proxy_list):
+def get_api(bk_name, proxy):
     if bk_name == 'pinnacle':
         head = {
             'accept': 'application/json',
@@ -156,7 +149,7 @@ def start_seeker_matchs(bk_name, gen_proxi, arr_matchs, proxy_list):
     if 'pinnacle' == bk_name:
         while True:
             try:
-                api_key = get_api(bk_name, proxy, proxy_list)
+                api_key = get_api(bk_name, proxy)
                 prnts('get api_key from ' + bk_name + ': ' + str(api_key))
                 break
             except Exception as e:
