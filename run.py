@@ -115,6 +115,16 @@ def get_fonbet(resp, arr_matchs):
                     
 def set_matches_pinnacle(bk_name, resp, arr_matchs, match_id_work):
     for match_id, match_data in resp.items():
+        # match_data 
+        
+        # 'bk_name'
+        # 'sport_id',
+        # 'sport_name',
+        # 'name',
+        # 'team1',
+        # 'team2',
+        # 'start_timestamp',
+        
         arr_matchs[str(match_id)] = match_data
                     
 def get_api(bk_name, proxy, proxy_list):
