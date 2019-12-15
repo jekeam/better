@@ -217,10 +217,10 @@ def save_list(proxies, filename=None, clone=1):
     cd()
 
     with open(filename, 'w') as f:
-        
-        if clone>1:
-            proxies = proxies*clone
-        
+
+        if clone > 1:
+            proxies = proxies * clone
+
         for p in proxies:
             f.write(p + '\n')
 
@@ -315,7 +315,7 @@ proxy_file_name = 'proxieslist.txt'
 
 def proxy_push(bk_name):
     bk_name = bk_name.lower()
-    copyfile('proxy_by_' + bk_name + '.txt',  bk_name + '.proxy')
+    copyfile('proxy_by_' + bk_name + '.txt', bk_name + '.proxy')
 
 
 def cd():
@@ -357,7 +357,7 @@ if __name__ == '__main__':
     prnts('cnt all: ' + str(len(proxy_list)))
     time.sleep(3)
 
-    #PINNACLE
+    # PINNACLE
     # proxy_list_pinnacle = get_proxy_from_file('proxy_by_pinnacle.txt')
     proxy_list_pinnacle = proxy_list
     proxy_list_https = (list(filter(lambda p: 'https' in p, proxy_list_pinnacle)))
