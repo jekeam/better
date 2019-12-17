@@ -73,7 +73,13 @@ abbreviations = {
     "Т1бол": "ТБ1({})",
     "Т1мен": "ТМ1({})",
     "Т2бол": "ТБ2({})",
-    "Т2мен": "ТМ2({})"
+    "Т2мен": "ТМ2({})",
+
+    "П1сфорой": "Ф1({})",
+    "П2сфорой": "Ф2({})",
+
+    "П1в1-мт.сфорой": "1Ф1({})",
+    "П2в1-мт.сфорой": "1Ф2({})",
 }
 
 
@@ -291,7 +297,6 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
 
     try:
         resp, time_resp = get_match_olimp(match_id, proxies_olimp, proxy, time_out, pair_mathes)
-
         time_start_proc = time.time()
 
         math_block = True if not resp or str(resp.get('ms', '1')) != '2' or resp.get('error', {'err_code': 0}).get('err_code') == 404 else False
@@ -356,8 +361,10 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
                 }
 
             for c in resp.get('it', []):
-                # if c.get('n', '').replace(' ', '').lower() in ['основные', 'голы', 'угловые', 'инд.тотал', 'доп.тотал', 'исходыпотаймам']:
-                if c.get('n', '').replace(' ', '').lower() in ['основные', 'голы', 'инд.тотал', 'доп.тотал', 'исходыпотаймам']:
+                # del: угловые
+                group_kof = c.get('n', '').replace(' ', '').lower()
+                group_kof = group_kof.replace('азиатские', '')
+                if group_kof in ['основные', 'голы', 'инд.тотал', 'доп.тотал', 'исходыпотаймам', 'победасучетомфоры', 'форы', 'тоталы', 'инд.тоталы']:
                     for d in c.get('i', []):
                         if 'обе забьют: '.lower() \
                                 in d.get('n', '').lower() \
@@ -369,6 +376,8 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
                                 in d.get('n', '').lower() \
                                 or d.get('n', '').lower().endswith(' бол') \
                                 or d.get('n', '').lower().endswith(' мен') \
+                                or 'с форой'.lower() \
+                                in d.get('n', '').lower() \
                                 or 'первая не проиграет'.lower() \
                                 in d.get('n', '').lower() \
                                 or 'вторая не проиграет'.lower() \
@@ -376,8 +385,13 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
                                 or 'ничьей не будет' \
                                 in d.get('n', '').lower() \
                                 or 'ничья'.lower() \
-                                in d.get('n', '').lower():
-                            key_r = d.get('n', '').replace(resp.get('c1', ''), 'Т1').replace(resp.get('c2', ''), 'Т2')
+                                in d.get('n', '').lower() \
+                                or 'форы' in group_kof:
+                            if 'форы' in group_kof:
+                                key_r = d.get('n', '').replace(resp.get('c1', ''), 'П1сфорой').replace(resp.get('c2', ''), 'П2сфорой')
+                                key_r = key_r.replace(' ', '')
+                            else:
+                                key_r = d.get('n', '').replace(resp.get('c1', ''), 'Т1').replace(resp.get('c2', ''), 'Т2')
                             coef = str([
                                            abbreviations[c.replace(' ', '')]
                                            if c.replace(' ', '') in abbreviations.keys()
