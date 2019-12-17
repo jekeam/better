@@ -30,6 +30,7 @@ def if_exists(jsos_list: dict, key_name: str, val: str, get_key: str = ''):
                 return m.get(get_key)
     return False
 
+
 bk_fork_name = ['olimp', 'fonbet', 'pinnacle']
 
 sport_list = [
@@ -46,33 +47,33 @@ sport_list = [
         'fonbet': 29086,
         'pinn': 12,
     },
-     {
-         'name': 'volleyball',
-         'olimp': 10,
-         'fonbet': 9,
-         'pinn': 34,
-     },
-     {
-         'name': 'tennis',
-         'olimp': 3,
-         'fonbet': 4,
-         'pinn': 33,
-     },
-     {
-         'name': 'basketball',
-         'olimp': 5,
-         'fonbet': 3,
-         # TODO
-         'pinn': -1,
-         'min': 40,
-     },
-     {
-         'name': 'hockey',
-         'olimp': 2,
-         'fonbet': 2,
-         'pinn': 19,
-         'min': 60,
-     }
+    {
+        'name': 'volleyball',
+        'olimp': 10,
+        'fonbet': 9,
+        'pinn': 34,
+    },
+    {
+        'name': 'tennis',
+        'olimp': 3,
+        'fonbet': 4,
+        'pinn': 33,
+    },
+    {
+        'name': 'basketball',
+        'olimp': 5,
+        'fonbet': 3,
+        # TODO
+        'pinn': -1,
+        'min': 40,
+    },
+    {
+        'name': 'hockey',
+        'olimp': 2,
+        'fonbet': 2,
+        'pinn': 19,
+        'min': 60,
+    }
 ]
 
 opposition = {
