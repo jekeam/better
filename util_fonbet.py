@@ -5,6 +5,8 @@ import time
 from exceptions import FonbetMatchСompleted
 from utils import prnts, get_vector, print_j, if_exists, sport_list
 import re
+import sys
+import traceback
 
 url_fonbet = 'https://line-01.ccf4ab51771cacd46d.com'
 url_fonbet_matchs = url_fonbet + '/live/currentLine/en/?2lzf1earo8wjksbh22s'
@@ -400,9 +402,13 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
                             bets_fonbet[key_id_in]['kofs'][i]['value'] = 0
                             # prnts('Фонбет, данные по котировке из БК не получены более 2.8 сек., знач. выставил в 0: ' + key_id_in + ' ' + str(i), 'hide')
                         except Exception as e:
-                            prnts('Фонбет, ошибка 1 при удалении старой котирофки: ' + str(e))
+                            exc_type, exc_value, exc_traceback = sys.exc_info()
+                            err_str = 'error: ' + str(e) + ' (' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))) + ')'
+                            prnts('Фонбет, ошибка 1 при удалении старой котирофки: ' + str(err_str))
         except Exception as e:
-            prnts('Фонбет, ошибка 2 при удалении старой котирофки: ' + str(e))
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            err_str = 'error: ' + str(e) + ' (' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))) + ')'
+            prnts('Фонбет, ошибка 2 при удалении старой котирофки: ' + str(err_str))
         return time_resp + (time.time() - time_start_proc)
     except FonbetMatchСompleted as e:
         if bets_fonbet.get(key_id):
