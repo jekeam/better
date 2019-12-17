@@ -440,7 +440,7 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
             else:
                 pass
                 # prnts('Олимп, не смог обновить время time_req, т.к. матч ' + str(key_id) + ' заблокирован и это первое добавление?')
-                
+
             try:
                 for i, j in bets_olimp.get(key_id, {}).get('kofs', {}).copy().items():
                     try:
@@ -486,7 +486,7 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
         #         bets_olimp[key_id].update({'avg_change_total': avg_change_total})
 
         try:
-            for key_id_in, j in bets_olimp.copy().items():
+            for key_id_in, j in list(bets_olimp).items():
                 for i, j in j.get('kofs', {}).items():
                     if round(float(time.time() - float(j.get('time_req', 0)))) > 2.8 and j.get('value', 0) > 0:
                         try:
@@ -495,7 +495,6 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
                             # prnts('Олимп, данные по котировке из БК не получены более 2.8 сек., знач. выставил в 0: ' + key_id_in + ' ' + str(i), 'hide')
                         except Exception as e:
                             prnts('Олимп, ошибка 1 при удалении старой котирофки: ' + str(e))
-
         except Exception as e:
             prnts('Олимп, ошибка 2 при удалении старой котирофки: ' + str(e))
         return time_resp + (time.time() - time_start_proc)
