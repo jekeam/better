@@ -6,6 +6,9 @@ import cfscrape
 import requests
 import datetime
 import statistics
+import re
+import sys
+import traceback
 
 
 def print_j(j, ret=False):
@@ -122,7 +125,14 @@ opposition = {
     'ОЗД': 'ОЗН',
     'ОЗН': 'ОЗД',
     'ННД': 'ННН',
-    'ННН': 'ННД'
+    'ННН': 'ННД',
+
+    'Ф1': 'Ф2',
+    'Ф2': 'Ф1',
+    '1Ф1': '1Ф2',
+    '1Ф2': '1Ф1',
+    '2Ф1': '2Ф2',
+    '2Ф2': '2Ф1',
 }
 
 
@@ -140,7 +150,7 @@ else:
 
 
 def get_vector(bet_type, sc1=None, sc2=None):
-    def raise_err(VECT, sc1, sc2):
+    def check_score(VECT, sc1, sc2):
         if sc1 is None or sc2 is None and VECT != '':
             err_str = 'Error: sc1 or sc2 not defined! bet_type={}, sc1={}, sc2={}'.format(bet_type, sc1, sc2)
             prnts(err_str)
@@ -164,46 +174,60 @@ def get_vector(bet_type, sc1=None, sc2=None):
     # но те типы что по длинне написания больше,  должны быть выше
 
     if 'П1Н' in bet_type:
-        raise_err(VECT, sc1, sc2)
+        check_score(VECT, sc1, sc2)
         if sc1 >= sc2:
             return D
         else:
             return U
 
     if 'П2Н' in bet_type:
-        raise_err(VECT, sc1, sc2)
+        check_score(VECT, sc1, sc2)
         if sc1 <= sc2:
             return D
         else:
             return U
 
     if '12' in bet_type:
-        raise_err(VECT, sc1, sc2)
+        check_score(VECT, sc1, sc2)
         if sc1 != sc2:
             return D
         else:
             return U
 
     if 'П1' in bet_type:
-        raise_err(VECT, sc1, sc2)
+        check_score(VECT, sc1, sc2)
         if sc1 > sc2:
             return D
         else:
             return U
 
     if 'П2' in bet_type:
-        raise_err(VECT, sc1, sc2)
+        check_score(VECT, sc1, sc2)
         if sc1 < sc2:
             return D
         else:
             return U
 
     if 'Н' in bet_type:
-        raise_err(VECT, sc1, sc2)
+        check_score(VECT, sc1, sc2)
         if sc1 == sc2:
             return D
         else:
             return U
+
+    if 'Ф' in bet_type:
+        check_score(VECT, sc1, sc2)
+        try:
+            fora_val = float(re.findall('\((.*)\)', bet_type)[0])
+            if sc1 + fora_val > sc2:
+                return D
+            else:
+                return U
+        except Exception as e:
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            err_str = 'get_vector error: ' + str(e) + ' (' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))) + ')'
+            prnts(err_str)
+
     err_str = 'Error: vector not defined! bet_type={}, sc1={}, sc2={}'.format(bet_type, sc1, sc2)
     prnts(err_str)
     # raise ValueError(err_str)

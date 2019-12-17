@@ -279,7 +279,7 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
 
                                 factorId = str(kof.get('factorId'))
                                 pValue = kof.get('pValue', '')
-                                p = kof.get('p', '')
+                                p = kof.get('p', '').replace('+', '')
 
                                 kof_is_block = kof.get('blocked', False)
                                 if kof_is_block:
@@ -288,7 +288,7 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
                                     value = kof.get('value', 0)
 
                                 for vct in VICTS:
-                                    coef = half + str(vct[0])  # + num_team
+                                    coef = half + str(vct[0])
                                     if str(vct[1]) == factorId:
 
                                         kof_order = bets_fonbet[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('order', [])
