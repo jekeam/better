@@ -591,10 +591,14 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
                     if '(' in kof_type:
                         tot_abrr = re.sub('\((.*)\)', '', kof_type)
                         tot_val = re.findall('\((.*)\)', kof_type)[0]
-                        curr_opposition.update({
-                            tot_abrr + '({})'.format(tot_val):
-                                opposition[tot_abrr] + '({})'.format(tot_val)
-                        })
+                        if 'Ф' in kof_type:
+                            tot_val_float = float(tot_val)
+                            if tot_val_float > 0:
+                                curr_opposition.update({tot_abrr + '({})'.format(tot_val_float): opposition[tot_abrr] + '(-{})'.format(tot_val_float)})
+                            else:
+                                curr_opposition.update({tot_abrr + '({})'.format(abs(tot_val_float)): opposition[tot_abrr] + '({})'.format(tot_val_float)})
+                        else:
+                            curr_opposition.update({tot_abrr + '({})'.format(tot_val): opposition[tot_abrr] + '({})'.format(tot_val)})
 
                 if event_type in ('volleyball', 'tennis', 'basketball', 'esports'):
                     curr_opposition.update({'П1': 'П2'})
