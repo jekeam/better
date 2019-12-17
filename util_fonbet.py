@@ -393,7 +393,7 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
         #         bets_fonbet[key_id].update({'avg_change_total': avg_change_total})
 
         try:
-            for key_id_in, j in list(bets_fonbet).items():
+            for key_id_in, j in dict(bets_fonbet).items():
                 for i, j in j.get('kofs', {}).items():
                     if round(float(time.time() - float(j.get('time_req', 0)))) > 2.8 and j.get('value', 0) > 0:
                         try:
