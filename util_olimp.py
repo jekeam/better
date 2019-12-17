@@ -486,7 +486,7 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
         #         bets_olimp[key_id].update({'avg_change_total': avg_change_total})
 
         try:
-            for key_id_in, j in list(bets_olimp).items():
+            for key_id_in, j in dict(bets_olimp).items():
                 for i, j in j.get('kofs', {}).items():
                     if round(float(time.time() - float(j.get('time_req', 0)))) > 2.8 and j.get('value', 0) > 0:
                         try:
