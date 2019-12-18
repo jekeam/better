@@ -219,10 +219,16 @@ def get_vector(bet_type, sc1=None, sc2=None):
         check_score(VECT, sc1, sc2)
         try:
             fora_val = float(re.findall('\((.*)\)', bet_type)[0])
-            if sc1 + fora_val > sc2:
-                return D
-            else:
-                return U
+            if 'Ф1' in bet_type:
+                if sc1 + fora_val > sc2:
+                    return D
+                else:
+                    return U
+            elif 'Ф2' in bet_type:
+                if sc1 > sc2 + fora_val:
+                    return D
+                else:
+                    return U
         except Exception as e:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             err_str = 'get_vector error: ' + str(e) + ' (' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))) + ')'
