@@ -356,20 +356,21 @@ if __name__ == '__main__':
     prnts('cnt http: ' + str(len(list(filter(lambda p: 'http:' in p, proxy_list)))))
     prnts('cnt all: ' + str(len(proxy_list)))
     time.sleep(3)
-
+    # OL
+    proxy_list_ol = get_proxy_from_file('proxy_for_olimp.txt')
+    proxy_list_ol = (list(filter(lambda p: 'https' in p, proxy_list_ol)))
+    proxy_list_olimp = check_proxies_olimp(proxy_list_ol)
+    save_list(proxy_list_olimp, ol_fl, clone=2000)
+    time.sleep(3)
     # PINNACLE
     # proxy_list_pinnacle = get_proxy_from_file('proxy_by_pinnacle.txt')
     proxy_list_pinnacle = proxy_list
     proxy_list_https = (list(filter(lambda p: 'https' in p, proxy_list_pinnacle)))
     proxy_list_pinnacle = check_proxies(proxy_list_https, url_pinnacle, headers_pinnacle)
     save_list(proxy_list_pinnacle, pn_fl)
-
+    time.sleep(3)
     # FB
     proxy_list_fonbet = check_proxies_fonbet(proxy_list)
     save_list(proxy_list_fonbet, fb_fl)
 
-    # OL
-    proxy_list = get_proxy_from_file('proxy_for_olimp.txt')
-    proxy_list = (list(filter(lambda p: 'https' in p, proxy_list)))
-    proxy_list_olimp = check_proxies_olimp(proxy_list)
-    save_list(proxy_list_olimp, ol_fl, clone=2000)
+    
