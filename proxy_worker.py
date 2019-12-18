@@ -218,10 +218,10 @@ def save_list(proxies, filename=None, clone=1):
     cd()
 
     with open(filename, 'w') as f:
-        
-        if clone>1:
-            proxies = proxies*clone
-        
+
+        if clone > 1:
+            proxies = proxies * clone
+
         for p in proxies:
             f.write(p + '\n')
 
@@ -318,7 +318,7 @@ proxy_file_name = 'proxieslist.txt'
 
 def proxy_push(bk_name):
     bk_name = bk_name.lower()
-    copyfile('proxy_by_' + bk_name + '.txt',  bk_name + '.proxy')
+    copyfile('proxy_by_' + bk_name + '.txt', bk_name + '.proxy')
 
 
 def cd():
