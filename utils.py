@@ -34,11 +34,7 @@ def if_exists(jsos_list: dict, key_name: str, val: str, get_key: str = ''):
     return False
 
 
-<<<<<<< HEAD
 bk_working = ['olimp', 'fonbet', 'pinnacle']
-=======
-bk_fork_name = ['olimp', 'fonbet', 'pinnacle']
->>>>>>> origin
 
 sport_list = [
     {
@@ -58,7 +54,7 @@ sport_list = [
         'name': 'volleyball',
         'olimp': 10,
         'fonbet': 9,
-        'pinn': 34,
+        'pinnacle': 34,
     },
     {
         'name': 'tennis',
@@ -74,37 +70,10 @@ sport_list = [
         'min': 40,
     },
     {
-<<<<<<< HEAD
         'name': 'hockey',
         'olimp': 2,
         'fonbet': 2,
         'pinnacle': 19,
-=======
-        'name': 'volleyball',
-        'olimp': 10,
-        'fonbet': 9,
-        'pinn': 34,
-    },
-    {
-        'name': 'tennis',
-        'olimp': 3,
-        'fonbet': 4,
-        'pinn': 33,
-    },
-    {
-        'name': 'basketball',
-        'olimp': 5,
-        'fonbet': 3,
-        # TODO
-        'pinn': -1,
-        'min': 40,
-    },
-    {
-        'name': 'hockey',
-        'olimp': 2,
-        'fonbet': 2,
-        'pinn': 19,
->>>>>>> origin
         'min': 60,
     }
 ]
