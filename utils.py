@@ -54,7 +54,7 @@ sport_list = [
         'name': 'volleyball',
         'olimp': 10,
         'fonbet': 9,
-        'pinn': 34,
+        'pinnacle': 34,
     },
     {
         'name': 'tennis',
