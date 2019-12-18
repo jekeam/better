@@ -552,8 +552,8 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
         except Exception as e:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             prnts('Error start_event_mapping: ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
-            prnts('bk_rate_sorted: ' + str(bk_rate_sorted))
-            prnts('pair: ' + str(pair))
+            # prnts('bk_rate_sorted: ' + str(bk_rate_sorted))
+            # prnts('pair: ' + str(pair))
         finally:
             time.sleep(15)
 
