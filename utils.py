@@ -6,6 +6,9 @@ import cfscrape
 import requests
 import datetime
 import statistics
+import re
+import sys
+import traceback
 
 
 def print_j(j, ret=False):
@@ -31,7 +34,11 @@ def if_exists(jsos_list: dict, key_name: str, val: str, get_key: str = ''):
     return False
 
 
+<<<<<<< HEAD
 bk_working = ['olimp', 'fonbet', 'pinnacle']
+=======
+bk_fork_name = ['olimp', 'fonbet', 'pinnacle']
+>>>>>>> origin
 
 sport_list = [
     {
@@ -67,10 +74,37 @@ sport_list = [
         'min': 40,
     },
     {
+<<<<<<< HEAD
         'name': 'hockey',
         'olimp': 2,
         'fonbet': 2,
         'pinnacle': 19,
+=======
+        'name': 'volleyball',
+        'olimp': 10,
+        'fonbet': 9,
+        'pinn': 34,
+    },
+    {
+        'name': 'tennis',
+        'olimp': 3,
+        'fonbet': 4,
+        'pinn': 33,
+    },
+    {
+        'name': 'basketball',
+        'olimp': 5,
+        'fonbet': 3,
+        # TODO
+        'pinn': -1,
+        'min': 40,
+    },
+    {
+        'name': 'hockey',
+        'olimp': 2,
+        'fonbet': 2,
+        'pinn': 19,
+>>>>>>> origin
         'min': 60,
     }
 ]
@@ -121,7 +155,14 @@ opposition = {
     'ОЗД': 'ОЗН',
     'ОЗН': 'ОЗД',
     'ННД': 'ННН',
-    'ННН': 'ННД'
+    'ННН': 'ННД',
+
+    'Ф1': 'Ф2',
+    'Ф2': 'Ф1',
+    '1Ф1': '1Ф2',
+    '1Ф2': '1Ф1',
+    '2Ф1': '2Ф2',
+    '2Ф2': '2Ф1',
 }
 
 
@@ -139,9 +180,11 @@ else:
 
 
 def get_vector(bet_type, sc1=None, sc2=None):
-    def raise_err(VECT, sc1, sc2):
+    def check_score(VECT, sc1, sc2):
         if sc1 is None or sc2 is None and VECT != '':
-            raise ValueError('ERROR: sc1 or sc2 not defined!')
+            err_str = 'Error: sc1 or sc2 not defined! bet_type={}, sc1={}, sc2={}'.format(bet_type, sc1, sc2)
+            prnts(err_str)
+            # raise ValueError(err_str)
 
     D = 'DOWN'
     U = 'UP'
@@ -161,48 +204,69 @@ def get_vector(bet_type, sc1=None, sc2=None):
     # но те типы что по длинне написания больше,  должны быть выше
 
     if 'П1Н' in bet_type:
-        raise_err(VECT, sc1, sc2)
+        check_score(VECT, sc1, sc2)
         if sc1 >= sc2:
             return D
         else:
             return U
 
     if 'П2Н' in bet_type:
-        raise_err(VECT, sc1, sc2)
+        check_score(VECT, sc1, sc2)
         if sc1 <= sc2:
             return D
         else:
             return U
 
     if '12' in bet_type:
-        raise_err(VECT, sc1, sc2)
+        check_score(VECT, sc1, sc2)
         if sc1 != sc2:
             return D
         else:
             return U
 
     if 'П1' in bet_type:
-        raise_err(VECT, sc1, sc2)
+        check_score(VECT, sc1, sc2)
         if sc1 > sc2:
             return D
         else:
             return U
 
     if 'П2' in bet_type:
-        raise_err(VECT, sc1, sc2)
+        check_score(VECT, sc1, sc2)
         if sc1 < sc2:
             return D
         else:
             return U
 
     if 'Н' in bet_type:
-        raise_err(VECT, sc1, sc2)
+        check_score(VECT, sc1, sc2)
         if sc1 == sc2:
             return D
         else:
             return U
 
-    raise ValueError('Error: vector not defined!')
+    if 'Ф' in bet_type:
+        check_score(VECT, sc1, sc2)
+        try:
+            fora_val = float(re.findall('\((.*)\)', bet_type)[0])
+            if 'Ф1' in bet_type:
+                if sc1 + fora_val > sc2:
+                    return D
+                else:
+                    return U
+            elif 'Ф2' in bet_type:
+                if sc2 + fora_val > sc1:
+                    return D
+                else:
+                    return U
+        except Exception as e:
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            err_str = 'get_vector error: ' + str(e) + ' (' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))) + ')'
+            prnts(err_str)
+
+    err_str = 'Error: vector not defined! bet_type={}, sc1={}, sc2={}'.format(bet_type, sc1, sc2)
+    prnts(err_str)
+    # raise ValueError(err_str)
 
 
 def find_max_mode(list1):

@@ -19,7 +19,7 @@ urllib3.disable_warnings()
 
 TIME_OUT = 3
 # CHUNKS = 500
-CHUNKS = 200
+CHUNKS = 20
 
 UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3163.100 Safari/537.36'
 
@@ -331,6 +331,28 @@ fb_fl = 'proxy_by_fonbet.txt'
 pn_fl = 'proxy_by_pinnacle.txt'
 
 if __name__ == '__main__':
+    prnts('start proxy worker')
+
+    proxy_list = []
+    proxy_list_olimp = []
+    proxy_list_fonbet = []
+    proxy_list = join_proxies_to_file(10000)
+
+    prnts('cnt https: ' + str(len(list(filter(lambda p: 'https' in p, proxy_list)))))
+    prnts('cnt http: ' + str(len(list(filter(lambda p: 'http:' in p, proxy_list)))))
+    prnts('cnt all: ' + str(len(proxy_list)))
+    time.sleep(3)
+    # OL
+    proxy_list_ol = get_proxy_from_file('proxy_for_olimp.txt')
+    proxy_list_ol = (list(filter(lambda p: 'https' in p, proxy_list_ol)))
+    proxy_list_olimp = check_proxies_olimp(proxy_list_ol)
+    save_list(proxy_list_olimp, ol_fl, clone=2000)
+    time.sleep(3)
+    # FB
+    proxy_list_fonbet = check_proxies_fonbet(proxy_list)
+    save_list(proxy_list_fonbet, fb_fl)
+    time.sleep(3)
+    # PINNACLE
     prnts('get api_key from pinnacle')
     url_pinnacle = 'www.pinnacle.com'
     app_key = requests.get('https://pinnacle.bet/config/app.json', verify=False, proxies={'htttps': 'https://Sela89823703090:H5f7LlK@176.114.8.78:45785'}).json()['api']['haywire']['apiKey']
@@ -347,6 +369,7 @@ if __name__ == '__main__':
     }
     # url_pinnacle = 'guest.api.arcadia.pinnacle.com/0.1/sports/29/matchups/live'
     url_pinnacle = 'guest.api.arcadia.pinnacle.com/0.1/sports/29/markets/live/straight?primaryOnly=false'
+<<<<<<< HEAD
 
     prnts('start proxy worker')
 
@@ -361,12 +384,16 @@ if __name__ == '__main__':
     time.sleep(3)
 
     # PINNACLE
+=======
+>>>>>>> origin
     # proxy_list_pinnacle = get_proxy_from_file('proxy_by_pinnacle.txt')
     proxy_list_pinnacle = proxy_list
     proxy_list_https = (list(filter(lambda p: 'https' in p, proxy_list_pinnacle)))
     proxy_list_pinnacle = check_proxies(proxy_list_https, url_pinnacle, headers_pinnacle)
     save_list(proxy_list_pinnacle, pn_fl)
+    time.sleep(3)
 
+<<<<<<< HEAD
     # FB
     # proxy_list_fonbet = check_proxies_fonbet(proxy_list)
     # save_list(proxy_list_fonbet, fb_fl)
@@ -376,3 +403,6 @@ if __name__ == '__main__':
     # proxy_list = (list(filter(lambda p: 'https' in p, proxy_list)))
     # proxy_list_olimp = check_proxies_olimp(proxy_list)
     # save_list(proxy_list_olimp, ol_fl, clone=2000)
+=======
+    
+>>>>>>> origin

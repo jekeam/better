@@ -5,6 +5,8 @@ import time
 from exceptions import FonbetMatchСompleted
 from utils import prnts, get_vector, print_j, if_exists, sport_list
 import re
+import sys
+import traceback
 
 url_fonbet = 'https://line-01.ccf4ab51771cacd46d.com'
 url_fonbet_matchs = url_fonbet + '/live/currentLine/en/?2lzf1earo8wjksbh22s'
@@ -40,6 +42,11 @@ TT1U = [['ТМ1({})', 1810], ['ТМ1({})', 1813], ['ТМ1({})', 1816]]
 # TEAM TOTALS-2
 TT2O = [['ТБ2({})', 1854], ['ТБ2({})', 1873], ['ТБ2({})', 1880]]
 TT2U = [['ТМ2({})', 1871], ['ТМ2({})', 1874], ['ТМ2({})', 1881]]
+# FORA
+FORA = [['Ф1({})', 927], ['Ф2({})', 928],
+        ['Ф1({})', 910], ['Ф1({})', 989], ['Ф1({})', 1569],
+        ['Ф2({})', 991], ['Ф2({})', 1572], ['Ф2({})', 1572]
+        ]
 
 
 def get_matches_fonbet(proxy, time_out, proxy_list, top=None):
@@ -126,8 +133,6 @@ def get_match_fonbet(match_id, proxi_list, proxy, time_out, pair_mathes):
         try:
             res = resp.json()
             # print_j(res)
-
-
         except Exception as e:
             err_str = 'Fonbet error by ' + str(match_id) + ': ' + str(e)
             prnts(err_str)
@@ -166,7 +171,7 @@ def get_match_fonbet(match_id, proxi_list, proxy, time_out, pair_mathes):
 
 
 def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair_mathes, arr_fonbet_top_kofs):
-    global VICTS, TTO, TTU, TT1O, TT1U, TT2O, TT2U, BASE_LINE
+    global VICTS, TTO, TTU, TT1O, TT1U, TT2O, TT2U, BASE_LINE, FORA
     global sport_list
 
     match_exists = False
@@ -184,7 +189,7 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
         time_start_proc = time.time()
 
         TT = []
-        for bet in [TTO, TTU, TT1O, TT1U, TT2O, TT2U]:
+        for bet in [TTO, TTU, TT1O, TT1U, TT2O, TT2U, FORA]:
             TT.extend(bet)
 
         for event in resp.get("events"):
@@ -224,8 +229,7 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
                 name = event.get('name')
                 priority = event.get('priority')
                 score_1st = event.get('scoreComment', '').replace('-', ':')
-
-                if event.get('parentId') == 0 or event.get('name') in ('1st half', '2nd half'):
+                if event.get('parentId') == 0 or 'st half' in name or 'nd half' in name:
                     if event.get('parentId') == 0:
                         try:
                             bets_fonbet[key_id].update({
@@ -241,7 +245,6 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
                                 'time_req': round(time.time())
                             })
                         except Exception as e:
-                            # print(e)
                             bets_fonbet[key_id] = {
                                 'sport_id': skId,
                                 'sport_name': skName,
@@ -259,27 +262,23 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
                             }
 
                     half = ''
-                    if event.get('name') == '1st half':
-                        half = '1'
-                    elif event.get('name') == '2nd half':
-                        half = '2'
+                    if 'st half' in name or 'nd half' in name:
+                        half = name.replace('st half', '').repoalce('nd half', '')
 
                     for cat in event.get('subcategories', {}):
-
                         cat_name = cat.get('name')
-
                         if cat_name in (
                                 '1X2 (90 min)',
                                 '1X2',
                                 'Goal - no goal',
-                                'Total', 'Totals', 'Team Totals-1', 'Team Totals-2'
+                                'Total', 'Totals', 'Team Totals-1', 'Team Totals-2',
+                                'Hcap',
                         ):
-
                             for kof in cat.get('quotes'):
 
                                 factorId = str(kof.get('factorId'))
                                 pValue = kof.get('pValue', '')
-                                p = kof.get('p', '')
+                                p = kof.get('p', '').replace('+', '')
 
                                 kof_is_block = kof.get('blocked', False)
                                 if kof_is_block:
@@ -288,7 +287,7 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
                                     value = kof.get('value', 0)
 
                                 for vct in VICTS:
-                                    coef = half + str(vct[0])  # + num_team
+                                    coef = half + str(vct[0])
                                     if str(vct[1]) == factorId:
 
                                         kof_order = bets_fonbet[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('order', [])
@@ -393,16 +392,20 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
         #         bets_fonbet[key_id].update({'avg_change_total': avg_change_total})
 
         try:
-            for key_id_in, j in bets_fonbet.copy().items():
+            for key_id_in, j in dict(bets_fonbet).items():
                 for i, j in j.get('kofs', {}).items():
                     if round(float(time.time() - float(j.get('time_req', 0)))) > 2.8 and j.get('value', 0) > 0:
                         try:
                             bets_fonbet[key_id_in]['kofs'][i]['value'] = 0
                             # prnts('Фонбет, данные по котировке из БК не получены более 2.8 сек., знач. выставил в 0: ' + key_id_in + ' ' + str(i), 'hide')
                         except Exception as e:
-                            prnts('Фонбет, ошибка 1 при удалении старой котирофки: ' + str(e))
+                            exc_type, exc_value, exc_traceback = sys.exc_info()
+                            err_str = 'error: ' + str(e) + ' (' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))) + ')'
+                            prnts('Фонбет, ошибка 1 при удалении старой котирофки: ' + str(err_str))
         except Exception as e:
-            prnts('Фонбет, ошибка 2 при удалении старой котирофки: ' + str(e))
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            err_str = 'error: ' + str(e) + ' (' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))) + ')'
+            prnts('Фонбет, ошибка 2 при удалении старой котирофки: ' + str(err_str))
         return time_resp + (time.time() - time_start_proc)
     except FonbetMatchСompleted as e:
         if bets_fonbet.get(key_id):
