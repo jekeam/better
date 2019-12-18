@@ -22,13 +22,22 @@ if 1 == 1:
     idx = df.groupby(
         ['time_create', 'kof_ol', 'kof_fb', 'name'], sort=False
     )['minute'].transform('min') == df['minute']
-
-    df[idx].to_csv(cur_date_str + '_forks_simple.csv', encoding='utf-8', sep=';')
+    
+    csv_file_name = cur_date_str + '_forks_simple.csv'
+    if not os.path.isfile(csv_file_name):
+        df[idx].to_csv(csv_file_name, encoding='utf-8', sep=';')
+    else:
+        df[idx].to_csv(csv_file_name, mode='a', header=False, encoding='utf-8', sep=';')
     os.remove(file_forks_raw)
     
-    if os.path.isfile('server.log'):
+    name_server_log = 'server.log'
+    if os.path.isfile(name_server_log):
         try:
-            os.rename('server.log', cur_date_str + '_' + 'server.log')
+            new_name_server_log = cur_date_str + '_' + name_server_log
+            if not os.path.isfile(new_name_server_log):
+                os.rename(name_server_log, new_name_server_log)
+            else:
+                os.rename(name_server_log, new_name_server_log.replace('.', datetime.now().strftime('%H_%M') + '.'))
         except Exception as e:
             pass
     

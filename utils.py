@@ -225,7 +225,7 @@ def get_vector(bet_type, sc1=None, sc2=None):
                 else:
                     return U
             elif 'Ф2' in bet_type:
-                if sc1 > sc2 + fora_val:
+                if sc2 + fora_val > sc1:
                     return D
                 else:
                     return U
