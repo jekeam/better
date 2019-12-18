@@ -362,10 +362,18 @@ def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_p
 def starter_bets(bets_olimp, bets_fonbet, pair_mathes, mathes_complite, mathes_id_is_work,
                  proxies_olimp, gen_proxi_olimp, proxies_fonbet, gen_proxi_fonbet, stat_reqs,
                  arr_fonbet_top_kofs):
+    match_id_olimp = []
+    match_id_fonbet = []
+    match_id_pinnacle = []
     while True:
         for pair_match in pair_mathes:
             # prnts(pair_match)
-            match_id_olimp, match_id_fonbet, event_type, passs, pass2 = pair_match
+            bks = []
+            bks.append(pair_match[-2])
+            bks.append(pair_match[-1])
+            for bk_name in bks:
+                if bk_name == 'olimp':
+                    match_id_olimp, event_type = pair_match[0], pair_match[2]
 
             if match_id_olimp not in mathes_id_is_work:
                 mathes_id_is_work.append(match_id_olimp)
