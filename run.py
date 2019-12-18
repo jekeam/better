@@ -422,8 +422,6 @@ def get_rate(team1_bk1, team2_bk1, team1_bk2, team2_bk2, debug=False):
 
 
 def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
-    json_bk1_copy = dict()
-    json_bk2_copy = dict()
 
     need = 1.5
     prnts('start_event_mapping, need: ' + str(need))
@@ -437,6 +435,8 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
             # pair_bk = list(itertools.combinations(['fonbet', 'pinnacle'], 2))
             for bk_name1, bk_name2 in pair_bk:
                 print(bk_name1, bk_name2)
+                json_bk1_copy = dict()
+                json_bk2_copy = dict()
                 prnts('Events found: ' + str(len(pair_mathes)) + ' ' + str(pair_mathes))
                 bk_rate_list = list()
                 bk_rate_sorted = list()
@@ -447,7 +447,8 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                 for key, val in arr_matchs.items():
                     if val.get('bk_name', '') == bk_name2:
                         json_bk2_copy[key] = val
-
+                # print('json_bk1_copy: ' + str(json_bk1_copy))
+                # print('json_bk2_copy: ' + str(json_bk2_copy))
                 for bk1_match_id, bk1_match_info in json_bk1_copy.items():
                     if [bk1_name for bk1_name in bk1_match_info.values() if bk1_name is not None]:
 
@@ -501,7 +502,6 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
 
                 bk_rate_sorted = list(filter(lambda x: x is not None, bk_rate_sorted))
                 bk_rate_sorted.sort(key=sort_by_rate, reverse=True)
-
                 for e in bk_rate_sorted:
                     pair = []
                     main_rate = e.get('rate', 0)
@@ -517,6 +517,8 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                     pair = [pair[1], pair[0], pair[2]]
                     pair.append(e.get('match_name'))
                     pair.append(e.get('rate'))
+                    pair.append(bk_name1)
+                    pair.append(bk_name2)
 
                     if pair[0] in mathes_complite or pair[1] in mathes_complite:
                         pass
@@ -550,6 +552,8 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
         except Exception as e:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             prnts('Error start_event_mapping: ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
+            prnts('bk_rate_sorted: ' + str(bk_rate_sorted))
+            prnts('pair: ' + str(pair))
         finally:
             time.sleep(15)
 
