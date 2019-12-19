@@ -362,27 +362,31 @@ def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_p
 def starter_bets(bets_olimp, bets_fonbet, pair_mathes, mathes_complite, mathes_id_is_work,
                  proxies_olimp, gen_proxi_olimp, proxies_fonbet, gen_proxi_fonbet, stat_reqs,
                  arr_fonbet_top_kofs):
-    match_id_olimp = []
-    match_id_fonbet = []
-    match_id_pinnacle = []
+    # match_id_olimp = []
+    # match_id_fonbet = []
+    # match_id_pinnacle = []
     while True:
         for pair_match in pair_mathes:
-            # prnts(pair_match)
-            bks = []
-            bks.append(pair_match[-2])
-            bks.append(pair_match[-1])
-            for bk_name in bks:
-                if bk_name == 'olimp':
-                    match_id_olimp, event_type = pair_match[0], pair_match[2]
+            prnts(pair_match)
+            match_id_bk1, match_id_bk2, event_type, event_name, kof_compare, bk_name1, bk_name2 = pair_match
 
-            if match_id_olimp not in mathes_id_is_work:
-                mathes_id_is_work.append(match_id_olimp)
+            if bk_name1 == 'olimp':
+                match_id_olimp = match_id_bk1
+            elif bk_name2 == 'olimp':
+                match_id_olimp = match_id_bk2
+            if match_id_olimp:
+                if match_id_olimp not in mathes_id_is_work:
+                    mathes_id_is_work.append(match_id_olimp)
+    
+                    start_seeker_olimp_bets_by_id = threading.Thread(
+                        target=start_seeker_bets_olimp,
+                        args=(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi_olimp, pair_mathes, mathes_complite, stat_reqs))
+                    start_seeker_olimp_bets_by_id.start()
 
-                start_seeker_olimp_bets_by_id = threading.Thread(
-                    target=start_seeker_bets_olimp,
-                    args=(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi_olimp, pair_mathes, mathes_complite, stat_reqs))
-                start_seeker_olimp_bets_by_id.start()
-
+            if bk_name1 == 'fonbet':
+                match_id_fonbet = match_id_bk1
+            elif bk_name2 == 'fonbet':
+                match_id_fonbet = match_id_bk2
             if match_id_fonbet not in mathes_id_is_work:
                 mathes_id_is_work.append(match_id_fonbet)
 
@@ -442,7 +446,6 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
             pair_bk = list(itertools.combinations(bk_working, 2))
             # pair_bk = list(itertools.combinations(['fonbet', 'pinnacle'], 2))
             for bk_name1, bk_name2 in pair_bk:
-                print(bk_name1, bk_name2)
                 json_bk1_copy = dict()
                 json_bk2_copy = dict()
                 prnts('Events found: ' + str(len(pair_mathes)) + ' ' + str(pair_mathes))
