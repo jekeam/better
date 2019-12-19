@@ -68,14 +68,14 @@ def straight_normalize(data):
     unit = 'У' if data.get('units', '') == 'Corners' else ''
     try:
         if data.get('type', '') == 'team_total':
-            return {norm_periods(data.get('period')) + unit + types[data.get('type')] + designations[data.get('designation')] + sides[data.get('side')] + '({})'.format(data.get('points')): data}
+            return {norm_periods(data.get('period')) + unit + types[data.get('type')] + designations[data.get('designation')] + sides[data.get('side')] + '({})'.format(data.get('points')).replace('+', ''): data}
         if data.get('type', '') == 'total':
-            return {norm_periods(data.get('period')) + unit + types[data.get('type')] + designations[data.get('designation')] + '({})'.format(data.get('points')): data}
+            return {norm_periods(data.get('period')) + unit + types[data.get('type')] + designations[data.get('designation')] + '({})'.format(data.get('points')).replace('+', ''): data}
         if data.get('type', '') == 'moneyline':
             return {unit + norm_designations(designations[data.get('designation')]): data}
         if data.get('type', '') == 'spread':
             return {norm_periods(data.get('period')) + unit + types[data.get('type')] + designations[data.get('designation')] + '({})'.format(
-                '+' + str(data.get('points', '')) if data.get('points') > 0 != '-' else data.get('points')): data}
+                '+' + str(data.get('points', '')) if data.get('points') > 0 != '-' else data.get('points')).replace('+', ''): data}
         else:
             return {}
     except Exception as e:
@@ -186,6 +186,9 @@ def get_matches(bk_name, proxy, timeout, api_key, proxy_list):
     return data, resp.elapsed.total_seconds()
 
 
+MAX_VERSION = 0
+
+
 def get_odds(bets, api_key, pair_mathes, sport_id, proxi_list, proxy, timeout):
     match_id_list = []
     bk_mame = 'pinnacle'
@@ -222,23 +225,27 @@ def get_odds(bets, api_key, pair_mathes, sport_id, proxi_list, proxy, timeout):
         for bet in filter(lambda x: x['matchupId'] == int(match_id), data):
             # print('bet: ' + str(bet))
             for price in bet.get('prices', []):
-                # print('price: ' + str(price))
-                res.update(straight_normalize({
-                    'time_req': round(time.time()),
-                    'match_id': match_id,
-                    'type': bet.get('type'),
-                    'status': bet.get('status'),
-                    'side': bet.get('side'),
-                    'period': bet.get('period'),
-                    'designation': price.get('designation'),
-                    'points': price.get('points'),
-                    'value': str(price.get('price')) + ' -> ' + str(american_to_decimal(price.get('price'), bet.get('status'))),
-                    # 'units':res[match_id]['units'], Нужно для угловых - они отключены
-                    # 'vector':'UP' if price.get('price') > 0 else 'DOWN'
-                }))
-                # print('res: ' + str(res))
+                version = bet.get('version')
+                if version > MAX_VERSION:
+                    MAX_VERSION = version
+                    value = american_to_decimal(price.get('price'), bet.get('status'))
+                    res.update(straight_normalize({
+                        'time_req': round(time.time()),
+                        'match_id': match_id,
+                        'type': bet.get('type'),
+                        'status': bet.get('status'),
+                        'side': bet.get('side'),
+                        'period': bet.get('period'),
+                        'designation': price.get('designation'),
+                        'points': price.get('points'),
+                        'value': value,
+                        # 'units':res[match_id]['units'], Нужно для угловых - они отключены
+                        # 'vector':'UP' if price.get('price') > 0 else 'DOWN'
+                    }))
+                    # print('res: ' + str(res))
         if not bets.get(str(match_id)):
             bets[str(match_id)] = {}
         bets[str(match_id)]['time_req'] = round(time.time())
-        bets[str(match_id)]['kofs'] = res
+        if res:
+            bets[str(match_id)]['kofs'] = res
     return resp.elapsed.total_seconds()
