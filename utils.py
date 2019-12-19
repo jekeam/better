@@ -36,8 +36,8 @@ def if_exists(jsos_list: dict, key_name: str, val: str, get_key: str = ''):
 
 bk_working = [
     'olimp', 
-    'fonbet', 
-    # 'pinnacle'
+    # 'fonbet', 
+    'pinnacle'
     ]
 
 sport_list = [
