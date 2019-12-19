@@ -379,19 +379,8 @@ def start_seeker_bets(bk_name, def_bk, bets, api_key, sport_id, proxies_containe
                 stat_reqs[bk_name] = []
             else:
                 stat_reqs[bk_name].append(round(time_resp, 2))
-        # Удалять катировки будем глубще в def_bk
-        # except MatchСompleted as e:
-        #     cnt = 0
-        #     for pair_match in pair_mathes:
-        #         if sport_id in pair_match:
-        #             if bets.get(str(sport_id)):
-        #                 bets.pop(str(sport_id))
-        #             prnts(bk_name + ', sport id remove: ' + str(pair_mathes[cnt]))
-        #             pair_mathes.remove(pair_mathes[cnt])
-        #             mathes_complite.append(sport_id)
-        #         cnt += 1
-        #     prnts(e)
-        #     raise ValueError('start_seeker_bets:' + str(e))
+        # TODO Удаления котировок при завершении матча
+        # Удалять катировки будем глубще в def_bk?
         except Exception as e:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             prnts('Exception: ' + bk_name + ', ошибка при запросе котировок по спорту ' + str(sport_id) + ': ' +

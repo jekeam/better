@@ -42,7 +42,9 @@ url_odds = 'https://guest.api.arcadia.pinnacle.com/0.1/sports/{}/markets/live/st
 # ).json()['api']['haywire']['apiKey']
 
 
-def american_to_decimal(odd):
+def american_to_decimal(odd, status):
+    if status != 'open':
+        return 0
     if odd:
         if odd > 0:
             return (odd / 100) + 1
@@ -225,11 +227,13 @@ def get_odds(bets, api_key, pair_mathes, sport_id, proxi_list, proxy, timeout):
                     'time_req': round(time.time()),
                     'match_id': match_id,
                     'type': bet.get('type'),
+                    'status': bet.get('status'),
                     'side': bet.get('side'),
                     'period': bet.get('period'),
                     'designation': price.get('designation'),
                     'points': price.get('points'),
-                    'val': american_to_decimal(price.get('price')),
+                    'key': bet.get('key'),
+                    'value': str(price.get('price')) + '/ ' + str(american_to_decimal(price.get('price'), bet.get('status'))),
                     # 'units':res[match_id]['units'], Нужно для угловых - они отключены
                     # 'vector':'UP' if price.get('price') > 0 else 'DOWN'
                 }))
