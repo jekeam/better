@@ -218,7 +218,7 @@ def get_odds(bets, api_key, pair_mathes, sport_id, proxi_list, proxy, timeout):
         proxies=proxies,
     )
     data = resp.json()
-    # print('data' + str(data))
+    print('data' + str(data))
 
     for match_id in match_id_list:
         res = {}
