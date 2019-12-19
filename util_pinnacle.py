@@ -18,7 +18,7 @@ list_matches_head = {
 }
 list_matches_url = 'https://guest.api.arcadia.pinnacle.com/0.1/sports/{}/matchups/live'
 
-head_odds={
+head_odds = {
     'accept': 'application/json',
     'accept-language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7',
     'cache-control': 'no-cache',
@@ -44,38 +44,39 @@ url_odds = 'https://guest.api.arcadia.pinnacle.com/0.1/sports/{}/markets/live/st
 def american_to_decimal(odd):
     if odd:
         if odd > 0:
-            return (odd/100)+1
+            return (odd / 100) + 1
         elif odd < 0:
-            return abs(100/odd)+1
+            return abs(100 / odd) + 1
         else:
             return 0
     else:
         return None
-        
+
 
 def straight_normalize(data):
-    designations={'over':'Б','under':'М', 'home':'1','away':'2','draw':'Н', None:''}
-    periods={1:'1', 2:'2', 0:'', None:''}
-    types={'team_total':'ИТ','total':'Т','moneyline':'','spread':'Ф', None:''}
-    sides={'home':'1','away':'2', None:''}
-    
-    norm_designations = lambda x: x if x=='Н' else 'П'+x
+    designations = {'over': 'Б', 'under': 'М', 'home': '1', 'away': '2', 'draw': 'Н', None: ''}
+    periods = {1: '1', 2: '2', 0: '', None: ''}
+    types = {'team_total': 'ИТ', 'total': 'Т', 'moneyline': '', 'spread': 'Ф', None: ''}
+    sides = {'home': '1', 'away': '2', None: ''}
+
+    norm_designations = lambda x: x if x == 'Н' else 'П' + x
     norm_periods = lambda x: '' if ~x else x if x != '0' else ''
-      
-    unit='У' if data.get('units', '') == 'Corners' else ''
+
+    unit = 'У' if data.get('units', '') == 'Corners' else ''
     try:
         if data.get('type', '') == 'team_total':
-            return {norm_periods(data.get('period'))+unit+types[data.get('type')]+designations[data.get('designation')]+sides[data.get('side')]+'({})'.format(data.get('points')):data}
+            return {norm_periods(data.get('period')) + unit + types[data.get('type')] + designations[data.get('designation')] + sides[data.get('side')] + '({})'.format(data.get('points')): data}
         if data.get('type', '') == 'total':
-            return {norm_periods(data.get('period'))+unit+types[data.get('type')]+designations[data.get('designation')]+'({})'.format(data.get('points')):data}
+            return {norm_periods(data.get('period')) + unit + types[data.get('type')] + designations[data.get('designation')] + '({})'.format(data.get('points')): data}
         if data.get('type', '') == 'moneyline':
-            return {unit+norm_designations(designations[data.get('designation')]):data}
+            return {unit + norm_designations(designations[data.get('designation')]): data}
         if data.get('type', '') == 'spread':
-            return {norm_periods(data.get('period'))+unit+types[data.get('type')]+designations[data.get('designation')]+'({})'.format('+'+str(data.get('points','')) if data.get('points') > 0 != '-' else data.get('points')):data}
+            return {norm_periods(data.get('period')) + unit + types[data.get('type')] + designations[data.get('designation')] + '({})'.format(
+                '+' + str(data.get('points', '')) if data.get('points') > 0 != '-' else data.get('points')): data}
         else:
             return {}
     except Exception as e:
-        return {'error':str(e)}
+        return {'error': str(e)}
 
 
 def get_matches(bk_name, proxy, timeout, api_key, proxy_list):
@@ -195,7 +196,7 @@ def get_odds(bets, api_key, pair_mathes, sport_id, proxi_list, proxy, timeout):
         elif bk_name2 == bk_mame and match_id2 not in match_id_list:
             match_id_list.append(str(match_id2))
     # print('match_id_list: ' + str(match_id_list))
-            
+
     head = head_odds
     head.update({'x-api-key': api_key})
     url = url_odds
@@ -213,21 +214,21 @@ def get_odds(bets, api_key, pair_mathes, sport_id, proxi_list, proxy, timeout):
     ###GO
     print('data' + data)
     for match_id in match_id_list:
-        res={}
+        res = {}
         print(match_id)
         for bet in filter(lambda x: x['match_id'] == match_id, data):
             for price in bet.get('prices', []):
                 res.update(straight_normalize({
-                            'match_id':match_id, 
-                            'type':bet.get('type'), 
-                            'side':bet.get('side'), 
-                            'period':bet.get('period'), 
-                            'designation':price.get('designation'), 
-                            'points':price.get('points'), 
-                            'price':american_to_decimal(price.get('price')), 
-                            # 'units':res[match_id]['units'], Нужно для угловых - они отключены
-                            # 'vector':'UP' if price.get('price') > 0 else 'DOWN'
-                            }))
+                    'match_id': match_id,
+                    'type': bet.get('type'),
+                    'side': bet.get('side'),
+                    'period': bet.get('period'),
+                    'designation': price.get('designation'),
+                    'points': price.get('points'),
+                    'price': american_to_decimal(price.get('price')),
+                    # 'units':res[match_id]['units'], Нужно для угловых - они отключены
+                    # 'vector':'UP' if price.get('price') > 0 else 'DOWN'
+                }))
         if not bets.get(match_id):
             bets[match_id] = {}
-        bets[match_id]['kofs']=res 
+        bets[match_id]['kofs'] = res

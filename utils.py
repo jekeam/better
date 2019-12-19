@@ -35,10 +35,10 @@ def if_exists(jsos_list: dict, key_name: str, val: str, get_key: str = ''):
 
 
 bk_working = [
-    'olimp', 
+    'olimp',
     # 'fonbet', 
     'pinnacle'
-    ]
+]
 
 sport_list = [
     {
@@ -70,7 +70,7 @@ sport_list = [
     #     'name': 'basketball',
     #     'olimp': 5,
     #     'fonbet': 3,
-    #     #  'pinnacle': -1,
+    #     'pinnacle': 4,
     #     'min': 40,
     # },
     # {

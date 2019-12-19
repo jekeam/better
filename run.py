@@ -359,8 +359,8 @@ def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_p
             # prnts(str('Фонбет, матч ' + str(match_id_fonbet) + '. Время ответа: ' + str(time_resp) + ', запрос через ' + str(time_sleep)) + ' ' + ps.get_cur_proxy(), 'hide')
 
         time.sleep(time_sleep)
-        
-        
+
+
 def start_seeker_bets(bk_name, def_bk, bets, api_key, sport_id, proxies_container, pair_mathes, mathes_complite, stat_reqs):
     global TIMEOUT_MATCH, TIMEOUT_MATCH_MINUS
     proxy_size = 5
@@ -408,14 +408,14 @@ def start_seeker_bets(bk_name, def_bk, bets, api_key, sport_id, proxies_containe
 
 
 def starter_bets(
-    bets_olimp, bets_fonbet, 
-    bets, 
-    pair_mathes, mathes_complite, mathes_id_is_work,
-    proxies_olimp, gen_proxi_olimp, 
-    proxies_fonbet, gen_proxi_fonbet,
-    proxies_container,
-    stat_reqs, arr_fonbet_top_kofs, api_key
-    ):
+        bets_olimp, bets_fonbet,
+        bets,
+        pair_mathes, mathes_complite, mathes_id_is_work,
+        proxies_olimp, gen_proxi_olimp,
+        proxies_fonbet, gen_proxi_fonbet,
+        proxies_container,
+        stat_reqs, arr_fonbet_top_kofs, api_key
+):
     while True:
         matchs_id = None
         for pair_match in pair_mathes:
@@ -428,7 +428,7 @@ def starter_bets(
             if matchs_id:
                 if matchs_id not in mathes_id_is_work:
                     mathes_id_is_work.append(matchs_id)
-    
+
                     start_seeker_olimp_bets_by_id = threading.Thread(
                         target=start_seeker_bets_olimp,
                         args=(bets_olimp, matchs_id, proxies_olimp, gen_proxi_olimp, pair_mathes, mathes_complite, stat_reqs))
@@ -445,8 +445,7 @@ def starter_bets(
                     target=start_seeker_bets_fonbet,
                     args=(bets_fonbet, matchs_id, proxies_fonbet, gen_proxi_fonbet, pair_mathes, mathes_complite, stat_reqs, arr_fonbet_top_kofs))
                 start_seeker_fonbet_bets_by_id.start()
-                
-            
+
             v_bk_name = 'pinnacle'
             for sport_arr in sport_list:
                 sport_id = sport_arr.get(v_bk_name)
@@ -497,7 +496,6 @@ def get_rate(team1_bk1, team2_bk1, team1_bk2, team2_bk2, debug=False):
 
 
 def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
-
     need = 1.5
     prnts('start_event_mapping, need: ' + str(need))
 
@@ -893,7 +891,7 @@ if __name__ == '__main__':
     proxy_filename_olimp = 'olimp.proxy'
     proxy_filename_fonbet = 'fonbet.proxy'
     proxy_filename_pinnacle = 'pinnacle.proxy'
-    
+
     proxies_container = dict()
 
     proxies_olimp = get_proxy_from_file(proxy_filename_olimp, uniq=False)
@@ -924,7 +922,7 @@ if __name__ == '__main__':
 
             proxy_filename_olimp,
             proxy_filename_fonbet,
-            
+
             proxies_container
         )
     )
@@ -976,22 +974,22 @@ if __name__ == '__main__':
     starter_bets = threading.Thread(
         target=starter_bets,
         args=(
-            bets_olimp, 
+            bets_olimp,
             bets_fonbet,
             bets,
-            
-            pair_mathes, 
-            mathes_complite, 
+
+            pair_mathes,
+            mathes_complite,
             mathes_id_is_work,
-            
-            proxies_olimp, 
-            gen_proxi_olimp, 
+
+            proxies_olimp,
+            gen_proxi_olimp,
             #
-            proxies_fonbet, 
-            gen_proxi_fonbet, 
+            proxies_fonbet,
+            gen_proxi_fonbet,
             #
             proxies_container,
-            
+
             stat_reqs,
             arr_fonbet_top_kofs,
             api_key
