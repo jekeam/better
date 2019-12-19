@@ -216,9 +216,13 @@ def get_odds(bets, api_key, pair_mathes, sport_id, proxi_list, proxy, timeout):
 
     for match_id in match_id_list:
         res = {}
-        for bet in filter(lambda x: x['matchupId'] == match_id, data):
+        # print('match_id: ' + str(match_id))
+        for bet in filter(lambda x: x['matchupId'] == int(match_id), data):
+            # print('bet: ' + str(bet))
             for price in bet.get('prices', []):
+                # print('price: ' + str(price))
                 res.update(straight_normalize({
+                    'time_req': round(time.time()),
                     'match_id': match_id,
                     'type': bet.get('type'),
                     'side': bet.get('side'),
@@ -229,7 +233,9 @@ def get_odds(bets, api_key, pair_mathes, sport_id, proxi_list, proxy, timeout):
                     # 'units':res[match_id]['units'], Нужно для угловых - они отключены
                     # 'vector':'UP' if price.get('price') > 0 else 'DOWN'
                 }))
-        if not bets.get(match_id):
-            bets[match_id] = {}
-        bets[match_id]['kofs'] = res
+                # print('res: ' + str(res))
+        if not bets.get(str(match_id)):
+            bets[str(match_id)] = {}
+        bets[str(match_id)]['time_req'] = round(time.time())
+        bets[str(match_id)]['kofs'] = res
     return resp.elapsed.total_seconds()

@@ -361,7 +361,7 @@ def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_p
         time.sleep(time_sleep)
 
 
-def start_seeker_bets(bk_name, def_bk, bets, api_key, sport_id, proxies_container, pair_mathes, mathes_complite, stat_reqs):
+def start_seeker_bets(bk_name, def_bk, bets, api_key, sport_id, proxies_container, pair_mathes, stat_reqs):
     global TIMEOUT_MATCH, TIMEOUT_MATCH_MINUS
     proxy_size = 5
     proxy = []
@@ -453,7 +453,7 @@ def starter_bets(
                     mathes_id_is_work.append(sport_id)
                     start_seeker_fonbet_bets_by_id = threading.Thread(
                         target=start_seeker_bets,
-                        args=('pinnacle', util_pinnacle.get_odds, bets, api_key, sport_id, proxies_container, pair_mathes, mathes_complite, stat_reqs)
+                        args=('pinnacle', util_pinnacle.get_odds, bets, api_key, sport_id, proxies_container, pair_mathes, stat_reqs)
                     )
                     start_seeker_fonbet_bets_by_id.start()
 

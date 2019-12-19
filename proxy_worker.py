@@ -28,7 +28,7 @@ UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like 
 def get_next_proxy(proxi_list):
     for n, i in list(enumerate(proxi_list)):
         # prnts('Get next proxy: ' + i, 'hide')
-        prnts('Proxy left: ' + str(len(proxi_list) - n) + '/' + str(len(proxi_list)))
+        prnts('Proxy left: ' + str(len(proxi_list) - n) + '/' + str(len(proxi_list)), 'hide')
         yield i.strip()
 
 
