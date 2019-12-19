@@ -224,12 +224,9 @@ def get_odds(bets, api_key, pair_mathes, sport_id, proxi_list, proxy, timeout):
         res = {}
         # print('match_id: ' + str(match_id))
         for bet in filter(lambda x: x['matchupId'] == int(match_id), data):
-            # print('bet: ' + str(bet))
-            for price in bet.get('prices', []):
-                version = bet.get('version', -1)
-                if version >= MAX_VERSION:
-                    MAX_VERSION = version
-                    value = american_to_decimal(price.get('price'), bet.get('status'))
+            version = bet.get('version', -1)
+            if version > MAX_VERSION:
+                for price in bet.get('prices', []):
                     res.update(straight_normalize({
                         'time_req': round(time.time()),
                         'match_id': match_id,
@@ -239,7 +236,7 @@ def get_odds(bets, api_key, pair_mathes, sport_id, proxi_list, proxy, timeout):
                         'period': bet.get('period'),
                         'designation': price.get('designation'),
                         'points': price.get('points'),
-                        'value': value,
+                        'value': american_to_decimal(price.get('price'), bet.get('status')),
                         'version': version,
                         # 'units':res[match_id]['units'], Нужно для угловых - они отключены
                         # 'vector':'UP' if price.get('price') > 0 else 'DOWN'
@@ -250,4 +247,5 @@ def get_odds(bets, api_key, pair_mathes, sport_id, proxi_list, proxy, timeout):
         bets[str(match_id)]['time_req'] = round(time.time())
         if res:
             bets[str(match_id)]['kofs'] = res
+        MAX_VERSION = version
     return resp.elapsed.total_seconds()
