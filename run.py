@@ -142,7 +142,7 @@ def get_api(bk_name, proxy):
             raise ValueError(bk_name + ', возникла ошибка при запросе ключа, код ответа ' + str(res.status_code) + ': ' + str(e))
 
 
-def start_seeker_matchs(bk_name, proxies_container, arr_matchs):
+def start_seeker_matchs(bk_name, proxies_container, arr_matchs, api_key):
     global TIMEOUT_MATCHS
     proxy = proxies_container[bk_name]['gen_proxi'].next()
     fail_proxy = 0
@@ -308,7 +308,8 @@ def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi
         time_sleep = max(0, (TIMEOUT_MATCH - abs(TIMEOUT_MATCH_MINUS + time_resp)))
 
         if DEBUG:
-            prnts('Олимп, матч ' + str(match_id_olimp) + '. Время ответа: ' + str(time_resp) + ', запрос через ' + str(time_sleep) + ' ' + ps.get_cur_proxy(), 'hide')
+            pass
+            # prnts('Олимп, матч ' + str(match_id_olimp) + '. Время ответа: ' + str(time_resp) + ', запрос через ' + str(time_sleep) + ' ' + ps.get_cur_proxy(), 'hide')
 
         time.sleep(time_sleep)
 
@@ -354,53 +355,55 @@ def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_p
         time_sleep = max(0, (TIMEOUT_MATCH - (TIMEOUT_MATCH_MINUS + time_resp)))
 
         if DEBUG:
-            prnts(str('Фонбет, матч ' + str(match_id_fonbet) + '. Время ответа: ' + str(time_resp) + ', запрос через ' + str(time_sleep)) + ' ' + ps.get_cur_proxy(), 'hide')
+            pass
+            # prnts(str('Фонбет, матч ' + str(match_id_fonbet) + '. Время ответа: ' + str(time_resp) + ', запрос через ' + str(time_sleep)) + ' ' + ps.get_cur_proxy(), 'hide')
 
         time.sleep(time_sleep)
         
         
-def start_seeker_bets(bk_name, bets, match_id, proxies_container, pair_mathes, mathes_complite, stat_reqs):
+def start_seeker_bets(bk_name, def_bk, bets, api_key, sport_id, proxies_container, pair_mathes, mathes_complite, stat_reqs):
     global TIMEOUT_MATCH, TIMEOUT_MATCH_MINUS
     proxy_size = 5
     proxy = []
     i = 0
     while i < proxy_size:
-        proxy.append(gen_proxi_fonbet.next())
+        proxy.append(proxies_container[bk_name]['gen_proxi'].next())
         i = i + 1
     ps = ProxySwitcher(proxy_size, proxy)
 
     while True:
         try:
-            time_resp = get_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, ps.get_next_proxy(), TIMEOUT_MATCH, pair_mathes, arr_fonbet_top_kofs)
-            if stat_reqs.get('fonbet') is None:
-                stat_reqs['fonbet'] = []
+            prnts(bk_name + ', start sport_id: ' + str(sport_id))
+            time_resp = def_bk(bets, api_key, pair_mathes, sport_id, proxies_container[bk_name]['gen_proxi'], ps.get_next_proxy(), TIMEOUT_MATCH)
+            if stat_reqs.get(bk_name) is None:
+                stat_reqs[bk_name] = []
             else:
-                stat_reqs['fonbet'].append(round(time_resp, 2))
-        except FonbetMatchСompleted as e:
-            cnt = 0
-            for pair_match in pair_mathes:
-                if match_id_fonbet in pair_match:
-                    if bets_fonbet.get(str(match_id_fonbet)):
-                        bets_fonbet.pop(str(match_id_fonbet))
-                    prnts('Fonbet, pair mathes remove: ' + str(pair_mathes[cnt]))
-                    pair_mathes.remove(pair_mathes[cnt])
-                    mathes_complite.append(match_id_fonbet)
-                cnt += 1
-            prnts(e)
-            raise ValueError('start_seeker_bets_fonbet:' + str(e))
+                stat_reqs[bk_name].append(round(time_resp, 2))
+        # Удалять катировки будем глубще в def_bk
+        # except MatchСompleted as e:
+        #     cnt = 0
+        #     for pair_match in pair_mathes:
+        #         if sport_id in pair_match:
+        #             if bets.get(str(sport_id)):
+        #                 bets.pop(str(sport_id))
+        #             prnts(bk_name + ', sport id remove: ' + str(pair_mathes[cnt]))
+        #             pair_mathes.remove(pair_mathes[cnt])
+        #             mathes_complite.append(sport_id)
+        #         cnt += 1
+        #     prnts(e)
+        #     raise ValueError('start_seeker_bets:' + str(e))
         except Exception as e:
             exc_type, exc_value, exc_traceback = sys.exc_info()
-            prnts('Exception: Фонбет, ошибка при запросе матча ' + str(match_id_fonbet) + ': ' +
+            prnts('Exception: ' + bk_name + ', ошибка при запросе котировок по спорту ' + str(sport_id) + ': ' +
                   str(e) + ' ' + ps.get_cur_proxy() + ' ' +
                   str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
-            ps.rep_cur_proxy(gen_proxi_fonbet.next())
+            ps.rep_cur_proxy(proxies_container[bk_name]['gen_proxi'].next())
             time_resp = TIMEOUT_MATCH
 
         time_sleep = max(0, (TIMEOUT_MATCH - (TIMEOUT_MATCH_MINUS + time_resp)))
-
         if DEBUG:
-            prnts(str('Фонбет, матч ' + str(match_id_fonbet) + '. Время ответа: ' + str(time_resp) + ', запрос через ' + str(time_sleep)) + ' ' + ps.get_cur_proxy(), 'hide')
-
+            pass
+            # prnts(str(bk_name + ', матч ' + str(match_id) + '. Время ответа: ' + str(time_resp) + ', запрос через ' + str(time_sleep)) + ' ' + ps.get_cur_proxy(), 'hide')
         time.sleep(time_sleep)
 
 
@@ -411,7 +414,7 @@ def starter_bets(
     proxies_olimp, gen_proxi_olimp, 
     proxies_fonbet, gen_proxi_fonbet,
     proxies_container,
-    stat_reqs, arr_fonbet_top_kofs
+    stat_reqs, arr_fonbet_top_kofs, api_key
     ):
     while True:
         matchs_id = None
@@ -445,17 +448,15 @@ def starter_bets(
                 
             
             v_bk_name = 'pinnacle'
-            if bk_name1 == v_bk_name:
-                matchs_id = match_id_bk1
-            elif bk_name2 == v_bk_name:
-                matchs_id = match_id_bk2
-            if matchs_id not in mathes_id_is_work:
-                mathes_id_is_work.append(matchs_id)
-
-                start_seeker_fonbet_bets_by_id = threading.Thread(
-                    target=start_seeker_bets,
-                    args=('pinnacle', bets, matchs_id, proxies_pinncale, gen_proxi_pinnacle, pair_mathes, mathes_complite, stat_reqs))
-                start_seeker_fonbet_bets_by_id.start()
+            for sport_arr in sport_list:
+                sport_id = sport_arr.get(v_bk_name)
+                if sport_id not in mathes_id_is_work:
+                    mathes_id_is_work.append(sport_id)
+                    start_seeker_fonbet_bets_by_id = threading.Thread(
+                        target=start_seeker_bets,
+                        args=('pinnacle', util_pinnacle.get_odds, bets, api_key, sport_id, proxies_container, pair_mathes, mathes_complite, stat_reqs)
+                    )
+                    start_seeker_fonbet_bets_by_id.start()
 
         time.sleep(20)
 
@@ -888,6 +889,7 @@ if __name__ == '__main__':
     prnts('DEBUG: ' + str(DEBUG))
     prnts('BK working: ' + str(bk_working))
     # STEP 1 - Proxy Saver
+    api_key = ''
     proxy_filename_olimp = 'olimp.proxy'
     proxy_filename_fonbet = 'fonbet.proxy'
     proxy_filename_pinnacle = 'pinnacle.proxy'
@@ -953,7 +955,7 @@ if __name__ == '__main__':
     # get event list by bk
     bk_seeker_matchs = []
     for bk_name in bk_working:
-        seeker_matchs = threading.Thread(target=start_seeker_matchs, args=(bk_name, proxies_container, arr_matchs))
+        seeker_matchs = threading.Thread(target=start_seeker_matchs, args=(bk_name, proxies_container, arr_matchs, api_key))
         bk_seeker_matchs.append(seeker_matchs)
         seeker_matchs.start()
     time.sleep(4)
@@ -991,7 +993,10 @@ if __name__ == '__main__':
             proxies_container,
             
             stat_reqs,
-            arr_fonbet_top_kofs))
+            arr_fonbet_top_kofs,
+            api_key
+        )
+    )
     starter_bets.start()
 
     starter_forks = threading.Thread(target=get_forks, args=(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbet_top_matchs))
