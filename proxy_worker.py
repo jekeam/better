@@ -5,7 +5,6 @@ import requests
 import multiprocessing as mp
 import os
 import time
-import urllib3
 from random import choice
 from utils import prnts, DEBUG
 from hashlib import md5
@@ -13,6 +12,7 @@ import threading
 import platform
 from shutil import copyfile
 from utils import DEBUG
+import urllib3
 
 # disable warning
 urllib3.disable_warnings()
@@ -350,8 +350,8 @@ if __name__ == '__main__':
     # time.sleep(3)
     # PINNACLE
     prnts('get api_key from pinnacle')
-    url_pinnacle = 'www.pinnacle.com'
-    app_key = requests.get('https://' + url_pinnacle + '/config/app.json').json()['api']['haywire']['apiKey']
+    url_pinnacle = 'www.pinnacle.bet'
+    app_key = requests.get('https://' + url_pinnacle + '/config/app.json', verify=False).json()['api']['haywire']['apiKey']
     prnts('pinnacle app_key: ' + app_key)
     headers_pinnacle = {
         'accept': 'application/json',
@@ -365,10 +365,15 @@ if __name__ == '__main__':
     }
     # url_pinnacle = 'guest.api.arcadia.pinnacle.com/0.1/sports/29/matchups/live'
     url_pinnacle = 'guest.api.arcadia.pinnacle.com/0.1/sports/29/markets/live/straight?primaryOnly=false'
-    # proxy_list_pinnacle = get_proxy_from_file('proxy_by_pinnacle.txt')
-    proxy_list_pinnacle = proxy_list
-    proxy_list_https = (list(filter(lambda p: 'https' in p, proxy_list_pinnacle)))
-    proxy_list_pinnacle = check_proxies(proxy_list_https, url_pinnacle, headers_pinnacle)
-    save_list(proxy_list_pinnacle, pn_fl)
-    time.sleep(3)
 
+    # proxy_list_pinnacle = get_proxy_from_file('proxy_by_pinnacle.txt')
+    # proxy_list_pinnacle = proxy_list
+    # proxy_list_https = (list(filter(lambda p: 'https' in p, proxy_list_pinnacle)))
+    # proxy_list_pinnacle = check_proxies(proxy_list_https, url_pinnacle, headers_pinnacle)
+    # save_list(proxy_list_pinnacle, pn_fl)
+
+    proxy_list_pinnacle = get_proxy_from_file('proxy_for_olimp.txt')
+    proxy_list_pinnacle = (list(filter(lambda p: 'https' in p, proxy_list_pinnacle)))
+    proxy_list_pinnacle = check_proxies(proxy_list_pinnacle, url_pinnacle, headers_pinnacle)
+    save_list(proxy_list_pinnacle, pn_fl, clone=2000)
+    time.sleep(3)

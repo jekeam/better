@@ -5,6 +5,7 @@ import exceptions
 import datetime
 import sys
 import traceback
+import time
 
 list_matches_head = {
     'accept': 'application/json',
@@ -192,9 +193,9 @@ def get_odds(bets, api_key, pair_mathes, sport_id, proxi_list, proxy, timeout):
         bk_name2 = pair_math[-1]
         match_id2 = pair_math[1]
         if bk_name1 == bk_mame and match_id1 not in match_id_list:
-            match_id_list.append(str(match_id1))
+            match_id_list.append(match_id1)
         elif bk_name2 == bk_mame and match_id2 not in match_id_list:
-            match_id_list.append(str(match_id2))
+            match_id_list.append(match_id2)
     # print('match_id_list: ' + str(match_id_list))
 
     head = head_odds
@@ -211,12 +212,11 @@ def get_odds(bets, api_key, pair_mathes, sport_id, proxi_list, proxy, timeout):
         proxies=proxies,
     )
     data = resp.json()
-    ###GO
-    print('data' + data)
+    # print('data' + str(data))
+
     for match_id in match_id_list:
         res = {}
-        print(match_id)
-        for bet in filter(lambda x: x['match_id'] == match_id, data):
+        for bet in filter(lambda x: x['matchupId'] == match_id, data):
             for price in bet.get('prices', []):
                 res.update(straight_normalize({
                     'match_id': match_id,
@@ -232,3 +232,4 @@ def get_odds(bets, api_key, pair_mathes, sport_id, proxi_list, proxy, timeout):
         if not bets.get(match_id):
             bets[match_id] = {}
         bets[match_id]['kofs'] = res
+    return resp.elapsed.total_seconds()

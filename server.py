@@ -5,7 +5,7 @@ import json
 import platform
 import threading
 import time
-from utils import prnts
+from utils import prnts, bk_working
 from urllib.parse import unquote
 import sys
 import traceback
@@ -37,7 +37,7 @@ def get_state(arr):
     return state
 
 
-def run_server(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_fonbet_top_matchs, bets_olimp, bets_fonbet):
+def run_server(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_fonbet_top_matchs, bets_olimp, bets_fonbet, bets):
     class HttpProcessor(BaseHTTPRequestHandler):
         def __init__(self, forks, bar, qux, *args, **kwargs):
             self.data_str = json.dumps(forks, ensure_ascii=False)
@@ -69,41 +69,6 @@ def run_server(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_fonbet_top_matchs
                 self.send_header('content-type', 'application/json')
                 self.end_headers()
                 self.wfile.write(str(arr_fonbet_top_matchs).encode('utf-8'))
-            elif '/fonbet/' in self.path or '/olimp/' in self.path:
-                cnt_par = str(self.path).count('/')
-                prnts('get path: {}, cnt_par: {}, arr: {}'.format(self.path, cnt_par, str(self.path.split('/'))))
-                answer = 'ok'
-                branch = ''
-                try:
-                    answer = None
-                    if cnt_par == 2:
-                        balnk, bk_name, match_id = self.path.split('/')
-                        if '/fonbet/' in self.path:
-                            answer = get_state(bets_fonbet.get(match_id, {}))
-                        elif '/olimp/' in self.path:
-                            answer = get_state(bets_olimp.get(match_id, {}))
-                    elif cnt_par == 3:
-                        balnk, bk_name, match_id, kof = self.path.split('/')
-                        kof = unquote(kof)
-                        if '/fonbet/' in self.path:
-                            answer = bets_fonbet.get(match_id, {}).get('kofs', {}).get(kof)
-                        elif '/olimp/' in self.path:
-                            answer = bets_olimp.get(match_id, {}).get('kofs', {}).get(kof)
-                    if answer:
-                        try:
-                            answer.pop('hist')
-                        except:
-                            pass
-                        answer = json.dumps(answer, ensure_ascii=False, indent=4)
-                except Exception as e:
-                    exc_type, exc_value, exc_traceback = sys.exc_info()
-                    answer = branch + ': ' + str(traceback.format_exception(exc_type, exc_value, exc_traceback))
-                    prnts(answer)
-                finally:
-                    self.send_response(200)
-                    self.send_header('content-type', 'application/json')
-                    self.end_headers()
-                    self.wfile.write(str(answer).encode('utf-8'))
             elif '/set/' in self.path:
                 prnts(self.path)
                 status = 'ok'
@@ -128,6 +93,45 @@ def run_server(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_fonbet_top_matchs
                     self.send_header('content-type', 'application/json')
                     self.end_headers()
                     self.wfile.write(str(status).encode('utf-8'))
+            elif '/fonbet/' in self.path or '/olimp/' in self.path or '/pinnacle/' in self.path:
+                cnt_par = str(self.path).count('/')
+                prnts('get path: {}, cnt_par: {}, arr: {}'.format(self.path, cnt_par, str(self.path.split('/'))))
+                answer = 'ok'
+                branch = ''
+                try:
+                    answer = None
+                    if cnt_par == 2:
+                        balnk, bk_name, match_id = self.path.split('/')
+                        if '/fonbet/' in self.path:
+                            answer = get_state(bets_fonbet.get(match_id, {}))
+                        elif '/olimp/' in self.path:
+                            answer = get_state(bets_olimp.get(match_id, {}))
+                        elif '/pinnacle/' in self.path:
+                            answer = get_state(bets.get(match_id, {}))
+                    elif cnt_par == 3:
+                        balnk, bk_name, match_id, kof = self.path.split('/')
+                        kof = unquote(kof)
+                        if '/fonbet/' in self.path:
+                            answer = bets_fonbet.get(match_id, {}).get('kofs', {}).get(kof)
+                        elif '/olimp/' in self.path:
+                            answer = bets_olimp.get(match_id, {}).get('kofs', {}).get(kof)
+                        elif '/pinnacle/' in self.path:
+                            answer = bets.get(match_id, {}).get('kofs', {}).get(kof)
+                    if answer:
+                        try:
+                            answer.pop('hist')
+                        except:
+                            pass
+                        answer = json.dumps(answer, ensure_ascii=False, indent=4)
+                except Exception as e:
+                    exc_type, exc_value, exc_traceback = sys.exc_info()
+                    answer = branch + ': ' + str(traceback.format_exception(exc_type, exc_value, exc_traceback))
+                    prnts(answer)
+                finally:
+                    self.send_response(200)
+                    self.send_header('content-type', 'application/json')
+                    self.end_headers()
+                    self.wfile.write(str(answer).encode('utf-8'))
             else:
                 mutex.acquire()
                 with open('access.log', 'a+', encoding='utf-8') as f:

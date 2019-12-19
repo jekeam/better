@@ -371,9 +371,9 @@ def start_seeker_bets(bk_name, def_bk, bets, api_key, sport_id, proxies_containe
         i = i + 1
     ps = ProxySwitcher(proxy_size, proxy)
 
+    prnts(bk_name + ', start sport_id: ' + str(sport_id))
     while True:
         try:
-            prnts(bk_name + ', start sport_id: ' + str(sport_id))
             time_resp = def_bk(bets, api_key, pair_mathes, sport_id, proxies_container[bk_name]['gen_proxi'], ps.get_next_proxy(), TIMEOUT_MATCH)
             if stat_reqs.get(bk_name) is None:
                 stat_reqs[bk_name] = []
@@ -896,7 +896,7 @@ if __name__ == '__main__':
 
     proxies_olimp = get_proxy_from_file(proxy_filename_olimp, uniq=False)
     proxies_fonbet = get_proxy_from_file(proxy_filename_fonbet)
-    proxies_pinncale = get_proxy_from_file(proxy_filename_pinnacle)
+    proxies_pinncale = get_proxy_from_file(proxy_filename_pinnacle, uniq=False)
 
     gen_proxi_olimp = createBatchGenerator(get_next_proxy(copy.deepcopy(proxies_olimp)))
     gen_proxi_fonbet = createBatchGenerator(get_next_proxy(copy.deepcopy(proxies_fonbet)))
@@ -1003,7 +1003,7 @@ if __name__ == '__main__':
     started_stat_req = threading.Thread(target=prnt_stat_req, args=(stat_reqs,))
     started_stat_req.start()
 
-    server = threading.Thread(target=run_server, args=(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_fonbet_top_matchs, bets_olimp, bets_fonbet))
+    server = threading.Thread(target=run_server, args=(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_fonbet_top_matchs, bets_olimp, bets_fonbet, bets))
     server.start()
 
     proxy_saver.join()
