@@ -34,7 +34,7 @@ def get_state(arr):
                 state['kofs'].update({kof_name: {
                     'last_update': str(int(time.time() - kof_info.get('time_req'))),
                     'val': val,
-                    'key': version
+                    'version': version
                 }})
     return state
 

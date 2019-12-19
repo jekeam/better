@@ -190,6 +190,7 @@ MAX_VERSION = 0
 
 
 def get_odds(bets, api_key, pair_mathes, sport_id, proxi_list, proxy, timeout):
+    global MAX_VERSION
     match_id_list = []
     bk_mame = 'pinnacle'
     for pair_math in pair_mathes:
@@ -225,8 +226,8 @@ def get_odds(bets, api_key, pair_mathes, sport_id, proxi_list, proxy, timeout):
         for bet in filter(lambda x: x['matchupId'] == int(match_id), data):
             # print('bet: ' + str(bet))
             for price in bet.get('prices', []):
-                version = bet.get('version')
-                if version > MAX_VERSION:
+                version = bet.get('version', -1)
+                if version >= MAX_VERSION:
                     MAX_VERSION = version
                     value = american_to_decimal(price.get('price'), bet.get('status'))
                     res.update(straight_normalize({
@@ -239,6 +240,7 @@ def get_odds(bets, api_key, pair_mathes, sport_id, proxi_list, proxy, timeout):
                         'designation': price.get('designation'),
                         'points': price.get('points'),
                         'value': value,
+                        'version': version,
                         # 'units':res[match_id]['units'], Нужно для угловых - они отключены
                         # 'vector':'UP' if price.get('price') > 0 else 'DOWN'
                     }))
