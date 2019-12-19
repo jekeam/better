@@ -236,7 +236,7 @@ def get_odds(bets, api_key, pair_mathes, sport_id, proxi_list, proxy, timeout):
                         'period': bet.get('period'),
                         'designation': price.get('designation'),
                         'points': price.get('points'),
-                        'value': american_to_decimal(price.get('price'), bet.get('status')),
+                        'value': str(price.get('price')) + ' -> ' + str(american_to_decimal(price.get('price'), bet.get('status'))),
                         'version': version,
                         # 'units':res[match_id]['units'], Нужно для угловых - они отключены
                         # 'vector':'UP' if price.get('price') > 0 else 'DOWN'
