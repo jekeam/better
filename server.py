@@ -24,7 +24,6 @@ def get_state(arr):
         state['kofs'] = {}
         for kof_name, kof_info in info.get('kofs', {}).items():
             val = kof_info.get('value')
-            key = kof_info.get('key', '')
             if val == 0:
                 try:
                     state['kofs'].pop(kof_name)
@@ -34,7 +33,6 @@ def get_state(arr):
                 state['kofs'].update({kof_name: {
                     'last_update': str(int(time.time() - kof_info.get('time_req'))),
                     'val': val,
-                    'key': key
                 }})
     return state
 

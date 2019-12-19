@@ -49,7 +49,7 @@ def american_to_decimal(odd, status):
         if odd > 0:
             return (odd / 100) + 1
         elif odd < 0:
-            return abs(100 / odd) + 1
+            return (100 / odd) + 1
         else:
             return 0
     else:
@@ -232,7 +232,6 @@ def get_odds(bets, api_key, pair_mathes, sport_id, proxi_list, proxy, timeout):
                     'period': bet.get('period'),
                     'designation': price.get('designation'),
                     'points': price.get('points'),
-                    'key': bet.get('key'),
                     'value': str(price.get('price')) + '/ ' + str(american_to_decimal(price.get('price'), bet.get('status'))),
                     # 'units':res[match_id]['units'], Нужно для угловых - они отключены
                     # 'vector':'UP' if price.get('price') > 0 else 'DOWN'
