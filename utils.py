@@ -36,18 +36,18 @@ def if_exists(jsos_list: dict, key_name: str, val: str, get_key: str = ''):
 
 bk_working = [
     'olimp',
-    # 'fonbet', 
+    'fonbet', 
     'pinnacle'
 ]
 
 sport_list = [
-    {
-        'name': 'football',
-        'olimp': 1,
-        'fonbet': 1,
-        'pinnacle': 29,
-        'min': 90,
-    },
+    # {
+    #     'name': 'football',
+    #     'olimp': 1,
+    #     'fonbet': 1,
+    #     'pinnacle': 29,
+    #     'min': 90,
+    # },
     # {
     #     'name': 'esports',
     #     'olimp': 112,
@@ -73,13 +73,13 @@ sport_list = [
     #     'pinnacle': 4,
     #     'min': 40,
     # },
-    # {
-    #     'name': 'hockey',
-    #     'olimp': 2,
-    #     'fonbet': 2,
-    #     'pinnacle': 19,
-    #     'min': 60,
-    # }
+    {
+        'name': 'hockey',
+        'olimp': 2,
+        'fonbet': 2,
+        'pinnacle': 19,
+        'min': 60,
+    }
 ]
 
 opposition = {

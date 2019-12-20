@@ -218,7 +218,11 @@ def get_odds(bets, api_key, pair_mathes, sport_id, proxi_list, proxy, timeout):
         proxies=proxies,
     )
     data = resp.json()
-    print('data' + str(data))
+    # {'detail': 'API key is not valid', 'status': 403, 'title': 'BAD_APIKEY', 'type': 'about:blank'}
+    if data.get('status'):
+        utils.prnts('data' + str(data))
+        if data.get('title') == 'BAD_APIKEY':
+            utils.prnts('api_key: ' + str(api_key))
 
     for match_id in match_id_list:
         res = {}
