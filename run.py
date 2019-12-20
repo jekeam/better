@@ -437,6 +437,7 @@ def starter_bets(
                 start_seeker_fonbet_bets_by_id.start()
 
             v_bk_name = 'pinnacle'
+            # TODO onle exists successfull compare matches
             for sport_arr in sport_list:
                 sport_id = sport_arr.get(v_bk_name)
                 if sport_id not in mathes_id_is_work:
