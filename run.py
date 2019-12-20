@@ -406,7 +406,10 @@ def get_rate(team1_bk1, team2_bk1, team1_bk2, team2_bk2, debug=False):
     team2_bk2 = str(team2_bk2).lower()
 
     if 'corners'.lower() in team1_bk1 + team2_bk1 + team1_bk2 + team2_bk2:
-        # prnts('corners exclude: ' + team1_bk1 + team2_bk1 + team1_bk2 + team2_bk2)
+        prnts('corners exclude: ' + team1_bk1 + team2_bk1 + team1_bk2 + team2_bk2, 'hide')
+        return 0, 0, 0
+    elif 'yellow cards'.lower() in team1_bk1 + team2_bk1 + team1_bk2 + team2_bk2:
+        prnts('yellow cards exclude: ' + team1_bk1 + team2_bk1 + team1_bk2 + team2_bk2, 'hide')
         return 0, 0, 0
 
     if team1_bk1 and team2_bk1 and team1_bk2 and team2_bk2:
