@@ -142,8 +142,8 @@ def get_api(bk_name, proxy):
             raise ValueError(bk_name + ', возникла ошибка при запросе ключа, код ответа ' + str(res.status_code) + ': ' + str(e))
 
 
-def start_seeker_matchs(bk_name, proxies_container, arr_matchs, api_key):
-    global TIMEOUT_MATCHS
+def start_seeker_matchs(bk_name, proxies_container, arr_matchs):
+    global TIMEOUT_MATCHS, api_key
     proxy = proxies_container[bk_name]['gen_proxi'].next()
     fail_proxy = 0
 
@@ -403,8 +403,9 @@ def starter_bets(
         proxies_olimp, gen_proxi_olimp,
         proxies_fonbet, gen_proxi_fonbet,
         proxies_container,
-        stat_reqs, arr_fonbet_top_kofs, api_key
+        stat_reqs, arr_fonbet_top_kofs
 ):
+    global api_key
     while True:
         matchs_id = None
         for pair_match in pair_mathes:
@@ -945,7 +946,7 @@ if __name__ == '__main__':
     # get event list by bk
     bk_seeker_matchs = []
     for bk_name in bk_working:
-        seeker_matchs = threading.Thread(target=start_seeker_matchs, args=(bk_name, proxies_container, arr_matchs, api_key))
+        seeker_matchs = threading.Thread(target=start_seeker_matchs, args=(bk_name, proxies_container, arr_matchs))
         bk_seeker_matchs.append(seeker_matchs)
         seeker_matchs.start()
     time.sleep(4)
@@ -983,8 +984,7 @@ if __name__ == '__main__':
             proxies_container,
 
             stat_reqs,
-            arr_fonbet_top_kofs,
-            api_key
+            arr_fonbet_top_kofs
         )
     )
     starter_bets.start()
