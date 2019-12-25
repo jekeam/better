@@ -7,6 +7,7 @@ from utils import prnts, get_vector, print_j, if_exists, sport_list
 import re
 import sys
 import traceback
+import copy
 
 url_fonbet = 'https://line-01.ccf4ab51771cacd46d.com'
 url_fonbet_matchs = url_fonbet + '/live/currentLine/en/?2lzf1earo8wjksbh22s'
@@ -392,7 +393,7 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
         #         bets_fonbet[key_id].update({'avg_change_total': avg_change_total})
 
         try:
-            for key_id_in, j in dict(bets_fonbet).items():
+            for key_id_in, j in copy.deepcopy(bets_fonbet).items():
                 for i, j in j.get('kofs', {}).items():
                     if round(float(time.time() - float(j.get('time_req', 0)))) > 2.8 and j.get('value', 0) > 0:
                         try:
