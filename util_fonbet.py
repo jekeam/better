@@ -394,10 +394,12 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
 
         try:
             for i in list(bets_fonbet):
+                prnts('i: ' + str(i))
                 for j in list(bets_fonbet[i].get('kofs', {})):
+                    prnts('j: ' + str(j))
                     if round(float(time.time() - float(bets_fonbet[i][j].get('time_req', 0)))) > 2.8 and bets_fonbet[i][j].get('value', 0) > 0:
                         try:
-                            bets_fonbet[i]['kofs'][i]['value'] = 0
+                            bets_fonbet[i]['kofs'][j]['value'] = 0
                             # prnts('Фонбет, данные по котировке из БК не получены более 2.8 сек., знач. выставил в 0: ' + key_id_in + ' ' + str(i), 'hide')
                         except Exception as e:
                             exc_type, exc_value, exc_traceback = sys.exc_info()
