@@ -507,15 +507,12 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
 
         try:
             for i in list(bets_olimp):
-                prnts('o i: ' + str(i))
                 for j in list(bets_olimp[i].get('kofs', {})):
-                    prnts('o j: ' + str(j))
-                    prnts('o ij: ' + str(bets_olimp.get(i, {}).get(j)))
-                    if round(float(time.time() - float(bets_olimp[i][j].get('time_req', 0)))) > 2.8 and bets_olimp[i][j].get('value', 0) > 0:
+                    if round(float(time.time() - float(bets_olimp[i]['kofs'][j].get('time_req', 0)))) > 4 and bets_olimp[i]['kofs'][j].get('value', 0) > 0:
                         try:
                             bets_olimp[i]['kofs'][j]['value'] = 0
                             bets_olimp[i]['kofs'][j]['factor'] = 0
-                            # prnts('Олимп, данные по котировке из БК не получены более 2.8 сек., знач. выставил в 0: ' + key_id_in + ' ' + str(i), 'hide')
+                            # prnts('Олимп, данные по котировке из БК не получены более X сек., знач. выставил в 0: ' + key_id_in + ' ' + str(i), 'hide')
                         except Exception as e:
                             exc_type, exc_value, exc_traceback = sys.exc_info()
                             err_str = 'error: ' + str(e) + ' (' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))) + ')'
