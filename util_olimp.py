@@ -8,7 +8,6 @@ from utils import prnts, get_vector, get_param, if_exists, sport_list, print_j
 from exceptions import *
 import sys
 import traceback
-import copy
 
 url_autorize = "https://{}.olimp-proxy.ru/api/{}"
 payload = {"lang_id": "0", "platforma": "ANDROID1"}
@@ -507,12 +506,12 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
         #         bets_olimp[key_id].update({'avg_change_total': avg_change_total})
 
         try:
-            for key_id_in, j in copy.deepcopy(bets_olimp).items():
-                for i, j in j.get('kofs', {}).items():
-                    if round(float(time.time() - float(j.get('time_req', 0)))) > 2.8 and j.get('value', 0) > 0:
+            for i in list(bets_olimp):
+                for j in list(bets_olimp[i].get('kofs', {})):
+                    if round(float(time.time() - float(bets_olimp[i][j].get('time_req', 0)))) > 2.8 and bets_olimp[i][j].get('value', 0) > 0:
                         try:
-                            bets_olimp[key_id_in]['kofs'][i]['value'] = 0
-                            bets_olimp[key_id_in]['kofs'][i]['factor'] = 0
+                            bets_olimp[i]['kofs'][j]['value'] = 0
+                            bets_olimp[i]['kofs'][j]['factor'] = 0
                             # prnts('Олимп, данные по котировке из БК не получены более 2.8 сек., знач. выставил в 0: ' + key_id_in + ' ' + str(i), 'hide')
                         except Exception as e:
                             exc_type, exc_value, exc_traceback = sys.exc_info()

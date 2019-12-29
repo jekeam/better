@@ -393,11 +393,11 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
         #         bets_fonbet[key_id].update({'avg_change_total': avg_change_total})
 
         try:
-            for key_id_in, j in copy.deepcopy(bets_fonbet).items():
-                for i, j in j.get('kofs', {}).items():
-                    if round(float(time.time() - float(j.get('time_req', 0)))) > 2.8 and j.get('value', 0) > 0:
+            for i in list(bets_fonbet):
+                for j in list(bets_fonbet[i].get('kofs', {})):
+                    if round(float(time.time() - float(bets_fonbet[i][j].get('time_req', 0)))) > 2.8 and bets_fonbet[i][j].get('value', 0) > 0:
                         try:
-                            bets_fonbet[key_id_in]['kofs'][i]['value'] = 0
+                            bets_fonbet[i]['kofs'][i]['value'] = 0
                             # prnts('Фонбет, данные по котировке из БК не получены более 2.8 сек., знач. выставил в 0: ' + key_id_in + ' ' + str(i), 'hide')
                         except Exception as e:
                             exc_type, exc_value, exc_traceback = sys.exc_info()
