@@ -394,9 +394,10 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
 
         try:
             for i in list(bets_fonbet):
-                prnts('i: ' + str(i))
+                prnts('f i: ' + str(i))
                 for j in list(bets_fonbet[i].get('kofs', {})):
-                    prnts('j: ' + str(j))
+                    prnts('f j: ' + str(j))
+                    prnts('f ij: ' + str(bets_fonbet.get(i, {}).get(j)))
                     if round(float(time.time() - float(bets_fonbet[i][j].get('time_req', 0)))) > 2.8 and bets_fonbet[i][j].get('value', 0) > 0:
                         try:
                             bets_fonbet[i]['kofs'][j]['value'] = 0
