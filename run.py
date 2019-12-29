@@ -557,7 +557,7 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
             exc_type, exc_value, exc_traceback = sys.exc_info()
             prnts('Error start_event_mapping: ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
         finally:
-            time.sleep(15)
+            time.sleep(30)
 
 
 def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbet_top_matchs):
@@ -814,7 +814,7 @@ def stat_req(stat_req_olimp, stat_req_fonbet):
                   ' max:' + str(max(stat_req_olimp)) +
                   ' mode:' + str(round(find_max_mode(stat_req_olimp), 2)) +
                   ' median:' + str(round(median(stat_req_olimp), 2)))
-        time.sleep(60)
+        time.sleep(30)
 
 
 if __name__ == '__main__':
