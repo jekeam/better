@@ -76,7 +76,13 @@ sport_list = [
         'fonbet': 2,
         'pinn': 19,
         'min': 60,
-    }
+    },
+    {
+        'name': 'table-tennis',
+        'olimp': 40,
+        'fonbet': 3088,
+        'pinn': None,
+    },
 ]
 
 opposition = {
