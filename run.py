@@ -238,7 +238,7 @@ def start_seeker_top_matchs_fonbet(gen_proxi_fonbet, arr_fonbet_top_matchs, pair
             prnts('Фонбет, ошибка при запросе списка TOP матчей: ' + str(e) + ' ' + proxy)
             raise ValueError(e)
         try:
-            resp, time_resp = get_matches_fonbet(proxy, TIMEOUT_MATCHS, top=True)
+            resp, time_resp = get_matches_fonbet(proxy, TIMEOUT_MATCHS, 'top')
             for event in resp.get('events'):
                 match_id = event.get('id')
                 if match_id not in arr_fonbet_top_matchs and match_id in list_pair_mathes:
