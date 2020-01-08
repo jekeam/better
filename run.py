@@ -22,6 +22,7 @@ import sys
 import traceback
 
 TIMEOUT_MATCHS = 10
+TIMEOUT_PRE_MATCHS = 30
 TIMEOUT_MATCH = 10
 TIMEOUT_MATCH_MINUS = 9
 
@@ -118,8 +119,7 @@ def get_fonbet(resp, arr_matchs, type):
             'event_bk': 'fonbet',
             'event_name': sport['name'],
             'event_id': sport['id'],
-            'event_sportId': sport['parentId'],
-            'type': type
+            'event_sportId': sport['parentId']
         } for sport in resp['sports'] if sport['kind'] == 'segment' and if_exists(sport_list, 'fonbet', sport.get('parentId'))
     ]
 
@@ -144,6 +144,7 @@ def get_fonbet(resp, arr_matchs, type):
                     # prnts(if_exists(sport_list, 'fonbet', mid.get('sportId'), 'name'))
                     arr_matchs[str(event['id'])] = {
                         'bk_name': 'fonbet',
+                        'type': type,
                         'sport_id': mid.get('sportId'),
                         'sport_name': if_exists(sport_list, 'fonbet', mid.get('sportId'), 'name'),
                         'name': event['name'],
@@ -205,18 +206,22 @@ def start_seeker_matchs_olimp(gen_proxi_olimp, arr_matchs):
 
 
 def start_seeker_matchs_fonbet(gen_proxi_fonbet, arr_matchs, type):
-    global TIMEOUT_MATCHS
+    global TIMEOUT_MATCHS, TIMEOUT_PRE_MATCHS
+    if type == 'pre':
+        time_out = TIMEOUT_PRE_MATCHS
+    else:
+        time_out = TIMEOUT_MATCHS
     proxy = gen_proxi_fonbet.next()
     while True:
         try:
-            resp, time_resp = get_matches_fonbet(proxy, TIMEOUT_MATCHS, type)
+            resp, time_resp = get_matches_fonbet(proxy, time_out, type)
             get_fonbet(resp, arr_matchs, type)
         except Exception as e:
-            prnts('Фонбет, ошибка при запросе списка матчей: ' + str(e) + ' ' + proxy)
+            prnts('Фонбет, ошибка при запросе списка матчей: ' + str(type) + ' ' + str(e) + ' ' + proxy)
             proxy = gen_proxi_fonbet.next()
-            time_resp = TIMEOUT_MATCHS
+            time_resp = time_out
 
-        time_sleep = max(0, (TIMEOUT_MATCHS - time_resp))
+        time_sleep = max(0, (time_out - time_resp))
 
         if DEBUG:
             pass
@@ -453,7 +458,10 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
 
             for key, val in arr_matchs.items():
                 if val.get('bk_name', '') == 'fonbet':
-                    json_bk2_copy[key] = val
+                    if val.get('type') == 'live':
+                        json_bk2_copy[key] = val
+                    else:
+                        print('pre key:' + str(key))
 
             for bk1_match_id, bk1_match_info in json_bk1_copy.items():
                 if [bk1_name for bk1_name in bk1_match_info.values() if bk1_name is not None]:
@@ -859,12 +867,11 @@ if __name__ == '__main__':
     # get event list by fonbet
     fonbet_seeker_matchs = threading.Thread(target=start_seeker_matchs_fonbet, args=(gen_proxi_fonbet, arr_matchs, 'live'))
     fonbet_seeker_matchs.start()
-    time.sleep(4)
-
-    # get event list by fonbet
+    time.sleep(2)
+    # get pre event list by fonbet
     fonbet_seeker_pre_matchs = threading.Thread(target=start_seeker_matchs_fonbet, args=(gen_proxi_fonbet, arr_matchs, 'pre'))
     fonbet_seeker_pre_matchs.start()
-
+    time.sleep(2)
     # while True:
     #     print_j(arr_matchs)
     #     time.sleep(15)

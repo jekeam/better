@@ -11,8 +11,8 @@ import copy
 
 url_fonbet = 'https://line-01.ccf4ab51771cacd46d.com'
 url_fonbet_matchs = url_fonbet + '/live/currentLine/en/?2lzf1earo8wjksbh22s'
-url_fonbet_pre_matchs = url_fonbet + '/line/mobile/showSports?lineType=full_line&skId=1&lang=en'
-url_fonbet_top_matchs = url_fonbet + '/line/topEvents3?place=live&sysId=1&lang=en&salt=2miqtggxzksk0amacau'
+url_fonbet_pre_matchs = url_fonbet + '/line/mobile/showSportKinds?lineType=full_line&lang=en'
+url_fonbet_top_matchs = url_fonbet + '/line/topEvents3?place=live&sysId=1&lang=en'
 # url_fonbet_match = 'https://23.111.80.222/line/eventView?eventId='
 
 url_fonbet_match = url_fonbet + '/line/eventView?eventId='
@@ -53,7 +53,7 @@ FORA = [['Ф1({})', 927], ['Ф2({})', 928],
         ]
 
 
-def get_matches_fonbet(proxy, time_out, type=''):
+def get_matches_fonbet(proxy, time_out, type='live'):
     global url_fonbet
     global UA
 
