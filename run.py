@@ -41,7 +41,7 @@ prnts('SERVER_PORT: ' + str(SERVER_PORT))
 prnts('SPORT_LIST: ' + print_j(sport_list, 'return var'))
 
 
-def get_olimp(resp, arr_matchs):
+def get_olimp(resp, arr_matchs, type='live'):
     # Очистим дстарые данные
     arr_matchs_copy = copy.deepcopy(arr_matchs)
     for key in arr_matchs_copy.keys():
@@ -72,6 +72,7 @@ def get_olimp(resp, arr_matchs):
                     # print_j(liga_info)
                     arr_matchs[match_id_str] = {
                         'bk_name': 'olimp',
+                        'type': type,
                         'sport_id': liga_info.get('sport_id'),
                         'sport_name': if_exists(sport_list, 'olimp', liga_info.get('sport_id'), 'name'),
                         'name': liga_info['cn'],
@@ -378,7 +379,7 @@ def starter_bets(bets_olimp, bets_fonbet, pair_mathes, mathes_complite, mathes_i
     while True:
         for pair_match in pair_mathes:
             # prnts(pair_match)
-            match_id_olimp, match_id_fonbet, event_type, passs, pass2 = pair_match
+            match_id_olimp, match_id_fonbet, event_type, passs, pass2, pass3 = pair_match
 
             if match_id_olimp not in mathes_id_is_work:
                 mathes_id_is_work.append(match_id_olimp)
@@ -458,10 +459,7 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
 
             for key, val in arr_matchs.items():
                 if val.get('bk_name', '') == 'fonbet':
-                    if val.get('type') == 'live':
-                        json_bk2_copy[key] = val
-                    else:
-                        print('pre key:' + str(key))
+                    json_bk2_copy[key] = val
 
             for bk1_match_id, bk1_match_info in json_bk1_copy.items():
                 if [bk1_name for bk1_name in bk1_match_info.values() if bk1_name is not None]:
@@ -482,7 +480,8 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                                              str(bk2_match_info.get('team1')) + ';' + \
                                              str(bk2_match_info.get('team2')) + ';'
 
-                                if bk1_match_info.get('sport_name') == bk2_match_info.get('sport_name'):
+                                if bk1_match_info.get('sport_name') == bk2_match_info.get('sport_name') and bk1_match_info.get('type') == bk2_match_info.get('type'):
+                                    type = bk1_match_info.get('type')
                                     r1, r2, rate = get_rate(
                                         bk1_match_info.get('team1'),
                                         bk1_match_info.get('team2'),
@@ -494,16 +493,19 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                                             'bk1_t1': bk1_match_info.get('team1'),
                                             'bk1_t2': bk1_match_info.get('team2'),
                                             'rate': r1,
-                                            'sport_name': bk1_match_info.get('sport_name')
+                                            'sport_name': bk1_match_info.get('sport_name'),
+                                            'type': bk1_match_info.get('type'),
                                         },
                                         str(bk2_match_id): {
                                             'bk2_t1': bk2_match_info.get('team1'),
                                             'bk2_t2': bk2_match_info.get('team2'),
                                             'rate': r2,
-                                            'sport_name': bk2_match_info.get('sport_name')
+                                            'sport_name': bk2_match_info.get('sport_name'),
+                                            'type': bk2_match_info.get('type'),
                                         },
                                         'rate': rate,
-                                        'match_name': match_name
+                                        'match_name': match_name,
+                                        'type': type,
                                     })
 
             for bkr in bk_rate_list:
@@ -526,10 +528,11 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                             pair.append(m)
                             if v.get('sport_name') not in pair:
                                 pair.append(v.get('sport_name'))
+                                pair.append(v.get('type'))
                     except:
                         pass
                 pair.sort()
-                pair = [pair[1], pair[0], pair[2]]
+                pair = [pair[1], pair[0], pair[2], pair[3]]
                 pair.append(e.get('match_name'))
                 pair.append(e.get('rate'))
 
@@ -542,25 +545,25 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                         for p in pair_mathes:
                             id1, id2 = pair[0], pair[1]
                             if id1 in p:
-                                if pair[4] > p[4]:
+                                if pair[5] > p[5]:
                                     prnts('Math conflict: ' + str(id1) + ', p: ' + str(p) + ', need: ' + str(pair))
                                     conflict = True
                                 else:
                                     is_exists = True
                             if id2 in p:
-                                if pair[4] > p[4]:
+                                if pair[5] > p[5]:
                                     prnts('Math conflict: ' + str(id2) + ', p: ' + str(p) + ', need: ' + str(pair))
                                     conflict = True
                                 else:
                                     is_exists = True
                             if conflict:
                                 pair_mathes.remove(p)
-                                serv_log('compare_teams', 'del;' + str(p[3]) + 'conflict')
+                                serv_log('compare_teams', 'del;' + str(p[4]) + 'conflict')
                                 pair_mathes.append(pair)
-                                serv_log('compare_teams', 'add;' + pair[3] + 'conflict')
+                                serv_log('compare_teams', 'add;' + pair[4] + 'conflict')
                         if not conflict and not is_exists:
                             pair_mathes.append(pair)
-                            serv_log('compare_teams', 'add;' + pair[3])
+                            serv_log('compare_teams', 'add;' + pair[4])
 
         except Exception as e:
             exc_type, exc_value, exc_traceback = sys.exc_info()
