@@ -14,7 +14,9 @@ url_fonbet_matchs = url_fonbet + '/live/currentLine/en/?2lzf1earo8wjksbh22s'
 url_fonbet_pre_matchs = url_fonbet + '/line/mobile/showSports?lineType=full_line&skId=1&lang=en'
 url_fonbet_top_matchs = url_fonbet + '/line/topEvents3?place=live&sysId=1&lang=en&salt=2miqtggxzksk0amacau'
 # url_fonbet_match = 'https://23.111.80.222/line/eventView?eventId='
+
 url_fonbet_match = url_fonbet + '/line/eventView?eventId='
+
 UA = 'Mozilla/5.0 (Windows NT 10; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.3163.100 Safari/537.36'
 fonbet_header = {
     'User-Agent': 'Fonbet/5.2.2b (Android 21; Phone; com.bkfonbet)',

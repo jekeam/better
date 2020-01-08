@@ -81,7 +81,7 @@ def get_olimp(resp, arr_matchs):
     # print_j(arr_matchs) # 50940691
 
 
-def get_fonbet(resp, arr_matchs):
+def get_fonbet(resp, arr_matchs, type):
     # with open('resp.json', 'w') as f:
     #     f.write(json.dumps(resp, ensure_ascii=False))
 
@@ -118,7 +118,8 @@ def get_fonbet(resp, arr_matchs):
             'event_bk': 'fonbet',
             'event_name': sport['name'],
             'event_id': sport['id'],
-            'event_sportId': sport['parentId']
+            'event_sportId': sport['parentId'],
+            'type': type
         } for sport in resp['sports'] if sport['kind'] == 'segment' and if_exists(sport_list, 'fonbet', sport.get('parentId'))
     ]
 
@@ -203,13 +204,13 @@ def start_seeker_matchs_olimp(gen_proxi_olimp, arr_matchs):
         time.sleep(time_sleep)
 
 
-def start_seeker_matchs_fonbet(gen_proxi_fonbet, arr_matchs):
+def start_seeker_matchs_fonbet(gen_proxi_fonbet, arr_matchs, type):
     global TIMEOUT_MATCHS
     proxy = gen_proxi_fonbet.next()
     while True:
         try:
-            resp, time_resp = get_matches_fonbet(proxy, TIMEOUT_MATCHS)
-            get_fonbet(resp, arr_matchs)
+            resp, time_resp = get_matches_fonbet(proxy, TIMEOUT_MATCHS, type)
+            get_fonbet(resp, arr_matchs, type)
         except Exception as e:
             prnts('Фонбет, ошибка при запросе списка матчей: ' + str(e) + ' ' + proxy)
             proxy = gen_proxi_fonbet.next()
@@ -856,9 +857,13 @@ if __name__ == '__main__':
     olimp_seeker_matchs.start()
 
     # get event list by fonbet
-    fonbet_seeker_matchs = threading.Thread(target=start_seeker_matchs_fonbet, args=(gen_proxi_fonbet, arr_matchs))
+    fonbet_seeker_matchs = threading.Thread(target=start_seeker_matchs_fonbet, args=(gen_proxi_fonbet, arr_matchs, 'live'))
     fonbet_seeker_matchs.start()
     time.sleep(4)
+
+    # get event list by fonbet
+    fonbet_seeker_pre_matchs = threading.Thread(target=start_seeker_matchs_fonbet, args=(gen_proxi_fonbet, arr_matchs, 'pre'))
+    fonbet_seeker_pre_matchs.start()
 
     # while True:
     #     print_j(arr_matchs)
@@ -892,6 +897,7 @@ if __name__ == '__main__':
     proxy_saver.join()
     olimp_seeker_matchs.join()
     fonbet_seeker_matchs.join()
+    fonbet_seeker_pre_matchs.join()
     event_mapping.join()
     starter_forks.join()
     started_stat_req.join()
