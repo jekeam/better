@@ -11,7 +11,7 @@ import copy
 
 url_fonbet = 'https://line-01.ccf4ab51771cacd46d.com'
 url_fonbet_matchs = url_fonbet + '/live/currentLine/en/?2lzf1earo8wjksbh22s'
-url_fonbet_pre_matchs = url_fonbet + '/line/mobile/showSportKinds?lineType=full_line&lang=en'
+url_fonbet_pre_matchs = url_fonbet + '/line/currentLine/en/?2lzf1earo8wjksbh22s'
 url_fonbet_top_matchs = url_fonbet + '/line/topEvents3?place=live&sysId=1&lang=en'
 # url_fonbet_match = 'https://23.111.80.222/line/eventView?eventId='
 
