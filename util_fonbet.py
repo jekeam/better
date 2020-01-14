@@ -199,10 +199,7 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
             TT.extend(bet)
 
         for event in resp.get("events"):
-
             if event.get('parentId') == 0:
-                # import json
-                # print(json.dumps(event, ensure_ascii=False))
                 score = event.get('score', '0:0').replace('-', ':')
                 sc1 = 0
                 sc2 = 0
@@ -233,8 +230,14 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
 
                 sport_name = event.get('sportName')
                 name = event.get('name')
+                # print('name:' + str(name))
+                # if name == 'SKA-1946 – HK Riga':
+                #     import json
+                #     print(json.dumps(event, ensure_ascii=False))
                 priority = event.get('priority')
                 score_1st = event.get('scoreComment', '').replace('-', ':')
+                start_time = event('startTimeTimestamp')
+                start_after_min = (event('startTimeTimestamp') - int(time.time())) / 60
                 if event.get('parentId') == 0 or 'st half' in name or 'nd half' in name:
                     if event.get('parentId') == 0:
                         try:
@@ -248,6 +251,8 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
                                 'score_1st': score_1st,
                                 'time': timer,
                                 'minute': minute,
+                                'start_time': start_time,
+                                'start_after_min': start_after_min,
                                 'time_req': round(time.time())
                             })
                         except Exception as e:
@@ -261,6 +266,8 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
                                 'score_1st': score_1st,
                                 'time': timer,
                                 'minute': minute,
+                                'start_time': start_time,
+                                'start_after_min': start_after_min,
                                 'time_req': round(time.time()),
                                 # 'time_change_total': round(time.time()),
                                 # 'avg_change_total': [],

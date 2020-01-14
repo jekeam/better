@@ -23,7 +23,6 @@ def get_state(arr):
         state['last_update'] = str((int(time.time() - info.get('time_req'))))
         state['place'] = ''
         state['start_after_min'] = ''
-        state['info'] = str(info)
         state['kofs'] = {}
         for kof_name, kof_info in info.get('kofs', {}).items():
             val = kof_info.get('value')
