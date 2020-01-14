@@ -22,9 +22,11 @@ import sys
 import traceback
 
 TIMEOUT_MATCHS = 10
-TIMEOUT_PRE_MATCHS = 30
 TIMEOUT_MATCH = 10
 TIMEOUT_MATCH_MINUS = 9
+
+TIMEOUT_PRE_MATCHS = 30
+TIMEOUT_PRE_MATCH_MINUS = 29
 
 if not DEBUG:
     SERVER_IP = get_param('server_ip')
@@ -64,7 +66,7 @@ def get_olimp(resp, arr_matchs, type='live'):
             # 51 Badminton
             # 60 Beach Volleyball
             # 126 Pool
-            if if_exists(sport_list, 'olimp', liga_info.get('sport_id')):
+            if if_exists(sport_list, 'olimp', liga_info.get('sport_id')) and if_exists(sport_list, 'place', type):
                 for math_info in liga_info.get('it'):
                     match_id_str = str(math_info.get('id'))
                     # math_block = True if math_info.get('ms') == 1 else False
@@ -85,6 +87,7 @@ def get_olimp(resp, arr_matchs, type='live'):
 def get_fonbet(resp, arr_matchs, type):
     # with open('resp.json', 'w') as f:
     #     f.write(json.dumps(resp, ensure_ascii=False, indent=0))
+    # print(str(resp)[0:10000])
 
     # for val in resp.get('sports'):
     #     if val.get('kind') == 'sport':
@@ -118,7 +121,7 @@ def get_fonbet(resp, arr_matchs, type):
             'event_name': sport['name'],
             'event_id': sport['id'],
             'event_sportId': sport['parentId']
-        } for sport in resp['sports'] if sport['kind'] == 'segment' and if_exists(sport_list, 'fonbet', sport.get('parentId'))
+        } for sport in resp['sports'] if sport['kind'] == 'segment' and if_exists(sport_list, 'fonbet', sport.get('parentId')) and if_exists(sport_list, 'place', type)
     ]
 
     # получим список ид всех матчей по событиям
@@ -127,8 +130,12 @@ def get_fonbet(resp, arr_matchs, type):
 
     for idEvent in idEvents:
         # prnts(idEvent['event_id'])
+
+        # for event in resp['events']:
+        #     print(event)
+
         # prnts([{'id': event['id'], 'sportId': idEvent['event_sportId']} for event in resp['events'] if event.get('parentId', -1) == -1])
-        for x in [{'id': event['id'], 'sportId': idEvent['event_sportId'], 'isHot': event.get('state', {}).get('inHotList', False)} for event in resp['events'] if
+        for x in [{'id': event['id'], 'sportId': idEvent['event_sportId'], 'isHot': event.get('state', {}).get('inHotList', False), 'place': event['place']} for event in resp['events'] if
                   event['sportId'] == idEvent['event_id'] and event.get('parentId', -1) == -1]:
             idMatches.append(x)
         # полчим все инфу по ид матча
@@ -143,12 +150,14 @@ def get_fonbet(resp, arr_matchs, type):
                     arr_matchs[str(event['id'])] = {
                         'bk_name': 'fonbet',
                         'type': type,
+                        'place': event.get('place'),
                         'sport_id': mid.get('sportId'),
                         'sport_name': if_exists(sport_list, 'fonbet', mid.get('sportId'), 'name'),
                         'name': event['name'],
                         'team1': event.get('team1', ''),
                         'team2': event.get('team2', ''),
                         'start_timestamp': event.get('startTime', 0),
+                        'start_after_min': (int(event.get('startTime', 0)) - int(time.time())),
                         'isHot': mid.get('isHot')
                     }
                     # if mid.get('isHot'):
@@ -415,6 +424,9 @@ def get_rate(team1_bk1, team2_bk1, team1_bk2, team2_bk2, debug=False):
     elif 'yellow cards'.lower() in team1_bk1 + team2_bk1 + team1_bk2 + team2_bk2:
         # prnts('yellow cards exclude: ' + team1_bk1 + team2_bk1 + team1_bk2 + team2_bk2, 'hide')
         return 0, 0, 0
+    elif team1_bk1=='' or team2_bk1=='' or team1_bk2=='' or team2_bk2=='':
+        # prnts('Название одной из команд не определено, team1_bk1:{}, team2_bk1:{}, team1_bk2:{}, team2_bk2:{}'.format(team1_bk1, team2_bk1, team1_bk2, team2_bk2))
+        return 0, 0, 0
 
     if team1_bk1 and team2_bk1 and team1_bk2 and team2_bk2:
         team1_bk1 = re.sub('[^A-z 0-9]', '', team1_bk1).replace(' ', '')
@@ -476,32 +488,33 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                                              str(bk2_match_info.get('team1')) + ';' + \
                                              str(bk2_match_info.get('team2')) + ';'
 
-                                if bk1_match_info.get('sport_name') == bk2_match_info.get('sport_name') and bk1_match_info.get('type') == bk2_match_info.get('type'):
+                                if bk1_match_info.get('sport_name') == bk2_match_info.get('sport_name'): # and bk1_match_info.get('type') == bk2_match_info.get('type'):
                                     type = bk1_match_info.get('type')
                                     r1, r2, rate = get_rate(
-                                        bk1_match_info.get('team1'),
-                                        bk1_match_info.get('team2'),
-                                        bk2_match_info.get('team1'),
-                                        bk2_match_info.get('team2')
+                                        bk1_match_info.get('team1', ''),
+                                        bk1_match_info.get('team2', ''),
+                                        bk2_match_info.get('team1', ''),
+                                        bk2_match_info.get('team2', '')
                                     )
-                                    bk_rate_list.append({
-                                        str(bk1_match_id): {
-                                            'bk1_t1': bk1_match_info.get('team1'),
-                                            'bk1_t2': bk1_match_info.get('team2'),
-                                            'rate': r1,
-                                            'sport_name': bk1_match_info.get('sport_name'),
-                                            'type': bk1_match_info.get('type'),
-                                        },
-                                        str(bk2_match_id): {
-                                            'bk2_t1': bk2_match_info.get('team1'),
-                                            'bk2_t2': bk2_match_info.get('team2'),
-                                            'rate': r2,
-                                            'sport_name': bk2_match_info.get('sport_name'),
-                                            'type': bk2_match_info.get('type'),
-                                        },
-                                        'rate': rate,
-                                        'match_name': match_name,
-                                        'type': type,
+                                    if rate > 0:
+                                        bk_rate_list.append({
+                                            str(bk1_match_id): {
+                                                'bk1_t1': bk1_match_info.get('team1'),
+                                                'bk1_t2': bk1_match_info.get('team2'),
+                                                'rate': r1,
+                                                'sport_name': bk1_match_info.get('sport_name'),
+                                                'type': type,
+                                            },
+                                            str(bk2_match_id): {
+                                                'bk2_t1': bk2_match_info.get('team1'),
+                                                'bk2_t2': bk2_match_info.get('team2'),
+                                                'rate': r2,
+                                                'sport_name': bk2_match_info.get('sport_name'),
+                                                'type': type,
+                                            },
+                                            'rate': rate,
+                                            'match_name': match_name,
+                                            'type': type,
                                     })
             for bkr in bk_rate_list:
                 if bkr.get('rate', 0) > need:
@@ -874,10 +887,10 @@ if __name__ == '__main__':
     fonbet_seeker_pre_matchs = threading.Thread(target=start_seeker_matchs_fonbet, args=(gen_proxi_fonbet, arr_matchs, 'pre'))
     fonbet_seeker_pre_matchs.start()
     time.sleep(2)
-    while True:
-        for n in list(arr_matchs):
-            print_j(arr_matchs[n])
-        time.sleep(15)
+    # while True:
+    #     for n in list(arr_matchs):
+    #         print_j(arr_matchs[n])
+    #     time.sleep(15)
 
     # List of TOP events
     fonbet_seeker_top_matchs = threading.Thread(target=start_seeker_top_matchs_fonbet, args=(gen_proxi_fonbet, arr_fonbet_top_matchs, pair_mathes, arr_fonbet_top_kofs))

@@ -26,15 +26,23 @@ dtOld = datetime.datetime.now()
 
 def if_exists(jsos_list: dict, key_name: str, val: str, get_key: str = ''):
     for m in jsos_list:
-        if m.get(key_name) == val:
-            if get_key == '':
+        v = m.get(key_name)
+        if type(v) is list:
+            if val in v:
                 return True
             else:
                 return m.get(get_key)
+        else:
+            if v==val:
+                if get_key == '':
+                    return True
+                else:
+                    return m.get(get_key)
     return False
 
 
 bk_fork_name = ['olimp', 'fonbet']  # , 'pinnacle']
+# bk_fork_name = ['fonbet']  # , 'pinnacle']
 
 # TODO, ADD FLAG: LIVE, LINE/PRE
 sport_list = [
@@ -44,32 +52,40 @@ sport_list = [
         'fonbet': 1,
         'pinn': 29,
         'min': 90,
+        'place': ['live', 'pre']
     },
     {
         'name': 'esports',
         'olimp': 112,
         'fonbet': 29086,
         'pinn': 12,
+        # 'place': ['live', 'pre']
+        'place': ['live']
     },
     {
         'name': 'volleyball',
         'olimp': 10,
         'fonbet': 9,
         'pinn': 34,
+        # 'place': ['live', 'pre']
+        'place': ['live']
     },
     {
         'name': 'tennis',
         'olimp': 3,
         'fonbet': 4,
         'pinn': 33,
+        # 'place': ['live', 'pre']
+        'place': ['live']
     },
     {
         'name': 'basketball',
         'olimp': 5,
         'fonbet': 3,
-        # TODO
-        'pinn': -1,
+        'pinn': None, #TODO
         'min': 40,
+        # 'place': ['live', 'pre']
+        'place': ['live']
     },
     {
         'name': 'hockey',
@@ -77,12 +93,16 @@ sport_list = [
         'fonbet': 2,
         'pinn': 19,
         'min': 60,
+        # 'place': ['live', 'pre']
+        'place': ['live']        
     },
     {
         'name': 'table-tennis',
         'olimp': 40,
         'fonbet': 3088,
-        'pinn': None,
+        'pinn': None, #TODO
+        # 'place': ['live', 'pre']
+        'place': ['live']
     },
 ]
 
