@@ -606,7 +606,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
                 math_json_olimp = bets_olimp.get(pair_math[0], {})
                 math_json_fonbet = bets_fonbet.get(pair_math[1], {})
                 event_type = pair_math[2]
-                type_time = pair_math[3]  # pre/live
+                # type_time = pair_math[3]  # pre/live
 
                 curr_opposition = copy.deepcopy(opposition)
 
