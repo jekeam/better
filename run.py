@@ -546,25 +546,25 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                         for p in pair_mathes:
                             id1, id2 = pair[0], pair[1]
                             if id1 in p:
-                                if pair[5] > p[5]:
+                                if float(pair[-1]) > float(p[-1]):
                                     prnts('Math conflict: ' + str(id1) + ', p: ' + str(p) + ', need: ' + str(pair))
                                     conflict = True
                                 else:
                                     is_exists = True
                             if id2 in p:
-                                if pair[5] > p[5]:
+                                if float(pair[-1]) > float(p[-1]):
                                     prnts('Math conflict: ' + str(id2) + ', p: ' + str(p) + ', need: ' + str(pair))
                                     conflict = True
                                 else:
                                     is_exists = True
                             if conflict:
                                 pair_mathes.remove(p)
-                                serv_log('compare_teams', 'del;' + str(p[4]) + 'conflict')
+                                serv_log('compare_teams', 'del;' + str(p[-2]) + 'conflict')
                                 pair_mathes.append(pair)
-                                serv_log('compare_teams', 'add;' + pair[4] + 'conflict')
+                                serv_log('compare_teams', 'add;' + pair[-2] + 'conflict')
                         if not conflict and not is_exists:
                             pair_mathes.append(pair)
-                            serv_log('compare_teams', 'add;' + pair[4])
+                            serv_log('compare_teams', 'add;' + pair[2])
             # for x in pair_mathes:
                 # print(x)
         except Exception as e:
