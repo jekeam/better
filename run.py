@@ -872,9 +872,9 @@ if __name__ == '__main__':
     fonbet_seeker_matchs.start()
     time.sleep(2)
     # get pre event list by fonbet
-    fonbet_seeker_pre_matchs = threading.Thread(target=start_seeker_matchs_fonbet, args=(gen_proxi_fonbet, arr_matchs, 'pre'))
-    fonbet_seeker_pre_matchs.start()
-    time.sleep(2)
+    # fonbet_seeker_pre_matchs = threading.Thread(target=start_seeker_matchs_fonbet, args=(gen_proxi_fonbet, arr_matchs, 'pre'))
+    # fonbet_seeker_pre_matchs.start()
+    # time.sleep(2)
     # while True:
     #     print_j(arr_matchs)
     #     time.sleep(15)
