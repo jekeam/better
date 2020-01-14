@@ -157,7 +157,7 @@ def get_fonbet(resp, arr_matchs, type):
                         'team1': event.get('team1', ''),
                         'team2': event.get('team2', ''),
                         'start_timestamp': event.get('startTime', 0),
-                        'start_after_min': (int(event.get('startTime', 0)) - int(time.time())),
+                        'start_after_min': (int(event.get('startTime', 0)) - int(time.time()))/60,
                         'isHot': mid.get('isHot')
                     }
                     # if mid.get('isHot'):
