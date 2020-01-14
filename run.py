@@ -43,10 +43,9 @@ prnts('SPORT_LIST: ' + print_j(sport_list, 'return var'))
 
 def get_olimp(resp, arr_matchs, type='live'):
     # Очистим дстарые данные
-    arr_matchs_copy = copy.deepcopy(arr_matchs)
-    for key in arr_matchs_copy.keys():
+    for key in list(arr_matchs):
         if arr_matchs.get('olimp', '') != '':
-            arr_matchs.pop(key)
+            arr_matchs.pop(key)   
     if resp:
         for liga_info in resp:
 
@@ -85,7 +84,7 @@ def get_olimp(resp, arr_matchs, type='live'):
 
 def get_fonbet(resp, arr_matchs, type):
     # with open('resp.json', 'w') as f:
-    #     f.write(json.dumps(resp, ensure_ascii=False))
+    #     f.write(json.dumps(resp, ensure_ascii=False, indent=0))
 
     # for val in resp.get('sports'):
     #     if val.get('kind') == 'sport':
@@ -108,9 +107,7 @@ def get_fonbet(resp, arr_matchs, type):
     #         # 45827 Cybertennis
     #         # 11627 Floorball
     #         # 40481 Cyberbasket
-
-    arr_matchs_copy = copy.deepcopy(arr_matchs)
-    for key in arr_matchs_copy.keys():
+    for key in list(arr_matchs):
         if arr_matchs.get('fonbet', '') != '':
             arr_matchs.pop(key)
 
@@ -453,13 +450,12 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
             prnts('Events found: ' + str(len(pair_mathes)) + ' ' + str(pair_mathes))
             bk_rate_list = list()
             bk_rate_sorted = list()
-            for key, val in arr_matchs.items():
-                if val.get('bk_name', '') == 'olimp':
-                    json_bk1_copy[key] = val
-
-            for key, val in arr_matchs.items():
-                if val.get('bk_name', '') == 'fonbet':
-                    json_bk2_copy[key] = val
+            
+            for j in list(arr_matchs):
+                if arr_matchs[j].get('bk_name', '') == 'olimp':
+                    json_bk1_copy[j] = arr_matchs[j]
+                elif arr_matchs[j].get('bk_name', '') == 'fonbet':
+                    json_bk2_copy[j] = arr_matchs[j]
 
             for bk1_match_id, bk1_match_info in json_bk1_copy.items():
                 if [bk1_name for bk1_name in bk1_match_info.values() if bk1_name is not None]:
@@ -597,6 +593,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
                 math_json_olimp = bets_olimp.get(pair_math[0], {})
                 math_json_fonbet = bets_fonbet.get(pair_math[1], {})
                 event_type = pair_math[2]
+                type_time = pair_math[3] # pre/live
 
                 curr_opposition = copy.deepcopy(opposition)
 
@@ -870,16 +867,17 @@ if __name__ == '__main__':
     olimp_seeker_matchs.start()
 
     # get event list by fonbet
-    fonbet_seeker_matchs = threading.Thread(target=start_seeker_matchs_fonbet, args=(gen_proxi_fonbet, arr_matchs, 'live'))
-    fonbet_seeker_matchs.start()
-    time.sleep(2)
-    # get pre event list by fonbet
-    # fonbet_seeker_pre_matchs = threading.Thread(target=start_seeker_matchs_fonbet, args=(gen_proxi_fonbet, arr_matchs, 'pre'))
-    # fonbet_seeker_pre_matchs.start()
+    # fonbet_seeker_matchs = threading.Thread(target=start_seeker_matchs_fonbet, args=(gen_proxi_fonbet, arr_matchs, 'live'))
+    # fonbet_seeker_matchs.start()
     # time.sleep(2)
-    # while True:
-    #     print_j(arr_matchs)
-    #     time.sleep(15)
+    # get pre event list by fonbet
+    fonbet_seeker_pre_matchs = threading.Thread(target=start_seeker_matchs_fonbet, args=(gen_proxi_fonbet, arr_matchs, 'pre'))
+    fonbet_seeker_pre_matchs.start()
+    time.sleep(2)
+    while True:
+        for n in list(arr_matchs):
+            print_j(arr_matchs[n])
+        time.sleep(15)
 
     # List of TOP events
     fonbet_seeker_top_matchs = threading.Thread(target=start_seeker_top_matchs_fonbet, args=(gen_proxi_fonbet, arr_fonbet_top_matchs, pair_mathes, arr_fonbet_top_kofs))
