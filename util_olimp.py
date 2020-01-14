@@ -8,6 +8,7 @@ from utils import prnts, get_vector, get_param, if_exists, sport_list, print_j
 from exceptions import *
 import sys
 import traceback
+import math
 
 url_autorize = "https://{}.olimp-proxy.ru/api/{}"
 payload = {"lang_id": "0", "platforma": "ANDROID1"}
@@ -320,6 +321,7 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
             skName = resp.get('sn')
             sport_name = resp.get('cn')
             name = resp.get('n')
+            start_after_min = math.floor((resp.get('t', 0) + 60 * 60 - int(time.time())) / 60)
             score = ''
             sc1 = 0
             sc2 = 0
@@ -344,6 +346,7 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
                     'name': name,
                     'score': score,
                     'time_start': timer,
+                    'start_after_min': start_after_min,
                     'time_req': round(time.time())
                 })
             except:
@@ -354,6 +357,7 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
                     'name': name,
                     'score': score,
                     'time_start': timer,
+                    'start_after_min': start_after_min,
                     'time_req': round(time.time()),
                     # 'time_change_total': round(time.time()),
                     # 'avg_change_total': [],

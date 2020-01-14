@@ -70,9 +70,13 @@ def get_olimp(resp, arr_matchs, type='live'):
             # 126 Pool
             if if_exists(sport_list, 'olimp', liga_info.get('sport_id')) and if_exists(sport_list, 'place', type):
                 for math_info in liga_info.get('it'):
+                    # print(math_info.get('dt') + ' ' + str(datetime.fromtimestamp(int(math_info.get('t')) + 60 * 60).strftime('%d.%m.%Y %H:%M:%S')))
+                    # print(math_info.get('dt') == str(datetime.fromtimestamp(int(math_info.get('t'))+60*60).strftime('%d.%m.%Y %H:%M:%S')))
                     match_id_str = str(math_info.get('id'))
                     # math_block = True if math_info.get('ms') == 1 else False
                     # print_j(liga_info)
+                    start_time = math_info.get('t', 0) + 60 * 60
+                    start_after_min = math.floor((start_time - int(time.time())) / 60)
                     arr_matchs[match_id_str] = {
                         'bk_name': 'olimp',
                         'type': type,
@@ -81,7 +85,8 @@ def get_olimp(resp, arr_matchs, type='live'):
                         'name': liga_info['cn'],
                         'team1': math_info.get('c1', ''),
                         'team2': math_info.get('c2', ''),
-                        'start_timestamp': math_info.get('t', 0)
+                        'start_timestamp': start_time,
+                        'start_after_min': start_after_min
                     }
     # print_j(arr_matchs) # 50940691
 
@@ -151,8 +156,8 @@ def get_fonbet(resp, arr_matchs, type):
                     # prnts(sport_list)
                     # prnts(if_exists(sport_list, 'fonbet', mid.get('sportId'), 'name'))
                     # print(event)
-                    start_after_time = math.floor((int(event.get('startTime', 0)) - int(time.time())) / 60)
-                    if start_after_time < max_min_prematch:
+                    start_after_min = math.floor((int(event.get('startTime', 0)) - int(time.time())) / 60)
+                    if start_after_min < max_min_prematch:
                         arr_matchs[str(event['id'])] = {
                             'bk_name': 'fonbet',
                             'type': type,
@@ -163,7 +168,7 @@ def get_fonbet(resp, arr_matchs, type):
                             'team1': event.get('team1', ''),
                             'team2': event.get('team2', ''),
                             'start_timestamp': event.get('startTime', 0),
-                            'start_after_min': start_after_time,
+                            'start_after_min': start_after_min,
                             'isHot': mid.get('isHot')
                         }
                         # if mid.get('isHot'):
