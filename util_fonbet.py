@@ -199,6 +199,7 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
 
         for event in resp.get("events"):
             if event.get('parentId') == 0:
+                print(event)
                 score = event.get('score', '0:0').replace('-', ':')
                 sc1 = 0
                 sc2 = 0
@@ -219,6 +220,7 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
                 minute = event.get('timerSeconds', 0) / 60
 
                 skId = event.get('skId')
+                liga_id = event.get('sportId')
                 skName = event.get('skName')
 
                 minute_complite = if_exists(sport_list, 'fonbet', skId, 'min')
@@ -247,6 +249,7 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
                         try:
                             bets_fonbet[key_id].update({
                                 'sport_id': skId,
+                                'liga_id': liga_id,
                                 'place': place,
                                 'sport_name': skName,
                                 'league': sport_name,
@@ -263,6 +266,7 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
                         except Exception as e:
                             bets_fonbet[key_id] = {
                                 'sport_id': skId,
+                                'liga_id': liga_id,
                                 'place': place,
                                 'sport_name': skName,
                                 'league': sport_name,
