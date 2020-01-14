@@ -488,7 +488,7 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                                              str(bk2_match_info.get('team1')) + ';' + \
                                              str(bk2_match_info.get('team2')) + ';'
 
-                                if bk1_match_info.get('sport_name') == bk2_match_info.get('sport_name'): # and bk1_match_info.get('type') == bk2_match_info.get('type'):
+                                if bk1_match_info.get('sport_name') == bk2_match_info.get('sport_name') and bk1_match_info.get('type') == bk2_match_info.get('type'):
                                     type = bk1_match_info.get('type')
                                     r1, r2, rate = get_rate(
                                         bk1_match_info.get('team1', ''),
@@ -880,9 +880,9 @@ if __name__ == '__main__':
     olimp_seeker_matchs.start()
 
     # get event list by fonbet
-    # fonbet_seeker_matchs = threading.Thread(target=start_seeker_matchs_fonbet, args=(gen_proxi_fonbet, arr_matchs, 'live'))
-    # fonbet_seeker_matchs.start()
-    # time.sleep(2)
+    fonbet_seeker_matchs = threading.Thread(target=start_seeker_matchs_fonbet, args=(gen_proxi_fonbet, arr_matchs, 'live'))
+    fonbet_seeker_matchs.start()
+    time.sleep(2)
     # get pre event list by fonbet
     fonbet_seeker_pre_matchs = threading.Thread(target=start_seeker_matchs_fonbet, args=(gen_proxi_fonbet, arr_matchs, 'pre'))
     fonbet_seeker_pre_matchs.start()
