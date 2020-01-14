@@ -19,10 +19,10 @@ def get_state(arr):
     if arr:
         info = arr
         state['name'] = info.get('name')
-        state['time'] = info.get('time')
+        state['type'] = info.get('place')
+        state['liga_id'] = info.get('sport_id')
         state['last_update'] = str((int(time.time() - info.get('time_req'))))
-        state['place'] = ''
-        state['start_after_min'] = ''
+        state['start_after_min'] = info.get('start_after_min')
         state['kofs'] = {}
         for kof_name, kof_info in info.get('kofs', {}).items():
             val = kof_info.get('value')

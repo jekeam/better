@@ -191,7 +191,6 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
     key_id = str(match_id)
     try:
         resp, time_resp = get_match_fonbet(match_id, proxies_fonbet, proxy, time_out, pair_mathes)
-
         time_start_proc = time.time()
 
         TT = []
@@ -236,13 +235,19 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
                 #     print(json.dumps(event, ensure_ascii=False))
                 priority = event.get('priority')
                 score_1st = event.get('scoreComment', '').replace('-', ':')
-                start_time = event('startTimeTimestamp')
-                start_after_min = (event('startTimeTimestamp') - int(time.time())) / 60
+                start_time = event.get('startTimeTimestamp')
+                start_after_min = event.get('time')
+                if start_after_min:
+                    if start_after_min <= 0:
+                        err_str = 'Фонбет: pre матч, ' + skName + ' - ' + str(match_id) + ' завершен, т.к. ' + str(start_after_min) + ' минут до начала матча.'
+                        raise FonbetMatchСompleted(err_str)
+                place = event.get('place')
                 if event.get('parentId') == 0 or 'st half' in name or 'nd half' in name:
                     if event.get('parentId') == 0:
                         try:
                             bets_fonbet[key_id].update({
                                 'sport_id': skId,
+                                'place': place,
                                 'sport_name': skName,
                                 'league': sport_name,
                                 'name': name,
@@ -258,6 +263,7 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
                         except Exception as e:
                             bets_fonbet[key_id] = {
                                 'sport_id': skId,
+                                'place': place,
                                 'sport_name': skName,
                                 'league': sport_name,
                                 'name': name,

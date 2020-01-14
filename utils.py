@@ -43,7 +43,7 @@ def if_exists(jsos_list: dict, key_name: str, val: str, get_key: str = ''):
 
 bk_fork_name = ['olimp', 'fonbet']  # , 'pinnacle']
 # bk_fork_name = ['fonbet']  # , 'pinnacle']
-
+max_min_prematch = 60  # 120 = 2 hour
 # TODO, ADD FLAG: LIVE, LINE/PRE
 sport_list = [
     {
@@ -54,56 +54,56 @@ sport_list = [
         'min': 90,
         'place': ['live', 'pre']
     },
-    {
-        'name': 'esports',
-        'olimp': 112,
-        'fonbet': 29086,
-        'pinn': 12,
-        # 'place': ['live', 'pre']
-        'place': ['live']
-    },
-    {
-        'name': 'volleyball',
-        'olimp': 10,
-        'fonbet': 9,
-        'pinn': 34,
-        # 'place': ['live', 'pre']
-        'place': ['live']
-    },
-    {
-        'name': 'tennis',
-        'olimp': 3,
-        'fonbet': 4,
-        'pinn': 33,
-        # 'place': ['live', 'pre']
-        'place': ['live']
-    },
-    {
-        'name': 'basketball',
-        'olimp': 5,
-        'fonbet': 3,
-        'pinn': None,  # TODO
-        'min': 40,
-        # 'place': ['live', 'pre']
-        'place': ['live']
-    },
-    {
-        'name': 'hockey',
-        'olimp': 2,
-        'fonbet': 2,
-        'pinn': 19,
-        'min': 60,
-        # 'place': ['live', 'pre']
-        'place': ['live']
-    },
-    {
-        'name': 'table-tennis',
-        'olimp': 40,
-        'fonbet': 3088,
-        'pinn': None,  # TODO
-        # 'place': ['live', 'pre']
-        'place': ['live']
-    },
+    # {
+    #     'name': 'esports',
+    #     'olimp': 112,
+    #     'fonbet': 29086,
+    #     'pinn': 12,
+    #     # 'place': ['live', 'pre']
+    #     'place': ['live']
+    # },
+    # {
+    #     'name': 'volleyball',
+    #     'olimp': 10,
+    #     'fonbet': 9,
+    #     'pinn': 34,
+    #     # 'place': ['live', 'pre']
+    #     'place': ['live']
+    # },
+    # {
+    #     'name': 'tennis',
+    #     'olimp': 3,
+    #     'fonbet': 4,
+    #     'pinn': 33,
+    #     # 'place': ['live', 'pre']
+    #     'place': ['live']
+    # },
+    # {
+    #     'name': 'basketball',
+    #     'olimp': 5,
+    #     'fonbet': 3,
+    #     'pinn': None,  # TODO
+    #     'min': 40,
+    #     # 'place': ['live', 'pre']
+    #     'place': ['live']
+    # },
+    # {
+    #     'name': 'hockey',
+    #     'olimp': 2,
+    #     'fonbet': 2,
+    #     'pinn': 19,
+    #     'min': 60,
+    #     # 'place': ['live', 'pre']
+    #     'place': ['live']
+    # },
+    # {
+    #     'name': 'table-tennis',
+    #     'olimp': 40,
+    #     'fonbet': 3088,
+    #     'pinn': None,  # TODO
+    #     # 'place': ['live', 'pre']
+    #     'place': ['live']
+    # },
 ]
 
 opposition = {
