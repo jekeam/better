@@ -36,6 +36,7 @@ def if_exists(jsos_list: dict, key_name: str, val: str, get_key: str = ''):
 
 bk_fork_name = ['olimp', 'fonbet']  # , 'pinnacle']
 
+# TODO, ADD FLAG: LIVE, LINE/PRE
 sport_list = [
     {
         'name': 'football',

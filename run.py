@@ -507,7 +507,6 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                                         'match_name': match_name,
                                         'type': type,
                                     })
-
             for bkr in bk_rate_list:
                 if bkr.get('rate', 0) > need:
                     bk_rate_sorted.append(bkr)
@@ -515,7 +514,6 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                     if 'del;' + bkr.get('match_name') not in not_compare:
                         serv_log('compare_teams', 'del;' + bkr.get('match_name'))
                         not_compare.append('del;' + bkr.get('match_name'))
-
             bk_rate_sorted = list(filter(lambda x: x is not None, bk_rate_sorted))
             bk_rate_sorted.sort(key=sort_by_rate, reverse=True)
 
@@ -528,6 +526,12 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                             pair.append(m)
                             if v.get('sport_name') not in pair:
                                 pair.append(v.get('sport_name'))
+                    except:
+                        pass
+                    try:
+                        if v.get('type'):
+                            pair.append(m)
+                            if v.get('type') not in pair:
                                 pair.append(v.get('type'))
                     except:
                         pass
@@ -564,7 +568,8 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                         if not conflict and not is_exists:
                             pair_mathes.append(pair)
                             serv_log('compare_teams', 'add;' + pair[4])
-
+            for x in pair_mathes:
+                print(x)
         except Exception as e:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             prnts('Error start_event_mapping: ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
