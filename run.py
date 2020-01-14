@@ -494,14 +494,14 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                                             'bk1_t2': bk1_match_info.get('team2'),
                                             'rate': r1,
                                             'sport_name': bk1_match_info.get('sport_name'),
-                                            'type': bk1_match_info.get('type'),
+                                            # 'type': bk1_match_info.get('type'),
                                         },
                                         str(bk2_match_id): {
                                             'bk2_t1': bk2_match_info.get('team1'),
                                             'bk2_t2': bk2_match_info.get('team2'),
                                             'rate': r2,
                                             'sport_name': bk2_match_info.get('sport_name'),
-                                            'type': bk2_match_info.get('type'),
+                                            # 'type': bk2_match_info.get('type'),
                                         },
                                         'rate': rate,
                                         'match_name': match_name,
@@ -516,27 +516,24 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                         not_compare.append('del;' + bkr.get('match_name'))
             bk_rate_sorted = list(filter(lambda x: x is not None, bk_rate_sorted))
             bk_rate_sorted.sort(key=sort_by_rate, reverse=True)
-
             for e in bk_rate_sorted:
                 pair = []
                 main_rate = e.get('rate', 0)
                 for m, v in e.items():
+                    # print(m, v)
+                    # print('--')
                     try:
                         if v.get('sport_name'):
                             pair.append(m)
                             if v.get('sport_name') not in pair:
                                 pair.append(v.get('sport_name'))
+                            # if v.get('type') not in pair:
+                                # pair.append(v.get('type'))
                     except:
                         pass
-                    try:
-                        if v.get('type'):
-                            pair.append(m)
-                            if v.get('type') not in pair:
-                                pair.append(v.get('type'))
-                    except:
-                        pass
+                    # print('pair: ' + str(pair))
                 pair.sort()
-                pair = [pair[1], pair[0], pair[2], pair[3]]
+                pair = [pair[1], pair[0], pair[2]]#, pair[3]]
                 pair.append(e.get('match_name'))
                 pair.append(e.get('rate'))
 
@@ -549,25 +546,25 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                         for p in pair_mathes:
                             id1, id2 = pair[0], pair[1]
                             if id1 in p:
-                                if pair[5] > p[5]:
+                                if pair[4] > p[4]:
                                     prnts('Math conflict: ' + str(id1) + ', p: ' + str(p) + ', need: ' + str(pair))
                                     conflict = True
                                 else:
                                     is_exists = True
                             if id2 in p:
-                                if pair[5] > p[5]:
+                                if pair[4] > p[4]:
                                     prnts('Math conflict: ' + str(id2) + ', p: ' + str(p) + ', need: ' + str(pair))
                                     conflict = True
                                 else:
                                     is_exists = True
                             if conflict:
                                 pair_mathes.remove(p)
-                                serv_log('compare_teams', 'del;' + str(p[4]) + 'conflict')
+                                serv_log('compare_teams', 'del;' + str(p[3]) + 'conflict')
                                 pair_mathes.append(pair)
-                                serv_log('compare_teams', 'add;' + pair[4] + 'conflict')
+                                serv_log('compare_teams', 'add;' + pair[3] + 'conflict')
                         if not conflict and not is_exists:
                             pair_mathes.append(pair)
-                            serv_log('compare_teams', 'add;' + pair[4])
+                            serv_log('compare_teams', 'add;' + pair[3])
             for x in pair_mathes:
                 print(x)
         except Exception as e:
