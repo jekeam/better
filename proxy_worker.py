@@ -372,4 +372,3 @@ if __name__ == '__main__':
     # proxy_list_pinnacle = check_proxies(proxy_list_https, url_pinnacle, headers_pinnacle)
     # save_list(proxy_list_pinnacle, pn_fl)
     # time.sleep(3)
-    

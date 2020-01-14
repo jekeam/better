@@ -33,7 +33,7 @@ def if_exists(jsos_list: dict, key_name: str, val: str, get_key: str = ''):
             else:
                 return m.get(get_key)
         else:
-            if v==val:
+            if v == val:
                 if get_key == '':
                     return True
                 else:

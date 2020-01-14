@@ -47,7 +47,7 @@ def get_olimp(resp, arr_matchs, type='live'):
     # Очистим дстарые данные
     for key in list(arr_matchs):
         if arr_matchs.get('olimp', '') != '':
-            arr_matchs.pop(key)   
+            arr_matchs.pop(key)
     if resp:
         for liga_info in resp:
 
@@ -157,7 +157,7 @@ def get_fonbet(resp, arr_matchs, type):
                         'team1': event.get('team1', ''),
                         'team2': event.get('team2', ''),
                         'start_timestamp': event.get('startTime', 0),
-                        'start_after_min': (int(event.get('startTime', 0)) - int(time.time()))/60,
+                        'start_after_min': (int(event.get('startTime', 0)) - int(time.time())) / 60,
                         'isHot': mid.get('isHot')
                     }
                     # if mid.get('isHot'):
@@ -424,7 +424,7 @@ def get_rate(team1_bk1, team2_bk1, team1_bk2, team2_bk2, debug=False):
     elif 'yellow cards'.lower() in team1_bk1 + team2_bk1 + team1_bk2 + team2_bk2:
         # prnts('yellow cards exclude: ' + team1_bk1 + team2_bk1 + team1_bk2 + team2_bk2, 'hide')
         return 0, 0, 0
-    elif team1_bk1=='' or team2_bk1=='' or team1_bk2=='' or team2_bk2=='':
+    elif team1_bk1 == '' or team2_bk1 == '' or team1_bk2 == '' or team2_bk2 == '':
         # prnts('Название одной из команд не определено, team1_bk1:{}, team2_bk1:{}, team1_bk2:{}, team2_bk2:{}'.format(team1_bk1, team2_bk1, team1_bk2, team2_bk2))
         return 0, 0, 0
 
@@ -462,7 +462,7 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
             prnts('Events found: ' + str(len(pair_mathes)) + ' ' + str(pair_mathes))
             bk_rate_list = list()
             bk_rate_sorted = list()
-            
+
             for j in list(arr_matchs):
                 if arr_matchs[j].get('bk_name', '') == 'olimp':
                     json_bk1_copy[j] = arr_matchs[j]
@@ -515,7 +515,7 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                                             'rate': rate,
                                             'match_name': match_name,
                                             'type': type,
-                                    })
+                                        })
             for bkr in bk_rate_list:
                 if bkr.get('rate', 0) > need:
                     bk_rate_sorted.append(bkr)
@@ -540,7 +540,7 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                     except:
                         pass
                 # print(pair)
-                pair.sort(key=lambda p: 'z' if p in('live', 'pre', 'line') else p)
+                pair.sort(key=lambda p: 'z' if p in ('live', 'pre', 'line') else p)
                 # print(pair)
                 pair = [pair[1], pair[0], pair[2], pair[3]]
                 pair.append(e.get('match_name'))
@@ -575,7 +575,7 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                             pair_mathes.append(pair)
                             serv_log('compare_teams', 'add;' + pair[-2])
             # for x in pair_mathes:
-                # print(x)
+            # print(x)
         except Exception as e:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             prnts('Error start_event_mapping: ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
@@ -606,7 +606,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
                 math_json_olimp = bets_olimp.get(pair_math[0], {})
                 math_json_fonbet = bets_fonbet.get(pair_math[1], {})
                 event_type = pair_math[2]
-                type_time = pair_math[3] # pre/live
+                type_time = pair_math[3]  # pre/live
 
                 curr_opposition = copy.deepcopy(opposition)
 
