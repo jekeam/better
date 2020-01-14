@@ -564,7 +564,7 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                                 serv_log('compare_teams', 'add;' + pair[-2] + 'conflict')
                         if not conflict and not is_exists:
                             pair_mathes.append(pair)
-                            serv_log('compare_teams', 'add;' + pair[2])
+                            serv_log('compare_teams', 'add;' + pair[-2])
             # for x in pair_mathes:
                 # print(x)
         except Exception as e:
