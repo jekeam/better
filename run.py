@@ -177,7 +177,7 @@ def get_fonbet(resp, arr_matchs, type):
                         #     prnts('no: ' + str(event['priority']) + ' ' + str(arr_matchs[str(event['id'])]))
                     else:
                         if DEBUG:
-                            prnts('Собитие исключено т.к. время начла больше: {}, мин.:{}\ndata:{}'.format(max_min_prematch, start_after_time, str(event)), 'hide')
+                            prnts('Собитие исключено т.к. время начла больше: {}, мин.:{}\ndata:{}'.format(max_min_prematch, start_after_min, str(event)), 'hide')
 
         # for mid in idMatches:
         # for event in resp['events']:
@@ -186,7 +186,7 @@ def get_fonbet(resp, arr_matchs, type):
     # ['16453828': {'bk_name': 'fonbet', 'sport_id': 1, 'sport_name': 'Football', 'name': '', 'team1': 'Nadi', 'team2': 'Suva'}, ....]
 
 
-def start_seeker_matchs_olimp(gen_proxi_olimp, arr_matchs):
+def start_seeker_matchs_olimp(gen_proxi_olimp, arr_matchs, type):
     global TIMEOUT_LIST
     proxy = gen_proxi_olimp.next()
     fail_proxy = 0
@@ -895,10 +895,62 @@ if __name__ == '__main__':
 
     # List of event "at work"
     pair_mathes = []
+    # 1
+    # POST http://ssl.facebookgateway.com.mastertest.ru/api/sports HTTP/1.1
+    # X-TOKEN: e41f1ccf519b7a3aa5fe72015dbd7a4d
+    # Content-Type: application/x-www-form-urlencoded
+    # Content-Length: 44
+    # Host: ssl.facebookgateway.com.mastertest.ru
+    # Connection: Keep-Alive
+    # Accept-Encoding: gzip
+    # User-Agent: okhttp/3.12.1
+    #
+    # live=0&session=&platforma=ANDROID2&lang_id=2
+
+    # 2
+    # POST http://ssl.facebookgateway.com.mastertest.ru/api/champs HTTP/1.1
+    # X-TOKEN: 83add5028c8b839164e557531b5474ea
+    # Content-Type: application/x-www-form-urlencoded
+    # Content-Length: 55
+    # Host: ssl.facebookgateway.com.mastertest.ru
+    # Connection: Keep-Alive
+    # Accept-Encoding: gzip
+    # User-Agent: okhttp/3.12.1
+    #
+    # live=0&sport_id=1&session=&platforma=ANDROID2&lang_id=2
+
+    # 3
+    # POST http://ssl.facebookgateway.com.mastertest.ru/api/matches HTTP/1.1
+    # X-TOKEN: 4702d8a567b5c358b679569dcb682aa4
+    # Content-Type: application/x-www-form-urlencoded
+    # Content-Length: 76
+    # Host: ssl.facebookgateway.com.mastertest.ru
+    # Connection: Keep-Alive
+    # Accept-Encoding: gzip
+    # User-Agent: okhttp/3.12.1
+    #
+    # live=0&sport_id=1&id=7449&session=&platforma=ANDROID2&lang_id=2&time_shift=0
+
+    # 4
+    # POST http://ssl.facebookgateway.com.mastertest.ru/api/stakes HTTP/1.1
+    # X-TOKEN: a6aacceb2ccf68185f3e2bf2a8fe21b1
+    # Content-Type: application/x-www-form-urlencoded
+    # Content-Length: 80
+    # Host: ssl.facebookgateway.com.mastertest.ru
+    # Connection: Keep-Alive
+    # Accept-Encoding: gzip
+    # User-Agent: okhttp/3.12.1
+    #
+    # live=0&sport_id=1&id=54069840&session=&platforma=ANDROID2&lang_id=2&time_shift=0
 
     # get event list by olimp
-    olimp_seeker_matchs = threading.Thread(target=start_seeker_matchs_olimp, args=(gen_proxi_olimp, arr_matchs))
-    olimp_seeker_matchs.start()
+    # olimp_seeker_matchs = threading.Thread(target=start_seeker_matchs_olimp, args=(gen_proxi_olimp, arr_matchs, 'live'))
+    # olimp_seeker_matchs.start()
+    # time.sleep(2)
+    # get pre event list by olimp
+    olimp_seeker_pre_matchs = threading.Thread(target=start_seeker_matchs_olimp, args=(gen_proxi_olimp, arr_matchs, 'pre'))
+    olimp_seeker_pre_matchs.start()
+    time.sleep(2)
 
     # get event list by fonbet
     # fonbet_seeker_matchs = threading.Thread(target=start_seeker_matchs_fonbet, args=(gen_proxi_fonbet, arr_matchs, 'live'))
@@ -940,6 +992,7 @@ if __name__ == '__main__':
 
     proxy_saver.join()
     olimp_seeker_matchs.join()
+    olimp_seeker_pre_matchs.join()
     fonbet_seeker_matchs.join()
     fonbet_seeker_pre_matchs.join()
     event_mapping.join()

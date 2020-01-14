@@ -110,6 +110,7 @@ def get_matches_olimp(proxy, time_out):
     olimp_head_ll = olimp_head
     olimp_head_ll.update(olimp_get_xtoken(olimp_data_ll, olimp_secret_key))
     olimp_head_ll.pop('Accept-Language', None)
+
     try:
         resp = requests.post(
             url + '/api/slice/',
@@ -121,6 +122,7 @@ def get_matches_olimp(proxy, time_out):
         )
         try:
             res = resp.json()
+            print(res)
         except Exception as e:
             err_str = 'Olimp error : ' + str(e)
             prnts(err_str)
@@ -221,6 +223,9 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out, pair_mathes):
         err_str = 'Olimp error set proxy by ' + str(match_id) + ': ' + str(e)
         prnts(err_str)
         raise ValueError(err_str)
+
+    # if type == 'pre':
+        # olimp_data_ll.update({'live': 0})
 
     try:
         resp = requests.post(

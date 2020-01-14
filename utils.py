@@ -52,7 +52,8 @@ sport_list = [
         'fonbet': 1,
         'pinn': 29,
         'min': 90,
-        'place': ['live', 'pre']
+        # 'place': ['live', 'pre']
+        'place': ['pre']
     },
     # {
     #     'name': 'esports',
