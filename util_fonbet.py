@@ -199,7 +199,6 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
 
         for event in resp.get("events"):
             if event.get('parentId') == 0:
-                print(event)
                 score = event.get('score', '0:0').replace('-', ':')
                 sc1 = 0
                 sc2 = 0

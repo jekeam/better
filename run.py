@@ -245,9 +245,9 @@ def start_seeker_matchs_olimp(gen_proxi_olimp, arr_matchs, place):
                             else:
                                 raise ValueError(str(e))
                         get_olimp(resp_matches, arr_matchs, 'pre', sport_id)
-                        print_j(arr_matchs)
-                        print(len(arr_matchs))
-                        time.sleep(5)
+                        # print_j(arr_matchs)
+                        # print(len(arr_matchs))
+                        # time.sleep(5)
             else:
                 resp, time_resp = get_matches_olimp(proxy, time_out, place)
                 get_olimp(resp, arr_matchs, 'live')
@@ -350,8 +350,9 @@ def start_seeker_top_matchs_fonbet(gen_proxi_fonbet, arr_fonbet_top_matchs, pair
         time.sleep(time_sleep)
 
 
-def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi_olimp, pair_mathes, mathes_complite, stat_req_ol):
+def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi_olimp, pair_mathes, mathes_complite, stat_req_ol, place):
     global TIMEOUT_MATCH, TIMEOUT_MATCH_MINUS
+    global TIMEOUT_PRE_MATCH, TIMEOUT_PRE_MATCH_MINUS
 
     fail_proxy = 0
     proxy_size = 10
@@ -364,7 +365,7 @@ def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi
 
     while True:
         try:
-            time_resp = get_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, ps.get_next_proxy(), TIMEOUT_MATCH, pair_mathes)
+            time_resp = get_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, ps.get_next_proxy(), TIMEOUT_MATCH, pair_mathes, place)
             stat_req_ol.append(round(time_resp, 2))
         except OlimpMatchСompleted as e:
             cnt = 0
@@ -391,16 +392,17 @@ def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi
             else:
                 fail_proxy = fail_proxy + 1
                 time.sleep(3)
-
-        time_sleep = max(0, (TIMEOUT_MATCH - abs(TIMEOUT_MATCH_MINUS + time_resp)))
-
+        if place == 'live':
+            time_sleep = max(0, (TIMEOUT_MATCH - (TIMEOUT_MATCH_MINUS + time_resp)))
+        else:
+            time_sleep = max(0, (TIMEOUT_PRE_MATCH - (TIMEOUT_PRE_MATCH_MINUS + time_resp)))
         if DEBUG:
-            prnts('Олимп, матч ' + str(match_id_olimp) + '. Время ответа: ' + str(time_resp) + ', запрос через ' + str(time_sleep) + ' ' + ps.get_cur_proxy(), 'hide')
-
+            # prnts('Олимп, матч ' + str(match_id_olimp) + '. Время ответа: ' + str(time_resp) + ', запрос через ' + str(time_sleep) + ' ' + ps.get_cur_proxy(), 'hide')
+            prnts('Олимп, матч ' + str(match_id_olimp) + '. Время ответа: ' + str(time_resp) + ', запрос через ' + str(time_sleep) + ' ' + ps.get_cur_proxy())
         time.sleep(time_sleep)
 
 
-def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_proxi_fonbet, pair_mathes, mathes_complite, stat_req_fb, arr_fonbet_top_kofs):
+def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_proxi_fonbet, pair_mathes, mathes_complite, stat_req_fb, arr_fonbet_top_kofs, place):
     global TIMEOUT_MATCH, TIMEOUT_MATCH_MINUS
     global TIMEOUT_PRE_MATCH, TIMEOUT_PRE_MATCH_MINUS
 
@@ -412,14 +414,9 @@ def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_p
         i = i + 1
     ps = ProxySwitcher(proxy_size, proxy)
     while True:
-        place = 'live'
         try:
             time_resp = get_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, ps.get_next_proxy(), TIMEOUT_MATCH, pair_mathes, arr_fonbet_top_kofs)
             stat_req_fb.append(round(time_resp, 2))
-            for p in pair_mathes:
-                if str(match_id_fonbet) in p:
-                    if 'live' in p:
-                        place = 'pre'
         except FonbetMatchСompleted as e:
             cnt = 0
             for pair_match in pair_mathes:
@@ -439,14 +436,13 @@ def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_p
                   str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
             ps.rep_cur_proxy(gen_proxi_fonbet.next())
             time_resp = TIMEOUT_MATCH
-
         if place == 'live':
             time_sleep = max(0, (TIMEOUT_MATCH - (TIMEOUT_MATCH_MINUS + time_resp)))
         else:
             time_sleep = max(0, (TIMEOUT_PRE_MATCH - (TIMEOUT_PRE_MATCH_MINUS + time_resp)))
         if DEBUG:
-            prnts(str('Фонбет, матч ' + str(match_id_fonbet) + '. Время ответа: ' + str(time_resp) + ', запрос через ' + str(time_sleep)) + ' ' + ps.get_cur_proxy(), 'hide')
-            # prnts(str('Фонбет, матч ' + str(match_id_fonbet) + '. Время ответа: ' + str(time_resp) + ', запрос через ' + str(time_sleep)) + ' ' + ps.get_cur_proxy())
+            # prnts(str('Фонбет, матч ' + str(match_id_fonbet) + '. Время ответа: ' + str(time_resp) + ', запрос через ' + str(time_sleep)) + ' ' + ps.get_cur_proxy(), 'hide')
+            prnts(str('Фонбет, матч ' + str(match_id_fonbet) + '. Время ответа: ' + str(time_resp) + ', запрос через ' + str(time_sleep)) + ' ' + ps.get_cur_proxy())
         time.sleep(time_sleep)
 
 
@@ -456,14 +452,14 @@ def starter_bets(bets_olimp, bets_fonbet, pair_mathes, mathes_complite, mathes_i
     while True:
         for pair_match in pair_mathes:
             # prnts(pair_match)
-            match_id_olimp, match_id_fonbet, event_type, passs, pass2, pass3 = pair_match
+            match_id_olimp, match_id_fonbet, event_type, place, pass2, pass3 = pair_match
 
             if match_id_olimp not in mathes_id_is_work:
                 mathes_id_is_work.append(match_id_olimp)
 
                 start_seeker_olimp_bets_by_id = threading.Thread(
                     target=start_seeker_bets_olimp,
-                    args=(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi_olimp, pair_mathes, mathes_complite, stat_req_olimp))
+                    args=(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi_olimp, pair_mathes, mathes_complite, stat_req_olimp, place))
                 start_seeker_olimp_bets_by_id.start()
 
             if match_id_fonbet not in mathes_id_is_work:
@@ -471,7 +467,7 @@ def starter_bets(bets_olimp, bets_fonbet, pair_mathes, mathes_complite, mathes_i
 
                 start_seeker_fonbet_bets_by_id = threading.Thread(
                     target=start_seeker_bets_fonbet,
-                    args=(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_proxi_fonbet, pair_mathes, mathes_complite, stat_req_fonbet, arr_fonbet_top_kofs))
+                    args=(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_proxi_fonbet, pair_mathes, mathes_complite, stat_req_fonbet, arr_fonbet_top_kofs, place))
                 start_seeker_fonbet_bets_by_id.start()
 
         time.sleep(20)
@@ -647,6 +643,7 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                             serv_log('compare_teams', 'add;' + pair[-2])
             # for x in pair_mathes:
             # print(x)
+            # print('pair_mathes: ' + str(pair_mathes))
         except Exception as e:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             prnts('Error start_event_mapping: ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
@@ -779,10 +776,10 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
 
                                     if DEBUG:
                                         pass
-                                        # prnts('\n')
-                                        # str_js = json.dumps(forks.get(bet_key), ensure_ascii=False)
-                                        # prnts('forks: ' + bet_key + ' ' + str(str_js))
-                                        # prnts('\n')
+                                        prnts('\n')
+                                        str_js = json.dumps(forks.get(bet_key), ensure_ascii=False)
+                                        prnts('forks: ' + bet_key + ' ' + str(str_js))
+                                        prnts('\n')
 
                                     if not os.path.isfile(file_forks):
                                         with open(file_forks, 'w', encoding='utf-8') as csv:
@@ -1000,8 +997,8 @@ if __name__ == '__main__':
     # get pre event list by olimp
     olimp_seeker_pre_matchs = threading.Thread(target=start_seeker_matchs_olimp, args=(gen_proxi_olimp, arr_matchs, 'pre'))
     olimp_seeker_pre_matchs.start()
-    # time.sleep(2)
-    time.sleep(60)
+    time.sleep(2)
+    # time.sleep(60)
 
     # get event list by fonbet
     # fonbet_seeker_matchs = threading.Thread(target=start_seeker_matchs_fonbet, args=(gen_proxi_fonbet, arr_matchs, 'live'))

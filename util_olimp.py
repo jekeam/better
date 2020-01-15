@@ -199,7 +199,7 @@ def to_abb(sbet):
     return abr
 
 
-def get_match_olimp(match_id, proxi_list, proxy, time_out, pair_mathes):
+def get_match_olimp(match_id, proxi_list, proxy, time_out, pair_mathes, type):
     global olimp_url
     global olimp_url_https
     global olimp_data
@@ -218,6 +218,8 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out, pair_mathes):
     olimp_data_m.update({'id': match_id})
     olimp_data_m.update({'lang_id': 0})
     olimp_data_m.update({'sport_id': sport_id})
+    if type == 'pre':
+       olimp_data_m.update({'live': 0})
 
     olimp_stake_head = olimp_head.copy()
 
@@ -235,9 +237,6 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out, pair_mathes):
         prnts(err_str)
         raise ValueError(err_str)
 
-    # if type == 'pre':
-        # olimp_data_ll.update({'live': 0})
-
     try:
         resp = requests.post(
             url + '/api/stakes/',
@@ -249,6 +248,7 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out, pair_mathes):
         )
         try:
             res = resp.json()
+            print(res)
         except Exception as e:
             err_str = 'Olimp error by ' + str(match_id) + ': ' + str(e)
             prnts(err_str)
@@ -298,7 +298,7 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out, pair_mathes):
         raise ValueError(err_str)
 
 
-def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_mathes):
+def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_mathes, place):
     global sport_list
     key_id = str(match_id)
 
@@ -313,7 +313,7 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
         raise OlimpMatchСompleted(err_str)
 
     try:
-        resp, time_resp = get_match_olimp(match_id, proxies_olimp, proxy, time_out, pair_mathes)
+        resp, time_resp = get_match_olimp(match_id, proxies_olimp, proxy, time_out, pair_mathes, place)
         time_start_proc = time.time()
 
         math_block = True if not resp or str(resp.get('ms', '1')) != '2' or resp.get('error', {'err_code': 0}).get('err_code') == 404 else False
