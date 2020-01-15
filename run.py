@@ -366,6 +366,7 @@ def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi
     while True:
         try:
             time_resp = get_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, ps.get_next_proxy(), TIMEOUT_MATCH, pair_mathes, place)
+            print(bets_olimp)
             stat_req_ol.append(round(time_resp, 2))
         except OlimpMatchСompleted as e:
             cnt = 0

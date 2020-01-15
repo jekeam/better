@@ -248,7 +248,6 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out, pair_mathes, type):
         )
         try:
             res = resp.json()
-            print(res)
         except Exception as e:
             err_str = 'Olimp error by ' + str(match_id) + ': ' + str(e)
             prnts(err_str)
@@ -314,9 +313,14 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
 
     try:
         resp, time_resp = get_match_olimp(match_id, proxies_olimp, proxy, time_out, pair_mathes, place)
+        # print('resp:' + str(resp))
         time_start_proc = time.time()
-
-        math_block = True if not resp or str(resp.get('ms', '1')) != '2' or resp.get('error', {'err_code': 0}).get('err_code') == 404 else False
+        if place=='pre':
+            # TODO
+            # math_block = True if not resp or resp.get('ms', False) or resp.get('error', {'err_code': 0}).get('err_code') == 404 else False
+            math_block = False 
+        else:
+            math_block = True if not resp or str(resp.get('ms', '1')) != '2' or resp.get('error', {'err_code': 0}).get('err_code') == 404 else False
         # 1 - block, 2 - available
         if not math_block:
 
@@ -478,38 +482,41 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
                 # prnts('Олимп, не смог обновить время time_req, т.к. матч ' + str(key_id) + ' заблокирован и это первое добавление?')
 
             try:
-                for i, j in bets_olimp.get(key_id, {}).get('kofs', {}).copy().items():
-                    try:
-
-                        kof_order = bets_olimp[key_id].get('kofs', {}).get(i, {}).get('hist', {}).get('order', [])
-                        time_change = bets_olimp[key_id].get('kofs', {}).get(i, {}).get('hist', {}).get('time_change', time.time())
-                        avg_change = bets_olimp[key_id].get('kofs', {}).get(i, {}).get('hist', {}).get('avg_change', [])
-
+                for i in list(bets_olimp):
+                    for j in list(bets_olimp[i].get('kofs', {})):
                         try:
-                            if 0 != kof_order[-1]:
+    
+                            kof_order = bets_olimp[i]['kofs'][j].get('hist', {}).get('order', [])
+                            time_change = bets_olimp[i]['kofs'][j].get('hist', {}).get('time_change', time.time())
+                            avg_change = bets_olimp[i]['kofs'][j].get('hist', {}).get('avg_change', [])
+    
+                            try:
+                                if 0 != kof_order[-1]:
+                                    kof_order.append(0)
+                                    avg_change.append(round(time.time() - time_change))
+                                    time_change = time.time()
+                                elif 0 == kof_order[-1]:
+                                    avg_change[-1] = round(time.time() - time_change)
+                            except IndexError:
+                                # firs
                                 kof_order.append(0)
-                                avg_change.append(round(time.time() - time_change))
-                                time_change = time.time()
-                            elif 0 == kof_order[-1]:
-                                avg_change[-1] = round(time.time() - time_change)
-                        except IndexError:
-                            # firs
-                            kof_order.append(0)
-                            avg_change.append(0)
-
-                        bets_olimp[key_id]['kofs'][i]['value'] = 0
-                        bets_olimp[key_id]['kofs'][i]['factor'] = 0
-
-                        bets_olimp[key_id]['kofs'][i]['time_req'] = round(time.time())
-                        bets_olimp[key_id]['kofs'][i]['hist']['avg_change'] = avg_change
-                        bets_olimp[key_id]['kofs'][i]['hist']['time_change'] = time_change
-                        bets_olimp[key_id]['kofs'][i]['hist']['kof_order'] = kof_order
-                        if kof_order[-1]:
-                            prnts('Олимп, матч заблокирован, знач. выставил в 0: ' + key_id + ' ' + str(i), 'hide')
-                    except Exception as e:
-                        exc_type, exc_value, exc_traceback = sys.exc_info()
-                        err_str = 'error: ' + str(e) + ' (' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))) + ')'
-                        prnts('Олимп, ошибка 00 при удалении старой котирофки: ' + str(err_str))
+                                avg_change.append(0)
+    
+                            bets_olimp[key_id]['kofs'][i]['value'] = 0
+                            bets_olimp[key_id]['kofs'][i]['factor'] = 0
+    
+                            bets_olimp[key_id]['kofs'][i]['time_req'] = round(time.time())
+                            if bets_olimp[key_id]['kofs'][i].get('hist') is None:
+                                bets_olimp[key_id]['kofs'][i]['hist'] = {}
+                            bets_olimp[key_id]['kofs'][i]['hist']['avg_change'] = avg_change
+                            bets_olimp[key_id]['kofs'][i]['hist']['time_change'] = time_change
+                            bets_olimp[key_id]['kofs'][i]['hist']['kof_order'] = kof_order
+                            if kof_order[-1]:
+                                prnts('Олимп, матч заблокирован, знач. выставил в 0: ' + key_id + ' ' + str(i), 'hide')
+                        except Exception as e:
+                            exc_type, exc_value, exc_traceback = sys.exc_info()
+                            err_str = 'error: ' + str(e) + ' (' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))) + ')'
+                            prnts('Олимп, ошибка 00 при удалении старой котирофки: ' + str(err_str))
             except Exception as e:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
                 err_str = 'error: ' + str(e) + ' (' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))) + ')'
