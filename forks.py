@@ -52,7 +52,7 @@ else:
     for f in files:
         f = f.split('\\')[-1]
         f = 'logs/' + str(f)
-        print(f)
+        # print(f)
         df = pd.read_csv(f, encoding='utf-8', sep=';')
         df = df.round({'minute': 2})
 

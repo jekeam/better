@@ -78,8 +78,8 @@ def get_olimp(resp, arr_matchs, type='live', sport_id=None):
                     match_id_str = str(math_info.get('id'))
                     # math_block = True if math_info.get('ms') == 1 else False
                     # print_j(liga_info)
-                    start_time = math_info.get('t', 0) + 60 * 60 * 3
-                    start_time_str = math_info.get('dt')  # TODO
+                    start_time = math_info.get('t', 0)
+                    # start_time_str = math_info.get('dt')  # TODO
                     start_after_min = math.floor((start_time - int(time.time())) / 60)
                     # print('math_info: ' + str(math_info))
                     arr_matchs[match_id_str] = {
@@ -90,8 +90,8 @@ def get_olimp(resp, arr_matchs, type='live', sport_id=None):
                         'name': liga_info[key_name],
                         'team1': math_info.get('c1', ''),
                         'team2': math_info.get('c2', ''),
-                        'start_timestamp': start_time,
-                        'start_time_str': start_time_str,
+                        'start_time': start_time,
+                        # 'start_time_str': start_time_str,
                         'start_after_min': start_after_min,
                     }
     # print_j(arr_matchs) # 50940691
@@ -173,7 +173,7 @@ def get_fonbet(resp, arr_matchs, type):
                             'name': event['name'],
                             'team1': event.get('team1', ''),
                             'team2': event.get('team2', ''),
-                            'start_timestamp': event.get('startTime', 0),
+                            'start_time': event.get('startTime', 0),
                             'start_after_min': start_after_min,
                             'isHot': mid.get('isHot')
                         }
@@ -232,7 +232,7 @@ def start_seeker_matchs_olimp(gen_proxi_olimp, arr_matchs, place):
                 ligu = {}
                 for sport_id in list(arr_leagues):
                     for liga_id in arr_leagues[sport_id]:
-                        resp_matches = {}
+                        # print(liga_id)
                         try:
                             resp_matches, time_resp = get_matches_olimp(proxy, time_out, 'matches', sport_id, max_min_prematch / 60, liga_id)
                             get_olimp(resp_matches, arr_matchs, 'pre', sport_id)
@@ -563,6 +563,14 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                                         bk2_match_info.get('team1', ''),
                                         bk2_match_info.get('team2', '')
                                     )
+                                    if rate > need:
+                                        print('{}, {},{}, {}'.format(
+                                            bk1_match_info.get('start_time') == bk2_match_info.get('start_time'),
+                                            match_name,
+                                            bk1_match_info.get('start_time'),
+                                            bk2_match_info.get('start_time'),
+                                        )
+                                        )
                                     if rate > 0:
                                         bk_rate_list.append({
                                             str(bk1_match_id): {

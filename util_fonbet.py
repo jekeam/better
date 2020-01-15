@@ -8,6 +8,7 @@ import re
 import sys
 import traceback
 import copy
+import run
 
 url_fonbet = 'https://line-01.ccf4ab51771cacd46d.com'
 url_fonbet_matchs = url_fonbet + '/live/currentLine/en/?2lzf1earo8wjksbh22s'
@@ -178,7 +179,7 @@ def get_match_fonbet(match_id, proxi_list, proxy, time_out, pair_mathes):
 
 def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair_mathes, arr_fonbet_top_kofs, place):
     global VICTS, TTO, TTU, TT1O, TT1U, TT2O, TT2U, BASE_LINE, FORA
-    global sport_list, TIMEOUT_PRE_MATCH, DEBUG
+    global sport_list
 
     match_exists = False
     for pair_match in pair_mathes:
@@ -249,7 +250,7 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
                             bets_fonbet[key_id].update({
                                 'sport_id': skId,
                                 'liga_id': liga_id,
-                                'place': place_in,
+                                'place': place,
                                 'sport_name': skName,
                                 'league': sport_name,
                                 'name': name,
@@ -266,7 +267,7 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
                             bets_fonbet[key_id] = {
                                 'sport_id': skId,
                                 'liga_id': liga_id,
-                                'place': place_in,
+                                'place': place,
                                 'sport_name': skName,
                                 'league': sport_name,
                                 'name': name,
@@ -417,13 +418,13 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
             for i in list(bets_fonbet):
                 hide_time = 4
                 if place == 'pre':
-                    hide_time = TIMEOUT_PRE_MATCH + hide_time
+                    hide_time = run.TIMEOUT_PRE_MATCH + hide_time
                 for j in list(bets_fonbet[i].get('kofs', {})):
                     if round(float(time.time() - float(bets_fonbet[i]['kofs'][j].get('time_req', 0)))) > hide_time and bets_fonbet[i]['kofs'][j].get('value', 0) > 0:
                         try:
                             bets_fonbet[i]['kofs'][j]['value'] = 0
-                            if DEBUG:
-                                prnts('Фонбет, данные по котировке из БК не получены более X сек., знач. выставил в 0: ' + str(j) + ' ' + str(i))
+                            if run.DEBUG:
+                                prnts('Фонбет, данные по котировке из БК не получены более ' + str(hide_time) + ' сек., знач. выставил в 0: ' + str(j) + ' ' + str(i))
                         except Exception as e:
                             exc_type, exc_value, exc_traceback = sys.exc_info()
                             err_str = 'error: ' + str(e) + ' (' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))) + ')'

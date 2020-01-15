@@ -9,6 +9,7 @@ from exceptions import *
 import sys
 import traceback
 import math
+import run
 
 url_autorize = "https://{}.olimp-proxy.ru/api/{}"
 payload = {"lang_id": "0", "platforma": "ANDROID1"}
@@ -299,7 +300,7 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out, pair_mathes, type):
 
 
 def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_mathes, place):
-    global sport_list, TIMEOUT_PRE_MATCH, DEBUG
+    global sport_list
     key_id = str(match_id)
 
     match_exists = False
@@ -337,12 +338,15 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
                 if minute >= (int(minute_complite) - 2):
                     err_str = 'Олимп: матч, ' + my_sport_name + ' - ' + str(match_id) + ' завершен, т.к. ' + str(minute_complite - 2) + ' минут прошло.'
                     raise OlimpMatchСompleted(err_str)
-            # print('resp: ' + str(resp))
             skId = resp.get('sport_id')
             skName = resp.get('sn')
             sport_name = resp.get('cn')
+            champid = '' # NOT FOUND
             name = resp.get('n')
-            start_after_min = math.floor((resp.get('t', 0) + 60 * 60 - int(time.time())) / 60)
+            # if name == 'Ювентус - Удинезе':
+            #     print('resp: ' + str(resp))
+            start_time = int(resp.get('t', 0))
+            start_after_min = math.floor((start_time - int(time.time())) / 60)
             score = ''
             sc1 = 0
             sc2 = 0
@@ -357,28 +361,35 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
                 except Exception as e:
                     prnts('err util_olimp sc2: ' + str(e))
             except:
-                prnts('err util_olimp error split: ' + str(resp.get('sc', '0:0')))
+                if run.DEBUG:
+                    prnts('err util_olimp error split: ' + str(resp.get('sc', '0:0')))
 
             try:
                 bets_olimp[key_id].update({
                     'sport_id': skId,
+                    'place': place,
                     'sport_name': skName,
                     'league': sport_name,
+                    'liga_id': champid,
                     'name': name,
                     'score': score,
                     'time_start': timer,
                     'start_after_min': start_after_min,
+                    'start_time': start_time,
                     'time_req': round(time.time())
                 })
             except:
                 bets_olimp[key_id] = {
                     'sport_id': skId,
+                    'place': place,
                     'sport_name': skName,
                     'league': sport_name,
+                    'liga_id': champid,
                     'name': name,
                     'score': score,
                     'time_start': timer,
                     'start_after_min': start_after_min,
+                    'start_time': start_time,
                     'time_req': round(time.time()),
                     # 'time_change_total': round(time.time()),
                     # 'avg_change_total': [],
@@ -538,13 +549,13 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
                 for j in list(bets_olimp[i].get('kofs', {})):
                     hide_time = 4
                     if place == 'pre':
-                        hide_time = TIMEOUT_PRE_MATCH + hide_time
+                        hide_time = run.TIMEOUT_PRE_MATCH + hide_time
                     if round(float(time.time() - float(bets_olimp[i]['kofs'][j].get('time_req', 0)))) > hide_time and bets_olimp[i]['kofs'][j].get('value', 0) > 0:
                         try:
                             bets_olimp[i]['kofs'][j]['value'] = 0
                             bets_olimp[i]['kofs'][j]['factor'] = 0
-                            if DEBUG:
-                                prnts('Олимп, данные по котировке из БК не получены более X сек., знач. выставил в 0: ' + str(j) + ' ' + str(i))
+                            if run.DEBUG:
+                                prnts('Олимп, данные по котировке из БК не получены более ' + str(hide_time) + ' сек., знач. выставил в 0: ' + str(j) + ' ' + str(i))
                         except Exception as e:
                             exc_type, exc_value, exc_traceback = sys.exc_info()
                             err_str = 'error: ' + str(e) + ' (' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))) + ')'
