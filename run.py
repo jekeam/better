@@ -714,13 +714,17 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
                     k_olimp = math_json_olimp.get('kofs', {}).get(kof_type_olimp, {})
                     k_fonbet = math_json_fonbet.get('kofs', {}).get(kof_type_fonbet, {})
 
+                    ol_start = math_json_olimp.get('start_time', 0)
+                    fb_start = math_json_olimp.get('start_time', 0)
+
                     v_olimp = k_olimp.get('value', 0.0)
                     v_fonbet = k_fonbet.get('value', 0.0)
                     # print(kof_type_fonbet, str(v_fonbet), kof_type_olimp, str(v_olimp), sep=";")
 
-                    # if DEBUG:
-                    #     v_olimp = v_olimp * 2
-                    #     v_fonbet = v_fonbet * 2
+                    if DEBUG:
+                        pass
+                        v_olimp = v_olimp * 2
+                        v_fonbet = v_fonbet * 2
 
                     if v_olimp > 0.0 and v_fonbet > 0.0:
 
@@ -807,7 +811,9 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
                                                 'ol_time_change;'
                                                 'ol_kof_order;'
                                                 'fb_time_change;'
-                                                'fb_kof_order'
+                                                'fb_kof_order;'
+                                                'ol_start;',
+                                                'fb_start'
                                                 '\n'
                                             )
                                     else:
@@ -846,7 +852,9 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
                                                 str(k_olimp.get('hist', {}).get('time_change', '')) + ';' +
                                                 str(k_olimp.get('hist', {}).get('order', [])) + ';' +
                                                 str(k_fonbet.get('hist', {}).get('time_change', '')) + ';' +
-                                                str(k_fonbet.get('hist', {}).get('order', [])) +
+                                                str(k_fonbet.get('hist', {}).get('order', [])) + ';' +
+                                                str(ol_start) + ';' +
+                                                str(fb_start) +
                                                 '\n'
                                             )
                             else:
