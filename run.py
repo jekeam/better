@@ -711,8 +711,8 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
                     # print(kof_type_fonbet, str(v_fonbet), kof_type_olimp, str(v_olimp), sep=";")
 
                     # if DEBUG:
-                        # v_olimp = v_olimp * 2
-                        # v_fonbet = v_fonbet * 2
+                    #     v_olimp = v_olimp * 2
+                    #     v_fonbet = v_fonbet * 2
 
                     if v_olimp > 0.0 and v_fonbet > 0.0:
 
