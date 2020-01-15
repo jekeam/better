@@ -10,6 +10,7 @@ file_forks_raw = 'forks.csv'
 
 if 1 == 1:
 
+    # df = pd.read_csv(file_forks_raw, encoding='utf-8', sep=';', error_bad_lines=False)
     df = pd.read_csv(file_forks_raw, encoding='utf-8', sep=';')
     df = df.round({'minute': 2})
 

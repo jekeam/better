@@ -311,9 +311,10 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
     if match_exists is False:
         err_str = 'Олимп: матч ' + str(match_id) + ' не найден в спике активных, поток get_bets_olimp завершен.'
         raise OlimpMatchСompleted(err_str)
-
+    resp_temp = ''
     try:
         resp, time_resp = get_match_olimp(match_id, proxies_olimp, proxy, time_out, pair_mathes, place)
+        resp_temp = str(resp)
         time_start_proc = time.time()
         if place == 'pre':
             # TODO
@@ -554,7 +555,7 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
             bets_olimp.pop(key_id)
         raise OlimpMatchСompleted('4 ' + str(e))
     except Exception as e:
-        prnts(e)
+        prnts(e + '\ndata:' + str(resp_temp))
         if bets_olimp.get(key_id):
             bets_olimp.pop(key_id)
         raise ValueError(e)
