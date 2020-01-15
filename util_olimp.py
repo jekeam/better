@@ -108,16 +108,16 @@ def get_matches_olimp(proxy, time_out, place, sport_id=None, time=6, liga_id=Non
     if place == 'live':
         v_url = url + '/api/slice/'
     else:
-        v_url = url + '/api/'+place+'/'
+        v_url = url + '/api/' + place + '/'
         olimp_data_ll.update({'live': 0})
         olimp_data_ll.update({'sport_id': sport_id})
-        
+
         if place == 'matches':
             olimp_data_ll.update({'id': liga_id})
         else:
             olimp_data_ll.pop('time_shift', None)
-        olimp_data_ll['time'] =  max(time, 6) # in app avalible 6 min hours
-        
+        olimp_data_ll['time'] = max(time, 6)  # in app avalible 6 min hours
+
     olimp_data_ll.update({'lang_id': 2})
     olimp_head_ll = olimp_head
     olimp_head_ll.update(olimp_get_xtoken(olimp_data_ll, olimp_secret_key))
@@ -219,7 +219,7 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out, pair_mathes, type):
     olimp_data_m.update({'lang_id': 0})
     olimp_data_m.update({'sport_id': sport_id})
     if type == 'pre':
-       olimp_data_m.update({'live': 0})
+        olimp_data_m.update({'live': 0})
 
     olimp_stake_head = olimp_head.copy()
 
@@ -315,10 +315,10 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
     try:
         resp, time_resp = get_match_olimp(match_id, proxies_olimp, proxy, time_out, pair_mathes, place)
         time_start_proc = time.time()
-        if place=='pre':
+        if place == 'pre':
             # TODO
             # math_block = True if not resp or resp.get('ms', False) or resp.get('error', {'err_code': 0}).get('err_code') == 404 else False
-            math_block = False 
+            math_block = False
         else:
             math_block = True if not resp or str(resp.get('ms', '1')) != '2' or resp.get('error', {'err_code': 0}).get('err_code') == 404 else False
         # 1 - block, 2 - available
@@ -485,11 +485,11 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
                 for i in list(bets_olimp):
                     for j in list(bets_olimp[i].get('kofs', {})):
                         try:
-    
+
                             kof_order = bets_olimp[i]['kofs'][j].get('hist', {}).get('order', [])
                             time_change = bets_olimp[i]['kofs'][j].get('hist', {}).get('time_change', time.time())
                             avg_change = bets_olimp[i]['kofs'][j].get('hist', {}).get('avg_change', [])
-    
+
                             try:
                                 if 0 != kof_order[-1]:
                                     kof_order.append(0)
@@ -501,10 +501,10 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
                                 # firs
                                 kof_order.append(0)
                                 avg_change.append(0)
-    
+
                             bets_olimp[key_id]['kofs'][i]['value'] = 0
                             bets_olimp[key_id]['kofs'][i]['factor'] = 0
-    
+
                             bets_olimp[key_id]['kofs'][i]['time_req'] = round(time.time())
                             if bets_olimp[key_id]['kofs'][i].get('hist') is None:
                                 bets_olimp[key_id]['kofs'][i]['hist'] = {}

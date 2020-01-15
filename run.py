@@ -50,7 +50,7 @@ def get_olimp(resp, arr_matchs, type='live', sport_id=None):
     for key in list(arr_matchs):
         if arr_matchs.get('olimp', '') != '':
             arr_matchs.pop(key)
-    if type=='live':
+    if type == 'live':
         key_name = 'cn'
     else:
         key_name = 'n'
@@ -79,7 +79,7 @@ def get_olimp(resp, arr_matchs, type='live', sport_id=None):
                     # math_block = True if math_info.get('ms') == 1 else False
                     # print_j(liga_info)
                     start_time = math_info.get('t', 0) + 60 * 60 * 3
-                    start_time_str = math_info.get('dt') # TODO
+                    start_time_str = math_info.get('dt')  # TODO
                     start_after_min = math.floor((start_time - int(time.time())) / 60)
                     # print('math_info: ' + str(math_info))
                     arr_matchs[match_id_str] = {
@@ -210,7 +210,7 @@ def start_seeker_matchs_olimp(gen_proxi_olimp, arr_matchs, place):
                         sport_id = sport.get('olimp')
                         resp_sport = {}
                         try:
-                            resp_sport, time_resp = get_matches_olimp(proxy, time_out, 'champs', sport_id, max_min_prematch/60)
+                            resp_sport, time_resp = get_matches_olimp(proxy, time_out, 'champs', sport_id, max_min_prematch / 60)
                             if resp_sport:
                                 for sport_arr in resp_sport:
                                     liga_id_str = str(sport_arr.get('id'))
@@ -227,14 +227,14 @@ def start_seeker_matchs_olimp(gen_proxi_olimp, arr_matchs, place):
                             else:
                                 raise ValueError(str(e))
                         if DEBUG:
-                            prnts('sport ' + str(sport_id) + ': ' +  str(len(resp_sport)))
+                            prnts('sport ' + str(sport_id) + ': ' + str(len(resp_sport)))
                 # get matches by liga_id
                 ligu = {}
                 for sport_id in list(arr_leagues):
                     for liga_id in arr_leagues[sport_id]:
                         resp_matches = {}
                         try:
-                            resp_matches, time_resp = get_matches_olimp(proxy, time_out, 'matches', sport_id, max_min_prematch/60, liga_id)
+                            resp_matches, time_resp = get_matches_olimp(proxy, time_out, 'matches', sport_id, max_min_prematch / 60, liga_id)
                             get_olimp(resp_matches, arr_matchs, 'pre', sport_id)
                             # print_j(resp_matches)
                             # time.sleep(55)
@@ -722,7 +722,12 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
                         deff_time = max((cur_time - ol_time_req), (cur_time - fb_time_req))
 
                         L = (1 / float(v_olimp)) + (1 / float(v_fonbet))
-                        is_fork = True if L < 1 and deff_time < 4 else False
+
+                        if type_time == 'pre':
+                            fork_hide_time = TIMEOUT_PRE_MATCH + 4
+                        else:
+                            fork_hide_time = 4
+                        is_fork = True if L < 1 and deff_time < fork_hide_time else False
                         if is_fork:  # or True
 
                             time_break_fonbet = False
