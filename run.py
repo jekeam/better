@@ -715,7 +715,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
                     k_fonbet = math_json_fonbet.get('kofs', {}).get(kof_type_fonbet, {})
 
                     ol_start = math_json_olimp.get('start_time', 0)
-                    fb_start = math_json_olimp.get('start_time', 0)
+                    fb_start = math_json_fonbet.get('start_time', 0)
 
                     v_olimp = k_olimp.get('value', 0.0)
                     v_fonbet = k_fonbet.get('value', 0.0)
@@ -812,7 +812,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
                                                 'ol_kof_order;'
                                                 'fb_time_change;'
                                                 'fb_kof_order;'
-                                                'ol_start;',
+                                                'ol_start;'
                                                 'fb_start'
                                                 '\n'
                                             )
@@ -821,12 +821,12 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
                                             csv.write(
                                                 event_type + ';' +
                                                 type_time + ';' +
-                                                str(round(time.time())) + ';' +
-                                                str(forks.get(bet_key).get('create_fork')) + ';' +
+                                                str(datetime.fromtimestamp(int(round(time.time()))).strftime('%d.%m.%Y %H:%M:%S')) + ';' +
+                                                str(datetime.fromtimestamp(int(forks.get(bet_key).get('create_fork'))).strftime('%d.%m.%Y %H:%M:%S')) + ';' +
                                                 str(forks.get(bet_key).get('created_fork')) + ';' +
-                                                str(cur_time) + ';' +
-                                                str(math_json_olimp.get('time_req', '')) + ';' +
-                                                str(math_json_fonbet.get('time_req', '')) + ';' +
+                                                str(datetime.fromtimestamp(int(cur_time)).strftime('%d.%m.%Y %H:%M:%S')) + ';' +
+                                                str(datetime.fromtimestamp(int(math_json_olimp.get('time_req', ''))).strftime('%d.%m.%Y %H:%M:%S')) + ';' +
+                                                str(datetime.fromtimestamp(int(math_json_fonbet.get('time_req', ''))).strftime('%d.%m.%Y %H:%M:%S')) + ';' +
                                                 str(live_fork) + ';' +
                                                 str(forks_meta.get(bet_key, dict()).get('live_fork_total', 0) + live_fork) + ';' +
                                                 str(bet_key.split('@')[0]) + ';' + str(bet_key.split('@')[1]) + ';' +
@@ -853,8 +853,8 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
                                                 str(k_olimp.get('hist', {}).get('order', [])) + ';' +
                                                 str(k_fonbet.get('hist', {}).get('time_change', '')) + ';' +
                                                 str(k_fonbet.get('hist', {}).get('order', [])) + ';' +
-                                                str(ol_start) + ';' +
-                                                str(fb_start) +
+                                                str(datetime.fromtimestamp(int(ol_start)).strftime('%d.%m.%Y %H:%M:%S')) + ';' +
+                                                str(datetime.fromtimestamp(int(fb_start)).strftime('%d.%m.%Y %H:%M:%S')) +
                                                 '\n'
                                             )
                             else:

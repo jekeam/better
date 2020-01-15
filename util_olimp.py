@@ -344,6 +344,10 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
                 print('resp: ' + str(resp))
             start_time = int(resp.get('t', 0))
             start_after_min = math.floor((start_time - int(time.time())) / 60)
+            if start_after_min:
+                if start_after_min <= 0:
+                    err_str = 'Олимп: pre матч, ' + skName + ' - ' + str(match_id) + ' завершен, т.к. ' + str(start_after_min) + ' минут до начала матча.'
+                    raise OlimpMatchСompleted(err_str)
             score = ''
             sc1 = 0
             sc2 = 0
