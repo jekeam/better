@@ -992,9 +992,9 @@ if __name__ == '__main__':
     # live=0&sport_id=1&id=54069840&session=&platforma=ANDROID2&lang_id=2&time_shift=0
 
     # get event list by olimp
-    # olimp_seeker_matchs = threading.Thread(target=start_seeker_matchs_olimp, args=(gen_proxi_olimp, arr_matchs, 'live'))
-    # olimp_seeker_matchs.start()
-    # time.sleep(2)
+    olimp_seeker_matchs = threading.Thread(target=start_seeker_matchs_olimp, args=(gen_proxi_olimp, arr_matchs, 'live'))
+    olimp_seeker_matchs.start()
+    time.sleep(2)
     # get pre event list by olimp
     olimp_seeker_pre_matchs = threading.Thread(target=start_seeker_matchs_olimp, args=(gen_proxi_olimp, arr_matchs, 'pre'))
     olimp_seeker_pre_matchs.start()
@@ -1002,9 +1002,9 @@ if __name__ == '__main__':
     # time.sleep(60)
 
     # get event list by fonbet
-    # fonbet_seeker_matchs = threading.Thread(target=start_seeker_matchs_fonbet, args=(gen_proxi_fonbet, arr_matchs, 'live'))
-    # fonbet_seeker_matchs.start()
-    # time.sleep(2)
+    fonbet_seeker_matchs = threading.Thread(target=start_seeker_matchs_fonbet, args=(gen_proxi_fonbet, arr_matchs, 'live'))
+    fonbet_seeker_matchs.start()
+    time.sleep(2)
     # get pre event list by fonbet
     fonbet_seeker_pre_matchs = threading.Thread(target=start_seeker_matchs_fonbet, args=(gen_proxi_fonbet, arr_matchs, 'pre'))
     fonbet_seeker_pre_matchs.start()

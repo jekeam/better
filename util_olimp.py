@@ -336,7 +336,7 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
                 if minute >= (int(minute_complite) - 2):
                     err_str = 'Олимп: матч, ' + my_sport_name + ' - ' + str(match_id) + ' завершен, т.к. ' + str(minute_complite - 2) + ' минут прошло.'
                     raise OlimpMatchСompleted(err_str)
-
+            # print('resp: ' + str(resp))
             skId = resp.get('sport_id')
             skName = resp.get('sn')
             sport_name = resp.get('cn')
