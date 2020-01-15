@@ -341,7 +341,7 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
             skId = resp.get('sport_id')
             skName = resp.get('sn')
             sport_name = resp.get('cn')
-            champid = '' # NOT FOUND
+            champid = sport_name  # NOT FOUND
             name = resp.get('n')
             # if name == 'Ювентус - Удинезе':
             #     print('resp: ' + str(resp))

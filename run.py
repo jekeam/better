@@ -563,9 +563,9 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                                         bk2_match_info.get('team1', ''),
                                         bk2_match_info.get('team2', '')
                                     )
-                                    if rate > need:
-                                        print('{}, {},{}, {}'.format(
-                                            bk1_match_info.get('start_time') == bk2_match_info.get('start_time'),
+                                    if rate > need and bk1_match_info.get('start_time') != bk2_match_info.get('start_time'):
+                                        prnts('Обнаружено различие во времени матча:{}, {},{}, {}'.format(
+                                            (bk1_match_info.get('start_time') - bk2_match_info.get('start_time')) / 60,
                                             match_name,
                                             bk1_match_info.get('start_time'),
                                             bk2_match_info.get('start_time'),
