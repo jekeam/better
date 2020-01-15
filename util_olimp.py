@@ -90,7 +90,7 @@ def olimp_get_xtoken(payload, olimp_secret_key):
     return {"X-TOKEN": md5(to_encode.encode()).hexdigest()}
 
 
-def get_matches_olimp(proxy, time_out, place, sport_id=None, time=6):
+def get_matches_olimp(proxy, time_out, place, sport_id=None, time=6, liga_id=None):
     global olimp_data
     global olimp_head
 
@@ -105,15 +105,19 @@ def get_matches_olimp(proxy, time_out, place, sport_id=None, time=6):
         raise ValueError(err_str)
     olimp_data_ll = olimp_data.copy()
     v_url = ''
-    if place == 'champs':
-        v_url = url + '/api/champs/'
+    if place == 'live':
+        v_url = url + '/api/slice/'
+    else:
+        v_url = url + '/api/'+place+'/'
         olimp_data_ll.update({'live': 0})
         olimp_data_ll.update({'sport_id': sport_id})
+        
+        if place == 'matches':
+            olimp_data_ll.update({'id': liga_id})
+        else:
+            olimp_data_ll.pop('time_shift', None)
         olimp_data_ll['time'] =  max(time, 6) # in app avalible 6 min hours
-        olimp_data_ll.pop('time_shift', None)
-    else:
-        v_url = url + '/api/slice/'
-
+        
     olimp_data_ll.update({'lang_id': 2})
     olimp_head_ll = olimp_head
     olimp_head_ll.update(olimp_get_xtoken(olimp_data_ll, olimp_secret_key))

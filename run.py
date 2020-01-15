@@ -45,15 +45,18 @@ prnts('SERVER_PORT: ' + str(SERVER_PORT))
 prnts('SPORT_LIST: ' + print_j(sport_list, 'return var'))
 
 
-def get_olimp(resp, arr_matchs, type='live'):
+def get_olimp(resp, arr_matchs, type='live', sport_id=None):
     # Очистим дстарые данные
     for key in list(arr_matchs):
         if arr_matchs.get('olimp', '') != '':
             arr_matchs.pop(key)
+    if type=='live':
+        key_name = 'cn'
+    else:
+        key_name = 'n'
+        resp = [resp]
     if resp:
         for liga_info in resp:
-
-            # prnts(str(liga_info.get('sport_id')) + ' ' + liga_info.get('sn'))
             # 1 Soccer
             # 3 Tennis
             # 5 Basketball
@@ -68,25 +71,28 @@ def get_olimp(resp, arr_matchs, type='live'):
             # 51 Badminton
             # 60 Beach Volleyball
             # 126 Pool
-            if if_exists(sport_list, 'olimp', liga_info.get('sport_id')) and if_exists(sport_list, 'place', type):
+            if if_exists(sport_list, 'olimp', liga_info.get('sport_id', sport_id)) and if_exists(sport_list, 'place', type):
                 for math_info in liga_info.get('it'):
                     # print(math_info.get('dt') + ' ' + str(datetime.fromtimestamp(int(math_info.get('t')) + 60 * 60).strftime('%d.%m.%Y %H:%M:%S')))
                     # print(math_info.get('dt') == str(datetime.fromtimestamp(int(math_info.get('t'))+60*60).strftime('%d.%m.%Y %H:%M:%S')))
                     match_id_str = str(math_info.get('id'))
                     # math_block = True if math_info.get('ms') == 1 else False
                     # print_j(liga_info)
-                    start_time = math_info.get('t', 0) + 60 * 60
+                    start_time = math_info.get('t', 0) + 60 * 60 * 3
+                    start_time_str = math_info.get('dt') # TODO
                     start_after_min = math.floor((start_time - int(time.time())) / 60)
+                    # print('math_info: ' + str(math_info))
                     arr_matchs[match_id_str] = {
                         'bk_name': 'olimp',
                         'type': type,
-                        'sport_id': liga_info.get('sport_id'),
-                        'sport_name': if_exists(sport_list, 'olimp', liga_info.get('sport_id'), 'name'),
-                        'name': liga_info['cn'],
+                        'sport_id': liga_info.get('sport_id', sport_id),
+                        'sport_name': if_exists(sport_list, 'olimp', liga_info.get('sport_id', sport_id), 'name'),
+                        'name': liga_info[key_name],
                         'team1': math_info.get('c1', ''),
                         'team2': math_info.get('c2', ''),
                         'start_timestamp': start_time,
-                        'start_after_min': start_after_min
+                        'start_time_str': start_time_str,
+                        'start_after_min': start_after_min,
                     }
     # print_j(arr_matchs) # 50940691
 
@@ -191,6 +197,7 @@ def start_seeker_matchs_olimp(gen_proxi_olimp, arr_matchs, place):
     proxy = gen_proxi_olimp.next()
     fail_proxy = 0
     arr_leagues = {}
+    arr_matches = {}
     if place == 'pre':
         time_out = TIMEOUT_PRE_LIST
     else:
@@ -198,6 +205,7 @@ def start_seeker_matchs_olimp(gen_proxi_olimp, arr_matchs, place):
     while True:
         try:
             if place == 'pre':
+                # get leagues
                 for sport in sport_list:
                     if 'pre' in sport.get('place'):
                         sport_id = sport.get('olimp')
@@ -207,10 +215,9 @@ def start_seeker_matchs_olimp(gen_proxi_olimp, arr_matchs, place):
                         except Exception as e:
                             if 'We are updating betting line'.lower() in str(e).lower():
                                 pass
+                                print(e)
                             else:
                                 raise ValueError(str(e))
-                        if DEBUG:
-                            prnts('sport ' + str(sport_id) + ': ' +  str(len(resp_sport)))
                         if resp_sport:
                             for sport_arr in resp_sport:
                                 liga_id_str = str(sport_arr.get('id'))
@@ -220,12 +227,30 @@ def start_seeker_matchs_olimp(gen_proxi_olimp, arr_matchs, place):
                                     else:
                                         arr_leagues[sport_id] = []
                                         arr_leagues[sport_id].append(liga_id_str)
-                print_j(arr_leagues)
-                
+                        if DEBUG:
+                            prnts('sport ' + str(sport_id) + ': ' +  str(len(resp_sport)))
+                # get matches by liga_id
+                ligu = {}
+                for sport_id in list(arr_leagues):
+                    for liga_id in arr_leagues[sport_id]:
+                        resp_matches = {}
+                        try:
+                            resp_matches, time_resp = get_matches_olimp(proxy, time_out, 'matches', sport_id, max_min_prematch/60, liga_id)
+                            # print_j(resp_matches)
+                            # time.sleep(55)
+                        except Exception as e:
+                            if 'We are updating betting line'.lower() in str(e).lower():
+                                pass
+                                print(e)
+                            else:
+                                raise ValueError(str(e))
+                        get_olimp(resp_matches, arr_matchs, 'pre', sport_id)
+                        print_j(arr_matchs)
+                        print(len(arr_matchs))
+                        time.sleep(5)
             else:
                 resp, time_resp = get_matches_olimp(proxy, time_out, place)
-            print('resp: ' + str(resp))
-            get_olimp(resp, arr_matchs)
+                get_olimp(resp, arr_matchs, 'live')
         except TimeOut as e:
             err_str = 'Timeout: Олимп, ошибка призапросе списока матчей'
             prnts(err_str)
