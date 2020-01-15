@@ -197,7 +197,6 @@ def start_seeker_matchs_olimp(gen_proxi_olimp, arr_matchs, place):
     proxy = gen_proxi_olimp.next()
     fail_proxy = 0
     arr_leagues = {}
-    arr_matches = {}
     if place == 'pre':
         time_out = TIMEOUT_PRE_LIST
     else:
@@ -212,21 +211,21 @@ def start_seeker_matchs_olimp(gen_proxi_olimp, arr_matchs, place):
                         resp_sport = {}
                         try:
                             resp_sport, time_resp = get_matches_olimp(proxy, time_out, 'champs', sport_id, max_min_prematch/60)
+                            if resp_sport:
+                                for sport_arr in resp_sport:
+                                    liga_id_str = str(sport_arr.get('id'))
+                                    if liga_id_str not in arr_leagues.get(sport_id, {}):
+                                        if arr_leagues.get(sport_id) is not None:
+                                            arr_leagues[sport_id].append(liga_id_str)
+                                        else:
+                                            arr_leagues[sport_id] = []
+                                            arr_leagues[sport_id].append(liga_id_str)
                         except Exception as e:
                             if 'We are updating betting line'.lower() in str(e).lower():
                                 pass
                                 print(e)
                             else:
                                 raise ValueError(str(e))
-                        if resp_sport:
-                            for sport_arr in resp_sport:
-                                liga_id_str = str(sport_arr.get('id'))
-                                if liga_id_str not in arr_leagues.get(sport_id, {}):
-                                    if arr_leagues.get(sport_id) is not None:
-                                        arr_leagues[sport_id].append(liga_id_str)
-                                    else:
-                                        arr_leagues[sport_id] = []
-                                        arr_leagues[sport_id].append(liga_id_str)
                         if DEBUG:
                             prnts('sport ' + str(sport_id) + ': ' +  str(len(resp_sport)))
                 # get matches by liga_id
@@ -366,7 +365,7 @@ def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi
     while True:
         try:
             time_resp = get_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, ps.get_next_proxy(), TIMEOUT_MATCH, pair_mathes, place)
-            print(bets_olimp)
+            # print(bets_olimp)
             stat_req_ol.append(round(time_resp, 2))
         except OlimpMatchСompleted as e:
             cnt = 0
@@ -675,7 +674,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
                 math_json_olimp = bets_olimp.get(pair_math[0], {})
                 math_json_fonbet = bets_fonbet.get(pair_math[1], {})
                 event_type = pair_math[2]
-                # type_time = pair_math[3]  # pre/live
+                type_time = pair_math[3]  # pre/live
 
                 curr_opposition = copy.deepcopy(opposition)
 
@@ -711,9 +710,9 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
                     v_fonbet = k_fonbet.get('value', 0.0)
                     # print(kof_type_fonbet, str(v_fonbet), kof_type_olimp, str(v_olimp), sep=";")
 
-                    if DEBUG:
-                        v_olimp = v_olimp * 2
-                        v_fonbet = v_fonbet * 2
+                    # if DEBUG:
+                        # v_olimp = v_olimp * 2
+                        # v_fonbet = v_fonbet * 2
 
                     if v_olimp > 0.0 and v_fonbet > 0.0:
 
@@ -785,7 +784,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
                                     if not os.path.isfile(file_forks):
                                         with open(file_forks, 'w', encoding='utf-8') as csv:
                                             csv.write(
-                                                'event_type;time;time_create;created_fork;cut_time;ol_time;fb_time;live_fork;live_fork_total;'
+                                                'event_type;place;time;time_create;created_fork;cut_time;ol_time;fb_time;live_fork;live_fork_total;'
                                                 'match_ol;match_fb;kof_ol;kof_fb;name;l;l_first;bk1_score;bk2_score;'
                                                 'vect_ol;vect_fb;time;'
                                                 'minute;ol_kof;ol_avg_change;fb_kof;fb_avg_change;'
@@ -802,6 +801,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
                                         with open(file_forks, 'a', encoding='utf-8') as csv:
                                             csv.write(
                                                 event_type + ';' +
+                                                type_time + ';' +
                                                 str(round(time.time())) + ';' +
                                                 str(forks.get(bet_key).get('create_fork')) + ';' +
                                                 str(forks.get(bet_key).get('created_fork')) + ';' +
