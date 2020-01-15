@@ -344,31 +344,31 @@ if __name__ == '__main__':
     proxy_list_ol = (list(filter(lambda p: 'https' in p, proxy_list_ol)))
     proxy_list_olimp = check_proxies_olimp(proxy_list_ol)
     save_list(proxy_list_olimp, ol_fl, clone=2000)
-    time.sleep(3)
-    # FB
-    proxy_list_fonbet = check_proxies_fonbet(proxy_list)
-    save_list(proxy_list_fonbet, fb_fl)
-    time.sleep(3)
-    # PINNACLE
-    prnts('get api_key from pinnacle')
-    url_pinnacle = 'www.pinnacle.com'
-    app_key = requests.get('https://' + url_pinnacle + '/config/app.json').json()['api']['haywire']['apiKey']
-    prnts('pinnacle app_key: ' + app_key)
-    headers_pinnacle = {
-        'accept': 'application/json',
-        'content-type': 'application/json',
-        'origin': 'https://' + url_pinnacle,
-        'referer': 'https://' + url_pinnacle,
-        'sec-fetch-mode': 'cors',
-        'sec-fetch-site': 'same-site',
-        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36',
-        'x-api-key': app_key
-    }
-    # url_pinnacle = 'guest.api.arcadia.pinnacle.com/0.1/sports/29/matchups/live'
-    url_pinnacle = 'guest.api.arcadia.pinnacle.com/0.1/sports/29/markets/live/straight?primaryOnly=false'
-    # proxy_list_pinnacle = get_proxy_from_file('proxy_by_pinnacle.txt')
-    proxy_list_pinnacle = proxy_list
-    proxy_list_https = (list(filter(lambda p: 'https' in p, proxy_list_pinnacle)))
-    proxy_list_pinnacle = check_proxies(proxy_list_https, url_pinnacle, headers_pinnacle)
-    save_list(proxy_list_pinnacle, pn_fl)
-    time.sleep(3)
+    # time.sleep(3)
+    # # FB
+    # proxy_list_fonbet = check_proxies_fonbet(proxy_list)
+    # save_list(proxy_list_fonbet, fb_fl)
+    # time.sleep(3)
+    # # PINNACLE
+    # prnts('get api_key from pinnacle')
+    # url_pinnacle = 'www.pinnacle.com'
+    # app_key = requests.get('https://' + url_pinnacle + '/config/app.json').json()['api']['haywire']['apiKey']
+    # prnts('pinnacle app_key: ' + app_key)
+    # headers_pinnacle = {
+    #     'accept': 'application/json',
+    #     'content-type': 'application/json',
+    #     'origin': 'https://' + url_pinnacle,
+    #     'referer': 'https://' + url_pinnacle,
+    #     'sec-fetch-mode': 'cors',
+    #     'sec-fetch-site': 'same-site',
+    #     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36',
+    #     'x-api-key': app_key
+    # }
+    # # url_pinnacle = 'guest.api.arcadia.pinnacle.com/0.1/sports/29/matchups/live'
+    # url_pinnacle = 'guest.api.arcadia.pinnacle.com/0.1/sports/29/markets/live/straight?primaryOnly=false'
+    # # proxy_list_pinnacle = get_proxy_from_file('proxy_by_pinnacle.txt')
+    # proxy_list_pinnacle = proxy_list
+    # proxy_list_https = (list(filter(lambda p: 'https' in p, proxy_list_pinnacle)))
+    # proxy_list_pinnacle = check_proxies(proxy_list_https, url_pinnacle, headers_pinnacle)
+    # save_list(proxy_list_pinnacle, pn_fl)
+    # time.sleep(3)

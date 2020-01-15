@@ -90,7 +90,7 @@ def olimp_get_xtoken(payload, olimp_secret_key):
     return {"X-TOKEN": md5(to_encode.encode()).hexdigest()}
 
 
-def get_matches_olimp(proxy, time_out):
+def get_matches_olimp(proxy, time_out, place, sport_id=None, time=6):
     global olimp_data
     global olimp_head
 
@@ -103,17 +103,25 @@ def get_matches_olimp(proxy, time_out):
         err_str = 'Olimp error set proxy: ' + str(e)
         prnts(err_str)
         raise ValueError(err_str)
-
     olimp_data_ll = olimp_data.copy()
-    olimp_data_ll.update({'lang_id': 2})
+    v_url = ''
+    if place == 'champs':
+        v_url = url + '/api/champs/'
+        olimp_data_ll.update({'live': 0})
+        olimp_data_ll.update({'sport_id': sport_id})
+        olimp_data_ll['time'] =  max(time, 6) # in app avalible 6 min hours
+        olimp_data_ll.pop('time_shift', None)
+    else:
+        v_url = url + '/api/slice/'
 
+    olimp_data_ll.update({'lang_id': 2})
     olimp_head_ll = olimp_head
     olimp_head_ll.update(olimp_get_xtoken(olimp_data_ll, olimp_secret_key))
     olimp_head_ll.pop('Accept-Language', None)
-
+    # print(v_url, olimp_data_ll, proxies)
     try:
         resp = requests.post(
-            url + '/api/slice/',
+            v_url,
             data=olimp_data_ll,
             headers=olimp_head_ll,
             timeout=time_out,
@@ -122,7 +130,6 @@ def get_matches_olimp(proxy, time_out):
         )
         try:
             res = resp.json()
-            print(res)
         except Exception as e:
             err_str = 'Olimp error : ' + str(e)
             prnts(err_str)

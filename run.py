@@ -186,43 +186,71 @@ def get_fonbet(resp, arr_matchs, type):
     # ['16453828': {'bk_name': 'fonbet', 'sport_id': 1, 'sport_name': 'Football', 'name': '', 'team1': 'Nadi', 'team2': 'Suva'}, ....]
 
 
-def start_seeker_matchs_olimp(gen_proxi_olimp, arr_matchs, type):
+def start_seeker_matchs_olimp(gen_proxi_olimp, arr_matchs, place):
     global TIMEOUT_LIST
     proxy = gen_proxi_olimp.next()
     fail_proxy = 0
+    arr_leagues = {}
+    if place == 'pre':
+        time_out = TIMEOUT_PRE_LIST
+    else:
+        time_out = TIMEOUT_LIST
     while True:
         try:
-            resp, time_resp = get_matches_olimp(proxy, TIMEOUT_LIST)
+            if place == 'pre':
+                for sport in sport_list:
+                    if 'pre' in sport.get('place'):
+                        sport_id = sport.get('olimp')
+                        resp_sport = {}
+                        try:
+                            resp_sport, time_resp = get_matches_olimp(proxy, time_out, 'champs', sport_id, max_min_prematch/60)
+                        except Exception as e:
+                            if 'We are updating betting line'.lower() in str(e).lower():
+                                pass
+                            else:
+                                raise ValueError(str(e))
+                        if DEBUG:
+                            prnts('sport ' + str(sport_id) + ': ' +  str(len(resp_sport)))
+                        if resp_sport:
+                            for sport_arr in resp_sport:
+                                liga_id_str = str(sport_arr.get('id'))
+                                if liga_id_str not in arr_leagues.get(sport_id, {}):
+                                    if arr_leagues.get(sport_id) is not None:
+                                        arr_leagues[sport_id].append(liga_id_str)
+                                    else:
+                                        arr_leagues[sport_id] = []
+                                        arr_leagues[sport_id].append(liga_id_str)
+                print_j(arr_leagues)
+                
+            else:
+                resp, time_resp = get_matches_olimp(proxy, time_out, place)
+            print('resp: ' + str(resp))
             get_olimp(resp, arr_matchs)
         except TimeOut as e:
             err_str = 'Timeout: Олимп, ошибка призапросе списока матчей'
             prnts(err_str)
-            time_resp = TIMEOUT_LIST
-
+            time_resp = time_out
             if fail_proxy >= 3:
                 proxy = gen_proxi_olimp.next()
             else:
                 fail_proxy = fail_proxy + 1
                 time.sleep(3)
-
         except Exception as e:
-            prnts('Exception: Олимп, ошибка при запросе списка матчей: ' + proxy + str(e))
-            time_resp = TIMEOUT_LIST
-
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            err_str = str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
+            prnts('Exception: Олимп, ошибка при запросе списка матчей: ' + proxy + str(err_str))
+            time_resp = time_out
             if fail_proxy >= 3:
                 proxy = gen_proxi_olimp.next()
                 fail_proxy = 0
             else:
                 fail_proxy = fail_proxy + 1
                 time.sleep(3)
-
-        time_sleep = max(0, (TIMEOUT_LIST - time_resp))
-
+        time_sleep = max(0, (time_out - time_resp))
         if DEBUG:
             pass
             # prnts('Олимп, поиск матчей, время ответа: ' + str(time_resp) + ', запрос через ' +
             #       str(time_sleep) + ' ' + proxy)
-
         time.sleep(time_sleep)
 
 
@@ -241,14 +269,11 @@ def start_seeker_matchs_fonbet(gen_proxi_fonbet, arr_matchs, type):
             prnts('Фонбет, ошибка при запросе списка матчей: ' + str(type) + ' ' + str(e) + ' ' + proxy)
             proxy = gen_proxi_fonbet.next()
             time_resp = time_out
-
         time_sleep = max(0, (time_out - time_resp))
-
         if DEBUG:
             pass
             # prnts('Фонбет, поиск матчей, время ответа: ' + str(time_resp) + ', запрос через ' +
             #       str(time_sleep) + ' ' + proxy)
-
         time.sleep(time_sleep)
 
 
@@ -950,7 +975,8 @@ if __name__ == '__main__':
     # get pre event list by olimp
     olimp_seeker_pre_matchs = threading.Thread(target=start_seeker_matchs_olimp, args=(gen_proxi_olimp, arr_matchs, 'pre'))
     olimp_seeker_pre_matchs.start()
-    time.sleep(2)
+    # time.sleep(2)
+    time.sleep(60)
 
     # get event list by fonbet
     # fonbet_seeker_matchs = threading.Thread(target=start_seeker_matchs_fonbet, args=(gen_proxi_fonbet, arr_matchs, 'live'))
