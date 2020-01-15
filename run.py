@@ -79,21 +79,24 @@ def get_olimp(resp, arr_matchs, type='live', sport_id=None):
                     # math_block = True if math_info.get('ms') == 1 else False
                     # print_j(liga_info)
                     start_time = math_info.get('t', 0)
-                    # start_time_str = math_info.get('dt')  # TODO
                     start_after_min = math.floor((start_time - int(time.time())) / 60)
                     # print('math_info: ' + str(math_info))
-                    arr_matchs[match_id_str] = {
-                        'bk_name': 'olimp',
-                        'type': type,
-                        'sport_id': liga_info.get('sport_id', sport_id),
-                        'sport_name': if_exists(sport_list, 'olimp', liga_info.get('sport_id', sport_id), 'name'),
-                        'name': liga_info[key_name],
-                        'team1': math_info.get('c1', ''),
-                        'team2': math_info.get('c2', ''),
-                        'start_time': start_time,
-                        # 'start_time_str': start_time_str,
-                        'start_after_min': start_after_min,
-                    }
+                    if start_after_min < max_min_prematch:
+                        arr_matchs[match_id_str] = {
+                            'bk_name': 'olimp',
+                            'type': type,
+                            'sport_id': liga_info.get('sport_id', sport_id),
+                            'sport_name': if_exists(sport_list, 'olimp', liga_info.get('sport_id', sport_id), 'name'),
+                            'name': liga_info[key_name],
+                            'team1': math_info.get('c1', ''),
+                            'team2': math_info.get('c2', ''),
+                            'start_time': start_time,
+                            # 'start_time_str': start_time_str,
+                            'start_after_min': start_after_min,
+                        }
+                    else:
+                        if DEBUG:
+                            prnts('Собитие исключено т.к. время начла больше: {}, мин.:{}\ndata:{}'.format(max_min_prematch, start_after_min, str(math_info)), 'hide')
     # print_j(arr_matchs) # 50940691
 
 
@@ -230,10 +233,15 @@ def start_seeker_matchs_olimp(gen_proxi_olimp, arr_matchs, place):
                             prnts('sport ' + str(sport_id) + ': ' + str(len(resp_sport)))
                 # get matches by liga_id
                 ligu = {}
+                l = 0
+                m = 0
                 for sport_id in list(arr_leagues):
+                    l = l + 1
                     for liga_id in arr_leagues[sport_id]:
                         # print(liga_id)
                         try:
+                            m = m + 1
+                            prnts('Запущено лиг: {}/{}, прематчей: {}/{}'.format(len(arr_leagues), l, len(arr_leagues[sport_id]), m))
                             resp_matches, time_resp = get_matches_olimp(proxy, time_out, 'matches', sport_id, max_min_prematch / 60, liga_id)
                             get_olimp(resp_matches, arr_matchs, 'pre', sport_id)
                             # print_j(resp_matches)
@@ -723,8 +731,8 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
 
                     if DEBUG:
                         pass
-                        v_olimp = v_olimp * 2
-                        v_fonbet = v_fonbet * 2
+                        # v_olimp = v_olimp * 2
+                        # v_fonbet = v_fonbet * 2
 
                     if v_olimp > 0.0 and v_fonbet > 0.0:
 
