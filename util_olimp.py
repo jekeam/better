@@ -318,16 +318,13 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
         resp_temp = str(resp)
         time_start_proc = time.time()
         if place == 'pre':
-            # TODO
-            # math_block = True if not resp or resp.get('ms', False) or resp.get('error', {'err_code': 0}).get('err_code') == 404 else False
-            math_block = False
+            if resp:
+                math_block = resp.get('ms', False)
         else:
             math_block = True if not resp or str(resp.get('ms', '1')) != '2' or resp.get('error', {'err_code': 0}).get('err_code') == 404 else False
-        # 1 - block, 2 - available
+            # 1 - block, 2 - available
         if not math_block:
-
             timer = resp.get('t', '')
-
             minute = -1  # (2:0) Перерыв
             try:
                 minute = int(re.findall('\d{1,2}\\"', resp.get('sc', ''))[0].replace('"', ''))
@@ -343,8 +340,8 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
             sport_name = resp.get('cn')
             champid = sport_name  # NOT FOUND
             name = resp.get('n')
-            # if name == 'Ювентус - Удинезе':
-            #     print('resp: ' + str(resp))
+            if name == 'Ювентус - Удинезе':
+                print('resp: ' + str(resp))
             start_time = int(resp.get('t', 0))
             start_after_min = math.floor((start_time - int(time.time())) / 60)
             score = ''
