@@ -219,7 +219,7 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out, pair_mathes, type):
     olimp_data_m.update({'lang_id': 0})
     olimp_data_m.update({'sport_id': sport_id})
     if type == 'pre':
-       olimp_data_m.update({'pre': 0})
+       olimp_data_m.update({'live': 0})
 
     olimp_stake_head = olimp_head.copy()
 
@@ -248,6 +248,7 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out, pair_mathes, type):
         )
         try:
             res = resp.json()
+            # print('res: ' + str(res))
         except Exception as e:
             err_str = 'Olimp error by ' + str(match_id) + ': ' + str(e)
             prnts(err_str)
@@ -313,7 +314,6 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
 
     try:
         resp, time_resp = get_match_olimp(match_id, proxies_olimp, proxy, time_out, pair_mathes, place)
-        # print('resp:' + str(resp))
         time_start_proc = time.time()
         if place=='pre':
             # TODO
