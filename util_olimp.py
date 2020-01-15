@@ -299,7 +299,7 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out, pair_mathes, type):
 
 
 def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_mathes, place):
-    global sport_list
+    global sport_list, TIMEOUT_PRE_MATCH, DEBUG
     key_id = str(match_id)
 
     match_exists = False
@@ -536,11 +536,15 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
         try:
             for i in list(bets_olimp):
                 for j in list(bets_olimp[i].get('kofs', {})):
-                    if round(float(time.time() - float(bets_olimp[i]['kofs'][j].get('time_req', 0)))) > 4 and bets_olimp[i]['kofs'][j].get('value', 0) > 0:
+                    hide_time = 4
+                    if place == 'pre':
+                        hide_time = TIMEOUT_PRE_MATCH + hide_time
+                    if round(float(time.time() - float(bets_olimp[i]['kofs'][j].get('time_req', 0)))) > hide_time and bets_olimp[i]['kofs'][j].get('value', 0) > 0:
                         try:
                             bets_olimp[i]['kofs'][j]['value'] = 0
                             bets_olimp[i]['kofs'][j]['factor'] = 0
-                            # prnts('Олимп, данные по котировке из БК не получены более X сек., знач. выставил в 0: ' + key_id_in + ' ' + str(i), 'hide')
+                            if DEBUG:
+                                prnts('Олимп, данные по котировке из БК не получены более X сек., знач. выставил в 0: ' + str(j) + ' ' + str(i))
                         except Exception as e:
                             exc_type, exc_value, exc_traceback = sys.exc_info()
                             err_str = 'error: ' + str(e) + ' (' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))) + ')'

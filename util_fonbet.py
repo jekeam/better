@@ -176,9 +176,9 @@ def get_match_fonbet(match_id, proxi_list, proxy, time_out, pair_mathes):
         raise ValueError(err_str)
 
 
-def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair_mathes, arr_fonbet_top_kofs):
+def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair_mathes, arr_fonbet_top_kofs, place):
     global VICTS, TTO, TTU, TT1O, TT1U, TT2O, TT2U, BASE_LINE, FORA
-    global sport_list
+    global sport_list, TIMEOUT_PRE_MATCH, DEBUG
 
     match_exists = False
     for pair_match in pair_mathes:
@@ -242,14 +242,14 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
                     if start_after_min <= 0:
                         err_str = 'Фонбет: pre матч, ' + skName + ' - ' + str(match_id) + ' завершен, т.к. ' + str(start_after_min) + ' минут до начала матча.'
                         raise FonbetMatchСompleted(err_str)
-                place = event.get('place')
+                place_in = event.get('place')
                 if event.get('parentId') == 0 or 'st half' in name or 'nd half' in name:
                     if event.get('parentId') == 0:
                         try:
                             bets_fonbet[key_id].update({
                                 'sport_id': skId,
                                 'liga_id': liga_id,
-                                'place': place,
+                                'place': place_in,
                                 'sport_name': skName,
                                 'league': sport_name,
                                 'name': name,
@@ -266,7 +266,7 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
                             bets_fonbet[key_id] = {
                                 'sport_id': skId,
                                 'liga_id': liga_id,
-                                'place': place,
+                                'place': place_in,
                                 'sport_name': skName,
                                 'league': sport_name,
                                 'name': name,
@@ -415,11 +415,15 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
 
         try:
             for i in list(bets_fonbet):
+                hide_time = 4
+                if place == 'pre':
+                    hide_time = TIMEOUT_PRE_MATCH + hide_time
                 for j in list(bets_fonbet[i].get('kofs', {})):
-                    if round(float(time.time() - float(bets_fonbet[i]['kofs'][j].get('time_req', 0)))) > 4 and bets_fonbet[i]['kofs'][j].get('value', 0) > 0:
+                    if round(float(time.time() - float(bets_fonbet[i]['kofs'][j].get('time_req', 0)))) > hide_time and bets_fonbet[i]['kofs'][j].get('value', 0) > 0:
                         try:
                             bets_fonbet[i]['kofs'][j]['value'] = 0
-                            # prnts('Фонбет, данные по котировке из БК не получены более X сек., знач. выставил в 0: ' + key_id_in + ' ' + str(i), 'hide')
+                            if DEBUG:
+                                prnts('Фонбет, данные по котировке из БК не получены более X сек., знач. выставил в 0: ' + str(j) + ' ' + str(i))
                         except Exception as e:
                             exc_type, exc_value, exc_traceback = sys.exc_info()
                             err_str = 'error: ' + str(e) + ' (' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))) + ')'
