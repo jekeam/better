@@ -235,6 +235,7 @@ def start_seeker_matchs_olimp(gen_proxi_olimp, arr_matchs, place):
                         resp_matches = {}
                         try:
                             resp_matches, time_resp = get_matches_olimp(proxy, time_out, 'matches', sport_id, max_min_prematch/60, liga_id)
+                            get_olimp(resp_matches, arr_matchs, 'pre', sport_id)
                             # print_j(resp_matches)
                             # time.sleep(55)
                         except Exception as e:
@@ -243,7 +244,6 @@ def start_seeker_matchs_olimp(gen_proxi_olimp, arr_matchs, place):
                                 print(e)
                             else:
                                 raise ValueError(str(e))
-                        get_olimp(resp_matches, arr_matchs, 'pre', sport_id)
                         # print_j(arr_matchs)
                         # print(len(arr_matchs))
                         # time.sleep(5)
