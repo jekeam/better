@@ -59,56 +59,56 @@ sport_list = [
         # 'place': ['live', 'pre']
         'place': ['pre']
     },
-    # {
-    #     'name': 'esports',
-    #     'olimp': 112,
-    #     'fonbet': 29086,
-    #     'pinn': 12,
-    #     # 'place': ['live', 'pre']
-    #     'place': ['live']
-    # },
-    # {
-    #     'name': 'volleyball',
-    #     'olimp': 10,
-    #     'fonbet': 9,
-    #     'pinn': 34,
-    #     # 'place': ['live', 'pre']
-    #     'place': ['live']
-    # },
-    # {
-    #     'name': 'tennis',
-    #     'olimp': 3,
-    #     'fonbet': 4,
-    #     'pinn': 33,
-    #     # 'place': ['live', 'pre']
-    #     'place': ['live']
-    # },
-    # {
-    #     'name': 'basketball',
-    #     'olimp': 5,
-    #     'fonbet': 3,
-    #     'pinn': None,  # TODO
-    #     'min': 40,
-    #     # 'place': ['live', 'pre']
-    #     'place': ['live']
-    # },
-    # {
-    #     'name': 'hockey',
-    #     'olimp': 2,
-    #     'fonbet': 2,
-    #     'pinn': 19,
-    #     'min': 60,
-    #     # 'place': ['live', 'pre']
-    #     'place': ['live']
-    # },
-    # {
-    #     'name': 'table-tennis',
-    #     'olimp': 40,
-    #     'fonbet': 3088,
-    #     'pinn': None,  # TODO
-    #     # 'place': ['live', 'pre']
-    #     'place': ['live']
-    # },
+    {
+        'name': 'esports',
+        'olimp': 112,
+        'fonbet': 29086,
+        'pinn': 12,
+        # 'place': ['live', 'pre']
+        'place': ['pre']
+    },
+    {
+        'name': 'volleyball',
+        'olimp': 10,
+        'fonbet': 9,
+        'pinn': 34,
+        # 'place': ['live', 'pre']
+        'place': ['pre']
+    },
+    {
+        'name': 'tennis',
+        'olimp': 3,
+        'fonbet': 4,
+        'pinn': 33,
+        # 'place': ['live', 'pre']
+        'place': ['pre']
+    },
+    {
+        'name': 'basketball',
+        'olimp': 5,
+        'fonbet': 3,
+        'pinn': None,  # TODO
+        'min': 40,
+        # 'place': ['live', 'pre']
+        'place': ['pre']
+    },
+    {
+        'name': 'hockey',
+        'olimp': 2,
+        'fonbet': 2,
+        'pinn': 19,
+        'min': 60,
+        # 'place': ['live', 'pre']
+        'place': ['pre']
+    },
+    {
+        'name': 'table-tennis',
+        'olimp': 40,
+        'fonbet': 3088,
+        'pinn': None,  # TODO
+        # 'place': ['live', 'pre']
+        'place': ['pre']
+    },
 ]
 
 opposition = {
