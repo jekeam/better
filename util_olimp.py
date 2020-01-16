@@ -516,18 +516,20 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
                                 # firs
                                 kof_order.append(0)
                                 avg_change.append(0)
-
-                            bets_olimp[key_id]['kofs'][i]['value'] = 0
-                            bets_olimp[key_id]['kofs'][i]['factor'] = 0
-
-                            bets_olimp[key_id]['kofs'][i]['time_req'] = round(time.time())
-                            if bets_olimp[key_id]['kofs'][i].get('hist') is None:
-                                bets_olimp[key_id]['kofs'][i]['hist'] = {}
-                            bets_olimp[key_id]['kofs'][i]['hist']['avg_change'] = avg_change
-                            bets_olimp[key_id]['kofs'][i]['hist']['time_change'] = time_change
-                            bets_olimp[key_id]['kofs'][i]['hist']['kof_order'] = kof_order
-                            if kof_order[-1]:
-                                prnts('Олимп x, матч заблокирован, знач. выставил в 0: ' + key_id + ' ' + str(i), 'hide')
+                            if bets_olimp.get(key_id):
+                                bets_olimp[key_id]['kofs'][i]['value'] = 0
+                                bets_olimp[key_id]['kofs'][i]['factor'] = 0
+    
+                                bets_olimp[key_id]['kofs'][i]['time_req'] = round(time.time())
+                                if bets_olimp[key_id]['kofs'][i].get('hist') is None:
+                                    bets_olimp[key_id]['kofs'][i]['hist'] = {}
+                                bets_olimp[key_id]['kofs'][i]['hist']['avg_change'] = avg_change
+                                bets_olimp[key_id]['kofs'][i]['hist']['time_change'] = time_change
+                                bets_olimp[key_id]['kofs'][i]['hist']['kof_order'] = kof_order
+                                if kof_order[-1]:
+                                    prnts('Олимп x, матч заблокирован, знач. выставил в 0: ' + key_id + ' ' + str(i), 'hide')
+                            else:
+                                prnts('Олимп x, матч заблокирован и это первое добавлени значение не выставляю в 0: ' + key_id + ' ' + str(i), 'hide')
                         except Exception as e:
                             exc_type, exc_value, exc_traceback = sys.exc_info()
                             err_str = 'error: ' + str(e) + ' (' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))) + ')'
