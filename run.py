@@ -41,6 +41,9 @@ SERVER_PORT = get_param('server_port')
 prnts('TIMEOUT_MATCHS: ' + str(TIMEOUT_LIST))
 prnts('TIMEOUT_MATCH: ' + str(TIMEOUT_MATCH))
 prnts('TIMEOUT_MATCH_MINUS: ' + str(TIMEOUT_MATCH_MINUS))
+prnts('TIMEOUT_PRE_MATCHS: ' + str(TIMEOUT_PRE_LIST))
+prnts('TIMEOUT_PRE_MATCH: ' + str(TIMEOUT_PRE_MATCH))
+prnts('TIMEOUT_PRE_MATCH_MINUS: ' + str(TIMEOUT_PRE_MATCH_MINUS))
 prnts('SERVER_IP: ' + str(SERVER_IP))
 prnts('SERVER_PORT: ' + str(SERVER_PORT))
 prnts('SPORT_LIST: ' + print_j(sport_list, 'return var'))
@@ -377,22 +380,21 @@ def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi
             # print(bets_olimp)
             stat_req_ol.append(round(time_resp, 2))
         except OlimpMatchСompleted as e:
-            
-                cnt = 0
-                prnts(e)
-                try:
-                    for pair_match in pair_mathes:
-                        if match_id_olimp in pair_match:
-                            if bets_olimp.get(str(match_id_olimp)):
-                                bets_olimp.pop(str(match_id_olimp))
-                            prnts('Olimp, pair mathes remove: ' + str(pair_mathes[cnt]))
-                            pair_mathes.remove(pair_mathes[cnt])
-                            mathes_complite.append(match_id_olimp)
-                        cnt += 1
-                except Exception as e:
-                    exc_type, exc_value, exc_traceback = sys.exc_info()
-                    prnts('Exception: Олимп, ошибка при удалении матча ' + str(match_id_olimp) + ':' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
-                raise ValueError('start_seeker_bets_olimp:' + str(e))
+            cnt = 0
+            prnts(e)
+            try:
+                for pair_match in pair_mathes:
+                    if match_id_olimp in pair_match:
+                        if bets_olimp.get(str(match_id_olimp)):
+                            bets_olimp.pop(str(match_id_olimp))
+                        prnts('Olimp, pair mathes remove: ' + str(pair_mathes[cnt]))
+                        pair_mathes.remove(pair_mathes[cnt])
+                        mathes_complite.append(match_id_olimp)
+                    cnt += 1
+            except Exception as e:
+                exc_type, exc_value, exc_traceback = sys.exc_info()
+                prnts('Exception: Олимп, ошибка при удалении матча ' + str(match_id_olimp) + ':' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
+            raise ValueError('start_seeker_bets_olimp:' + str(e))
         except Exception as e:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             prnts('Exception: Олимп, ошибка при запросе матча ' + str(match_id_olimp) + ': ' +
@@ -918,6 +920,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
                                 }
                         else:
                             try:
+                                # print('del: ' + str(bet_key) + ' fork_hide_time: ' + str(fork_hide_time) + ' deff_time:' + str(deff_time))
                                 forks_meta_upd(forks_meta, forks)
                                 forks.pop(bet_key)
                             except:
