@@ -377,17 +377,21 @@ def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi
             # print(bets_olimp)
             stat_req_ol.append(round(time_resp, 2))
         except OlimpMatchСompleted as e:
-            cnt = 0
-            for pair_match in pair_mathes:
-                if match_id_olimp in pair_match:
-                    if bets_olimp.get(str(match_id_olimp)):
-                        bets_olimp.pop(str(match_id_olimp))
-                    prnts('Olimp, pair mathes remove: ' + str(pair_mathes[cnt]))
-                    pair_mathes.remove(pair_mathes[cnt])
-                    mathes_complite.append(match_id_olimp)
-                cnt += 1
-            prnts(e)
-            raise ValueError('start_seeker_bets_olimp:' + str(e))
+            try:
+                cnt = 0
+                prnts(e)
+                for pair_match in pair_mathes:
+                    if match_id_olimp in pair_match:
+                        if bets_olimp.get(str(match_id_olimp)):
+                            bets_olimp.pop(str(match_id_olimp))
+                        prnts('Olimp, pair mathes remove: ' + str(pair_mathes[cnt]))
+                        pair_mathes.remove(pair_mathes[cnt])
+                        mathes_complite.append(match_id_olimp)
+                    cnt += 1
+                raise ValueError('start_seeker_bets_olimp:' + str(e))
+            except Exception as e:
+                exc_type, exc_value, exc_traceback = sys.exc_info()
+                prnts('Exception: Олимп, ошибка при удалении матча ' + str(match_id_olimp))
         except Exception as e:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             prnts('Exception: Олимп, ошибка при запросе матча ' + str(match_id_olimp) + ': ' +
@@ -428,16 +432,20 @@ def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_p
             stat_req_fb.append(round(time_resp, 2))
         except FonbetMatchСompleted as e:
             cnt = 0
-            for pair_match in pair_mathes:
-                if match_id_fonbet in pair_match:
-                    if bets_fonbet.get(str(match_id_fonbet)):
-                        bets_fonbet.pop(str(match_id_fonbet))
-                    prnts('Fonbet, pair mathes remove: ' + str(pair_mathes[cnt]))
-                    pair_mathes.remove(pair_mathes[cnt])
-                    mathes_complite.append(match_id_fonbet)
-                cnt += 1
             prnts(e)
-            raise ValueError('start_seeker_bets_fonbet:' + str(e))
+            try:
+                for pair_match in pair_mathes:
+                    if match_id_fonbet in pair_match:
+                        if bets_fonbet.get(str(match_id_fonbet)):
+                            bets_fonbet.pop(str(match_id_fonbet))
+                        prnts('Fonbet, pair mathes remove: ' + str(pair_mathes[cnt]))
+                        pair_mathes.remove(pair_mathes[cnt])
+                        mathes_complite.append(match_id_fonbet)
+                    cnt += 1
+                raise ValueError('start_seeker_bets_fonbet:' + str(e))
+            except Exception as e:
+                exc_type, exc_value, exc_traceback = sys.exc_info()
+                prnts('Exception: Фонбет, ошибка при удалении матча ' + str(match_id_fonbet))
         except Exception as e:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             prnts('Exception: Фонбет, ошибка при запросе матча ' + str(match_id_fonbet) + ': ' +
