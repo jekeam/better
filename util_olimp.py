@@ -505,7 +505,10 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
         else:
             if run.DEBUG and key_id =='54736294':
                 prnts('Олимп матч {}, {} заблокирован:{}'.format(place, key_id, math_block))
-            prnts('Олимп матч {}, {} заблокирован:{}'.format(place, key_id, math_block), 'hide')
+            if bets_olimpюпуе(key_id):
+                prnts('Олимп матч {}, {} заблокирован:{}'.format(place, key_id, math_block), 'hide')
+            else:
+                prnts('Олимп матч {}, {} заблокирован и это первое добаление:{}'.format(place, key_id, math_block), 'hide')
             if bets_olimp.get(key_id):
                 bets_olimp[key_id].update({
                     'time_req': round(time.time())
@@ -562,7 +565,7 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
                         else:
                             pass
                             # prnts('Олимп x, матч заблокирован и это первое добавлени значение не выставляю в 0: ' + key_id + ' ' + str(j), 'hide')
-                            prnts('Олимп x, матч заблокирован и это первое добавлени значение не выставляю в 0: ' + key_id + ' ' + str(j) + ' math_block: ' + str(math_block))
+                            prnts('Олимп x, матч заблокирован и это первое добавлени: ' + key_id + ' ' + str(j) + ' math_block: ' + str(math_block))
                     except Exception as e:
                         exc_type, exc_value, exc_traceback = sys.exc_info()
                         err_str = 'error: ' + str(e) + ' (' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))) + ')'
