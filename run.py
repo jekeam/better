@@ -391,7 +391,7 @@ def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi
                 raise ValueError('start_seeker_bets_olimp:' + str(e))
             except Exception as e:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
-                prnts('Exception: Олимп, ошибка при удалении матча ' + str(match_id_olimp))
+                prnts('Exception: Олимп, ошибка при удалении матча ' + str(match_id_olimp) + ':' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
         except Exception as e:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             prnts('Exception: Олимп, ошибка при запросе матча ' + str(match_id_olimp) + ': ' +
@@ -445,7 +445,7 @@ def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_p
                 raise ValueError('start_seeker_bets_fonbet:' + str(e))
             except Exception as e:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
-                prnts('Exception: Фонбет, ошибка при удалении матча ' + str(match_id_fonbet))
+                prnts('Exception: Фонбет, ошибка при удалении матча ' + str(match_id_fonbet) + ':' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))))
         except Exception as e:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             prnts('Exception: Фонбет, ошибка при запросе матча ' + str(match_id_fonbet) + ': ' +
