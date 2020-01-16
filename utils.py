@@ -44,7 +44,7 @@ def if_exists(jsos_list: dict, key_name: str, val: str, get_key: str = ''):
 bk_fork_name = ['olimp', 'fonbet']  # , 'pinnacle']
 # bk_fork_name = ['fonbet']  # , 'pinnacle']
 
-max_min_prematch = 120  # 120 = 2 hour
+max_min_prematch = 720  # 120 = 2 hour
 assert max_min_prematch % 60 == 0, 'Время должно быть кратно 60 минутам'
 assert max_min_prematch >= 60, 'Время должно быть больше 60 минут'
 
