@@ -438,44 +438,45 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
                                            else to_abb(c)
                                            for c in [key_r]
                                        ][0])
-                            value = d.get('v', 0)
-                            kof_order = bets_olimp[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('order', [])
-                            time_change = bets_olimp[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('time_change', time.time())
-                            avg_change = bets_olimp[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('avg_change', [])
+                            if coef:
+                                value = d.get('v', 0)
+                                kof_order = bets_olimp[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('order', [])
+                                time_change = bets_olimp[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('time_change', time.time())
+                                avg_change = bets_olimp[key_id].get('kofs', {}).get(coef, {}).get('hist', {}).get('avg_change', [])
 
-                            try:
-                                if value != kof_order[-1]:
+                                try:
+                                    if value != kof_order[-1]:
+                                        kof_order.append(value)
+                                        avg_change.append(0)
+                                        time_change = time.time()
+                                    elif value == kof_order[-1]:
+                                        avg_change[-1] = round(time.time() - time_change)
+                                except IndexError:
+                                    # firs
                                     kof_order.append(value)
                                     avg_change.append(0)
-                                    time_change = time.time()
-                                elif value == kof_order[-1]:
-                                    avg_change[-1] = round(time.time() - time_change)
-                            except IndexError:
-                                # firs
-                                kof_order.append(value)
-                                avg_change.append(0)
-                            try:
-                                bets_olimp[key_id]['kofs'].update(
-                                    {
-                                        coef:
-                                            {
-                                                'time_req': round(time.time()),
-                                                'value': value,
-                                                'apid': d.get('apid', ''),
-                                                'factor': d.get('v', 0),
-                                                'sport_id': skId,
-                                                'event': match_id,
-                                                'vector': get_vector(coef, sc1, sc2),
-                                                'hist': {
-                                                    'time_change': time_change,
-                                                    'avg_change': avg_change,
-                                                    'order': kof_order
+                                try:
+                                    bets_olimp[key_id]['kofs'].update(
+                                        {
+                                            coef:
+                                                {
+                                                    'time_req': round(time.time()),
+                                                    'value': value,
+                                                    'apid': d.get('apid', ''),
+                                                    'factor': d.get('v', 0),
+                                                    'sport_id': skId,
+                                                    'event': match_id,
+                                                    'vector': get_vector(coef, sc1, sc2),
+                                                    'hist': {
+                                                        'time_change': time_change,
+                                                        'avg_change': avg_change,
+                                                        'order': kof_order
+                                                    }
                                                 }
-                                            }
-                                    }
-                                )
-                            except:
-                                pass
+                                        }
+                                    )
+                                except:
+                                    pass
             # if key_id == '52495128':
             #     prnts(key_id)
             #     prnts(bets_olimp)
