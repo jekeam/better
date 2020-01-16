@@ -526,15 +526,17 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
                             bets_olimp[key_id]['kofs'][i]['hist']['time_change'] = time_change
                             bets_olimp[key_id]['kofs'][i]['hist']['kof_order'] = kof_order
                             if kof_order[-1]:
-                                prnts('Олимп, матч заблокирован, знач. выставил в 0: ' + key_id + ' ' + str(i), 'hide')
+                                prnts('Олимп x, матч заблокирован, знач. выставил в 0: ' + key_id + ' ' + str(i), 'hide')
                         except Exception as e:
                             exc_type, exc_value, exc_traceback = sys.exc_info()
                             err_str = 'error: ' + str(e) + ' (' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))) + ')'
-                            prnts('Олимп, ошибка 00 при удалении старой котирофки: ' + str(err_str))
+                            prnts('Олимп x, ошибка 00 при удалении старой котирофки: ' + str(err_str))
+                            time.sleep(5)
             except Exception as e:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
                 err_str = 'error: ' + str(e) + ' (' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))) + ')'
-                prnts('Олимп, ошибка 0 при удалении установке в 0 котирофки: ' + str(err_str))
+                prnts('Олимп x, ошибка 0 при удалении установке в 0 котирофки: ' + str(err_str))
+                time.sleep(5)
             return time_resp + (time.time() - time_start_proc)
 
         # for val in bets_olimp.get(key_id, {}).get('kofs', {}).values():
