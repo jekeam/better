@@ -239,10 +239,11 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
                 score_1st = event.get('scoreComment', '').replace('-', ':')
                 start_time = event.get('startTimeTimestamp')
                 start_after_min = event.get('time')
-                if start_after_min:
-                    if start_after_min <= 0:
-                        err_str = 'Фонбет: pre матч, ' + skName + ' - ' + str(match_id) + ' завершен, т.к. ' + str(start_after_min) + ' минут до начала матча.'
-                        raise FonbetMatchСompleted(err_str)
+                if place == 'pre':
+                    if start_after_min:
+                        if start_after_min <= 0:
+                            err_str = 'Фонбет: pre матч, ' + skName + ' - ' + str(match_id) + ' завершен, т.к. ' + str(start_after_min) + ' минут до начала матча.'
+                            raise FonbetMatchСompleted(err_str)
                 place_in = event.get('place')
                 if event.get('parentId') == 0 or 'st half' in name or 'nd half' in name:
                     if event.get('parentId') == 0:
