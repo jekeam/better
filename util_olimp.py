@@ -527,10 +527,12 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
                                 bets_olimp[i]['kofs'][j]['hist']['time_change'] = time_change
                                 bets_olimp[i]['kofs'][j]['hist']['kof_order'] = kof_order
                                 if kof_order[-1]:
-                                    prnts('Олимп x, матч заблокирован, знач. выставил в 0: ' + i + ' ' + str(j), 'hide')
+                                    # prnts('Олимп x, матч заблокирован, знач. выставил в 0: ' + i + ' ' + str(j), 'hide')
+                                    prnts('Олимп x, матч заблокирован, знач. выставил в 0: ' + i + ' ' + str(j))
                             else:
                                 pass
-                                prnts('Олимп x, матч заблокирован и это первое добавлени значение не выставляю в 0: ' + i + ' ' + str(j), 'hide')
+                                # prnts('Олимп x, матч заблокирован и это первое добавлени значение не выставляю в 0: ' + i + ' ' + str(j), 'hide')
+                                prnts('Олимп x, матч заблокирован и это первое добавлени значение не выставляю в 0: ' + i + ' ' + str(j))
                         except Exception as e:
                             exc_type, exc_value, exc_traceback = sys.exc_info()
                             err_str = 'error: ' + str(e) + ' (' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))) + ')'
