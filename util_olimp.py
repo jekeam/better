@@ -481,7 +481,7 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
             #     prnts(bets_olimp)
             #     prnts(resp)
         else:
-            if bets_olimpю.get(key_id):
+            if bets_olimp.get(key_id):
                 prnts('Олимп матч {}, {} заблокирован:{}'.format(place, key_id, math_block), 'hide')
             else:
                 prnts('Олимп матч {}, {} заблокирован и это первое добаление:{}'.format(place, key_id, math_block), 'hide')
