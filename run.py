@@ -475,23 +475,19 @@ def starter_bets(bets_olimp, bets_fonbet, pair_mathes, mathes_complite, mathes_i
         for pair_match in pair_mathes:
             # prnts(pair_match)
             match_id_olimp, match_id_fonbet, event_type, place, pass2, pass3 = pair_match
-
             if match_id_olimp not in mathes_id_is_work:
                 mathes_id_is_work.append(match_id_olimp)
-
+                print(match_id_olimp, place)
                 start_seeker_olimp_bets_by_id = threading.Thread(
                     target=start_seeker_bets_olimp,
                     args=(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi_olimp, pair_mathes, mathes_complite, stat_req_olimp, place))
                 start_seeker_olimp_bets_by_id.start()
-
             if match_id_fonbet not in mathes_id_is_work:
                 mathes_id_is_work.append(match_id_fonbet)
-
                 start_seeker_fonbet_bets_by_id = threading.Thread(
                     target=start_seeker_bets_fonbet,
                     args=(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_proxi_fonbet, pair_mathes, mathes_complite, stat_req_fonbet, arr_fonbet_top_kofs, place))
                 start_seeker_fonbet_bets_by_id.start()
-
         time.sleep(20)
 
 

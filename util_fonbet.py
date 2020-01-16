@@ -418,7 +418,7 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
         try:
             for i in list(bets_fonbet):
                 hide_time = 4
-                if place == 'pre':
+                if bets_fonbet[i].get('place') == 'pre':
                     hide_time = run.TIMEOUT_PRE_MATCH + hide_time
                 for j in list(bets_fonbet[i].get('kofs', {})):
                     if round(float(time.time() - float(bets_fonbet[i]['kofs'][j].get('time_req', 0)))) > hide_time and bets_fonbet[i]['kofs'][j].get('value', 0) > 0:

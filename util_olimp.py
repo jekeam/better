@@ -530,12 +530,12 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
                     except Exception as e:
                         exc_type, exc_value, exc_traceback = sys.exc_info()
                         err_str = 'error: ' + str(e) + ' (' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))) + ')'
-                        prnts('Олимп x, матч:'+key_id+' ошибка 00 при удалении старой котирофки: ' + str(err_str) + ' math_block: ' + str(math_block))
+                        prnts('Олимп x, матч:' + key_id + ' ошибка 00 при удалении старой котирофки: ' + str(err_str) + ' math_block: ' + str(math_block))
                         time.sleep(5)
             except Exception as e:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
                 err_str = 'error: ' + str(e) + ' (' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))) + ')'
-                prnts('Олимп x, матч:'+key_id+' ошибка 0 при удалении установке в 0 котирофки: ' + str(err_str) + ' math_block: ' + str(math_block))
+                prnts('Олимп x, матч:' + key_id + ' ошибка 0 при удалении установке в 0 котирофки: ' + str(err_str) + ' math_block: ' + str(math_block))
                 time.sleep(5)
             return time_resp + (time.time() - time_start_proc)
 
@@ -552,7 +552,7 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
             for i in list(bets_olimp):
                 for j in list(bets_olimp[i].get('kofs', {})):
                     hide_time = 4
-                    if place == 'pre':
+                    if bets_olimp[i].get('place') == 'pre':
                         hide_time = run.TIMEOUT_PRE_MATCH + hide_time
                     if round(float(time.time() - float(bets_olimp[i]['kofs'][j].get('time_req', 0)))) > hide_time and bets_olimp[i]['kofs'][j].get('value', 0) > 0:
                         try:
@@ -560,16 +560,16 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
                             bets_olimp[i]['kofs'][j]['factor'] = 0
                             prnts('2: ' + i + ' ' + j + ' - выставил в 0')
                             if run.DEBUG:
-                                prnts('Олимп, матч:'+key_id+' данные по котировке из БК не получены более ' + str(hide_time) + ' сек., знач. выставил в 0: ' + str(j) + ' ' + str(i))
+                                prnts('Олимп, матч:' + key_id + ' данные по котировке из БК не получены более ' + str(hide_time) + ' сек., знач. выставил в 0: ' + str(j) + ' ' + str(i))
                         except Exception as e:
                             exc_type, exc_value, exc_traceback = sys.exc_info()
                             err_str = 'error: ' + str(e) + ' (' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))) + ')'
-                            prnts('Олимп, матч:'+key_id+' ошибка 1 при удалении старой котирофки: ' + str(err_str))
+                            prnts('Олимп, матч:' + key_id + ' ошибка 1 при удалении старой котирофки: ' + str(err_str))
                             time.sleep(5)
         except Exception as e:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             err_str = 'error: ' + str(e) + ' (' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))) + ')'
-            prnts('Олимп, матч:'+key_id+' ошибка 2 при удалении старой котирофки: ' + str(err_str))
+            prnts('Олимп, матч:' + key_id + ' ошибка 2 при удалении старой котирофки: ' + str(err_str))
             time.sleep(5)
         return time_resp + (time.time() - time_start_proc)
     except OlimpMatchСompleted as e:
