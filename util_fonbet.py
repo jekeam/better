@@ -194,7 +194,6 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
     try:
         resp, time_resp = get_match_fonbet(match_id, proxies_fonbet, proxy, time_out, pair_mathes)
         time_start_proc = time.time()
-
         TT = []
         for bet in [TTO, TTU, TT1O, TT1U, TT2O, TT2U, FORA]:
             TT.extend(bet)
@@ -292,13 +291,10 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
 
                     for cat in event.get('subcategories', {}):
                         cat_name = cat.get('name')
-                        if cat_name in (
-                                '1X2 (90 min)',
-                                '1X2',
-                                'Goal - no goal',
-                                'Total', 'Totals', 'Team Totals-1', 'Team Totals-2',
-                                'Hcap',
-                        ):
+                        cat_name_list = ['1X2 (90 min)', '1X2', 'Goal - no goal', 'Total', 'Totals', 'Team Totals-1', 'Team Totals-2', 'Hcap']
+                        if place == 'pre':
+                            cat_name_list.append('By games')
+                        if cat_name in cat_name_list:
                             for kof in cat.get('quotes'):
 
                                 factorId = str(kof.get('factorId'))
