@@ -516,7 +516,7 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
                                 # firs
                                 kof_order.append(0)
                                 avg_change.append(0)
-                            if bets_olimp.get(key_id):
+                            if bets_olimp.get(key_id, {}).get('kofs', {}).get([j):
                                 bets_olimp[key_id]['kofs'][j]['value'] = 0
                                 bets_olimp[key_id]['kofs'][j]['factor'] = 0
     
