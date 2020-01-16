@@ -37,12 +37,13 @@ else:
 
 SERVER_PORT = get_param('server_port')
 
-prnts('TIMEOUT_MATCHS: ' + str(TIMEOUT_LIST))
-prnts('TIMEOUT_MATCH: ' + str(TIMEOUT_MATCH))
-prnts('TIMEOUT_MATCH_MINUS: ' + str(TIMEOUT_MATCH_MINUS))
-prnts('SERVER_IP: ' + str(SERVER_IP))
-prnts('SERVER_PORT: ' + str(SERVER_PORT))
-prnts('SPORT_LIST: ' + print_j(sport_list, 'return var'))
+if __name__ =='main':
+    prnts('TIMEOUT_MATCHS: ' + str(TIMEOUT_LIST))
+    prnts('TIMEOUT_MATCH: ' + str(TIMEOUT_MATCH))
+    prnts('TIMEOUT_MATCH_MINUS: ' + str(TIMEOUT_MATCH_MINUS))
+    prnts('SERVER_IP: ' + str(SERVER_IP))
+    prnts('SERVER_PORT: ' + str(SERVER_PORT))
+    prnts('SPORT_LIST: ' + print_j(sport_list, 'return var'))
 
 
 def get_olimp(resp, arr_matchs, type='live', sport_id=None):
