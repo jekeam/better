@@ -47,7 +47,7 @@ prnts('TIMEOUT_PRE_MATCH_MINUS: ' + str(TIMEOUT_PRE_MATCH_MINUS))
 prnts('SERVER_IP: ' + str(SERVER_IP))
 prnts('SERVER_PORT: ' + str(SERVER_PORT))
 prnts('SPORT_LIST: ' + print_j(sport_list, 'return var'))
-prnts('max_hour_prematch: ' + str(max_min_prematch / 60)
+prnts('max_hour_prematch: ' + str(max_min_prematch / 60))
 
 
 def get_olimp(resp, arr_matchs, type='live', sport_id=None):
@@ -246,7 +246,7 @@ def start_seeker_matchs_olimp(gen_proxi_olimp, arr_matchs, place):
                         # print(liga_id)
                         try:
                             m = m + 1
-                            prnts('Запущено лиг: {}/{}, прематчей: {}/{}'.format(len(arr_leagues), l, len(arr_leagues[sport_id]), m))
+                            prnts('sport_id:{}. Запущено лиг: {}/{}, прематчей: {}/{}'.format(sport_id, len(arr_leagues), l, len(arr_leagues[sport_id]), m))
                             resp_matches, time_resp = get_matches_olimp(proxy, time_out, 'matches', sport_id, max_min_prematch / 60, liga_id)
                             get_olimp(resp_matches, arr_matchs, 'pre', sport_id)
                             # print_j(resp_matches)
