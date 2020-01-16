@@ -56,32 +56,32 @@ sport_list = [
         'fonbet': 1,
         'pinn': 29,
         'min': 90,
-        # 'place': ['live', 'pre']
-        'place': ['pre']
+        'place': ['live', 'pre']
+        # 'place': ['pre']
     },
     {
         'name': 'esports',
         'olimp': 112,
         'fonbet': 29086,
         'pinn': 12,
-        # 'place': ['live', 'pre']
-        'place': ['pre']
+        'place': ['live', 'pre']
+        # 'place': ['pre']
     },
     {
         'name': 'volleyball',
         'olimp': 10,
         'fonbet': 9,
         'pinn': 34,
-        # 'place': ['live', 'pre']
-        'place': ['pre']
+        'place': ['live', 'pre']
+        # 'place': ['pre']
     },
     {
         'name': 'tennis',
         'olimp': 3,
         'fonbet': 4,
         'pinn': 33,
-        # 'place': ['live', 'pre']
-        'place': ['pre']
+        'place': ['live', 'pre']
+        # 'place': ['pre']
     },
     {
         'name': 'basketball',
@@ -89,8 +89,8 @@ sport_list = [
         'fonbet': 3,
         'pinn': None,  # TODO
         'min': 40,
-        # 'place': ['live', 'pre']
-        'place': ['pre']
+        'place': ['live', 'pre']
+        # 'place': ['pre']
     },
     {
         'name': 'hockey',
@@ -98,8 +98,8 @@ sport_list = [
         'fonbet': 2,
         'pinn': 19,
         'min': 60,
-        # 'place': ['live', 'pre']
-        'place': ['pre']
+        'place': ['live', 'pre']
+        # 'place': ['pre']
     },
     {
         'name': 'table-tennis',
