@@ -267,7 +267,7 @@ def get_vector(bet_type, sc1=None, sc2=None):
             prnts(err_str)
 
     err_str = 'Error: vector not defined! bet_type={}, sc1={}, sc2={}'.format(bet_type, sc1, sc2)
-    prnts(err_str)
+    prnts(err_str, 'hide')
     # raise ValueError(err_str)
 
 

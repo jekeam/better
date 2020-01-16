@@ -321,7 +321,7 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
                                         try:
                                             if value != kof_order[-1]:
                                                 kof_order.append(value)
-                                                avg_change.append(round(time.time() - time_change))
+                                                avg_change.append(0)
                                                 time_change = time.time()
                                             elif value == kof_order[-1]:
                                                 avg_change[-1] = round(time.time() - time_change)
@@ -373,7 +373,7 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
                                         try:
                                             if value != kof_order[-1]:
                                                 kof_order.append(value)
-                                                avg_change.append(round(time.time() - time_change))
+                                                avg_change.append(0)
                                                 time_change = time.time()
                                             elif value == kof_order[-1]:
                                                 avg_change[-1] = round(time.time() - time_change)
