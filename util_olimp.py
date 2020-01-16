@@ -487,7 +487,7 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
             #     print(bets_olimp)
             #     print(resp)
         else:
-            prnts('Олимп матч {} заблокирован:{}'.format(key_id, math_block))
+            prnts('Олимп матч {}, {} заблокирован:{}'.format(place, key_id, math_block))
             if bets_olimp.get(key_id):
                 bets_olimp[key_id].update({
                     'time_req': round(time.time())
