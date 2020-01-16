@@ -902,6 +902,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
                                     'base_line': k_fonbet.get('base_line'),
                                     'event_type': event_type,
                                     'fonbet_maxbet_fact': {},
+                                    'place': type_time,
                                 }
                         else:
                             try:
