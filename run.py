@@ -47,6 +47,7 @@ prnts('TIMEOUT_PRE_MATCH_MINUS: ' + str(TIMEOUT_PRE_MATCH_MINUS))
 prnts('SERVER_IP: ' + str(SERVER_IP))
 prnts('SERVER_PORT: ' + str(SERVER_PORT))
 prnts('SPORT_LIST: ' + print_j(sport_list, 'return var'))
+prnts('max_hour_prematch: ' + str(max_min_prematch / 60)
 
 
 def get_olimp(resp, arr_matchs, type='live', sport_id=None):
