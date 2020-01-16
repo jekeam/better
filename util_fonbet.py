@@ -430,10 +430,12 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
                             exc_type, exc_value, exc_traceback = sys.exc_info()
                             err_str = 'error: ' + str(e) + ' (' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))) + ')'
                             prnts('Фонбет, ошибка 1 при удалении старой котирофки: ' + str(err_str))
+                            time.sleep(5)
         except Exception as e:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             err_str = 'error: ' + str(e) + ' (' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))) + ')'
             prnts('Фонбет, ошибка 2 при удалении старой котирофки: ' + str(err_str))
+            time.sleep(5)
         return time_resp + (time.time() - time_start_proc)
     except FonbetMatchСompleted as e:
         if bets_fonbet.get(key_id):
