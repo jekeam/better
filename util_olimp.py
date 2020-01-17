@@ -487,9 +487,11 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
             #     prnts(resp)
         else:
             if bets_olimp.get(key_id):
-                prnts('Олимп матч {}, {} заблокирован:{}'.format(place, key_id, math_block), 'hide')
+                if run.DEBUG:
+                    prnts('Олимп матч {}, {} заблокирован:{}'.format(place, key_id, math_block), 'hide')
             else:
-                prnts('Олимп матч {}, {} заблокирован и это первое добаление:{}'.format(place, key_id, math_block), 'hide')
+                if run.DEBUG:
+                    prnts('Олимп матч {}, {} заблокирован и это первое добаление:{}'.format(place, key_id, math_block), 'hide')
             if bets_olimp.get(key_id):
                 bets_olimp[key_id].update({
                     'time_req': round(time.time())
