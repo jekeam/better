@@ -261,7 +261,6 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
                                 'time': timer,
                                 'minute': minute,
                                 'start_time': start_time,
-                                'start_after_min': start_after_min,
                                 'time_req': round(time.time())
                             })
                         except Exception as e:
@@ -278,7 +277,6 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
                                 'time': timer,
                                 'minute': minute,
                                 'start_time': start_time,
-                                'start_after_min': start_after_min,
                                 'time_req': round(time.time()),
                                 # 'time_change_total': round(time.time()),
                                 # 'avg_change_total': [],
@@ -340,6 +338,7 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
                                                 coef:
                                                     {
                                                         'time_req': round(time.time()),
+                                                        'start_after_min': start_after_min,
                                                         'event': event.get('id'),
                                                         'value': value,
                                                         'param': '',
@@ -388,6 +387,7 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
                                                 coef:
                                                     {
                                                         'time_req': round(time.time()),
+                                                        'start_after_min': start_after_min,
                                                         'event': event.get('id'),
                                                         'value': value,
                                                         'param': pValue,

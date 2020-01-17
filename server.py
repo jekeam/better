@@ -23,7 +23,7 @@ def get_state(arr):
         state['place'] = info.get('place')
         state['liga_id'] = info.get('liga_id')
         state['last_update'] = str((int(time.time() - info.get('time_req'))))
-        state['start_after_min'] = info.get('start_after_min')
+        state['start_after_min'] = info.get('kofs', {}).get('start_after_min')
         state['start_time_str'] = str(datetime.datetime.fromtimestamp(int(info.get('start_time'))).strftime('%d.%m.%Y %H:%M:%S'))
         state['kofs'] = {}
         for kof_name, kof_info in info.get('kofs', {}).items():
