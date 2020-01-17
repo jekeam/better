@@ -244,6 +244,8 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
                         if start_after_min <= 0:
                             err_str = 'Фонбет: pre матч, ' + skName + ' - ' + str(match_id) + ' завершен, т.к. ' + str(start_after_min) + ' минут до начала матча.'
                             raise FonbetMatchСompleted(err_str)
+                if not start_after_min:
+                    start_after_min = 0
                 place_in = event.get('place')
                 if event.get('parentId') == 0 or 'st half' in name or 'nd half' in name:
                     if event.get('parentId') == 0:
