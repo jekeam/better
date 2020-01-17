@@ -320,6 +320,8 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
         if place == 'pre':
             if resp:
                 math_block = resp.get('ms', False)
+            else:
+                math_block = False
         else:
             math_block = True if not resp or str(resp.get('ms', '1')) != '2' or resp.get('error', {'err_code': 0}).get('err_code') == 404 else False
             # 1 - block, 2 - available
