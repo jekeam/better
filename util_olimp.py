@@ -487,9 +487,11 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
             #     prnts(resp)
         else:
             if bets_olimp.get(key_id):
-                prnts('Олимп матч {}, {} заблокирован:{}'.format(place, key_id, math_block), 'hide')
+                if run.DEBUG:
+                    prnts('Олимп матч {}, {} заблокирован:{}'.format(place, key_id, math_block), 'hide')
             else:
-                prnts('Олимп матч {}, {} заблокирован и это первое добаление:{}'.format(place, key_id, math_block), 'hide')
+                if run.DEBUG:
+                    prnts('Олимп матч {}, {} заблокирован и это первое добаление:{}'.format(place, key_id, math_block), 'hide')
             if bets_olimp.get(key_id):
                 bets_olimp[key_id].update({
                     'time_req': round(time.time())
@@ -563,8 +565,8 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
                         try:
                             bets_olimp[i]['kofs'][j]['value'] = 0
                             bets_olimp[i]['kofs'][j]['factor'] = 0
-                            prnts('2: ' + i + ' ' + j + ' - выставил в 0')
                             if run.DEBUG:
+                                prnts('2: ' + i + ' ' + j + ' - выставил в 0')
                                 prnts('Олимп, матч:' + key_id + ' данные по котировке из БК не получены более ' + str(hide_time) + ' сек., знач. выставил в 0: ' + str(j) + ' ' + str(i))
                         except Exception as e:
                             exc_type, exc_value, exc_traceback = sys.exc_info()
