@@ -376,6 +376,7 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
                     'name': name,
                     'score': score,
                     'time_start': timer,
+                    'start_after_min': start_after_min,
                     'start_time': start_time,
                     'time_req': round(time.time())
                 })
@@ -389,6 +390,7 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
                     'name': name,
                     'score': score,
                     'time_start': timer,
+                    'start_after_min': start_after_min,
                     'start_time': start_time,
                     'time_req': round(time.time()),
                     # 'time_change_total': round(time.time()),
@@ -459,7 +461,6 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
                                             coef:
                                                 {
                                                     'time_req': round(time.time()),
-                                                    'start_after_min': start_after_min,
                                                     'value': value,
                                                     'apid': d.get('apid', ''),
                                                     'factor': d.get('v', 0),
