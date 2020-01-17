@@ -735,6 +735,8 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
 
                     ol_start = math_json_olimp.get('start_time', 0)
                     fb_start = math_json_fonbet.get('start_time', 0)
+                    fb_start_after_min = math_json_fonbet.get('start_after_min', 0)
+                    ol_start_after_min = math_json_olimp.get('start_after_min', 0)
 
                     v_olimp = k_olimp.get('value', 0.0)
                     v_fonbet = k_fonbet.get('value', 0.0)
@@ -778,10 +780,8 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
                                     time_break_fonbet = True
 
                             if forks.get(bet_key, '') != '':
-
                                 live_fork = round(time.time() - forks.get(bet_key, {}).get('create_fork'))
                                 # print('live_fork: ' + str(live_fork))
-
                                 forks[bet_key].update({
                                     # 'created_fork': created_fork,
                                     'time_last_upd': cur_time,
@@ -889,6 +889,8 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
 
                                 forks[bet_key] = {
                                     'time_last_upd': cur_time,
+                                    'fb_start_after_min': fb_start_after_min,
+                                    'ol_start_after_min': ol_start_after_min,
                                     'name': math_json_fonbet.get('name', ''),
                                     'name_rus': math_json_olimp.get('name', ''),
                                     'time_req_olimp': ol_time_req,
