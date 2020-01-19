@@ -344,11 +344,11 @@ if __name__ == '__main__':
     proxy_list_ol = (list(filter(lambda p: 'https' in p, proxy_list_ol)))
     proxy_list_olimp = check_proxies_olimp(proxy_list_ol)
     save_list(proxy_list_olimp, ol_fl, clone=2000)
-    # time.sleep(3)
-    # # FB
-    # proxy_list_fonbet = check_proxies_fonbet(proxy_list)
-    # save_list(proxy_list_fonbet, fb_fl)
-    # time.sleep(3)
+    time.sleep(3)
+    # FB
+    proxy_list_fonbet = check_proxies_fonbet(proxy_list)
+    save_list(proxy_list_fonbet, fb_fl, clone=2)
+    time.sleep(3)
     # # PINNACLE
     # prnts('get api_key from pinnacle')
     # url_pinnacle = 'www.pinnacle.com'
