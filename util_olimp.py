@@ -196,7 +196,8 @@ def to_abb(sbet):
     try:
         abr = abbreviations[key].format(value)
     except Exception as e:
-        prnts('error: ' + str(e) + ', to_abb("' + sbet + '"), value=' + value + ', key=' + key)
+        if run.DEBUG:
+            prnts('error: ' + str(e) + ', to_abb("' + sbet + '"), value=' + value + ', key=' + key, 'hide')
     return abr
 
 
