@@ -231,9 +231,11 @@ def start_seeker_matchs_olimp(gen_proxi_olimp, arr_matchs, place):
                         except Exception as e:
                             if 'We are updating betting line'.lower() in str(e).lower():
                                 pass
-                                print(e)
+                                prnts(e)
                             else:
-                                raise ValueError(str(e))
+                                prnts(e)
+                                pass
+                                # raise ValueError(str(e))
                         if DEBUG:
                             prnts('sport ' + str(sport_id) + ': ' + str(len(resp_sport)))
                 # get matches by liga_id
