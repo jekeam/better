@@ -347,7 +347,7 @@ if __name__ == '__main__':
     time.sleep(3)
     # FB
     proxy_list_fonbet = check_proxies_fonbet(proxy_list)
-    save_list(proxy_list_fonbet, fb_fl, clone=2)
+    save_list(proxy_list_fonbet, fb_fl, clone=3)
     time.sleep(3)
     # # PINNACLE
     # prnts('get api_key from pinnacle')
