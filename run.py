@@ -38,16 +38,16 @@ else:
 SERVER_PORT = get_param('server_port')
 
 # if __name__ =='main':
-prnts('TIMEOUT_MATCHS: ' + str(TIMEOUT_LIST))
-prnts('TIMEOUT_MATCH: ' + str(TIMEOUT_MATCH))
-prnts('TIMEOUT_MATCH_MINUS: ' + str(TIMEOUT_MATCH_MINUS))
-prnts('TIMEOUT_PRE_MATCHS: ' + str(TIMEOUT_PRE_LIST))
-prnts('TIMEOUT_PRE_MATCH: ' + str(TIMEOUT_PRE_MATCH))
-prnts('TIMEOUT_PRE_MATCH_MINUS: ' + str(TIMEOUT_PRE_MATCH_MINUS))
-prnts('SERVER_IP: ' + str(SERVER_IP))
-prnts('SERVER_PORT: ' + str(SERVER_PORT))
-prnts('SPORT_LIST: ' + print_j(sport_list, 'return var'))
-prnts('max_hour_prematch: ' + str(max_min_prematch / 60))
+prnts('TIMEOUT_MATCHS: ' + str(TIMEOUT_LIST), 'hide')
+prnts('TIMEOUT_MATCH: ' + str(TIMEOUT_MATCH), 'hide')
+prnts('TIMEOUT_MATCH_MINUS: ' + str(TIMEOUT_MATCH_MINUS), 'hide')
+prnts('TIMEOUT_PRE_MATCHS: ' + str(TIMEOUT_PRE_LIST), 'hide')
+prnts('TIMEOUT_PRE_MATCH: ' + str(TIMEOUT_PRE_MATCH), 'hide')
+prnts('TIMEOUT_PRE_MATCH_MINUS: ' + str(TIMEOUT_PRE_MATCH_MINUS), 'hide')
+prnts('SERVER_IP: ' + str(SERVER_IP), 'hide')
+prnts('SERVER_PORT: ' + str(SERVER_PORT), 'hide')
+prnts('SPORT_LIST: ' + print_j(sport_list, 'return var'), 'hide')
+prnts('max_hour_prematch: ' + str(max_min_prematch / 60), 'hide')
 
 
 def get_olimp(resp, arr_matchs, type='live', sport_id=None):
