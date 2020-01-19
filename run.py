@@ -256,9 +256,12 @@ def start_seeker_matchs_olimp(gen_proxi_olimp, arr_matchs, place):
                         except Exception as e:
                             if 'We are updating betting line'.lower() in str(e).lower():
                                 pass
-                                print(e)
+                                prnts(e)
                             else:
-                                raise ValueError(str(e))
+                                pass
+                                # raise ValueError(str(e))
+                                prnts(e)
+
                         # print_j(arr_matchs)
                         # print(len(arr_matchs))
                         # time.sleep(5)
