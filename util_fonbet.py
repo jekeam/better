@@ -13,7 +13,7 @@ import run
 url_fonbet = 'https://line-01.ccf4ab51771cacd46d.com'
 url_fonbet_matchs = url_fonbet + '/live/currentLine/en/?2lzf1earo8wjksbh22s'
 url_fonbet_pre_matchs = url_fonbet + '/line/currentLine/en/?2lzf1earo8wjksbh22s'
-url_fonbet_top_matchs = url_fonbet + '/line/topEvents3?place=live&sysId=1&lang=en'
+url_fonbet_top_matchs = url_fonbet + '/line/topEvents3?place={}&sysId=1&lang=en'
 # url_fonbet_match = 'https://23.111.80.222/line/eventView?eventId='
 
 url_fonbet_match = url_fonbet + '/line/eventView?eventId='
@@ -59,8 +59,8 @@ def get_matches_fonbet(proxy, time_out, type='live'):
     global url_fonbet
     global UA
 
-    if type == 'top':
-        url = url_fonbet_top_matchs
+    if type in ('top:live', 'top:line'):
+        url = url_fonbet_top_matchs.format(type.split(':')[1])
     elif type == 'pre':
         url = url_fonbet_pre_matchs
     else:
