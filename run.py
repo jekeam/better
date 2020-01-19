@@ -26,7 +26,7 @@ TIMEOUT_LIST = 10
 TIMEOUT_MATCH = 10
 TIMEOUT_MATCH_MINUS = 9
 
-TIMEOUT_PRE_LIST = 30
+TIMEOUT_PRE_LIST = 60 * 5
 TIMEOUT_PRE_MATCH = 30
 TIMEOUT_PRE_MATCH_MINUS = 0
 
@@ -101,7 +101,7 @@ def get_olimp(resp, arr_matchs, type='live', sport_id=None):
                         }
                     else:
                         if DEBUG:
-                            prnts('Собитие исключено т.к. время начла больше: {}, мин.:{}\ndata:{}'.format(max_min_prematch, start_after_min, str(math_info)), 'hide')
+                            prnts('Собитие исключено т.к. время начла больше: {}, мин:{}\ndata:{}'.format(max_min_prematch, start_after_min, str(math_info)), 'hide')
     # print_j(arr_matchs) # 50940691
 
 
@@ -201,7 +201,7 @@ def get_fonbet(resp, arr_matchs, type):
 
 
 def start_seeker_matchs_olimp(gen_proxi_olimp, arr_matchs, place):
-    global TIMEOUT_LIST
+    global TIMEOUT_LIST, TIMEOUT_PRE_LIST
     proxy = gen_proxi_olimp.next()
     fail_proxy = 0
     arr_leagues = {}
@@ -219,11 +219,13 @@ def start_seeker_matchs_olimp(gen_proxi_olimp, arr_matchs, place):
                         resp_leagues = {}
                         try:
                             resp_leagues, time_resp = get_matches_olimp(proxy, time_out, 'champs', sport_id, max_min_prematch / 60)
-                            print_j(resp_leagues)
-                            prnts('sport_id: {}, get {} leagues'.format(sport_id, len(resp_leagues)))
+                            # print_j(resp_leagues)                            
                             if resp_leagues:
-                                for sport_arr in resp_leagues:
-                                    liga_id_str = str(sport_arr.get('id'))
+                                l = 0
+                                for leagues_arr in resp_leagues:
+                                    l = l + 1
+                                    prnts('sport_id: {}, get leagues: {}/{}'.format(sport_id, len(resp_leagues), l))
+                                    liga_id_str = str(leagues_arr.get('id'))
                                     if liga_id_str not in arr_leagues.get(sport_id, {}):
                                         if arr_leagues.get(sport_id) is not None:
                                             arr_leagues[sport_id].append(liga_id_str)
