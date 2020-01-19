@@ -18,7 +18,7 @@ from utils import DEBUG
 urllib3.disable_warnings()
 
 TIME_OUT = 4
-CHUNKS = 450
+CHUNKS = 550
 
 UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3163.100 Safari/537.36'
 
@@ -213,14 +213,10 @@ def save_list(proxies, filename=None, clone=1):
     if not filename:
         global proxy_file_name
         filename = proxy_file_name
-
     cd()
-
     with open(filename, 'w') as f:
-
         if clone > 1:
             proxies = proxies * clone
-
         for p in proxies:
             f.write(p + '\n')
 
@@ -343,11 +339,11 @@ if __name__ == '__main__':
     proxy_list_ol = get_proxy_from_file('proxy_for_olimp.txt')
     proxy_list_ol = (list(filter(lambda p: 'https' in p, proxy_list_ol)))
     proxy_list_olimp = check_proxies_olimp(proxy_list_ol)
-    save_list(proxy_list_olimp, ol_fl, clone=2000)
+    save_list(proxy_list_olimp, ol_fl, clone=4000)
     time.sleep(3)
     # FB
     proxy_list_fonbet = check_proxies_fonbet(proxy_list)
-    save_list(proxy_list_fonbet, fb_fl, clone=3)
+    save_list(proxy_list_fonbet, fb_fl, clone=4)
     time.sleep(3)
     # # PINNACLE
     # prnts('get api_key from pinnacle')

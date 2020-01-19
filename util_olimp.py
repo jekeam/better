@@ -117,7 +117,7 @@ def get_matches_olimp(proxy, time_out, place, sport_id=None, time=6, liga_id=Non
             olimp_data_ll.update({'id': liga_id})
         else:
             olimp_data_ll.pop('time_shift', None)
-        olimp_data_ll['time'] = max(time, 6)  # in app avalible 6 min hours
+        # olimp_data_ll['time'] = max(time, 6)  # in app avalible 6 min hours
 
     olimp_data_ll.update({'lang_id': 2})
     olimp_head_ll = olimp_head

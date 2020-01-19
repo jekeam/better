@@ -216,11 +216,13 @@ def start_seeker_matchs_olimp(gen_proxi_olimp, arr_matchs, place):
                 for sport in sport_list:
                     if 'pre' in sport.get('place'):
                         sport_id = sport.get('olimp')
-                        resp_sport = {}
+                        resp_leagues = {}
                         try:
-                            resp_sport, time_resp = get_matches_olimp(proxy, time_out, 'champs', sport_id, max_min_prematch / 60)
-                            if resp_sport:
-                                for sport_arr in resp_sport:
+                            resp_leagues, time_resp = get_matches_olimp(proxy, time_out, 'champs', sport_id, max_min_prematch / 60)
+                            print_j(resp_leagues)
+                            prnts('sport_id: {}, get {} leagues'.format(sport_id, len(resp_leagues)))
+                            if resp_leagues:
+                                for sport_arr in resp_leagues:
                                     liga_id_str = str(sport_arr.get('id'))
                                     if liga_id_str not in arr_leagues.get(sport_id, {}):
                                         if arr_leagues.get(sport_id) is not None:
@@ -228,6 +230,20 @@ def start_seeker_matchs_olimp(gen_proxi_olimp, arr_matchs, place):
                                         else:
                                             arr_leagues[sport_id] = []
                                             arr_leagues[sport_id].append(liga_id_str)
+                                        try:
+                                            prnts('request: sport_id:{}, liga_id:{}'.format(sport_id, liga_id_str))
+                                            resp_matches, time_resp = get_matches_olimp(proxy, time_out, 'matches', sport_id, max_min_prematch / 60, liga_id_str)
+                                            get_olimp(resp_matches, arr_matchs, 'pre', sport_id)
+                                            # print_j(resp_matches)
+                                            prnts('sport_id: {}, liga_id:{}, add matches: {}, liga name:{}'.format(sport_id, liga_id_str, len(resp_matches.get('it')), resp_matches.get('n')))
+                                        except Exception as e:
+                                            if 'We are updating betting line'.lower() in str(e).lower():
+                                                pass
+                                                prnts(e)
+                                            else:
+                                                pass
+                                                # raise ValueError(str(e))
+                                                prnts(e)
                         except Exception as e:
                             if 'We are updating betting line'.lower() in str(e).lower():
                                 pass
@@ -237,34 +253,20 @@ def start_seeker_matchs_olimp(gen_proxi_olimp, arr_matchs, place):
                                 pass
                                 # raise ValueError(str(e))
                         if DEBUG:
-                            prnts('sport ' + str(sport_id) + ': ' + str(len(resp_sport)))
-                # get matches by liga_id
-                ligu = {}
-                l = 0
-                for sport_id in list(arr_leagues):
-                    l = l + 1
-                    m = 0
-                    for liga_id in arr_leagues[sport_id]:
-                        # print(liga_id)
-                        try:
-                            m = m + 1
-                            prnts('sport_id:{}. Запущено лиг: {}/{}, прематчей: {}/{}'.format(sport_id, len(arr_leagues), l, len(arr_leagues[sport_id]), m))
-                            resp_matches, time_resp = get_matches_olimp(proxy, time_out, 'matches', sport_id, max_min_prematch / 60, liga_id)
-                            get_olimp(resp_matches, arr_matchs, 'pre', sport_id)
-                            # print_j(resp_matches)
-                            # time.sleep(55)
-                        except Exception as e:
-                            if 'We are updating betting line'.lower() in str(e).lower():
-                                pass
-                                prnts(e)
-                            else:
-                                pass
-                                # raise ValueError(str(e))
-                                prnts(e)
-
-                        # print_j(arr_matchs)
-                        # print(len(arr_matchs))
-                        # time.sleep(5)
+                            prnts('sport ' + str(sport_id) + ': ' + str(len(resp_leagues)))
+                # # get matches by liga_id
+                # ligu = {}
+                # l = 0
+                # for sport_id in list(arr_leagues):
+                #     l = l + 1
+                #     m = 0
+                #     for liga_id in arr_leagues[sport_id]:
+                #         # print(liga_id)
+                #
+                #
+                #         # print_j(arr_matchs)
+                #         # print(len(arr_matchs))
+                #         # time.sleep(5)
             else:
                 resp, time_resp = get_matches_olimp(proxy, time_out, place)
                 get_olimp(resp, arr_matchs, 'live')
