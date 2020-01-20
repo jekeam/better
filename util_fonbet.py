@@ -241,7 +241,7 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
                 start_after_min = event.get('time')
                 if place == 'pre':
                     if start_after_min:
-                        if start_after_min <= 0:
+                        if start_after_min <= 5:
                             err_str = 'Фонбет: pre матч, ' + skName + ' - ' + str(match_id) + ' завершен, т.к. ' + str(start_after_min) + ' минут до начала матча.'
                             raise FonbetMatchСompleted(err_str)
                 if not start_after_min:
