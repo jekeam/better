@@ -109,6 +109,15 @@ sport_list = [
         # 'place': ['live', 'pre']
         'place': ['pre']
     },
+    {
+        'name': 'mini-football',
+        'olimp': 11,
+        'fonbet': 1434,
+        'pinn': None,  # TODO
+        # 'place': ['live', 'pre']
+        'place': ['pre']
+    },
+    
 ]
 
 opposition = {
