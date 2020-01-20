@@ -9,7 +9,7 @@ from difflib import SequenceMatcher
 import re
 from exceptions import *
 from server import run_server
-from utils import prnts, DEBUG, find_max_mode, opposition, serv_log, get_param, sport_list, if_exists, print_j, max_min_prematch
+from utils import prnts, DEBUG, find_max_mode, opposition, add_if_draw, add_if_not_draw, serv_log, get_param, sport_list, if_exists, print_j, max_min_prematch
 from proxy_switcher import ProxySwitcher
 import json
 import os.path
@@ -734,6 +734,11 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
                 if event_type in ('volleyball', 'tennis', 'basketball', 'esports', 'table-tennis'):
                     curr_opposition.update({'П1': 'П2'})
                     curr_opposition.update({'П2': 'П1'})
+                    for pair in add_if_not_draw:
+                        curr_opposition.update(pair)
+                else:
+                    for pair in add_if_draw:
+                        curr_opposition.update(pair)
 
                 for kof_type_olimp, kof_type_fonbet in curr_opposition.items():
 
@@ -752,8 +757,8 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
 
                     if DEBUG:
                         pass
-                        # v_olimp = v_olimp * 2
-                        # v_fonbet = v_fonbet * 2
+                        v_olimp = v_olimp * 2
+                        v_fonbet = v_fonbet * 2
 
                     if v_olimp > 0.0 and v_fonbet > 0.0:
 
