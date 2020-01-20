@@ -110,7 +110,7 @@ sport_list = [
         'place': ['pre']
     },
     {
-        'name': 'mini-football',
+        'name': 'futsal',
         'olimp': 11,
         'fonbet': 1434,
         'pinn': None,  # TODO
