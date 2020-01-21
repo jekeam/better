@@ -176,7 +176,7 @@ def get_fonbet(resp, arr_matchs, place):
                         arr_matchs[str(event['id'])] = {
                             'bk_name': 'fonbet',
                             'place': place,
-                            'place': event.get('place'),
+                            # 'place': event.get('place'),
                             'sport_id': mid.get('sportId'),
                             'sport_name': if_exists(sport_list, 'fonbet', mid.get('sportId'), 'name'),
                             'name': event['name'],
@@ -342,7 +342,7 @@ def start_seeker_top_matchs_fonbet(gen_proxi_fonbet, arr_fonbet_top_matchs, pair
             prnts('Фонбет, ошибка при запросе списка TOP матчей: ' + str(e) + ' ' + proxy)
             raise ValueError(e)
         try:
-            for place in ('top:live', 'top:line'):
+            for place in ('top:live', 'top:pre'):
                 resp, time_resp = get_matches_fonbet(proxy, TIMEOUT_LIST, place)
                 for event in resp.get('events'):
                     match_id = event.get('id')
@@ -425,7 +425,7 @@ def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi
             else:
                 fail_proxy = fail_proxy + 1
                 time.sleep(3)
-        if place == 'live':
+        if place == 'pre':
             time_sleep = max(0, (TIMEOUT_MATCH - (TIMEOUT_MATCH_MINUS + time_resp)))
         else:
             time_sleep = max(0, (TIMEOUT_PRE_MATCH - (TIMEOUT_PRE_MATCH_MINUS + time_resp)))
@@ -495,7 +495,7 @@ def starter_bets(bets_olimp, bets_fonbet, pair_mathes, mathes_complite, mathes_i
             match_id_olimp, match_id_fonbet, event_type, place, pass2, pass3 = pair_match
             if match_id_olimp not in mathes_id_is_work:
                 mathes_id_is_work.append(match_id_olimp)
-                print(match_id_olimp, place)
+                # print(match_id_olimp, place)
                 start_seeker_olimp_bets_by_id = threading.Thread(
                     target=start_seeker_bets_olimp,
                     args=(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi_olimp, pair_mathes, mathes_complite, stat_req_olimp, place))
@@ -506,7 +506,7 @@ def starter_bets(bets_olimp, bets_fonbet, pair_mathes, mathes_complite, mathes_i
                     target=start_seeker_bets_fonbet,
                     args=(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_proxi_fonbet, pair_mathes, mathes_complite, stat_req_fonbet, arr_fonbet_top_kofs, place))
                 start_seeker_fonbet_bets_by_id.start()
-        time.sleep(20)
+        time.sleep(60)
 
 
 def sort_by_rate(val):
@@ -590,7 +590,9 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                                              str(bk2_match_id) + ';' + \
                                              str(bk2_match_info.get('team1')) + ';' + \
                                              str(bk2_match_info.get('team2')) + ';'
-
+                                # print(bk2_match_info)
+                                # print(bk2_match_info.get('place'))
+                                # print(bk1_match_info.get('sport_name'), bk2_match_info.get('sport_name') )
                                 if bk1_match_info.get('sport_name') == bk2_match_info.get('sport_name') and bk1_match_info.get('place') == bk2_match_info.get('place'):
                                     place = bk1_match_info.get('place')
                                     r1, r2, rate = get_rate(
@@ -651,7 +653,7 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                     except:
                         pass
                 # print(pair)
-                pair.sort(key=lambda p: 'z' if p in ('live', 'pre', 'line') else p)
+                pair.sort(key=lambda p: 'z' if p in ('live', 'pre') else p)
                 # print(pair)
                 pair = [pair[1], pair[0], pair[2], pair[3]]
                 pair.append(e.get('match_name'))
@@ -687,12 +689,11 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                             serv_log('compare_teams', 'add;' + pair[-2])
             # for x in pair_mathes:
             # print(x)
-            # print('pair_mathes: ' + str(pair_mathes))
         except Exception as e:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             prnts('Error start_event_mapping: ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
         finally:
-            time.sleep(30)
+            time.sleep(5)
 
 
 def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbet_top_matchs):
@@ -1036,6 +1037,7 @@ if __name__ == '__main__':
     fonbet_seeker_top_matchs.start()
 
     # Event mapping
+    time.sleep(15)
     event_mapping = threading.Thread(target=start_event_mapping, args=(pair_mathes, arr_matchs, mathes_complite))
     event_mapping.start()
 

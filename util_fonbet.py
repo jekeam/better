@@ -59,8 +59,10 @@ def get_matches_fonbet(proxy, time_out, place='live'):
     global url_fonbet
     global UA
 
-    if place in ('top:live', 'top:line'):
-        url = url_fonbet_top_matchs.format(place.split(':')[1])
+    if place == 'top:live':
+        url = url_fonbet_top_matchs.format('live')
+    elif place == 'top:pre':
+        url = url_fonbet_top_matchs.format('line')
     elif place == 'pre':
         url = url_fonbet_pre_matchs
     else:
@@ -246,7 +248,7 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
                             raise FonbetMatchСompleted(err_str)
                 if not start_after_min:
                     start_after_min = 0
-                place_in = event.get('place')
+                # place_in = event.get('place')
                 if event.get('parentId') == 0 or 'st half' in name or 'nd half' in name:
                     if event.get('parentId') == 0:
                         try:
