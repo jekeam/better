@@ -559,22 +559,23 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
 
         try:
             for i in list(bets_olimp):
-                for j in list(bets_olimp[i].get('kofs', {})):
-                    hide_time = 4
-                    if bets_olimp[i].get('place') == 'pre':
-                        hide_time = run.TIMEOUT_PRE_MATCH + hide_time
-                    if round(float(time.time() - float(bets_olimp[i]['kofs'][j].get('time_req', 0)))) > hide_time and bets_olimp[i]['kofs'][j].get('value', 0) > 0:
-                        try:
-                            bets_olimp[i]['kofs'][j]['value'] = 0
-                            bets_olimp[i]['kofs'][j]['factor'] = 0
-                            if run.DEBUG:
-                                prnts('2: ' + i + ' ' + j + ' - выставил в 0')
-                                prnts('Олимп, матч:' + key_id + ' данные по котировке из БК не получены более ' + str(hide_time) + ' сек., знач. выставил в 0: ' + str(j) + ' ' + str(i) + ' запрос №: ' + n)
-                        except Exception as e:
-                            exc_type, exc_value, exc_traceback = sys.exc_info()
-                            err_str = 'error: ' + str(e) + ' (' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))) + ')'
-                            prnts('Олимп, матч:' + key_id + ' ошибка 1 при удалении старой котирофки: ' + str(err_str) + ' запрос №: ' + n)
-                            time.sleep(5)
+                if str(i) == key_id:
+                    for j in list(bets_olimp[i].get('kofs', {})):
+                        hide_time = 4
+                        if bets_olimp[i].get('place') == 'pre':
+                            hide_time = run.TIMEOUT_PRE_MATCH + hide_time
+                        if round(float(time.time() - float(bets_olimp[i]['kofs'][j].get('time_req', 0)))) > hide_time and bets_olimp[i]['kofs'][j].get('value', 0) > 0:
+                            try:
+                                bets_olimp[i]['kofs'][j]['value'] = 0
+                                bets_olimp[i]['kofs'][j]['factor'] = 0
+                                if run.DEBUG:
+                                    prnts('2: ' + i + ' ' + j + ' - выставил в 0')
+                                    prnts('Олимп, матч:' + key_id + ' данные по котировке из БК не получены более ' + str(hide_time) + ' сек., знач. выставил в 0: ' + str(j) + ' ' + str(i) + ' запрос №: ' + n)
+                            except Exception as e:
+                                exc_type, exc_value, exc_traceback = sys.exc_info()
+                                err_str = 'error: ' + str(e) + ' (' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))) + ')'
+                                prnts('Олимп, матч:' + key_id + ' ошибка 1 при удалении старой котирофки: ' + str(err_str) + ' запрос №: ' + n)
+                                time.sleep(5)
         except Exception as e:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             err_str = 'error: ' + str(e) + ' (' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))) + ')'

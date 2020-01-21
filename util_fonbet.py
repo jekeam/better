@@ -418,20 +418,21 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
 
         try:
             for i in list(bets_fonbet):
-                hide_time = 4
-                if bets_fonbet[i].get('place') == 'pre':
-                    hide_time = run.TIMEOUT_PRE_MATCH + hide_time
-                for j in list(bets_fonbet[i].get('kofs', {})):
-                    if round(float(time.time() - float(bets_fonbet[i]['kofs'][j].get('time_req', 0)))) > hide_time and bets_fonbet[i]['kofs'][j].get('value', 0) > 0:
-                        try:
-                            bets_fonbet[i]['kofs'][j]['value'] = 0
-                            if run.DEBUG:
-                                prnts('Фонбет, данные по котировке из БК не получены более ' + str(hide_time) + ' сек., знач. выставил в 0: ' + str(j) + ' ' + str(i))
-                        except Exception as e:
-                            exc_type, exc_value, exc_traceback = sys.exc_info()
-                            err_str = 'error: ' + str(e) + ' (' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))) + ')'
-                            prnts('Фонбет, ошибка 1 при удалении старой котирофки: ' + str(err_str))
-                            time.sleep(5)
+                if str(i) == key_id:
+                    for j in list(bets_fonbet[i].get('kofs', {})):
+                        hide_time = 4
+                        if bets_fonbet[i].get('place') == 'pre':
+                            hide_time = run.TIMEOUT_PRE_MATCH + hide_time
+                        if round(float(time.time() - float(bets_fonbet[i]['kofs'][j].get('time_req', 0)))) > hide_time and bets_fonbet[i]['kofs'][j].get('value', 0) > 0:
+                            try:
+                                bets_fonbet[i]['kofs'][j]['value'] = 0
+                                if run.DEBUG:
+                                    prnts('Фонбет, данные по котировке из БК не получены более ' + str(hide_time) + ' сек., знач. выставил в 0: ' + str(j) + ' ' + str(i))
+                            except Exception as e:
+                                exc_type, exc_value, exc_traceback = sys.exc_info()
+                                err_str = 'error: ' + str(e) + ' (' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))) + ')'
+                                prnts('Фонбет, ошибка 1 при удалении старой котирофки: ' + str(err_str))
+                                time.sleep(5)
         except Exception as e:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             err_str = 'error: ' + str(e) + ' (' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))) + ')'
