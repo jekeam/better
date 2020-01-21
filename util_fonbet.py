@@ -195,6 +195,8 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
     key_id = str(match_id)
     try:
         resp, time_resp = get_match_fonbet(match_id, proxies_fonbet, proxy, time_out, pair_mathes)
+        # if key_id == '18967969':
+        #     print(resp)
         time_start_proc = time.time()
         TT = []
         for bet in [TTO, TTU, TT1O, TT1U, TT2O, TT2U, FORA]:
