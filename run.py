@@ -246,9 +246,10 @@ def start_seeker_matchs_olimp(gen_proxi_olimp, arr_matchs, place):
                                             else:
                                                 pass
                                                 # raise ValueError(str(e))
-                                                prnts(e)
+                                                exc_type, exc_value, exc_traceback = sys.exc_info()
+                                                prnts(str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
                                             if liga_id_str in arr_leagues[sport_id]:
-                                                del arr_leagues[arr_leagues.index(liga_id_str)]
+                                                del arr_leagues[sport_id][arr_leagues[sport_id].index(liga_id_str)]
                                                 prnts('sport_id:{}, Возникала ошибка при запросе списка матчей по лиге {}, лига удалена из списка: {}'.format(sport_id, liga_id_str, arr_leagues))
                                             else:
                                                 prnts('sport_id:{}, Возникала ошибка при запросе списка матчей по лиге {}, но лига не найдена в списке: {}'.format(sport_id, liga_id_str, arr_leagues))
@@ -257,7 +258,8 @@ def start_seeker_matchs_olimp(gen_proxi_olimp, arr_matchs, place):
                                 pass
                                 prnts(e)
                             else:
-                                prnts(e)
+                                exc_type, exc_value, exc_traceback = sys.exc_info()
+                                prnts(str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
                                 pass
                                 # raise ValueError(str(e))
                         if DEBUG:
