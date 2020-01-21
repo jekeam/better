@@ -76,8 +76,7 @@ def get_olimp(resp, arr_matchs, place='live', sport_id=None):
             # 51 Badminton
             # 60 Beach Volleyball
             # 126 Pool
-            print(sport_id, 'place', place)
-            if if_exists(sport_list, 'olimp', liga_info.get('sport_id', sport_id)) and if_exists_by_sport(sport_list, 'olimp', sport_id, 'place', place):
+            if if_exists(sport_list, 'olimp', liga_info.get('sport_id', sport_id)) and if_exists_by_sport(sport_list, 'olimp', liga_info.get('sport_id', sport_id), 'place', place):
                 for math_info in liga_info.get('it'):
                     # print(math_info.get('dt') + ' ' + str(datetime.fromtimestamp(int(math_info.get('t')) + 60 * 60).strftime('%d.%m.%Y %H:%M:%S')))
                     # print(math_info.get('dt') == str(datetime.fromtimestamp(int(math_info.get('t'))+60*60).strftime('%d.%m.%Y %H:%M:%S')))

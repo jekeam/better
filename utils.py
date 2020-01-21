@@ -46,7 +46,7 @@ def if_exists_by_sport(jsos_list: dict, bk_name:str, sport_id: str, check_key: s
         if str(m.get(bk_name)) == str(sport_id):
             if check_val in m.get(check_key, []):
                 return True
-    return False    
+    return False
 
 
 bk_fork_name = ['olimp', 'fonbet']  # , 'pinnacle']
