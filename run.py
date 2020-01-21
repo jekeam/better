@@ -247,6 +247,11 @@ def start_seeker_matchs_olimp(gen_proxi_olimp, arr_matchs, place):
                                                 pass
                                                 # raise ValueError(str(e))
                                                 prnts(e)
+                                            if arr_leagues[sport_id].get(liga_id_str):
+                                                arr_leagues[sport_id].pop(liga_id_str)
+                                                prnts('sport_id:{}, Возникала ошибка при запросе списка матчей по лиге {}, лига удалена из списка: {}'.format(sport_id, liga_id_str, arr_leagues))
+                                            else:
+                                                prnts('sport_id:{}, Возникала ошибка при запросе списка матчей по лиге {}, но лига не найдена в списке: {}'.format(sport_id, liga_id_str, arr_leagues))
                         except Exception as e:
                             if 'We are updating betting line'.lower() in str(e).lower():
                                 pass
