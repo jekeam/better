@@ -105,7 +105,7 @@ def get_olimp(resp, arr_matchs, place='live', sport_id=None):
     # print_j(arr_matchs) # 50940691
 
 
-def get_fonbet(resp, arr_matchs, type):
+def get_fonbet(resp, arr_matchs, place):
     # with open('resp.json', 'w') as f:
     #     s = str(resp).replace('\'', '"').replace('False', '"False"').replace('True', '"True"')
     #     f.write(s)
@@ -143,7 +143,7 @@ def get_fonbet(resp, arr_matchs, type):
             'event_name': sport['name'],
             'event_id': sport['id'],
             'event_sportId': sport['parentId']
-        } for sport in resp['sports'] if sport['kind'] == 'segment' and if_exists(sport_list, 'fonbet', sport.get('parentId')) and if_exists(sport_list, 'place', type)
+        } for sport in resp['sports'] if sport['kind'] == 'segment' and if_exists(sport_list, 'fonbet', sport.get('parentId')) and if_exists(sport_list, 'place', place)
     ]
 
     # получим список ид всех матчей по событиям
@@ -174,7 +174,7 @@ def get_fonbet(resp, arr_matchs, type):
                     if start_after_min < max_min_prematch:
                         arr_matchs[str(event['id'])] = {
                             'bk_name': 'fonbet',
-                            'type': type,
+                            'type': place,
                             'place': event.get('place'),
                             'sport_id': mid.get('sportId'),
                             'sport_name': if_exists(sport_list, 'fonbet', mid.get('sportId'), 'name'),
@@ -300,19 +300,19 @@ def start_seeker_matchs_olimp(gen_proxi_olimp, arr_matchs, place):
         time.sleep(time_sleep)
 
 
-def start_seeker_matchs_fonbet(gen_proxi_fonbet, arr_matchs, type):
+def start_seeker_matchs_fonbet(gen_proxi_fonbet, arr_matchs, place):
     global TIMEOUT_LIST, TIMEOUT_PRE_LIST
-    if type == 'pre':
+    if place == 'pre':
         time_out = TIMEOUT_PRE_LIST
     else:
         time_out = TIMEOUT_LIST
     proxy = gen_proxi_fonbet.next()
     while True:
         try:
-            resp, time_resp = get_matches_fonbet(proxy, time_out, type)
-            get_fonbet(resp, arr_matchs, type)
+            resp, time_resp = get_matches_fonbet(proxy, time_out, place)
+            get_fonbet(resp, arr_matchs, place)
         except Exception as e:
-            prnts('Фонбет, ошибка при запросе списка матчей: ' + str(type) + ' ' + str(e) + ' ' + proxy)
+            prnts('Фонбет, ошибка при запросе списка матчей: ' + str(place) + ' ' + str(e) + ' ' + proxy)
             proxy = gen_proxi_fonbet.next()
             time_resp = time_out
         time_sleep = max(0, (time_out - time_resp))
@@ -586,7 +586,7 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                                              str(bk2_match_info.get('team2')) + ';'
 
                                 if bk1_match_info.get('sport_name') == bk2_match_info.get('sport_name') and bk1_match_info.get('type') == bk2_match_info.get('type'):
-                                    type = bk1_match_info.get('type')
+                                    place = bk1_match_info.get('type')
                                     r1, r2, rate = get_rate(
                                         bk1_match_info.get('team1', ''),
                                         bk1_match_info.get('team2', ''),
@@ -608,18 +608,18 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                                                 'bk1_t2': bk1_match_info.get('team2'),
                                                 'rate': r1,
                                                 'sport_name': bk1_match_info.get('sport_name'),
-                                                'type': type,
+                                                'type': place,
                                             },
                                             str(bk2_match_id): {
                                                 'bk2_t1': bk2_match_info.get('team1'),
                                                 'bk2_t2': bk2_match_info.get('team2'),
                                                 'rate': r2,
                                                 'sport_name': bk2_match_info.get('sport_name'),
-                                                'type': type,
+                                                'type': place,
                                             },
                                             'rate': rate,
                                             'match_name': match_name,
-                                            'type': type,
+                                            'type': place,
                                         })
             for bkr in bk_rate_list:
                 if bkr.get('rate', 0) > need:
@@ -1001,53 +1001,6 @@ if __name__ == '__main__':
 
     # List of event "at work"
     pair_mathes = []
-    # 1
-    # POST http://ssl.facebookgateway.com.mastertest.ru/api/sports HTTP/1.1
-    # X-TOKEN: e41f1ccf519b7a3aa5fe72015dbd7a4d
-    # Content-Type: application/x-www-form-urlencoded
-    # Content-Length: 44
-    # Host: ssl.facebookgateway.com.mastertest.ru
-    # Connection: Keep-Alive
-    # Accept-Encoding: gzip
-    # User-Agent: okhttp/3.12.1
-    #
-    # live=0&session=&platforma=ANDROID2&lang_id=2
-
-    # 2
-    # POST http://ssl.facebookgateway.com.mastertest.ru/api/champs HTTP/1.1
-    # X-TOKEN: 83add5028c8b839164e557531b5474ea
-    # Content-Type: application/x-www-form-urlencoded
-    # Content-Length: 55
-    # Host: ssl.facebookgateway.com.mastertest.ru
-    # Connection: Keep-Alive
-    # Accept-Encoding: gzip
-    # User-Agent: okhttp/3.12.1
-    #
-    # live=0&sport_id=1&session=&platforma=ANDROID2&lang_id=2
-
-    # 3
-    # POST http://ssl.facebookgateway.com.mastertest.ru/api/matches HTTP/1.1
-    # X-TOKEN: 4702d8a567b5c358b679569dcb682aa4
-    # Content-Type: application/x-www-form-urlencoded
-    # Content-Length: 76
-    # Host: ssl.facebookgateway.com.mastertest.ru
-    # Connection: Keep-Alive
-    # Accept-Encoding: gzip
-    # User-Agent: okhttp/3.12.1
-    #
-    # live=0&sport_id=1&id=7449&session=&platforma=ANDROID2&lang_id=2&time_shift=0
-
-    # 4
-    # POST http://ssl.facebookgateway.com.mastertest.ru/api/stakes HTTP/1.1
-    # X-TOKEN: a6aacceb2ccf68185f3e2bf2a8fe21b1
-    # Content-Type: application/x-www-form-urlencoded
-    # Content-Length: 80
-    # Host: ssl.facebookgateway.com.mastertest.ru
-    # Connection: Keep-Alive
-    # Accept-Encoding: gzip
-    # User-Agent: okhttp/3.12.1
-    #
-    # live=0&sport_id=1&id=54069840&session=&platforma=ANDROID2&lang_id=2&time_shift=0
 
     # get event list by olimp
     olimp_seeker_matchs = threading.Thread(target=start_seeker_matchs_olimp, args=(gen_proxi_olimp, arr_matchs, 'live'))
