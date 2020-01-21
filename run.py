@@ -26,8 +26,8 @@ TIMEOUT_LIST = 10
 TIMEOUT_MATCH = 10
 TIMEOUT_MATCH_MINUS = 9
 
-TIMEOUT_PRE_LIST = 60 * 5
-TIMEOUT_PRE_MATCH = 30
+TIMEOUT_PRE_LIST = 60 * 15
+TIMEOUT_PRE_MATCH = 15
 TIMEOUT_PRE_MATCH_MINUS = 0
 
 if not DEBUG:
@@ -50,12 +50,12 @@ prnts('SPORT_LIST: ' + print_j(sport_list, 'return var'), 'hide')
 prnts('max_hour_prematch: ' + str(max_min_prematch / 60), 'hide')
 
 
-def get_olimp(resp, arr_matchs, type='live', sport_id=None):
+def get_olimp(resp, arr_matchs, place='live', sport_id=None):
     # Очистим дстарые данные
     for key in list(arr_matchs):
         if arr_matchs.get('olimp', '') != '':
             arr_matchs.pop(key)
-    if type == 'live':
+    if place == 'live':
         key_name = 'cn'
     else:
         key_name = 'n'
@@ -76,7 +76,7 @@ def get_olimp(resp, arr_matchs, type='live', sport_id=None):
             # 51 Badminton
             # 60 Beach Volleyball
             # 126 Pool
-            if if_exists(sport_list, 'olimp', liga_info.get('sport_id', sport_id)) and if_exists(sport_list, 'place', type):
+            if if_exists(sport_list, 'olimp', liga_info.get('sport_id', sport_id)) and if_exists(sport_list, 'place', place):
                 for math_info in liga_info.get('it'):
                     # print(math_info.get('dt') + ' ' + str(datetime.fromtimestamp(int(math_info.get('t')) + 60 * 60).strftime('%d.%m.%Y %H:%M:%S')))
                     # print(math_info.get('dt') == str(datetime.fromtimestamp(int(math_info.get('t'))+60*60).strftime('%d.%m.%Y %H:%M:%S')))
@@ -89,7 +89,7 @@ def get_olimp(resp, arr_matchs, type='live', sport_id=None):
                     if start_after_min < max_min_prematch:
                         arr_matchs[match_id_str] = {
                             'bk_name': 'olimp',
-                            'type': type,
+                            'type': place,
                             'sport_id': liga_info.get('sport_id', sport_id),
                             'sport_name': if_exists(sport_list, 'olimp', liga_info.get('sport_id', sport_id), 'name'),
                             'name': liga_info[key_name],
