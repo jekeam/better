@@ -57,7 +57,7 @@ assert max_min_prematch % 60 == 0, 'Время должно быть кратн�
 assert max_min_prematch >= 60, 'Время должно быть больше 60 минут'
 
 # TODO, ADD FLAG: LIVE, LINE/PRE
-sport_list = [
+sport_list_raw = [
     {
         'name': 'football',
         'olimp': 1,
@@ -125,8 +125,8 @@ sport_list = [
         # 'place': ['live', 'pre']
         'place': ['pre']
     },
-    
 ]
+sport_list = list(reversed(sport_list_raw))
 
 opposition = {
     '1ТБ': '1ТМ',

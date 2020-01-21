@@ -55,13 +55,13 @@ FORA = [['Ф1({})', 927], ['Ф2({})', 928],
         ]
 
 
-def get_matches_fonbet(proxy, time_out, type='live'):
+def get_matches_fonbet(proxy, time_out, place='live'):
     global url_fonbet
     global UA
 
-    if type in ('top:live', 'top:line'):
-        url = url_fonbet_top_matchs.format(type.split(':')[1])
-    elif type == 'pre':
+    if place in ('top:live', 'top:line'):
+        url = url_fonbet_top_matchs.format(place.split(':')[1])
+    elif place == 'pre':
         url = url_fonbet_pre_matchs
     else:
         url = url_fonbet_matchs

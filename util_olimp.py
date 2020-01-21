@@ -201,7 +201,7 @@ def to_abb(sbet):
     return abr
 
 
-def get_match_olimp(match_id, proxi_list, proxy, time_out, pair_mathes, type):
+def get_match_olimp(match_id, proxi_list, proxy, time_out, pair_mathes, place):
     global olimp_url
     global olimp_url_https
     global olimp_data
@@ -220,7 +220,7 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out, pair_mathes, type):
     olimp_data_m.update({'id': match_id})
     olimp_data_m.update({'lang_id': 0})
     olimp_data_m.update({'sport_id': sport_id})
-    if type == 'pre':
+    if place == 'pre':
         olimp_data_m.update({'live': 0})
 
     olimp_stake_head = olimp_head.copy()

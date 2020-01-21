@@ -90,7 +90,7 @@ def get_olimp(resp, arr_matchs, place='live', sport_id=None):
                     if start_after_min < max_min_prematch:
                         arr_matchs[match_id_str] = {
                             'bk_name': 'olimp',
-                            'type': place,
+                            'place': place,
                             'sport_id': liga_info.get('sport_id', sport_id),
                             'sport_name': if_exists(sport_list, 'olimp', liga_info.get('sport_id', sport_id), 'name'),
                             'name': liga_info[key_name],
@@ -175,7 +175,7 @@ def get_fonbet(resp, arr_matchs, place):
                     if start_after_min < max_min_prematch:
                         arr_matchs[str(event['id'])] = {
                             'bk_name': 'fonbet',
-                            'type': place,
+                            'place': place,
                             'place': event.get('place'),
                             'sport_id': mid.get('sportId'),
                             'sport_name': if_exists(sport_list, 'fonbet', mid.get('sportId'), 'name'),
@@ -591,8 +591,8 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                                              str(bk2_match_info.get('team1')) + ';' + \
                                              str(bk2_match_info.get('team2')) + ';'
 
-                                if bk1_match_info.get('sport_name') == bk2_match_info.get('sport_name') and bk1_match_info.get('type') == bk2_match_info.get('type'):
-                                    place = bk1_match_info.get('type')
+                                if bk1_match_info.get('sport_name') == bk2_match_info.get('sport_name') and bk1_match_info.get('place') == bk2_match_info.get('place'):
+                                    place = bk1_match_info.get('place')
                                     r1, r2, rate = get_rate(
                                         bk1_match_info.get('team1', ''),
                                         bk1_match_info.get('team2', ''),
@@ -614,18 +614,18 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                                                 'bk1_t2': bk1_match_info.get('team2'),
                                                 'rate': r1,
                                                 'sport_name': bk1_match_info.get('sport_name'),
-                                                'type': place,
+                                                'place': place,
                                             },
                                             str(bk2_match_id): {
                                                 'bk2_t1': bk2_match_info.get('team1'),
                                                 'bk2_t2': bk2_match_info.get('team2'),
                                                 'rate': r2,
                                                 'sport_name': bk2_match_info.get('sport_name'),
-                                                'type': place,
+                                                'place': place,
                                             },
                                             'rate': rate,
                                             'match_name': match_name,
-                                            'type': place,
+                                            'place': place,
                                         })
             for bkr in bk_rate_list:
                 if bkr.get('rate', 0) > need:
@@ -646,8 +646,8 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                             pair.append(m)
                             if v.get('sport_name') not in pair:
                                 pair.append(v.get('sport_name'))
-                            if v.get('type') not in pair:
-                                pair.append(v.get('type'))
+                            if v.get('place') not in pair:
+                                pair.append(v.get('place'))
                     except:
                         pass
                 # print(pair)
