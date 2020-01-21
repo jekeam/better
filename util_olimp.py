@@ -586,7 +586,7 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
         raise OlimpMatchСompleted('4 ' + str(e))
     except Exception as e:
         exc_type, exc_value, exc_traceback = sys.exc_info()
-        prnts('Олимп, матч: ' + key_id + ' фатальная ошибка:' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))) + '\ndata:' + str(resp_temp))
+        prnts('Олимп, матч: ' + key_id + ' фатальная ошибка:' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))) + ' запрос №: ' + n + '\ndata:' + str(resp_temp))
         if bets_olimp.get(key_id):
             bets_olimp.pop(key_id)
         raise ValueError(e)
