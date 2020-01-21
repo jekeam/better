@@ -39,6 +39,13 @@ def if_exists(jsos_list: dict, key_name: str, val: str, get_key: str = ''):
                 else:
                     return m.get(get_key)
     return False
+    
+def if_exists_by_sport(jsos_list: dict, sport_id: str, check_key: str, check_val: str = ''):
+    for m in jsos_list:
+        if m.get(sport_id):
+            if check_val in m.get(check_key):
+                return True
+    return False    
 
 
 bk_fork_name = ['olimp', 'fonbet']  # , 'pinnacle']
