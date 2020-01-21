@@ -9,7 +9,7 @@ from difflib import SequenceMatcher
 import re
 from exceptions import *
 from server import run_server
-from utils import prnts, DEBUG, find_max_mode, opposition, add_if_draw, add_if_not_draw, serv_log, get_param, sport_list, if_exists, print_j, max_min_prematch
+from utils import prnts, DEBUG, find_max_mode, opposition, add_if_draw, add_if_not_draw, serv_log, get_param, sport_list, if_exists, print_j, max_min_prematch, if_exists_by_sport
 from proxy_switcher import ProxySwitcher
 import json
 import os.path

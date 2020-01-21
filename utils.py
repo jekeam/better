@@ -41,6 +41,7 @@ def if_exists(jsos_list: dict, key_name: str, val: str, get_key: str = ''):
     return False
     
 def if_exists_by_sport(jsos_list: dict, bk_name:str, sport_id: str, check_key: str, check_val: str):
+    # print('{}, {}, {}, {}'.format(bk_name, sport_id, check_key, check_val))
     for m in jsos_list:
         if str(m.get(bk_name)) == str(sport_id):
             if check_val in m.get(check_key, []):
