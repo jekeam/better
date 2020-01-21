@@ -444,8 +444,8 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
         raise FonbetMatchСompleted('4 ' + str(e))
     except Exception as e:
         prnts(e)
-        if bets_fonbet.get(key_id):
-            bets_fonbet.pop(key_id)
+        # if bets_fonbet.get(key_id):
+        #     bets_fonbet.pop(key_id)
         raise ValueError(e)
 
 
