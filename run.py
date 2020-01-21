@@ -379,6 +379,7 @@ def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi
     proxy_size = 10
     proxy = []
     i = 0
+    n = 1
     while i < proxy_size:
         proxy.append(gen_proxi_olimp.next())
         i = i + 1
@@ -386,7 +387,7 @@ def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi
 
     while True:
         try:
-            time_resp = get_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, ps.get_next_proxy(), TIMEOUT_MATCH, pair_mathes, place)
+            time_resp = get_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, ps.get_next_proxy(), TIMEOUT_MATCH, pair_mathes, place, str(n))
             # print(bets_olimp)
             stat_req_ol.append(round(time_resp, 2))
         except OlimpMatchСompleted as e:
@@ -426,6 +427,7 @@ def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi
             pass
             # prnts('Олимп, матч ' + str(match_id_olimp) + '. Время ответа: ' + str(time_resp) + ', запрос через ' + str(time_sleep) + ' ' + ps.get_cur_proxy(), 'hide')
             # prnts('Олимп, матч ' + str(match_id_olimp) + '. Время ответа: ' + str(time_resp) + ', запрос через ' + str(time_sleep) + ' ' + ps.get_cur_proxy())
+        n = n + 1
         time.sleep(time_sleep)
 
 
