@@ -426,9 +426,9 @@ def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi
                 fail_proxy = fail_proxy + 1
                 time.sleep(3)
         if place == 'pre':
-            time_sleep = max(0, (TIMEOUT_MATCH - (TIMEOUT_MATCH_MINUS + time_resp)))
-        else:
             time_sleep = max(0, (TIMEOUT_PRE_MATCH - (TIMEOUT_PRE_MATCH_MINUS + time_resp)))
+        else:
+            time_sleep = max(0, (TIMEOUT_MATCH - (TIMEOUT_MATCH_MINUS + time_resp)))
         if DEBUG:
             pass
             # prnts('Олимп, матч ' + str(match_id_olimp) + '. Время ответа: ' + str(time_resp) + ', запрос через ' + str(time_sleep) + ' ' + ps.get_cur_proxy(), 'hide')
@@ -693,7 +693,7 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
             exc_type, exc_value, exc_traceback = sys.exc_info()
             prnts('Error start_event_mapping: ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
         finally:
-            time.sleep(5)
+            time.sleep(60)
 
 
 def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbet_top_matchs):
@@ -1037,10 +1037,11 @@ if __name__ == '__main__':
     fonbet_seeker_top_matchs.start()
 
     # Event mapping
-    time.sleep(15)
+    time.sleep(30)
     event_mapping = threading.Thread(target=start_event_mapping, args=(pair_mathes, arr_matchs, mathes_complite))
     event_mapping.start()
 
+    time.sleep(30)
     mathes_id_is_work = []
     starter_bets = threading.Thread(
         target=starter_bets,
