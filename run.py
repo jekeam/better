@@ -247,8 +247,8 @@ def start_seeker_matchs_olimp(gen_proxi_olimp, arr_matchs, place):
                                                 pass
                                                 # raise ValueError(str(e))
                                                 prnts(e)
-                                            if arr_leagues[sport_id].get(liga_id_str):
-                                                arr_leagues[sport_id].pop(liga_id_str)
+                                            if liga_id_str in arr_leagues[sport_id]:
+                                                del arr_leagues[arr_leagues.index(liga_id_str)]
                                                 prnts('sport_id:{}, Возникала ошибка при запросе списка матчей по лиге {}, лига удалена из списка: {}'.format(sport_id, liga_id_str, arr_leagues))
                                             else:
                                                 prnts('sport_id:{}, Возникала ошибка при запросе списка матчей по лиге {}, но лига не найдена в списке: {}'.format(sport_id, liga_id_str, arr_leagues))
