@@ -186,7 +186,7 @@ def get_matches(bk_name, proxy, timeout, api_key, proxy_list):
     return data, resp.elapsed.total_seconds()
 
 
-MAX_VERSION = 0
+MAX_VERSION = {}
 
 
 def get_odds(bets, api_key, pair_mathes, sport_id, proxi_list, proxy, timeout):
@@ -225,11 +225,14 @@ def get_odds(bets, api_key, pair_mathes, sport_id, proxi_list, proxy, timeout):
             utils.prnts('api_key: ' + str(api_key))
 
     for match_id in match_id_list:
+        check_vertion = False
         res = {}
+        version = None
         # print('match_id: ' + str(match_id))
         for bet in filter(lambda x: x['matchupId'] == int(match_id), data):
             version = bet.get('version', -1)
-            if version > MAX_VERSION:
+            if (check_vertion and version > MAX_VERSION.get(str(sport_id), 0)) or not check_vertion:
+                MAX_VERSION.update({str(sport_id): version})
                 for price in bet.get('prices', []):
                     res.update(straight_normalize({
                         'time_req': round(time.time()),
@@ -246,10 +249,12 @@ def get_odds(bets, api_key, pair_mathes, sport_id, proxi_list, proxy, timeout):
                         # 'vector':'UP' if price.get('price') > 0 else 'DOWN'
                     }))
                     # print('res: ' + str(res))
+        if version and check_vertion:
+            if version < MAX_VERSION.get(str(sport_id), 0):
+                print('sport_id:{}, get version is old: {}, max:{}'.format(sport_id, version, MAX_VERSION.get(str(sport_id), 0)))
         if not bets.get(str(match_id)):
             bets[str(match_id)] = {}
         bets[str(match_id)]['time_req'] = round(time.time())
         if res:
             bets[str(match_id)]['kofs'] = res
-        MAX_VERSION = version
     return resp.elapsed.total_seconds()

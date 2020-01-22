@@ -143,6 +143,7 @@ def get_match_fonbet(match_id, proxi_list, proxy, time_out, pair_mathes):
         elif res.get("place", "live") == "notActive":
             raise FonbetMatchСompleted('0 Фонбет, матч ' + str(match_id) + ' завершен, поток выключен!')
         else:
+            print(res)
             if 'Event not found' in res.get("errorMessage"):
                 raise FonbetMatchСompleted('1 Фонбет, матч ' + str(match_id) + ' завершен, поток выключен!')
             err = res.get("errorMessage")

@@ -410,6 +410,8 @@ def starter_bets(
         matchs_id = None
         for pair_match in pair_mathes:
             match_id_bk1, match_id_bk2, event_type, event_name, kof_compare, bk_name1, bk_name2 = pair_match
+            if DEBUG:
+                print('{}, {}, {}, {}, {}, {}, {}'.format(match_id_bk1, match_id_bk2, event_type, event_name, kof_compare, bk_name1, bk_name2))
 
             if bk_name1 == 'olimp':
                 matchs_id = match_id_bk1
@@ -418,7 +420,6 @@ def starter_bets(
             if matchs_id:
                 if matchs_id not in mathes_id_is_work:
                     mathes_id_is_work.append(matchs_id)
-
                     start_seeker_olimp_bets_by_id = threading.Thread(
                         target=start_seeker_bets_olimp,
                         args=(bets_olimp, matchs_id, proxies_olimp, gen_proxi_olimp, pair_mathes, mathes_complite, stat_reqs))
@@ -580,7 +581,7 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                         except:
                             pass
                     pair.sort()
-                    pair = [pair[1], pair[0], pair[2]]
+                    pair = [pair[0], pair[1], pair[2]]
                     pair.append(e.get('match_name'))
                     pair.append(e.get('rate'))
                     pair.append(bk_name1)
@@ -748,10 +749,10 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
 
                                     if DEBUG:
                                         pass
-                                        # prnts('\n')
-                                        # str_js = json.dumps(forks.get(bet_key), ensure_ascii=False)
-                                        # prnts('forks: ' + bet_key + ' ' + str(str_js))
-                                        # prnts('\n')
+                                        prnts('\n')
+                                        str_js = json.dumps(forks.get(bet_key), ensure_ascii=False)
+                                        prnts('forks: ' + bet_key + ' ' + str(str_js))
+                                        prnts('\n')
 
                                     if not os.path.isfile(file_forks):
                                         with open(file_forks, 'w', encoding='utf-8') as csv:
