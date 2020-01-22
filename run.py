@@ -118,7 +118,7 @@ def get_fonbet(resp, arr_matchs):
 def set_matches_pinnacle(bk_name, resp, arr_matchs, match_id_work):
     for match_id, match_data in resp.items():
         for key, items in copy.deepcopy(match_data).items():
-            if key not in ('bk_name', 'sport_id', 'sport_name', 'name', 'team1', 'team2', 'start_timestamp'):
+            if key not in ('bk_name', 'sport_id', 'sport_name', 'name', 'team1', 'team2', 'start_timestamp', 'minute', 'score'):
                 match_data.pop(key)
         arr_matchs[str(match_id)] = match_data
 

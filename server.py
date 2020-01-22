@@ -21,6 +21,8 @@ def get_state(arr):
         state['name'] = info.get('name', '')
         state['time'] = info.get('start_timestamp', '')
         state['last_update'] = str((int(time.time() - info.get('time_req', 0))))
+        state['minute'] = info.get('minute', ''),
+        state['score'] = info.get('score', ''),
         state['kofs'] = {}
         for kof_name, kof_info in info.get('kofs', {}).items():
             val = kof_info.get('value')

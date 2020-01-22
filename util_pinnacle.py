@@ -104,9 +104,9 @@ def get_matches(bk_name, proxy, timeout, api_key, proxy_list):
                 try:
                     res = resp.json()
                     # {'detail': 'The requested URL was not found on the server.  If you entered the URL manually please check your spelling and try again.', 'status': 404, 'title': 'Not Found', 'type': 'about:blank'}
+                    # print(res)
+                    # print('---')
                     res_status = 200
-                    print(type(res))
-                    print('-----')
                     if type(res) != list:
                         res_status = res.get('status', 404)
                     if res_status != 200:
