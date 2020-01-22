@@ -361,7 +361,7 @@ def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_p
         time.sleep(time_sleep)
 
 
-def start_seeker_bets(bk_name, def_bk, bets, api_key, sport_id, proxies_container, pair_mathes, stat_reqs):
+def start_seeker_bets(bk_name, def_bk, bets, api_key, sport_id, proxies_container, pair_mathes, stat_reqs, arr_matchs):
     global TIMEOUT_MATCH, TIMEOUT_MATCH_MINUS
     proxy_size = 5
     proxy = []
@@ -374,7 +374,7 @@ def start_seeker_bets(bk_name, def_bk, bets, api_key, sport_id, proxies_containe
     prnts(bk_name + ', start sport_id: ' + str(sport_id))
     while True:
         try:
-            time_resp = def_bk(bets, api_key, pair_mathes, sport_id, proxies_container[bk_name]['gen_proxi'], ps.get_next_proxy(), TIMEOUT_MATCH)
+            time_resp = def_bk(bets, api_key, pair_mathes, sport_id, proxies_container[bk_name]['gen_proxi'], ps.get_next_proxy(), TIMEOUT_MATCH, arr_matchs)
             if stat_reqs.get(bk_name) is None:
                 stat_reqs[bk_name] = []
             else:
@@ -403,15 +403,16 @@ def starter_bets(
         proxies_olimp, gen_proxi_olimp,
         proxies_fonbet, gen_proxi_fonbet,
         proxies_container,
-        stat_reqs, arr_fonbet_top_kofs
+        stat_reqs, arr_fonbet_top_kofs, 
+        arr_matchs
 ):
     global api_key
     while True:
         matchs_id = None
         for pair_match in pair_mathes:
             match_id_bk1, match_id_bk2, event_type, event_name, kof_compare, bk_name1, bk_name2 = pair_match
-            if DEBUG:
-                print('{}, {}, {}, {}, {}, {}, {}'.format(match_id_bk1, match_id_bk2, event_type, event_name, kof_compare, bk_name1, bk_name2))
+            # if DEBUG:
+            #     print('{}, {}, {}, {}, {}, {}, {}'.format(match_id_bk1, match_id_bk2, event_type, event_name, kof_compare, bk_name1, bk_name2))
 
             if bk_name1 == 'olimp':
                 matchs_id = match_id_bk1
@@ -445,10 +446,9 @@ def starter_bets(
                     mathes_id_is_work.append(sport_id)
                     start_seeker_fonbet_bets_by_id = threading.Thread(
                         target=start_seeker_bets,
-                        args=('pinnacle', util_pinnacle.get_odds, bets, api_key, sport_id, proxies_container, pair_mathes, stat_reqs)
+                        args=('pinnacle', util_pinnacle.get_odds, bets, api_key, sport_id, proxies_container, pair_mathes, stat_reqs, arr_matchs)
                     )
                     start_seeker_fonbet_bets_by_id.start()
-
         time.sleep(20)
 
 
@@ -986,7 +986,9 @@ if __name__ == '__main__':
             proxies_container,
 
             stat_reqs,
-            arr_fonbet_top_kofs
+            arr_fonbet_top_kofs,
+            
+            arr_matchs
         )
     )
     starter_bets.start()

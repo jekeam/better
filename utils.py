@@ -37,8 +37,8 @@ def if_exists(jsos_list: dict, key_name: str, val: str, get_key: str = ''):
 # !!! IMPORTANT: ORDER
 bk_working = [
     'pinnacle',
-    # 'olimp',
-    'fonbet', 
+    'olimp',
+    # 'fonbet', 
 ]
 
 sport_list = [
@@ -49,38 +49,38 @@ sport_list = [
         'pinnacle': 29,
         'min': 90,
     },
-    {
-        'name': 'esports',
-        'olimp': 112,
-        'fonbet': 29086,
-        'pinnacle': 12,
-    },
-    {
-        'name': 'volleyball',
-        'olimp': 10,
-        'fonbet': 9,
-        'pinnacle': 34,
-    },
-    {
-        'name': 'tennis',
-        'olimp': 3,
-        'fonbet': 4,
-        'pinnacle': 33,
-    },
-    {
-        'name': 'basketball',
-        'olimp': 5,
-        'fonbet': 3,
-        'pinnacle': 4,
-        'min': 40,
-    },
-    {
-        'name': 'hockey',
-        'olimp': 2,
-        'fonbet': 2,
-        'pinnacle': 19,
-        'min': 60,
-    }
+    # {
+    #     'name': 'esports',
+    #     'olimp': 112,
+    #     'fonbet': 29086,
+    #     'pinnacle': 12,
+    # },
+    # {
+    #     'name': 'volleyball',
+    #     'olimp': 10,
+    #     'fonbet': 9,
+    #     'pinnacle': 34,
+    # },
+    # {
+    #     'name': 'tennis',
+    #     'olimp': 3,
+    #     'fonbet': 4,
+    #     'pinnacle': 33,
+    # },
+    # {
+    #     'name': 'basketball',
+    #     'olimp': 5,
+    #     'fonbet': 3,
+    #     'pinnacle': 4,
+    #     'min': 40,
+    # },
+    # {
+    #     'name': 'hockey',
+    #     'olimp': 2,
+    #     'fonbet': 2,
+    #     'pinnacle': 19,
+    #     'min': 60,
+    # }
 ]
 
 opposition = {

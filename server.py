@@ -19,7 +19,7 @@ def get_state(arr):
     if arr:
         info = arr
         state['name'] = info.get('name', '')
-        state['time'] = info.get('time', '')
+        state['time'] = info.get('start_timestamp', '')
         state['last_update'] = str((int(time.time() - info.get('time_req', 0))))
         state['kofs'] = {}
         for kof_name, kof_info in info.get('kofs', {}).items():
@@ -102,6 +102,7 @@ def run_server(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_fonbet_top_matchs
                 try:
                     answer = None
                     if cnt_par == 2:
+                        # print(bets)
                         balnk, bk_name, match_id = self.path.split('/')
                         if '/fonbet/' in self.path:
                             answer = get_state(bets_fonbet.get(match_id, {}))

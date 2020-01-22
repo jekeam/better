@@ -105,7 +105,8 @@ def get_matches(bk_name, proxy, timeout, api_key, proxy_list):
                     res = resp.json()
                     # {'detail': 'The requested URL was not found on the server.  If you entered the URL manually please check your spelling and try again.', 'status': 404, 'title': 'Not Found', 'type': 'about:blank'}
                     res_status = 200
-                    # print(type(res))
+                    print(type(res))
+                    print('-----')
                     if type(res) != list:
                         res_status = res.get('status', 404)
                     if res_status != 200:
@@ -122,6 +123,7 @@ def get_matches(bk_name, proxy, timeout, api_key, proxy_list):
                                           ) or (x.get('league', {}).get('sport', {}).get('name', '') == 'Hockey'),
                                 res):
                             data[l.get('id')] = {
+                                'time_req': int(datetime.datetime.now().timestamp()),
                                 'bk_name': bk_name,
                                 'match_id': l.get('id'),
                                 'league': l.get('league', {}).get('group') + '-' + l.get('league', {}).get('name'),
@@ -133,7 +135,6 @@ def get_matches(bk_name, proxy, timeout, api_key, proxy_list):
                                 'score': str(l.get('participants', [{}, {}])[0].get('score')) + ':' + str(l.get('participants', [{}, {}])[0].get('score')),
                                 'state': l.get('state', {}).get('state'),
                                 'minute': float(l.get('state', {}).get('minutes', 0)),
-                                'cur_time': int(datetime.datetime.now().timestamp()),
                                 'sport_id': sport_id,
                                 'sport_name': sport_name,
                                 'start_timestamp': int(datetime.datetime.strptime(l.get('startTime'), '%Y-%m-%dT%H:%M:%SZ').timestamp()),
@@ -189,7 +190,7 @@ def get_matches(bk_name, proxy, timeout, api_key, proxy_list):
 MAX_VERSION = {}
 
 
-def get_odds(bets, api_key, pair_mathes, sport_id, proxi_list, proxy, timeout):
+def get_odds(bets, api_key, pair_mathes, sport_id, proxi_list, proxy, timeout, arr_matchs):
     global MAX_VERSION
     match_id_list = []
     bk_mame = 'pinnacle'
@@ -218,6 +219,7 @@ def get_odds(bets, api_key, pair_mathes, sport_id, proxi_list, proxy, timeout):
         proxies=proxies,
     )
     data = resp.json()
+    # print(data)
     # {'detail': 'API key is not valid', 'status': 403, 'title': 'BAD_APIKEY', 'type': 'about:blank'}
     if type(data) == dict and data.get('status'):
         utils.prnts('data' + str(data))
@@ -237,6 +239,7 @@ def get_odds(bets, api_key, pair_mathes, sport_id, proxi_list, proxy, timeout):
                     res.update(straight_normalize({
                         'time_req': round(time.time()),
                         'match_id': match_id,
+                        # 'name': arr_matchs.get(match_id, {}).get('name', ''),
                         'type': bet.get('type'),
                         'status': bet.get('status'),
                         'side': bet.get('side'),
@@ -254,7 +257,13 @@ def get_odds(bets, api_key, pair_mathes, sport_id, proxi_list, proxy, timeout):
                 print('sport_id:{}, get version is old: {}, max:{}'.format(sport_id, version, MAX_VERSION.get(str(sport_id), 0)))
         if not bets.get(str(match_id)):
             bets[str(match_id)] = {}
-        bets[str(match_id)]['time_req'] = round(time.time())
+        # bets[str(match_id)]['time_req'] = round(time.time())
         if res:
             bets[str(match_id)]['kofs'] = res
+            if arr_matchs.get(match_id, {}):
+                bets[str(match_id)].update(arr_matchs.get(match_id, {}))
+            bets[str(match_id)]['kofs'] = res
+            # print(bets)
+            # time.sleep(5)
+            # print('----')
     return resp.elapsed.total_seconds()
