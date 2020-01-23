@@ -15,7 +15,9 @@ list_matches_head = {
     'sec-fetch-mode': 'cors',
     'sec-fetch-site': 'same-site',
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36',
-    'x-api-key': 'app_key'
+    'x-api-key': 'app_key',
+    'x-device-uuid': 'x_device_uuid',
+    'x-session': 'x_session',
 }
 list_matches_url = 'https://guest.api.arcadia.pinnacle.com/0.1/sports/{}/matchups/live'
 
@@ -30,9 +32,13 @@ head_odds = {
     'sec-fetch-mode': 'cors',
     'sec-fetch-site': 'same-site',
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36',
-    'x-api-key': 'app_key'
+    'x-api-key': 'app_key',
+    'x-device-uuid': 'x_device_uuid',
+    'x-session': 'x_session',
 }
 url_odds = 'https://guest.api.arcadia.pinnacle.com/0.1/sports/{}/markets/live/straight?primaryOnly=false'
+x_device_uuid = 'f46d6637-4581a07c-36898a69-87694cf6'
+x_session = '8rnHMqfFTy5osJ59q9vytaWgGytFiW0v'
 
 
 # api_key = requests.get(
@@ -86,6 +92,8 @@ def get_matches(bk_name, proxy, timeout, api_key, proxy_list):
     if bk_name == 'pinnacle':
         head = list_matches_head
         head.update({'x-api-key': api_key})
+        head.update({'x-device-uuid': x_device_uuid})
+        head.update({'x-session': x_session})
         url = list_matches_url
     proxies = {'https': proxy}
     data = {}
@@ -207,6 +215,8 @@ def get_odds(bets, api_key, pair_mathes, sport_id, proxi_list, proxy, timeout, a
 
     head = head_odds
     head.update({'x-api-key': api_key})
+    head.update({'x-device-uuid': x_device_uuid})
+    head.update({'x-session': x_session})
     url = url_odds
     proxies = {'https': proxy}
     data = {}

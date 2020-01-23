@@ -25,7 +25,7 @@ import traceback
 
 TIMEOUT_MATCHS = 10
 TIMEOUT_MATCH = 10
-TIMEOUT_MATCH_MINUS = 9
+TIMEOUT_MATCH_MINUS = 0
 
 if not DEBUG:
     SERVER_IP = get_param('server_ip')
@@ -124,6 +124,7 @@ def set_matches_pinnacle(bk_name, resp, arr_matchs, match_id_work):
 
 
 def get_api(bk_name, proxy):
+    api_key = ''
     if bk_name == 'pinnacle':
         head = {
             'accept': 'application/json',
@@ -136,10 +137,34 @@ def get_api(bk_name, proxy):
         }
         res = requests.get(url='https://www.pinnacle.com/config/app.json', proxies={'https': proxy}, timeout=10, verify=False)
         try:
+            api_key = res.json()['api']['haywire']['apiKey']
+        except Exception as e:
+            # print(res.status_code, res.text)
+            raise ValueError(bk_name + ', возникла ошибка при запросе ключа, код ответа ' + str(res.status_code) + ': ' + str(e))
+
+        head.update({'x-api-key': api_key})
+        head.update({'x-device-uuid': util_pinnacle.x_device_uuid})
+        res = requests.post(
+            url='https://guest.api.arcadia.pinnacle.com/0.1/sessions',
+            # url='http://192.168.1.143:8888',
+            proxies={'https': proxy},
+            timeout=10,
+            verify=False,
+            headers=head,
+            json={
+                "username": "ES1096942",
+                "password": "11112007_A"
+            }
+        )
+        print(res.text)
+        try:
+            print(res)
             return res.json()['api']['haywire']['apiKey']
         except Exception as e:
             # print(res.status_code, res.text)
             raise ValueError(bk_name + ', возникла ошибка при запросе ключа, код ответа ' + str(res.status_code) + ': ' + str(e))
+
+        return api_key
 
 
 def start_seeker_matchs(bk_name, proxies_container, arr_matchs):
@@ -403,7 +428,7 @@ def starter_bets(
         proxies_olimp, gen_proxi_olimp,
         proxies_fonbet, gen_proxi_fonbet,
         proxies_container,
-        stat_reqs, arr_fonbet_top_kofs, 
+        stat_reqs, arr_fonbet_top_kofs,
         arr_matchs
 ):
     global api_key
@@ -987,7 +1012,7 @@ if __name__ == '__main__':
 
             stat_reqs,
             arr_fonbet_top_kofs,
-            
+
             arr_matchs
         )
     )
