@@ -214,15 +214,18 @@ def get_odds(bets, api_key, x_session, x_device_uuid, pair_mathes, sport_id, pro
 
     head = head_odds
     if api_key:
-        head.update({'x-api-key': api_key})
+        pass
+        # head.update({'x-api-key': api_key})
     if x_device_uuid:        
-        head.update({'x-device-uuid': x_device_uuid})
+        pass
+        # head.update({'x-device-uuid': x_device_uuid})
     if x_session:
-        head.update({'x-session': x_session})
+        pass
+        # head.update({'x-session': x_session})
     url = url_odds
     proxies = {'https': proxy}
     data = {}
-    # print('get_odds head: ' + str(head))
+    print('get_odds head: ' + str(head))
     resp = requests.get(
         url.format(sport_id),
         headers=head,
@@ -231,7 +234,7 @@ def get_odds(bets, api_key, x_session, x_device_uuid, pair_mathes, sport_id, pro
         proxies=proxies,
     )
     data = resp.json()
-    # print(data)
+    print('data:' + str(resp.text)[0:300])
     # {'detail': 'API key is not valid', 'status': 403, 'title': 'BAD_APIKEY', 'type': 'about:blank'}
     if type(data) == dict and data.get('status'):
         utils.prnts('data' + str(data))
@@ -239,7 +242,7 @@ def get_odds(bets, api_key, x_session, x_device_uuid, pair_mathes, sport_id, pro
             utils.prnts('api_key: ' + str(api_key))
 
     for match_id in match_id_list:
-        check_vertion = False
+        check_vertion = True
         res = {}
         version = None
         # print('match_id: ' + str(match_id))
