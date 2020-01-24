@@ -41,6 +41,8 @@ prnts('SERVER_IP: ' + str(SERVER_IP))
 prnts('SERVER_PORT: ' + str(SERVER_PORT))
 prnts('SPORT_LIST: ' + print_j(sport_list, 'return var'))
 
+pinn_session_data = {}
+
 
 def get_olimp(resp, arr_matchs):
     # # Это не работает.
@@ -123,60 +125,70 @@ def set_matches_pinnacle(bk_name, resp, arr_matchs, match_id_work):
         arr_matchs[str(match_id)] = match_data
 
 
-def get_api(bk_name, proxy):
-    api_key = ''
-    if bk_name == 'pinnacle':
-        head = {
-            'accept': 'application/json',
-            'content-type': 'application/json',
-            'origin': 'https://www.pinnacle.com',
-            'referer': 'https://www.pinnacle.com',
-            'sec-fetch-mode': 'cors',
-            'sec-fetch-site': 'same-site',
-            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36',
-        }
-        res = requests.get(url='https://www.pinnacle.com/config/app.json', proxies={'https': proxy}, timeout=10, verify=False)
-        try:
-            api_key = res.json()['api']['haywire']['apiKey']
-        except Exception as e:
-            # print(res.status_code, res.text)
-            raise ValueError(bk_name + ', возникла ошибка при запросе ключа, код ответа ' + str(res.status_code) + ': ' + str(e))
-
-        head.update({'x-api-key': api_key})
-        head.update({'x-device-uuid': util_pinnacle.x_device_uuid})
-        res = requests.post(
-            url='https://guest.api.arcadia.pinnacle.com/0.1/sessions',
-            # url='http://192.168.1.143:8888',
-            proxies={'https': proxy},
-            timeout=10,
-            verify=False,
-            headers=head,
-            json={
-                "username": "ES1096942",
-                "password": "11112007_A"
+def set_api(bk_name, proxy):
+    global pinn_session_data
+    try:
+        if bk_name == 'pinnacle':
+            head = {
+                'accept': 'application/json',
+                'content-type': 'application/json',
+                'origin': 'https://www.pinnacle.com',
+                'referer': 'https://www.pinnacle.com',
+                'sec-fetch-mode': 'cors',
+                'sec-fetch-site': 'same-site',
+                'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36',
             }
-        )
-        print(res.text)
-        try:
-            print(res)
-            return res.json()['api']['haywire']['apiKey']
-        except Exception as e:
-            # print(res.status_code, res.text)
-            raise ValueError(bk_name + ', возникла ошибка при запросе ключа, код ответа ' + str(res.status_code) + ': ' + str(e))
-
-        return api_key
+            res = requests.get(url='https://www.pinnacle.com/config/app.json', proxies={'https': proxy}, timeout=10, verify=False)
+            try:
+                api_key = res.json()['api']['haywire']['apiKey']
+            except Exception as e:
+                # print(res.status_code, res.text)
+                raise ValueError(bk_name + ', возникла ошибка при запросе ключа, код ответа ' + str(res.status_code) + ': ' + str(e))
+    
+            head.update({'x-api-key': api_key})
+            head.update({'x-device-uuid': util_pinnacle.x_device_uuid_temp})
+            res = requests.post(
+                url='https://guest.api.arcadia.pinnacle.com/0.1/sessions',
+                # url='http://192.168.1.143:8888',
+                proxies={'https': proxy},
+                timeout=10,
+                verify=False,
+                headers=head,
+                json={
+                    "username": "ES1096942",
+                    "password": "11112007_A"
+                }
+            )
+            resp = res.json()
+            print(resp)
+            x_device_uuid = resp.get('token')
+            x_session = resp.get('transactionId')
+    except Exception as e:
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        raise ValueError(bk_name + ', возникла ошибка при запросе ключа, код ответа ' + str(res.status_code) + ': ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
+    if api_key:
+        pinn_session_data.update({'api_key': api_key})
+    if x_device_uuid:
+        pinn_session_data.update({'x_device_uuid': x_device_uuid})
+    if x_session:
+        pinn_session_data.update({'x_session': x_session})
 
 
 def start_seeker_matchs(bk_name, proxies_container, arr_matchs):
-    global TIMEOUT_MATCHS, api_key
+    global TIMEOUT_MATCHS, pinn_session_data
     proxy = proxies_container[bk_name]['gen_proxi'].next()
     fail_proxy = 0
 
     if 'pinnacle' == bk_name:
         while True:
             try:
-                api_key = get_api(bk_name, proxy)
+                set_api(bk_name, proxy)
+                api_key = pinn_session_data.get('api_key')
+                x_session = pinn_session_data.get('x_session')
+                x_device_uuid = pinn_session_data.get('x_device_uuid')
                 prnts('get api_key from ' + bk_name + ': ' + str(api_key))
+                prnts('get x_session(token) from ' + bk_name + ': ' + str(x_session))
+                prnts('get x_device_uuid from ' + bk_name + ': ' + str(x_device_uuid))
                 break
             except Exception as e:
                 prnts(bk_name + ', код ошибки Exception: ' + str(e))
@@ -192,7 +204,7 @@ def start_seeker_matchs(bk_name, proxies_container, arr_matchs):
                 resp, time_resp = get_matches_fonbet(proxy, TIMEOUT_MATCHS, proxies_container[bk_name]['proxy_list'])
                 get_fonbet(resp, arr_matchs)
             elif bk_name == 'pinnacle':
-                resp, time_resp = util_pinnacle.get_matches(bk_name, proxy, TIMEOUT_MATCHS, api_key, proxies_container[bk_name]['proxy_list'])
+                resp, time_resp = util_pinnacle.get_matches(bk_name, proxy, TIMEOUT_MATCHS, api_key, x_session, x_device_uuid, proxies_container[bk_name]['proxy_list'])
                 set_matches_pinnacle(bk_name, resp, arr_matchs, match_id_work)
 
             # TODO ?
@@ -386,8 +398,11 @@ def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_p
         time.sleep(time_sleep)
 
 
-def start_seeker_bets(bk_name, def_bk, bets, api_key, sport_id, proxies_container, pair_mathes, stat_reqs, arr_matchs):
-    global TIMEOUT_MATCH, TIMEOUT_MATCH_MINUS
+def start_seeker_bets(bk_name, def_bk, bets, sport_id, proxies_container, pair_mathes, stat_reqs, arr_matchs):
+    global TIMEOUT_MATCH, TIMEOUT_MATCH_MINUS, pinn_session_data
+    api_key = pinn_session_data.get('api_key')
+    x_session = pinn_session_data.get('x_session')
+    x_device_uuid = pinn_session_data.get('x_device_uuid')
     proxy_size = 5
     proxy = []
     i = 0
@@ -399,7 +414,7 @@ def start_seeker_bets(bk_name, def_bk, bets, api_key, sport_id, proxies_containe
     prnts(bk_name + ', start sport_id: ' + str(sport_id))
     while True:
         try:
-            time_resp = def_bk(bets, api_key, pair_mathes, sport_id, proxies_container[bk_name]['gen_proxi'], ps.get_next_proxy(), TIMEOUT_MATCH, arr_matchs)
+            time_resp = def_bk(bets, api_key, x_session, x_device_uuid, pair_mathes, sport_id, proxies_container[bk_name]['gen_proxi'], ps.get_next_proxy(), TIMEOUT_MATCH, arr_matchs)
             if stat_reqs.get(bk_name) is None:
                 stat_reqs[bk_name] = []
             else:
@@ -431,37 +446,39 @@ def starter_bets(
         stat_reqs, arr_fonbet_top_kofs,
         arr_matchs
 ):
-    global api_key
+    global pinn_session_data
     while True:
         matchs_id = None
         for pair_match in pair_mathes:
             match_id_bk1, match_id_bk2, event_type, event_name, kof_compare, bk_name1, bk_name2 = pair_match
             # if DEBUG:
-            #     print('{}, {}, {}, {}, {}, {}, {}'.format(match_id_bk1, match_id_bk2, event_type, event_name, kof_compare, bk_name1, bk_name2))
+                # print('{}, {}, {}, {}, {}, {}, {}'.format(match_id_bk1, match_id_bk2, event_type, event_name, kof_compare, bk_name1, bk_name2))
 
             if bk_name1 == 'olimp':
                 matchs_id = match_id_bk1
             elif bk_name2 == 'olimp':
                 matchs_id = match_id_bk2
-            if matchs_id:
-                if matchs_id not in mathes_id_is_work:
-                    mathes_id_is_work.append(matchs_id)
-                    start_seeker_olimp_bets_by_id = threading.Thread(
-                        target=start_seeker_bets_olimp,
-                        args=(bets_olimp, matchs_id, proxies_olimp, gen_proxi_olimp, pair_mathes, mathes_complite, stat_reqs))
-                    start_seeker_olimp_bets_by_id.start()
+            if 'olimp' in bk_name1+bk_name2:
+                if matchs_id:
+                    if matchs_id not in mathes_id_is_work:
+                        mathes_id_is_work.append(matchs_id)
+                        start_seeker_olimp_bets_by_id = threading.Thread(
+                            target=start_seeker_bets_olimp,
+                            args=(bets_olimp, matchs_id, proxies_olimp, gen_proxi_olimp, pair_mathes, mathes_complite, stat_reqs))
+                        start_seeker_olimp_bets_by_id.start()
 
             if bk_name1 == 'fonbet':
                 matchs_id = match_id_bk1
             elif bk_name2 == 'fonbet':
                 matchs_id = match_id_bk2
-            if matchs_id not in mathes_id_is_work:
-                mathes_id_is_work.append(matchs_id)
-
-                start_seeker_fonbet_bets_by_id = threading.Thread(
-                    target=start_seeker_bets_fonbet,
-                    args=(bets_fonbet, matchs_id, proxies_fonbet, gen_proxi_fonbet, pair_mathes, mathes_complite, stat_reqs, arr_fonbet_top_kofs))
-                start_seeker_fonbet_bets_by_id.start()
+            if 'fonbet' in bk_name1+bk_name2:
+                if matchs_id not in mathes_id_is_work:
+                    mathes_id_is_work.append(matchs_id)
+    
+                    start_seeker_fonbet_bets_by_id = threading.Thread(
+                        target=start_seeker_bets_fonbet,
+                        args=(bets_fonbet, matchs_id, proxies_fonbet, gen_proxi_fonbet, pair_mathes, mathes_complite, stat_reqs, arr_fonbet_top_kofs))
+                    start_seeker_fonbet_bets_by_id.start()
 
             v_bk_name = 'pinnacle'
             # TODO onle exists successfull compare matches
@@ -471,7 +488,7 @@ def starter_bets(
                     mathes_id_is_work.append(sport_id)
                     start_seeker_fonbet_bets_by_id = threading.Thread(
                         target=start_seeker_bets,
-                        args=('pinnacle', util_pinnacle.get_odds, bets, api_key, sport_id, proxies_container, pair_mathes, stat_reqs, arr_matchs)
+                        args=('pinnacle', util_pinnacle.get_odds, bets, sport_id, proxies_container, pair_mathes, stat_reqs, arr_matchs)
                     )
                     start_seeker_fonbet_bets_by_id.start()
         time.sleep(20)
@@ -529,7 +546,6 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
             for bk_name1, bk_name2 in pair_bk:
                 json_bk1_copy = dict()
                 json_bk2_copy = dict()
-                prnts('Events found: ' + str(len(pair_mathes)) + ' ' + str(pair_mathes))
                 bk_rate_list = list()
                 bk_rate_sorted = list()
                 for key, val in arr_matchs.items():
@@ -640,7 +656,7 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                             if not conflict and not is_exists:
                                 pair_mathes.append(pair)
                                 serv_log('compare_teams', 'add;' + pair[3])
-
+            prnts('Events found: ' + str(len(pair_mathes)) + ' ' + str(pair_mathes))
         except Exception as e:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             prnts('Error start_event_mapping: ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
@@ -907,7 +923,6 @@ if __name__ == '__main__':
     prnts('DEBUG: ' + str(DEBUG))
     prnts('BK working: ' + str(bk_working))
     # STEP 1 - Proxy Saver
-    api_key = ''
     proxy_filename_olimp = 'olimp.proxy'
     proxy_filename_fonbet = 'fonbet.proxy'
     proxy_filename_pinnacle = 'pinnacle.proxy'

@@ -15,9 +15,6 @@ list_matches_head = {
     'sec-fetch-mode': 'cors',
     'sec-fetch-site': 'same-site',
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36',
-    'x-api-key': 'app_key',
-    'x-device-uuid': 'x_device_uuid',
-    'x-session': 'x_session',
 }
 list_matches_url = 'https://guest.api.arcadia.pinnacle.com/0.1/sports/{}/matchups/live'
 
@@ -32,13 +29,10 @@ head_odds = {
     'sec-fetch-mode': 'cors',
     'sec-fetch-site': 'same-site',
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36',
-    'x-api-key': 'app_key',
-    'x-device-uuid': 'x_device_uuid',
-    'x-session': 'x_session',
 }
 url_odds = 'https://guest.api.arcadia.pinnacle.com/0.1/sports/{}/markets/live/straight?primaryOnly=false'
-x_device_uuid = 'f46d6637-4581a07c-36898a69-87694cf6'
-x_session = '8rnHMqfFTy5osJ59q9vytaWgGytFiW0v'
+x_device_uuid_temp = 'f46d6637-4581a07c-36898a69-87694cf6'
+# x_session = '8rnHMqfFTy5osJ59q9vytaWgGytFiW0v'
 
 
 # api_key = requests.get(
@@ -88,11 +82,14 @@ def straight_normalize(data):
         return {'error': str(e)}
 
 
-def get_matches(bk_name, proxy, timeout, api_key, proxy_list):
+def get_matches(bk_name, proxy, timeout, api_key, x_session, x_device_uuid, proxy_list):
     if bk_name == 'pinnacle':
         head = list_matches_head
+    if api_key:
         head.update({'x-api-key': api_key})
+    if x_device_uuid:        
         head.update({'x-device-uuid': x_device_uuid})
+    if x_session:
         head.update({'x-session': x_session})
         url = list_matches_url
     proxies = {'https': proxy}
@@ -109,6 +106,7 @@ def get_matches(bk_name, proxy, timeout, api_key, proxy_list):
                     verify=False,
                     proxies=proxies,
                 )
+                # print('get_matches head: ' + str(head))
                 try:
                     res = resp.json()
                     # {'detail': 'The requested URL was not found on the server.  If you entered the URL manually please check your spelling and try again.', 'status': 404, 'title': 'Not Found', 'type': 'about:blank'}
@@ -130,6 +128,7 @@ def get_matches(bk_name, proxy, timeout, api_key, proxy_list):
                                                   # закомментить для добавления сетов и геймов
                                           ) or (x.get('league', {}).get('sport', {}).get('name', '') == 'Hockey'),
                                 res):
+                            # print(l)
                             data[l.get('id')] = {
                                 'time_req': int(datetime.datetime.now().timestamp()),
                                 'bk_name': bk_name,
@@ -139,7 +138,7 @@ def get_matches(bk_name, proxy, timeout, api_key, proxy_list):
                                 'team1': l.get('participants', [{}])[0].get('name'),
                                 'team_alignment2': l.get('participants', [{}, {}])[1].get('alignment'),
                                 'team2': l.get('participants', [{}, {}])[1].get('name'),
-                                'name': l.get('participants', [{}, {}])[0].get('name') + '-' + l.get('participants', [{}, {}])[0].get('name'),
+                                'name': l.get('participants', [{}, {}])[0].get('name') + '-' + l.get('participants', [{}, {}])[1].get('name'),
                                 'score': str(l.get('participants', [{}, {}])[0].get('score')) + ':' + str(l.get('participants', [{}, {}])[0].get('score')),
                                 'state': l.get('state', {}).get('state'),
                                 'minute': float(l.get('state', {}).get('minutes', 0)),
@@ -198,7 +197,7 @@ def get_matches(bk_name, proxy, timeout, api_key, proxy_list):
 MAX_VERSION = {}
 
 
-def get_odds(bets, api_key, pair_mathes, sport_id, proxi_list, proxy, timeout, arr_matchs):
+def get_odds(bets, api_key, x_session, x_device_uuid, pair_mathes, sport_id, proxi_list, proxy, timeout, arr_matchs):
     global MAX_VERSION
     match_id_list = []
     bk_mame = 'pinnacle'
@@ -214,13 +213,16 @@ def get_odds(bets, api_key, pair_mathes, sport_id, proxi_list, proxy, timeout, a
     # print('match_id_list: ' + str(match_id_list))
 
     head = head_odds
-    head.update({'x-api-key': api_key})
-    head.update({'x-device-uuid': x_device_uuid})
-    head.update({'x-session': x_session})
+    if api_key:
+        head.update({'x-api-key': api_key})
+    if x_device_uuid:        
+        head.update({'x-device-uuid': x_device_uuid})
+    if x_session:
+        head.update({'x-session': x_session})
     url = url_odds
     proxies = {'https': proxy}
     data = {}
-
+    # print('get_odds head: ' + str(head))
     resp = requests.get(
         url.format(sport_id),
         headers=head,
