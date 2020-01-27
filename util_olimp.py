@@ -4,12 +4,11 @@ import requests
 from proxy_worker import del_proxy
 import re
 import time
-from utils import prnts, get_vector, get_param, if_exists, sport_list, print_j
+from utils import prnts, get_vector, get_param, if_exists, sport_list, print_j, DEBUG, TIMEOUT_PRE_MATCH
 from exceptions import *
 import sys
 import traceback
 import math
-import run
 
 url_autorize = "https://{}.olimp-proxy.ru/api/{}"
 payload = {"lang_id": "0", "platforma": "ANDROID1"}
@@ -196,7 +195,7 @@ def to_abb(sbet):
     try:
         abr = abbreviations[key].format(value)
     except Exception as e:
-        if run.DEBUG:
+        if DEBUG:
             prnts('error: ' + str(e) + ', to_abb("' + sbet + '"), value=' + value + ', key=' + key, 'hide')
     return abr
 
@@ -368,7 +367,7 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
                 except Exception as e:
                     prnts('err util_olimp sc2: ' + str(e))
             except:
-                if run.DEBUG:
+                if DEBUG:
                     prnts('err util_olimp error split: ' + str(resp.get('sc', '0:0')))
 
             try:
@@ -488,10 +487,10 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
             #     prnts(resp)
         else:
             if bets_olimp.get(key_id):
-                if run.DEBUG:
+                if DEBUG:
                     prnts('Олимп матч {}, {} заблокирован:{}'.format(place, key_id, math_block), 'hide')
             else:
-                if run.DEBUG:
+                if DEBUG:
                     prnts('Олимп матч {}, {} заблокирован и это первое добаление:{}'.format(place, key_id, math_block), 'hide')
             if bets_olimp.get(key_id):
                 bets_olimp[key_id].update({
@@ -563,12 +562,12 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
                     for j in list(bets_olimp[i].get('kofs', {})):
                         hide_time = 4
                         if bets_olimp[i].get('place') == 'pre':
-                            hide_time = run.TIMEOUT_PRE_MATCH + hide_time
+                            hide_time = TIMEOUT_PRE_MATCH + hide_time
                         if round(float(time.time() - float(bets_olimp[i]['kofs'][j].get('time_req', 0)))) > hide_time and bets_olimp[i]['kofs'][j].get('value', 0) > 0:
                             try:
                                 bets_olimp[i]['kofs'][j]['value'] = 0
                                 bets_olimp[i]['kofs'][j]['factor'] = 0
-                                if run.DEBUG:
+                                if DEBUG:
                                     prnts('2: ' + i + ' ' + j + ' - выставил в 0')
                                     prnts('Олимп, матч:' + key_id + ' данные по котировке из БК не получены более ' + str(hide_time) + ' сек., знач. выставил в 0: ' + str(j) + ' ' + str(i) + ' запрос №: ' + n)
                             except Exception as e:

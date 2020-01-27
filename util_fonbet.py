@@ -3,12 +3,11 @@ import requests
 from proxy_worker import del_proxy
 import time
 from exceptions import FonbetMatchСompleted
-from utils import prnts, get_vector, print_j, if_exists, sport_list
+from utils import prnts, get_vector, print_j, if_exists, sport_list, DEBUG, TIMEOUT_PRE_MATCH
 import re
 import sys
 import traceback
 import copy
-import run
 
 url_fonbet = 'https://line-01.ccf4ab51771cacd46d.com'
 url_fonbet_matchs = url_fonbet + '/live/currentLine/en/?2lzf1earo8wjksbh22s'
@@ -424,11 +423,11 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
                     for j in list(bets_fonbet[i].get('kofs', {})):
                         hide_time = 4
                         if bets_fonbet[i].get('place') == 'pre':
-                            hide_time = run.TIMEOUT_PRE_MATCH + hide_time
+                            hide_time = TIMEOUT_PRE_MATCH + hide_time
                         if round(float(time.time() - float(bets_fonbet[i]['kofs'][j].get('time_req', 0)))) > hide_time and bets_fonbet[i]['kofs'][j].get('value', 0) > 0:
                             try:
                                 bets_fonbet[i]['kofs'][j]['value'] = 0
-                                if run.DEBUG:
+                                if DEBUG:
                                     prnts('Фонбет, данные по котировке из БК не получены более ' + str(hide_time) + ' сек., знач. выставил в 0: ' + str(j) + ' ' + str(i))
                             except Exception as e:
                                 exc_type, exc_value, exc_traceback = sys.exc_info()

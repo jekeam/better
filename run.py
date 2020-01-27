@@ -10,6 +10,7 @@ import re
 from exceptions import *
 from server import run_server
 from utils import prnts, DEBUG, find_max_mode, opposition, add_if_draw, add_if_not_draw, serv_log, get_param, sport_list, if_exists, print_j, max_min_prematch, if_exists_by_sport
+from utils import TIMEOUT_LIST, TIMEOUT_MATCH, TIMEOUT_MATCH_MINUS, TIMEOUT_PRE_LIST, TIMEOUT_PRE_MATCH, TIMEOUT_PRE_MATCH_MINUS, SERVER_IP, SERVER_PORT
 from proxy_switcher import ProxySwitcher
 import json
 import os.path
@@ -21,36 +22,6 @@ import math
 
 import sys
 import traceback
-
-TIMEOUT_LIST = 10
-TIMEOUT_MATCH = 10
-TIMEOUT_MATCH_MINUS = 9
-
-TIMEOUT_PRE_LIST = 60 * 15
-TIMEOUT_PRE_MATCH = 15
-TIMEOUT_PRE_MATCH_MINUS = 0
-
-time_sleep_proc = 30
-if not DEBUG:
-    SERVER_IP = get_param('server_ip')
-    time_sleep_proc = 3
-else:
-    SERVER_IP = get_param('server_ip_test')
-
-SERVER_PORT = get_param('server_port')
-
-# if __name__ =='main':
-prnts('TIMEOUT_MATCHS: ' + str(TIMEOUT_LIST), 'hide')
-prnts('TIMEOUT_MATCH: ' + str(TIMEOUT_MATCH), 'hide')
-prnts('TIMEOUT_MATCH_MINUS: ' + str(TIMEOUT_MATCH_MINUS), 'hide')
-prnts('TIMEOUT_PRE_MATCHS: ' + str(TIMEOUT_PRE_LIST), 'hide')
-prnts('TIMEOUT_PRE_MATCH: ' + str(TIMEOUT_PRE_MATCH), 'hide')
-prnts('TIMEOUT_PRE_MATCH_MINUS: ' + str(TIMEOUT_PRE_MATCH_MINUS), 'hide')
-prnts('SERVER_IP: ' + str(SERVER_IP), 'hide')
-prnts('SERVER_PORT: ' + str(SERVER_PORT), 'hide')
-prnts('SPORT_LIST: ' + print_j(sport_list, 'return var'), 'hide')
-prnts('max_hour_prematch: ' + str(max_min_prematch / 60), 'hide')
-
 
 def get_olimp(resp, arr_matchs, place='live', sport_id=None):
     # Очистим дстарые данные
@@ -981,6 +952,16 @@ def stat_req(stat_req_olimp, stat_req_fonbet):
 
 if __name__ == '__main__':
     prnts('DEBUG: ' + str(DEBUG))
+    prnts('SPORT_LIST: ' + str(sport_list))
+    prnts('TIMEOUT_MATCHS: ' + str(TIMEOUT_LIST))
+    prnts('TIMEOUT_MATCH: ' + str(TIMEOUT_MATCH))
+    prnts('TIMEOUT_MATCH_MINUS: ' + str(TIMEOUT_MATCH_MINUS))
+    prnts('TIMEOUT_PRE_MATCHS: ' + str(TIMEOUT_PRE_LIST))
+    prnts('TIMEOUT_PRE_MATCH: ' + str(TIMEOUT_PRE_MATCH))
+    prnts('TIMEOUT_PRE_MATCH_MINUS: ' + str(TIMEOUT_PRE_MATCH_MINUS))
+    prnts('SERVER_IP: ' + str(SERVER_IP))
+    prnts('SERVER_PORT: ' + str(SERVER_PORT))
+    prnts('max_hour_prematch: ' + str(max_min_prematch / 60))
     proxy_filename_olimp = 'olimp.proxy'
     proxy_filename_fonbet = 'fonbet.proxy'
 
