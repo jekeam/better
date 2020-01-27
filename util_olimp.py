@@ -344,8 +344,8 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
             sport_name = resp.get('cn')
             champid = sport_name  # NOT FOUND
             name = resp.get('n')
-            if name == 'Ювентус - Удинезе':
-                print('resp: ' + str(resp))
+            # if name == 'Ювентус - Удинезе':
+            #     print('resp: ' + str(resp))
             start_time = int(resp.get('t', 0))
             start_after_min = math.floor((start_time - int(time.time())) / 60)
             if place == 'pre':
@@ -355,6 +355,9 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
                         raise OlimpMatchСompleted(err_str)
             if not start_after_min:
                 start_after_min = 0
+            if start_after_min <= -120:
+                err_str = 'Олимп: матч, ' + skName + ' - ' + str(match_id) + ' завершен, т.к. прошло ' + str(abs(start_after_min)) + ' минут от начала матча.'
+                raise OlimpMatchСompleted(err_str)
             score = ''
             sc1 = 0
             sc2 = 0
