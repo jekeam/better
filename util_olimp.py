@@ -212,6 +212,7 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out, pair_mathes, place):
             sport_id = if_exists(sport_list, 'name', pair_match[2], 'olimp')
     if match_exists is False:
         err_str = 'Олимп: матч ' + str(match_id) + ' не найден в спике активных, поток get_match_olimp завершен.'
+        prnts(err_str)
         raise OlimpMatchСompleted(err_str)
 
     olimp_data_m = olimp_data.copy()
@@ -249,7 +250,8 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out, pair_mathes, place):
         )
         try:
             res = resp.json()
-            # print('res: ' + str(res))
+            # if str(55005822) == match_id:
+            #     print('res: ' + str(res))
         except Exception as e:
             err_str = 'Олимп ' + str(match_id) + ': ' + str(e)
             prnts(err_str)
@@ -316,17 +318,19 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
     try:
         resp, time_resp = get_match_olimp(match_id, proxies_olimp, proxy, time_out, pair_mathes, place)
         if resp is None:
-            raise ValueError('Олимп ' + key_id + '. Получен пустой ответ при запросе матча')
+            prnts('Олимп ' + key_id + '. Получен пустой ответ при запросе матча, ставим math_block=True')
+            math_block = True
         resp_temp = str(resp)
         time_start_proc = time.time()
-        if place == 'pre':
-            if resp:
-                math_block = resp.get('ms', False)
+        if not math_block:
+            if place == 'pre':
+                if resp:
+                    math_block = resp.get('ms', False)
+                else:
+                    math_block = False
             else:
-                math_block = False
-        else:
-            math_block = True if not resp or str(resp.get('ms', '1')) != '2' or resp.get('error', {'err_code': 0}).get('err_code') == 404 else False
-            # 1 - block, 2 - available
+                math_block = True if not resp or str(resp.get('ms', '1')) != '2' or resp.get('error', {'err_code': 0}).get('err_code') == 404 else False
+                # 1 - block, 2 - available
         if not math_block:
             timer = resp.get('t', '')
             minute = -1  # (2:0) Перерыв
