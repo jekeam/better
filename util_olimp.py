@@ -318,8 +318,9 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
     try:
         res, time_resp = get_match_olimp(match_id, proxies_olimp, proxy, time_out, pair_mathes, place)
         resp = res.json().get('data')
-        if resp is None:
-            prnts('Олимп ' + key_id + '. Получен пустой ответ при запросе матча, ставим math_block=True, time_resp: ' + str(time_resp) + ', res: ' + str(res.text) + ', status_code: ' + str(res.status_code))
+        if res.status_code == 404:
+            # res: {"error":{"err_code":404,"err_desc":"Прием ставок приостановлен"},"data":null}, status_code: 404
+            # prnts('Олимп ' + key_id + '. Получен пустой ответ при запросе матча, ставим math_block=True, time_resp: ' + str(time_resp) + ', res: ' + str(res.text) + ', status_code: ' + str(res.status_code))
             math_block = True
         math_block = False
         resp_temp = str(resp)
