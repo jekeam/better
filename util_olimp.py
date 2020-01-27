@@ -285,8 +285,10 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out, pair_mathes, place):
             prnts(e)
             raise OlimpMatchСompleted('Олимп, матч ' + str(match_id) + ' завершен, поток выключен!')
 
-        if resp.text:
+        if resp:
             text = resp.text
+        else:
+            text = 'resp is None'
         err_str = 'Олимп ' + str(match_id) + ', код ошибки ValueError: ' + str(e) + str(text)
         prnts(err_str)
         proxi_list = del_proxy(proxy, proxi_list)
