@@ -576,34 +576,36 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                                         bk2_match_info.get('team1', ''),
                                         bk2_match_info.get('team2', '')
                                     )
-                                    if rate > need and bk1_match_info.get('start_time') != bk2_match_info.get('start_time'):
-                                        prnts('Обнаружено различие во времени матча:{}, {},{}, {}'.format(
-                                            (bk1_match_info.get('start_time') - bk2_match_info.get('start_time')) / 60,
-                                            match_name,
-                                            bk1_match_info.get('start_time'),
-                                            bk2_match_info.get('start_time'),
-                                        )
-                                        )
-                                    if rate > 0:
-                                        bk_rate_list.append({
-                                            str(bk1_match_id): {
-                                                'bk1_t1': bk1_match_info.get('team1'),
-                                                'bk1_t2': bk1_match_info.get('team2'),
-                                                'rate': r1,
-                                                'sport_name': bk1_match_info.get('sport_name'),
+                                    deff_time = abs( (bk1_match_info.get('start_time') - bk2_match_info.get('start_time')) / 60 )
+                                    if rate > need and (
+                                        (bk1_match_info.get('sport_name') == 'football' and deff_time > 12)
+                                        or (bk1_match_info.get('sport_name') == 'hockey' and deff_time > 30)
+                                        or (bk1_match_info.get('sport_name') == 'tennis' and deff_time > 40)
+                                        or (bk1_match_info.get('sport_name') == 'volleyball' and deff_time > 30)
+                                        or (deff_time > 300)
+                                        ):
+                                            prnts('Обнаружено различие во времени матча: {}, {}'.format(deff_time, match_name))
+                                    else:
+                                        if rate > 0:
+                                            bk_rate_list.append({
+                                                str(bk1_match_id): {
+                                                    'bk1_t1': bk1_match_info.get('team1'),
+                                                    'bk1_t2': bk1_match_info.get('team2'),
+                                                    'rate': r1,
+                                                    'sport_name': bk1_match_info.get('sport_name'),
+                                                    'place': place,
+                                                },
+                                                str(bk2_match_id): {
+                                                    'bk2_t1': bk2_match_info.get('team1'),
+                                                    'bk2_t2': bk2_match_info.get('team2'),
+                                                    'rate': r2,
+                                                    'sport_name': bk2_match_info.get('sport_name'),
+                                                    'place': place,
+                                                },
+                                                'rate': rate,
+                                                'match_name': match_name,
                                                 'place': place,
-                                            },
-                                            str(bk2_match_id): {
-                                                'bk2_t1': bk2_match_info.get('team1'),
-                                                'bk2_t2': bk2_match_info.get('team2'),
-                                                'rate': r2,
-                                                'sport_name': bk2_match_info.get('sport_name'),
-                                                'place': place,
-                                            },
-                                            'rate': rate,
-                                            'match_name': match_name,
-                                            'place': place,
-                                        })
+                                            })
             for bkr in bk_rate_list:
                 if bkr.get('rate', 0) > need:
                     bk_rate_sorted.append(bkr)
