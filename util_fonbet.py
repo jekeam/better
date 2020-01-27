@@ -123,6 +123,7 @@ def get_match_fonbet(match_id, proxi_list, proxy, time_out, pair_mathes):
             match_exists = True
     if match_exists is False:
         err_str = 'Фонбет: матч ' + str(match_id) + ' не найден в спике активных, поток get_match_fonbet завершен.'
+        prnts(err_str)
         raise FonbetMatchСompleted(err_str)
 
     try:
