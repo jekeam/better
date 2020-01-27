@@ -312,8 +312,11 @@ def start_seeker_top_matchs_fonbet(gen_proxi_fonbet, arr_fonbet_top_matchs, pair
     try:
         df = pd.read_csv('top.csv', encoding='utf-8', sep=';')
         df = df[(df['is_top'] == 2)]
+        df_all = df[(df['is_top'] != 2)]
         lg = list(df['liga_id'])
+        lg_all = list(df_all['liga_id'])
         prnts('My top liga_id: ' + str(lg))
+        prnts('My oth liga_id: ' + str(lg_all))
     except Exception as e:
         prnts('err lg: ' + str(e))
         lg = []
@@ -333,20 +336,24 @@ def start_seeker_top_matchs_fonbet(gen_proxi_fonbet, arr_fonbet_top_matchs, pair
                 # print(str(resp)[0:10000])
                 for event in resp.get('events'):
                     match_id = event.get('id')
+                    liga_id = event.get('competitionId')
+                    liga_name = event.get('competitionName')
                     if str(event.get('skId')) != '1':
                         if match_id not in arr_fonbet_top_matchs and match_id in list_pair_mathes:
-                            prnts('TOP ' + place.split(':')[1] + ' Event added: ' + str(event.get('skId', '')) + '-' + str(event.get('skName', '')) + ': ' + str(match_id) + ', ' + event.get('eventName', '') + ', ' + str(event.get('competitionId')))
+                            prnts('TOP ' + place.split(':')[1] + ' Event added: ' + str(event.get('skId', '')) + '-' + str(event.get('skName', '')) + ': ' + str(match_id) + ', ' + event.get('eventName', '') + ', ' + str(liga_id))
                             arr_fonbet_top_matchs.append(match_id)
                         elif match_id in arr_fonbet_top_matchs and match_id not in list_pair_mathes:
-                            prnts('TOP ' + place.split(':')[1] + 'Event deleted: ' + str(event.get('skId', '')) + '-' + str(event.get('skName', '')) + ': ' + str(match_id) + ', ' + event.get('eventName', '') + ', ' + str(event.get('competitionId')))
+                            prnts('TOP ' + place.split(':')[1] + 'Event deleted: ' + str(event.get('skId', '')) + '-' + str(event.get('skName', '')) + ': ' + str(match_id) + ', ' + event.get('eventName', '') + ', ' + str(liga_id))
                             arr_fonbet_top_matchs.remove(match_id)
                     else:
-                        if event.get('competitionId') in lg and match_id not in arr_fonbet_top_matchs and match_id in list_pair_mathes:
-                            prnts('MY TOP ' + place.split(':')[1] + ' Event added: ' + str(event.get('skId', '')) + '-' + str(event.get('skName', '')) + ': ' + str(match_id) + ', ' + event.get('eventName', '') + ', ' + str(event.get('competitionId')))
+                        if liga_id in lg and match_id not in arr_fonbet_top_matchs and match_id in list_pair_mathes:
+                            prnts('MY TOP ' + place.split(':')[1] + ' Event added: ' + str(event.get('skId', '')) + '-' + str(event.get('skName', '')) + ': ' + str(match_id) + ', ' + event.get('eventName', '') + ', ' + str(liga_id))
                             arr_fonbet_top_matchs.append(match_id)
-                        elif event.get('competitionId') in lg and match_id in arr_fonbet_top_matchs and match_id not in list_pair_mathes:
-                            prnts('MY TOP ' + place.split(':')[1] + 'Event deleted: ' + str(event.get('skId', '')) + '-' + str(event.get('skName', '')) + ': ' + str(match_id) + ', ' + event.get('eventName', '') + ', ' + str(event.get('competitionId')))
+                        elif liga_id in lg and match_id in arr_fonbet_top_matchs and match_id not in list_pair_mathes:
+                            prnts('MY TOP ' + place.split(':')[1] + 'Event deleted: ' + str(event.get('skId', '')) + '-' + str(event.get('skName', '')) + ': ' + str(match_id) + ', ' + event.get('eventName', '') + ', ' + str(liga_id))
                             arr_fonbet_top_matchs.remove(match_id)
+                        if liga_id not in lg_all and liga_id not in lg:
+                            prnts('Liga_id not found; ' + str(liga_id) + ';' + str(liga_name))
 
                     for row in event.get('markets'):
                         for cell in row.get('rows'):
