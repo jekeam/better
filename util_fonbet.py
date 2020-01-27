@@ -8,6 +8,7 @@ import re
 import sys
 import traceback
 import copy
+import math
 
 url_fonbet = 'https://line-01.ccf4ab51771cacd46d.com'
 url_fonbet_matchs = url_fonbet + '/live/currentLine/en/?2lzf1earo8wjksbh22s'
@@ -240,8 +241,11 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
                 #     print(json.dumps(event, ensure_ascii=False))
                 priority = event.get('priority')
                 score_1st = event.get('scoreComment', '').replace('-', ':')
-                start_time = event.get('startTimeTimestamp')
-                start_after_min = event.get('time')
+                start_time = int(event.get('startTimeTimestamp', 0))
+                start_after_min = math.floor((start_time - int(time.time())) / 60)
+                # start_after_min = event.get('time')
+                # if DEBUG:
+                #     prnts('key_id: {}, start_after_min_cal: {}, start_after_min:{}'.format(key_id, start_after_min_cal, start_after_min))
                 if place == 'pre':
                     if start_after_min:
                         if start_after_min <= 5:
