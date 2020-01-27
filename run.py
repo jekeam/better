@@ -340,13 +340,13 @@ def start_seeker_top_matchs_fonbet(gen_proxi_fonbet, arr_fonbet_top_matchs, pair
                     elif match_id in arr_fonbet_top_matchs and match_id not in list_pair_mathes:
                         prnts('TOP ' + place.split(':')[1] + 'Event deleted: ' + str(event.get('skId', '')) + '-' + str(event.get('skName', '')) + ': ' + str(match_id) + ', ' + event.get('eventName', '') + ', ' + event.get('competitionId'))
                         arr_fonbet_top_matchs.remove(match_id)
-                    # else:
-                    #     if event.get('competitionId') in lg and match_id not in arr_fonbet_top_matchs and match_id in list_pair_mathes:
-                    #         prnts('MY TOP ' + place.split(':')[1] + ' Event added: ' + str(event.get('skId', '')) + '-' + str(event.get('skName', '')) + ': ' + str(match_id) + ', ' + event.get('eventName', ''))
-                    #         arr_fonbet_top_matchs.append(match_id)
-                    #     elif event.get('competitionId') in lg and match_id in arr_fonbet_top_matchs and match_id not in list_pair_mathes:
-                    #         prnts('MY TOP ' + place.split(':')[1] + 'Event deleted: ' + str(event.get('skId', '')) + '-' + str(event.get('skName', '')) + ': ' + str(match_id) + ', ' + event.get('eventName', ''))
-                    #         arr_fonbet_top_matchs.remove(match_id)
+                    else:
+                        if event.get('competitionId') in lg and match_id not in arr_fonbet_top_matchs and match_id in list_pair_mathes:
+                            prnts('MY TOP ' + place.split(':')[1] + ' Event added: ' + str(event.get('skId', '')) + '-' + str(event.get('skName', '')) + ': ' + str(match_id) + ', ' + event.get('eventName', ''))
+                            arr_fonbet_top_matchs.append(match_id)
+                        elif event.get('competitionId') in lg and match_id in arr_fonbet_top_matchs and match_id not in list_pair_mathes:
+                            prnts('MY TOP ' + place.split(':')[1] + 'Event deleted: ' + str(event.get('skId', '')) + '-' + str(event.get('skName', '')) + ': ' + str(match_id) + ', ' + event.get('eventName', ''))
+                            arr_fonbet_top_matchs.remove(match_id)
 
                     for row in event.get('markets'):
                         for cell in row.get('rows'):
