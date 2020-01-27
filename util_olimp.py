@@ -334,6 +334,10 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
             else:
                 math_block = True if not resp or str(resp.get('ms', '1')) != '2' or resp.get('error', {'err_code': 0}).get('err_code') == 404 else False
                 # 1 - block, 2 - available
+                if str(resp.get('ms', '')) == '4':
+                    err_str = 'Олимп: матч, ' + my_sport_name + ' - ' + str(match_id) + ' завершен, т.к. ms=4'
+                    raise OlimpMatchСompleted(err_str)
+                
         if not math_block:
             timer = resp.get('t', '')
             minute = -1  # (2:0) Перерыв
