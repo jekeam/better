@@ -139,7 +139,10 @@ def run_server(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_fonbet_top_matchs
                 with open('access.log', 'a+', encoding='utf-8') as f:
                     f.write('ip: ' + ip_adr + ', path: ' + self.path + '\n')
                 mutex.release()
-
-    handler = partial(HttpProcessor, forks, 0, 0)
-    serv = HTTPServer((SERVER_IP, SERVER_PORT), handler)
-    serv.serve_forever()
+    try:
+        handler = partial(HttpProcessor, forks, 0, 0)
+        serv = HTTPServer((SERVER_IP, SERVER_PORT), handler)
+        serv.serve_forever()
+    except Exception as e:
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        prnts('server error:' + str(traceback.format_exception(exc_type, exc_value, exc_traceback)))
