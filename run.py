@@ -537,7 +537,8 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
     # prnts(arr_matchs)
     while True:
         try:
-            prnts('Events found: ' + str(len(pair_mathes)) + ' ' + str(pair_mathes))
+            # prnts('Events found: ' + str(len(pair_mathes)) + ' ' + str(pair_mathes))
+            prnts('Events found: ' + str(len(pair_mathes)))
             bk_rate_list = list()
             bk_rate_sorted = list()
 
