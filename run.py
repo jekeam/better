@@ -19,6 +19,7 @@ from statistics import median
 from datetime import datetime
 import copy
 import math
+import pandas as pd
 
 import sys
 import traceback
@@ -307,6 +308,12 @@ def start_seeker_matchs_fonbet(gen_proxi_fonbet, arr_matchs, place):
 def start_seeker_top_matchs_fonbet(gen_proxi_fonbet, arr_fonbet_top_matchs, pair_mathes, arr_fonbet_top_kofs):
     global TIMEOUT_LIST
     proxy = gen_proxi_fonbet.next()
+    
+    df = pd.read_csv('top.csv', encoding='utf-8', sep=';')
+    df = df[(df['is_top'] == 2)]
+    lg = list(df['liga_id'])
+    prnts('My top liga_id: ' + str(lg))
+    
     while True:
         try:
             list_pair_mathes = []
@@ -319,14 +326,23 @@ def start_seeker_top_matchs_fonbet(gen_proxi_fonbet, arr_fonbet_top_matchs, pair
         try:
             for place in ('top:live', 'top:pre'):
                 resp, time_resp = get_matches_fonbet(proxy, TIMEOUT_LIST, place)
+                # print(str(resp)[0:10000])
                 for event in resp.get('events'):
                     match_id = event.get('id')
-                    if match_id not in arr_fonbet_top_matchs and match_id in list_pair_mathes:
-                        prnts('TOP ' + place.split(':')[1] + ' Event added: ' + str(event.get('skId', '')) + '-' + str(event.get('skName', '')) + ': ' + str(match_id) + ', ' + event.get('eventName', ''))
-                        arr_fonbet_top_matchs.append(match_id)
-                    elif match_id in arr_fonbet_top_matchs and match_id not in list_pair_mathes:
-                        prnts('TOP ' + place.split(':')[1] + 'Event deleted: ' + str(event.get('skId', '')) + '-' + str(event.get('skName', '')) + ': ' + str(match_id) + ', ' + event.get('eventName', ''))
-                        arr_fonbet_top_matchs.remove(match_id)
+                    if str(event.get('skId')) != '1':
+                        if match_id not in arr_fonbet_top_matchs and match_id in list_pair_mathes:
+                            prnts('TOP ' + place.split(':')[1] + ' Event added: ' + str(event.get('skId', '')) + '-' + str(event.get('skName', '')) + ': ' + str(match_id) + ', ' + event.get('eventName', ''))
+                            arr_fonbet_top_matchs.append(match_id)
+                        elif match_id in arr_fonbet_top_matchs and match_id not in list_pair_mathes:
+                            prnts('TOP ' + place.split(':')[1] + 'Event deleted: ' + str(event.get('skId', '')) + '-' + str(event.get('skName', '')) + ': ' + str(match_id) + ', ' + event.get('eventName', ''))
+                            arr_fonbet_top_matchs.remove(match_id)
+                    else:
+                        if event.get('competitionId') in lg and match_id not in arr_fonbet_top_matchs and match_id in list_pair_mathes:
+                            prnts('MY TOP ' + place.split(':')[1] + ' Event added: ' + str(event.get('skId', '')) + '-' + str(event.get('skName', '')) + ': ' + str(match_id) + ', ' + event.get('eventName', ''))
+                            arr_fonbet_top_matchs.append(match_id)
+                        elif event.get('competitionId') in lg and match_id in arr_fonbet_top_matchs and match_id not in list_pair_mathes:
+                            prnts('MY TOP ' + place.split(':')[1] + 'Event deleted: ' + str(event.get('skId', '')) + '-' + str(event.get('skName', '')) + ': ' + str(match_id) + ', ' + event.get('eventName', ''))
+                            arr_fonbet_top_matchs.remove(match_id)
 
                     for row in event.get('markets'):
                         for cell in row.get('rows'):
