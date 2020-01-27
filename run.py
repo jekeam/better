@@ -948,6 +948,13 @@ def stat_req(stat_req_olimp, stat_req_fonbet):
                   ' mode:' + str(round(find_max_mode(stat_req_olimp), 2)) +
                   ' median:' + str(round(median(stat_req_olimp), 2)))
         time.sleep(time_sleep_proc)
+        
+if not DEBUG:
+    SERVER_IP = get_param('server_ip')
+    time_sleep_proc = 3
+else:
+    SERVER_IP = get_param('server_ip_test')
+SERVER_PORT = get_param('server_port')        
 
 
 if __name__ == '__main__':

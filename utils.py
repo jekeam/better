@@ -240,19 +240,10 @@ else:
 TIMEOUT_LIST = 10
 TIMEOUT_MATCH = 10
 TIMEOUT_MATCH_MINUS = 9
-
 TIMEOUT_PRE_LIST = 60 * 15
 TIMEOUT_PRE_MATCH = 15
 TIMEOUT_PRE_MATCH_MINUS = 0
-
 time_sleep_proc = 30
-if not DEBUG:
-    SERVER_IP = get_param('server_ip')
-    time_sleep_proc = 3
-else:
-    SERVER_IP = get_param('server_ip_test')
-
-SERVER_PORT = get_param('server_port')    
 
 
 def get_vector(bet_type, sc1=None, sc2=None):
