@@ -238,7 +238,7 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out, pair_mathes, place):
         err_str = 'Olimp error set proxy by ' + str(match_id) + ': ' + str(e)
         prnts(err_str)
         raise ValueError(err_str)
-    resp = ''
+    resp = None
     try:
         resp = requests.post(
             url + '/api/stakes/',
@@ -257,6 +257,7 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out, pair_mathes, place):
                 text = ''
             exc_type, exc_value, exc_traceback = sys.exc_info()
             err_str = 'Олимп ' + str(match_id) + ': ' + str(str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))) + ', text: ' + str(text)
+            prnts(err_str)
             raise ValueError(err_str)
         # {"error": {"err_code": 404, "err_desc": "Прием ставок приостановлен"}, "data": null}
         # {"error": {"err_code": 511, "err_desc": "Sign access denied"}, "data": null}
@@ -285,9 +286,9 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out, pair_mathes, place):
         proxi_list = del_proxy(proxy, proxi_list)
         raise ValueError(err_str)
     except ValueError as e:
-        if str(e) == '404':
-            prnts(e)
-            raise OlimpMatchСompleted('Олимп, матч ' + str(match_id) + ' завершен, поток выключен!')
+        # if str(e) == '404':
+        #     prnts(e)
+        #     raise OlimpMatchСompleted('Олимп, матч ' + str(match_id) + ' завершен, поток выключен!')
 
         if resp:
             text = resp.text
@@ -298,9 +299,9 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out, pair_mathes, place):
         proxi_list = del_proxy(proxy, proxi_list)
         raise ValueError(err_str)
     except Exception as e:
-        if str(e) == '404':
-            prnts(e)
-            raise OlimpMatchСompleted('Олимп, матч ' + str(match_id) + ' завершен, поток выключен!')
+        # if str(e) == '404':
+        #     prnts(e)
+        #     raise OlimpMatchСompleted('Олимп, матч ' + str(match_id) + ' завершен, поток выключен!')
         err_str = 'Олимп ' + str(match_id) + ', код ошибки Exception: ' + str(e)
         prnts(err_str)
         proxi_list = del_proxy(proxy, proxi_list)
