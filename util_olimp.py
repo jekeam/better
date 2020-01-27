@@ -317,6 +317,7 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
     resp_temp = ''
     try:
         resp, time_resp = get_match_olimp(match_id, proxies_olimp, proxy, time_out, pair_mathes, place)
+        math_block = False
         if resp is None:
             prnts('Олимп ' + key_id + '. Получен пустой ответ при запросе матча, ставим math_block=True')
             math_block = True
