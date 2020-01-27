@@ -212,7 +212,6 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out, pair_mathes, place):
             sport_id = if_exists(sport_list, 'name', pair_match[2], 'olimp')
     if match_exists is False:
         err_str = 'Олимп: матч ' + str(match_id) + ' не найден в спике активных, поток get_match_olimp завершен.'
-        prnts(err_str)
         raise OlimpMatchСompleted(err_str)
 
     olimp_data_m = olimp_data.copy()
@@ -262,6 +261,8 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out, pair_mathes, place):
         # {"error": {"err_code": 511, "err_desc": "Sign access denied"}, "data": null}
         # {'err_code': 423, 'err_desc': 'Переменная: id запрещена в данном методе!'}
         if res.get("error").get('err_code', 999) in (0, 404, 511, 423):
+            err = 'Олимп ' + str(match_id) + ', err_code: ' + str(resp)
+            prnts(str(err))
             return res.get('data'), resp.elapsed.total_seconds()
         else:
             err = 'Олимп ' + str(match_id) + res.get("error")
@@ -321,7 +322,7 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
         resp, time_resp = get_match_olimp(match_id, proxies_olimp, proxy, time_out, pair_mathes, place)
         math_block = False
         if resp is None:
-            prnts('Олимп ' + key_id + '. Получен пустой ответ при запросе матча, ставим math_block=True')
+            prnts('Олимп ' + key_id + '. Получен пустой ответ при запросе матча, ставим math_block=True, time_resp: ' + str(time_resp))
             math_block = True
         resp_temp = str(resp)
         time_start_proc = time.time()
