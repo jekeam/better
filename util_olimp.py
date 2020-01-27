@@ -238,7 +238,7 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out, pair_mathes, place):
         err_str = 'Olimp error set proxy by ' + str(match_id) + ': ' + str(e)
         prnts(err_str)
         raise ValueError(err_str)
-
+    resp = ''
     try:
         resp = requests.post(
             url + '/api/stakes/',
@@ -252,7 +252,7 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out, pair_mathes, place):
             res = resp.json()
         except Exception as e:
             if resp:
-                text = str(resp.status_code) + ': '+ str(resp.text)
+                text = 'status_code: ' + str(resp.status_code) + ', text: '+ str(resp.text)
             else:
                 text = ''
             exc_type, exc_value, exc_traceback = sys.exc_info()
