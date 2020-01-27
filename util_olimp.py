@@ -251,7 +251,7 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out, pair_mathes, place):
             res = resp.json()
             # print('res: ' + str(res))
         except Exception as e:
-            err_str = 'Olimp error by ' + str(match_id) + ': ' + str(e)
+            err_str = 'Олимп ' + str(match_id) + ': ' + str(e)
             prnts(err_str)
             raise ValueError(err_str)
         # {"error": {"err_code": 404, "err_desc": "Прием ставок приостановлен"}, "data": null}
@@ -260,12 +260,12 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out, pair_mathes, place):
         if res.get("error").get('err_code', 999) in (0, 404, 511, 423):
             return res.get('data'), resp.elapsed.total_seconds()
         else:
-            err = res.get("error")
+            err = 'Олимп ' + str(match_id) + res.get("error")
             prnts(str(err))
             raise ValueError(str(err.get('err_code')))
 
     except requests.exceptions.Timeout as e:
-        err_str = 'Олимп, код ошибки Timeout: ' + str(e)
+        err_str = 'Олимп ' + str(match_id) + ', код ошибки Timeout: ' + str(e)
         prnts(err_str)
         proxi_list = del_proxy(proxy, proxi_list)
         raise TimeOut(err_str)
@@ -315,6 +315,8 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
     resp_temp = ''
     try:
         resp, time_resp = get_match_olimp(match_id, proxies_olimp, proxy, time_out, pair_mathes, place)
+        if resp is None:
+            raise ValueError('Олимп ' + key_id + '. Получен пустой ответ при запросе матча')
         resp_temp = str(resp)
         time_start_proc = time.time()
         if place == 'pre':
