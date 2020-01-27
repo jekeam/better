@@ -249,6 +249,8 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out, pair_mathes, place):
             proxies=proxies
         )
         try:
+            if resp is None:
+                prnts('Получен пустой ответ: ' + str(match_id) + ', status_code: ' + str(resp.status_code) + ', data: ' + str(resp.text))
             res = resp.json()
             # if str(55005822) == match_id:
             #     print('res: ' + str(res))
