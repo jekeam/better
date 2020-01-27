@@ -951,128 +951,132 @@ def stat_req(stat_req_olimp, stat_req_fonbet):
 
 
 if __name__ == '__main__':
-    prnts('DEBUG: ' + str(DEBUG))
-    prnts('SPORT_LIST: ' + str(sport_list))
-    prnts('TIMEOUT_MATCHS: ' + str(TIMEOUT_LIST))
-    prnts('TIMEOUT_MATCH: ' + str(TIMEOUT_MATCH))
-    prnts('TIMEOUT_MATCH_MINUS: ' + str(TIMEOUT_MATCH_MINUS))
-    prnts('TIMEOUT_PRE_MATCHS: ' + str(TIMEOUT_PRE_LIST))
-    prnts('TIMEOUT_PRE_MATCH: ' + str(TIMEOUT_PRE_MATCH))
-    prnts('TIMEOUT_PRE_MATCH_MINUS: ' + str(TIMEOUT_PRE_MATCH_MINUS))
-    prnts('SERVER_IP: ' + str(SERVER_IP))
-    prnts('SERVER_PORT: ' + str(SERVER_PORT))
-    prnts('time_sleep_proc: ' + str(time_sleep_proc))
-    prnts('max_hour_prematch: ' + str(max_min_prematch / 60))
-    proxy_filename_olimp = 'olimp.proxy'
-    proxy_filename_fonbet = 'fonbet.proxy'
-
-    proxies_olimp = get_proxy_from_file(proxy_filename_olimp, uniq=False)
-    proxies_fonbet = get_proxy_from_file(proxy_filename_fonbet)
-
-    gen_proxi_olimp = createBatchGenerator(get_next_proxy(copy.deepcopy(proxies_olimp)))
-    gen_proxi_fonbet = createBatchGenerator(get_next_proxy(copy.deepcopy(proxies_fonbet)))
-
-    proxy_saver = threading.Thread(target=start_proxy_saver, args=(proxies_olimp, proxies_fonbet, proxy_filename_olimp, proxy_filename_fonbet))
-    proxy_saver.start()
-    pritn(' ')
-    prnts('START: proxy_saver')
-
-    arr_matchs = dict()
-
-    arr_fonbet_top_matchs = []
-    arr_fonbet_top_kofs = {}
-    # Completed Events
-    mathes_complite = []
-
-    # json by bets event
-    bets_fonbet = dict()
-    bets_olimp = dict()
-
-    forks = dict()
-    forks_meta = dict()
-
-    stat_req_olimp = []
-    stat_req_fonbet = []
-
-    # List of event "at work"
-    pair_mathes = []
-
-    # get event list by olimp
-    olimp_seeker_matchs = threading.Thread(target=start_seeker_matchs_olimp, args=(gen_proxi_olimp, arr_matchs, 'live'))
-    olimp_seeker_matchs.start()
-    pritn(' ')
-    prnts('START: olimp_seeker_matchs')
-    time.sleep(time_sleep_proc)
-    # get pre event list by olimp
-    olimp_seeker_pre_matchs = threading.Thread(target=start_seeker_matchs_olimp, args=(gen_proxi_olimp, arr_matchs, 'pre'))
-    olimp_seeker_pre_matchs.start()
-    pritn(' ')
-    prnts('START: olimp_seeker_pre_matchs')
-    time.sleep(time_sleep_proc)
-    # time.sleep(60)
-
-    # get event list by fonbet
-    fonbet_seeker_matchs = threading.Thread(target=start_seeker_matchs_fonbet, args=(gen_proxi_fonbet, arr_matchs, 'live'))
-    fonbet_seeker_matchs.start()
-    pritn(' ')
-    prnts('START: fonbet_seeker_matchs')
-    time.sleep(time_sleep_proc)
-    # get pre event list by fonbet
-    fonbet_seeker_pre_matchs = threading.Thread(target=start_seeker_matchs_fonbet, args=(gen_proxi_fonbet, arr_matchs, 'pre'))
-    fonbet_seeker_pre_matchs.start()
-    pritn(' ')
-    prnts('START: fonbet_seeker_pre_matchs')
-    time.sleep(time_sleep_proc)
-    # while True:
-    #     for n in list(arr_matchs):
-    #         print_j(arr_matchs[n])
-    #     time.sleep(15)
-
-    # List of TOP events
-    fonbet_seeker_top_matchs = threading.Thread(target=start_seeker_top_matchs_fonbet, args=(gen_proxi_fonbet, arr_fonbet_top_matchs, pair_mathes, arr_fonbet_top_kofs))
-    fonbet_seeker_top_matchs.start()
-    pritn(' ')
-    prnts('START: fonbet_seeker_top_matchs')
-
-    # Event mapping
-    time.sleep(time_sleep_proc)
-    event_mapping = threading.Thread(target=start_event_mapping, args=(pair_mathes, arr_matchs, mathes_complite))
-    event_mapping.start()
-    pritn(' ')
-    prnts('START: event_mapping')
-
-    time.sleep(time_sleep_proc)
-    mathes_id_is_work = []
-    starter_bets = threading.Thread(
-        target=starter_bets,
-        args=(bets_olimp, bets_fonbet, pair_mathes, mathes_complite, mathes_id_is_work,
-              proxies_olimp, gen_proxi_olimp, proxies_fonbet, gen_proxi_fonbet, stat_req_olimp, stat_req_fonbet,
-              arr_fonbet_top_kofs))
-    starter_bets.start()
-    pritn(' ')
-    prnts('START: starter_bets')
-
-    starter_forks = threading.Thread(target=get_forks, args=(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbet_top_matchs))
-    starter_forks.start()
-    pritn(' ')
-    prnts('START: starter_forks')
-
-    started_stat_req = threading.Thread(target=stat_req, args=(stat_req_olimp, stat_req_fonbet))
-    started_stat_req.start()
-    pritn(' ')
-    prnts('START: started_stat_req')
-
-    server = threading.Thread(target=run_server, args=(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_fonbet_top_matchs, bets_olimp, bets_fonbet))
-    server.start()
-    pritn(' ')
-    prnts('START: server')
-
-    proxy_saver.join()
-    olimp_seeker_matchs.join()
-    olimp_seeker_pre_matchs.join()
-    fonbet_seeker_matchs.join()
-    fonbet_seeker_pre_matchs.join()
-    event_mapping.join()
-    starter_forks.join()
-    started_stat_req.join()
-    server.join()
+    try:
+        prnts('DEBUG: ' + str(DEBUG))
+        prnts('SPORT_LIST: ' + str(sport_list))
+        prnts('TIMEOUT_MATCHS: ' + str(TIMEOUT_LIST))
+        prnts('TIMEOUT_MATCH: ' + str(TIMEOUT_MATCH))
+        prnts('TIMEOUT_MATCH_MINUS: ' + str(TIMEOUT_MATCH_MINUS))
+        prnts('TIMEOUT_PRE_MATCHS: ' + str(TIMEOUT_PRE_LIST))
+        prnts('TIMEOUT_PRE_MATCH: ' + str(TIMEOUT_PRE_MATCH))
+        prnts('TIMEOUT_PRE_MATCH_MINUS: ' + str(TIMEOUT_PRE_MATCH_MINUS))
+        prnts('SERVER_IP: ' + str(SERVER_IP))
+        prnts('SERVER_PORT: ' + str(SERVER_PORT))
+        prnts('time_sleep_proc: ' + str(time_sleep_proc))
+        prnts('max_hour_prematch: ' + str(max_min_prematch / 60))
+        proxy_filename_olimp = 'olimp.proxy'
+        proxy_filename_fonbet = 'fonbet.proxy'
+    
+        proxies_olimp = get_proxy_from_file(proxy_filename_olimp, uniq=False)
+        proxies_fonbet = get_proxy_from_file(proxy_filename_fonbet)
+    
+        gen_proxi_olimp = createBatchGenerator(get_next_proxy(copy.deepcopy(proxies_olimp)))
+        gen_proxi_fonbet = createBatchGenerator(get_next_proxy(copy.deepcopy(proxies_fonbet)))
+    
+        proxy_saver = threading.Thread(target=start_proxy_saver, args=(proxies_olimp, proxies_fonbet, proxy_filename_olimp, proxy_filename_fonbet))
+        proxy_saver.start()
+        prnts(' ')
+        prnts('START: proxy_saver')
+    
+        arr_matchs = dict()
+    
+        arr_fonbet_top_matchs = []
+        arr_fonbet_top_kofs = {}
+        # Completed Events
+        mathes_complite = []
+    
+        # json by bets event
+        bets_fonbet = dict()
+        bets_olimp = dict()
+    
+        forks = dict()
+        forks_meta = dict()
+    
+        stat_req_olimp = []
+        stat_req_fonbet = []
+    
+        # List of event "at work"
+        pair_mathes = []
+    
+        # get event list by olimp
+        olimp_seeker_matchs = threading.Thread(target=start_seeker_matchs_olimp, args=(gen_proxi_olimp, arr_matchs, 'live'))
+        olimp_seeker_matchs.start()
+        prnts(' ')
+        prnts('START: olimp_seeker_matchs')
+        time.sleep(time_sleep_proc)
+        # get pre event list by olimp
+        olimp_seeker_pre_matchs = threading.Thread(target=start_seeker_matchs_olimp, args=(gen_proxi_olimp, arr_matchs, 'pre'))
+        olimp_seeker_pre_matchs.start()
+        prnts(' ')
+        prnts('START: olimp_seeker_pre_matchs')
+        time.sleep(time_sleep_proc)
+        # time.sleep(60)
+    
+        # get event list by fonbet
+        fonbet_seeker_matchs = threading.Thread(target=start_seeker_matchs_fonbet, args=(gen_proxi_fonbet, arr_matchs, 'live'))
+        fonbet_seeker_matchs.start()
+        prnts(' ')
+        prnts('START: fonbet_seeker_matchs')
+        time.sleep(time_sleep_proc)
+        # get pre event list by fonbet
+        fonbet_seeker_pre_matchs = threading.Thread(target=start_seeker_matchs_fonbet, args=(gen_proxi_fonbet, arr_matchs, 'pre'))
+        fonbet_seeker_pre_matchs.start()
+        prnts(' ')
+        prnts('START: fonbet_seeker_pre_matchs')
+        time.sleep(time_sleep_proc)
+        # while True:
+        #     for n in list(arr_matchs):
+        #         print_j(arr_matchs[n])
+        #     time.sleep(15)
+    
+        # List of TOP events
+        fonbet_seeker_top_matchs = threading.Thread(target=start_seeker_top_matchs_fonbet, args=(gen_proxi_fonbet, arr_fonbet_top_matchs, pair_mathes, arr_fonbet_top_kofs))
+        fonbet_seeker_top_matchs.start()
+        prnts(' ')
+        prnts('START: fonbet_seeker_top_matchs')
+    
+        # Event mapping
+        time.sleep(time_sleep_proc)
+        event_mapping = threading.Thread(target=start_event_mapping, args=(pair_mathes, arr_matchs, mathes_complite))
+        event_mapping.start()
+        prnts(' ')
+        prnts('START: event_mapping')
+    
+        time.sleep(time_sleep_proc)
+        mathes_id_is_work = []
+        starter_bets = threading.Thread(
+            target=starter_bets,
+            args=(bets_olimp, bets_fonbet, pair_mathes, mathes_complite, mathes_id_is_work,
+                  proxies_olimp, gen_proxi_olimp, proxies_fonbet, gen_proxi_fonbet, stat_req_olimp, stat_req_fonbet,
+                  arr_fonbet_top_kofs))
+        starter_bets.start()
+        prnts(' ')
+        prnts('START: starter_bets')
+    
+        starter_forks = threading.Thread(target=get_forks, args=(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbet_top_matchs))
+        starter_forks.start()
+        prnts(' ')
+        prnts('START: starter_forks')
+    
+        started_stat_req = threading.Thread(target=stat_req, args=(stat_req_olimp, stat_req_fonbet))
+        started_stat_req.start()
+        prnts(' ')
+        prnts('START: started_stat_req')
+    
+        server = threading.Thread(target=run_server, args=(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_fonbet_top_matchs, bets_olimp, bets_fonbet))
+        server.start()
+        prnts(' ')
+        prnts('START: server')
+    
+        proxy_saver.join()
+        olimp_seeker_matchs.join()
+        olimp_seeker_pre_matchs.join()
+        fonbet_seeker_matchs.join()
+        fonbet_seeker_pre_matchs.join()
+        event_mapping.join()
+        starter_forks.join()
+        started_stat_req.join()
+        server.join()
+    except Exception as e:
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        prnts('server error:' + str(traceback.format_exception(exc_type, exc_value, exc_traceback)))
