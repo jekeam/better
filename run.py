@@ -584,7 +584,7 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                                         or (bk1_match_info.get('sport_name') == 'volleyball' and deff_time > 30)
                                         or (deff_time > 300)
                                         ):
-                                            prnts('Обнаружено различие во времени матча: {}, {}, '.format(deff_time, match_name, rate))
+                                            prnts('Обнаружено различие во времени матча: {}, {}, {}'.format(deff_time, match_name, rate))
                                     else:
                                         if rate > 0:
                                             bk_rate_list.append({
