@@ -251,9 +251,13 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out, pair_mathes, place):
         try:
             res = resp.json()
         except Exception as e:
+            if resp:
+                text = str(resp.status_code) + ': '+ str(resp.text)
+            else:
+                text = ''
             exc_type, exc_value, exc_traceback = sys.exc_info()
             err_str = 'error: ' + str(e) + ' (' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))) + ')'
-            err_str = 'Олимп ' + str(match_id) + ': ' + str(err_str)
+            err_str = 'Олимп ' + str(match_id) + ': ' + str(err_str) + ', text: ' + str(text)
             prnts(err_str)
             raise ValueError(err_str)
         # {"error": {"err_code": 404, "err_desc": "Прием ставок приостановлен"}, "data": null}
