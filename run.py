@@ -10,7 +10,7 @@ import re
 from exceptions import *
 from server import run_server
 from utils import prnts, DEBUG, find_max_mode, opposition, add_if_draw, add_if_not_draw, serv_log, get_param, sport_list, if_exists, print_j, max_min_prematch, if_exists_by_sport
-from utils import TIMEOUT_LIST, TIMEOUT_MATCH, TIMEOUT_MATCH_MINUS, TIMEOUT_PRE_LIST, TIMEOUT_PRE_MATCH, TIMEOUT_PRE_MATCH_MINUS#, SERVER_IP, SERVER_PORT
+from utils import TIMEOUT_LIST, TIMEOUT_MATCH, TIMEOUT_MATCH_MINUS, TIMEOUT_PRE_LIST, TIMEOUT_PRE_MATCH, TIMEOUT_PRE_MATCH_MINUS, SERVER_IP, SERVER_PORT, time_sleep_proc
 from proxy_switcher import ProxySwitcher
 import json
 import os.path
@@ -948,13 +948,6 @@ def stat_req(stat_req_olimp, stat_req_fonbet):
                   ' mode:' + str(round(find_max_mode(stat_req_olimp), 2)) +
                   ' median:' + str(round(median(stat_req_olimp), 2)))
         time.sleep(time_sleep_proc)
-        
-if not DEBUG:
-    SERVER_IP = get_param('server_ip')
-    time_sleep_proc = 3
-else:
-    SERVER_IP = get_param('server_ip_test')
-SERVER_PORT = get_param('server_port')        
 
 
 if __name__ == '__main__':
