@@ -261,8 +261,8 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out, pair_mathes, place):
         # {"error": {"err_code": 511, "err_desc": "Sign access denied"}, "data": null}
         # {'err_code': 423, 'err_desc': 'Переменная: id запрещена в данном методе!'}
         if res.get("error").get('err_code', 999) in (0, 404, 511, 423):
-            err = 'Олимп ' + str(match_id) + ', err_code: ' + str(resp)
-            prnts(str(err))
+            if res is None:
+                prnts('Получен пустой ответ: ' + str(match_id) + ', status_code: ' + str(resp.status_code) + ', data: ' + str(resp.text))
             return res.get('data'), resp.elapsed.total_seconds()
         else:
             err = 'Олимп ' + str(match_id) + res.get("error")
