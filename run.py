@@ -24,7 +24,7 @@ import pandas as pd
 import sys
 import traceback
 
-def get_olimp(resp, arr_matchs, place='live', sport_id=None):
+def get_olimp(resp, arr_matchs, place='live', sport_id=None, liga_id=None, arr_fonbet_top_matchs=None, liga_top=None, liga_oth=None, liga_unknown=None):
     # Очистим дстарые данные
     for key in list(arr_matchs):
         if arr_matchs.get('olimp', '') != '':
@@ -55,7 +55,8 @@ def get_olimp(resp, arr_matchs, place='live', sport_id=None):
                 for math_info in liga_info.get('it'):
                     # print(math_info.get('dt') + ' ' + str(datetime.fromtimestamp(int(math_info.get('t')) + 60 * 60).strftime('%d.%m.%Y %H:%M:%S')))
                     # print(math_info.get('dt') == str(datetime.fromtimestamp(int(math_info.get('t'))+60*60).strftime('%d.%m.%Y %H:%M:%S')))
-                    match_id_str = str(math_info.get('id'))
+                    match_id = math_info.get('id')
+                    match_id_str = str(match_id)
                     # math_block = True if math_info.get('ms') == 1 else False
                     # print_j(liga_info)
                     start_time = math_info.get('t', 0)
@@ -65,8 +66,8 @@ def get_olimp(resp, arr_matchs, place='live', sport_id=None):
                         arr_matchs[match_id_str] = {
                             'bk_name': 'olimp',
                             'place': place,
-                            'sport_id': liga_info.get('sport_id', sport_id),
-                            'sport_name': if_exists(sport_list, 'olimp', liga_info.get('sport_id', sport_id), 'name'),
+                            'sport_id': v_sport_id,
+                            'sport_name': if_exists(sport_list, 'olimp', v_sport_id, 'name'),
                             'name': liga_info[key_name],
                             'team1': math_info.get('c1', ''),
                             'team2': math_info.get('c2', ''),
@@ -74,6 +75,14 @@ def get_olimp(resp, arr_matchs, place='live', sport_id=None):
                             # 'start_time_str': start_time_str,
                             'start_after_min': start_after_min,
                         }
+                    if place != 'live' and v_sport_id==1:
+                        if liga_id in liga_top and match_id not in arr_fonbet_top_matchs:
+                            prnts('MY TOP ' + place + ' Event added: ' + str(match_id_str) + '-' + str(liga_info[key_name]) + ', ' + liga_info.get('cn', '') + ', ' + str(liga_id))
+                            arr_fonbet_top_matchs.append(match_id)
+                        elif liga_id not in liga_oth and liga_id not in liga_top:
+                            if liga_id not in liga_unknown:
+                                liga_unknown.append(liga_id)
+                                prnts(str(v_sport_id) + ';' + str(liga_id) + ';' + liga_info.get('cn', '') + ';' + str(match_id_str) + ';' + str(liga_info[key_name]) + ';', False, 'liga_not_found.csv', True)
                     else:
                         if DEBUG:
                             prnts('Собитие исключено т.к. время начла больше: {}, мин:{}\ndata:{}'.format(max_min_prematch, start_after_min, str(math_info)), 'hide')
@@ -175,11 +184,12 @@ def get_fonbet(resp, arr_matchs, place):
     # ['16453828': {'bk_name': 'fonbet', 'sport_id': 1, 'sport_name': 'Football', 'name': '', 'team1': 'Nadi', 'team2': 'Suva'}, ....]
 
 
-def start_seeker_matchs_olimp(gen_proxi_olimp, arr_matchs, place):
+def start_seeker_matchs_olimp(gen_proxi_olimp, arr_matchs, place, arr_fonbet_top_matchs=None):
     global TIMEOUT_LIST, TIMEOUT_PRE_LIST
     proxy = gen_proxi_olimp.next()
     fail_proxy = 0
     arr_leagues = {}
+    liga_unknown = []
     if place == 'pre':
         time_out = TIMEOUT_PRE_LIST
     else:
@@ -187,6 +197,19 @@ def start_seeker_matchs_olimp(gen_proxi_olimp, arr_matchs, place):
     while True:
         try:
             if place == 'pre':
+                try:
+                    df = pd.read_csv('top.csv', encoding='utf-8', sep=';')
+                    df = df[(df['is_top'] == 2)]
+                    df_all = df[(df['is_top'] != 2)]
+                    liga_top = list(df['liga_id'])
+                    liga_oth = list(df_all['liga_id'])
+                    prnts('My liga_top: ' + str(liga_top))
+                    prnts('My liga_oth: ' + str(liga_oth))
+                except Exception as e:
+                    prnts('err liga_top: ' + str(e))
+                    liga_top = []
+                    liga_oth = []
+                
                 # get leagues
                 for sport in sport_list:
                     if 'pre' in sport.get('place'):
@@ -210,7 +233,7 @@ def start_seeker_matchs_olimp(gen_proxi_olimp, arr_matchs, place):
                                         try:
                                             prnts('request: sport_id:{}, liga_id:{}'.format(sport_id, liga_id_str))
                                             resp_matches, time_resp = get_matches_olimp(proxy, time_out, 'matches', sport_id, max_min_prematch / 60, liga_id_str)
-                                            get_olimp(resp_matches, arr_matchs, 'pre', sport_id)
+                                            get_olimp(resp_matches, arr_matchs, 'pre', sport_id, liga_id_str, arr_fonbet_top_matchs, liga_top, liga_oth, liga_unknown)
                                             # print_j(resp_matches)
                                             prnts('sport_id: {}, liga_id:{}, add matches: {}, liga name:{}'.format(sport_id, liga_id_str, len(resp_matches.get('it')), resp_matches.get('n')))
                                         except Exception as e:
@@ -308,19 +331,7 @@ def start_seeker_matchs_fonbet(gen_proxi_fonbet, arr_matchs, place):
 def start_seeker_top_matchs_fonbet(gen_proxi_fonbet, arr_fonbet_top_matchs, pair_mathes, arr_fonbet_top_kofs):
     global TIMEOUT_LIST
     proxy = gen_proxi_fonbet.next()
-    
-    try:
-        df = pd.read_csv('top.csv', encoding='utf-8', sep=';')
-        df = df[(df['is_top'] == 2)]
-        df_all = df[(df['is_top'] != 2)]
-        lg = list(df['liga_id'])
-        lg_all = list(df_all['liga_id'])
-        prnts('My top liga_id: ' + str(lg))
-        prnts('My oth liga_id: ' + str(lg_all))
-    except Exception as e:
-        prnts('err lg: ' + str(e))
-        lg = []
-    
+
     while True:
         try:
             list_pair_mathes = []
@@ -338,22 +349,13 @@ def start_seeker_top_matchs_fonbet(gen_proxi_fonbet, arr_fonbet_top_matchs, pair
                     match_id = event.get('id')
                     liga_id = event.get('competitionId')
                     liga_name = event.get('competitionName')
-                    # if str(event.get('skId')) != '1':
-                    if match_id not in arr_fonbet_top_matchs and match_id in list_pair_mathes:
-                        prnts('TOP ' + place.split(':')[1] + ' Event added: ' + str(event.get('skId', '')) + '-' + str(event.get('skName', '')) + ': ' + str(match_id) + ', ' + event.get('eventName', '') + ', ' + str(liga_id))
-                        arr_fonbet_top_matchs.append(match_id)
-                    elif match_id in arr_fonbet_top_matchs and match_id not in list_pair_mathes:
-                        prnts('TOP ' + place.split(':')[1] + 'Event deleted: ' + str(event.get('skId', '')) + '-' + str(event.get('skName', '')) + ': ' + str(match_id) + ', ' + event.get('eventName', '') + ', ' + str(liga_id))
-                        arr_fonbet_top_matchs.remove(match_id)
-                    # else:
-                    #     if liga_id in lg and match_id not in arr_fonbet_top_matchs and match_id in list_pair_mathes:
-                    #         prnts('MY TOP ' + place.split(':')[1] + ' Event added: ' + str(event.get('skId', '')) + '-' + str(event.get('skName', '')) + ': ' + str(match_id) + ', ' + event.get('eventName', '') + ', ' + str(liga_id))
-                    #         arr_fonbet_top_matchs.append(match_id)
-                    #     elif liga_id in lg and match_id in arr_fonbet_top_matchs and match_id not in list_pair_mathes:
-                    #         prnts('MY TOP ' + place.split(':')[1] + 'Event deleted: ' + str(event.get('skId', '')) + '-' + str(event.get('skName', '')) + ': ' + str(match_id) + ', ' + event.get('eventName', '') + ', ' + str(liga_id))
-                    #         arr_fonbet_top_matchs.remove(match_id)
-                    #     if liga_id not in lg_all and liga_id not in lg:
-                    #         prnts('Liga_id not found;' + str(liga_id) + ';' + str(liga_name))
+                    if str(event.get('skId')) != '1' and place != 'top:pre':
+                        if match_id not in arr_fonbet_top_matchs and match_id in list_pair_mathes:
+                            prnts('TOP ' + place.split(':')[1] + ' Event added: ' + str(event.get('skId', '')) + '-' + str(event.get('skName', '')) + ': ' + str(match_id) + ', ' + event.get('eventName', '') + ', ' + str(liga_id))
+                            arr_fonbet_top_matchs.append(match_id)
+                        elif match_id in arr_fonbet_top_matchs and match_id not in list_pair_mathes:
+                            prnts('TOP ' + place.split(':')[1] + 'Event deleted: ' + str(event.get('skId', '')) + '-' + str(event.get('skName', '')) + ': ' + str(match_id) + ', ' + event.get('eventName', '') + ', ' + str(liga_id))
+                            arr_fonbet_top_matchs.remove(match_id)
 
                     for row in event.get('markets'):
                         for cell in row.get('rows'):
@@ -1034,7 +1036,7 @@ if __name__ == '__main__':
         prnts('START: olimp_seeker_matchs')
         time.sleep(time_sleep_proc)
         # get pre event list by olimp
-        olimp_seeker_pre_matchs = threading.Thread(target=start_seeker_matchs_olimp, args=(gen_proxi_olimp, arr_matchs, 'pre'))
+        olimp_seeker_pre_matchs = threading.Thread(target=start_seeker_matchs_olimp, args=(gen_proxi_olimp, arr_matchs, 'pre', arr_fonbet_top_matchs))
         olimp_seeker_pre_matchs.start()
         prnts(' ')
         prnts('START: olimp_seeker_pre_matchs')
@@ -1052,7 +1054,7 @@ if __name__ == '__main__':
         fonbet_seeker_pre_matchs.start()
         prnts(' ')
         prnts('START: fonbet_seeker_pre_matchs')
-        time.sleep(time_sleep_proc)
+        time.sleep(time_sleep_proc*2)
         # while True:
         #     for n in list(arr_matchs):
         #         print_j(arr_matchs[n])
