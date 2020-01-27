@@ -75,14 +75,14 @@ def get_olimp(resp, arr_matchs, place='live', sport_id=None, liga_id=None, arr_f
                             # 'start_time_str': start_time_str,
                             'start_after_min': start_after_min,
                         }
-                    if place != 'live' and v_sport_id==1:
-                        if liga_id in liga_top and match_id not in arr_fonbet_top_matchs:
-                            prnts('MY TOP ' + place + ' Event added: ' + str(match_id_str) + '-' + str(liga_info[key_name]) + ', ' + liga_info.get('cn', '') + ', ' + str(liga_id))
-                            arr_fonbet_top_matchs.append(match_id)
-                        elif liga_id not in liga_oth and liga_id not in liga_top:
-                            if liga_id not in liga_unknown:
-                                liga_unknown.append(liga_id)
-                                prnts(str(v_sport_id) + ';' + str(liga_id) + ';' + liga_info.get('cn', '') + ';' + str(match_id_str) + ';' + str(liga_info[key_name]) + ';', False, 'liga_not_found.csv', True)
+                    # if place != 'live' and v_sport_id==1:
+                    #     if liga_id in liga_top and match_id not in arr_fonbet_top_matchs:
+                    #         prnts('MY TOP ' + place + ' Event added: ' + str(match_id_str) + '-' + str(liga_info[key_name]) + ', ' + liga_info.get('cn', '') + ', ' + str(liga_id))
+                    #         arr_fonbet_top_matchs.append(match_id)
+                    #     elif liga_id not in liga_oth and liga_id not in liga_top:
+                    #         if liga_id not in liga_unknown:
+                    #             liga_unknown.append(liga_id)
+                    #             prnts(str(v_sport_id) + ';' + str(liga_id) + ';' + str(liga_info[key_name]) + ';', False, 'liga_not_found.csv', True)
                     else:
                         if DEBUG:
                             prnts('Собитие исключено т.к. время начла больше: {}, мин:{}\ndata:{}'.format(max_min_prematch, start_after_min, str(math_info)), 'hide')
@@ -349,13 +349,13 @@ def start_seeker_top_matchs_fonbet(gen_proxi_fonbet, arr_fonbet_top_matchs, pair
                     match_id = event.get('id')
                     liga_id = event.get('competitionId')
                     liga_name = event.get('competitionName')
-                    if str(event.get('skId')) != '1' and place != 'top:pre':
-                        if match_id not in arr_fonbet_top_matchs and match_id in list_pair_mathes:
-                            prnts('TOP ' + place.split(':')[1] + ' Event added: ' + str(event.get('skId', '')) + '-' + str(event.get('skName', '')) + ': ' + str(match_id) + ', ' + event.get('eventName', '') + ', ' + str(liga_id))
-                            arr_fonbet_top_matchs.append(match_id)
-                        elif match_id in arr_fonbet_top_matchs and match_id not in list_pair_mathes:
-                            prnts('TOP ' + place.split(':')[1] + 'Event deleted: ' + str(event.get('skId', '')) + '-' + str(event.get('skName', '')) + ': ' + str(match_id) + ', ' + event.get('eventName', '') + ', ' + str(liga_id))
-                            arr_fonbet_top_matchs.remove(match_id)
+                    # if str(event.get('skId')) != '1' and place != 'top:pre':
+                    if match_id not in arr_fonbet_top_matchs and match_id in list_pair_mathes:
+                        prnts('TOP ' + place.split(':')[1] + ' Event added: ' + str(event.get('skId', '')) + '-' + str(event.get('skName', '')) + ': ' + str(match_id) + ', ' + event.get('eventName', '') + ', ' + str(liga_id))
+                        arr_fonbet_top_matchs.append(match_id)
+                    elif match_id in arr_fonbet_top_matchs and match_id not in list_pair_mathes:
+                        prnts('TOP ' + place.split(':')[1] + 'Event deleted: ' + str(event.get('skId', '')) + '-' + str(event.get('skName', '')) + ': ' + str(match_id) + ', ' + event.get('eventName', '') + ', ' + str(liga_id))
+                        arr_fonbet_top_matchs.remove(match_id)
 
                     for row in event.get('markets'):
                         for cell in row.get('rows'):
