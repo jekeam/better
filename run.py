@@ -309,10 +309,14 @@ def start_seeker_top_matchs_fonbet(gen_proxi_fonbet, arr_fonbet_top_matchs, pair
     global TIMEOUT_LIST
     proxy = gen_proxi_fonbet.next()
     
-    df = pd.read_csv('top.csv', encoding='utf-8', sep=';')
-    df = df[(df['is_top'] == 2)]
-    lg = list(df['liga_id'])
-    prnts('My top liga_id: ' + str(lg))
+    try:
+        df = pd.read_csv('top.csv', encoding='utf-8', sep=';')
+        df = df[(df['is_top'] == 2)]
+        lg = list(df['liga_id'])
+        prnts('My top liga_id: ' + str(lg))
+    except Exception as e:
+        prnts('err lg: ' + str(e))
+        lg = []
     
     while True:
         try:
