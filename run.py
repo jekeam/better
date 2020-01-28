@@ -50,7 +50,7 @@ def get_olimp(resp, arr_matchs, place='live', sport_id=None, arr_fonbet_top_matc
             # 51 Badminton
             # 60 Beach Volleyball
             # 126 Pool
-            v_sport_id = liga_info.get('sport_id', sport_id)
+            v_sport_id = int(liga_info.get('sport_id', sport_id))
             liga_id = liga_info.get('id')
             liga_name = liga_info[key_name]
             if '. Statistics' not in liga_name:
@@ -82,7 +82,7 @@ def get_olimp(resp, arr_matchs, place='live', sport_id=None, arr_fonbet_top_matc
                             }
                         if place == 'pre' and v_sport_id==1:
                             if liga_id in liga_top and match_id not in arr_fonbet_top_matchs:
-                                prnts('MY TOP ' + place + ' Event added: ' + str(match_id_str) + '-' + str(liga_name) + ', ' + liga_info.get('cn', '') + ', ' + str(liga_id))
+                                prnts('MY TOP ' + place + ' Event added: ' + str(match_id_str) + ', liga_name ' + str(liga_name) + ', liga_id: ' + str(liga_id))
                                 arr_fonbet_top_matchs.append(match_id)
                                 # v_str = str(v_sport_id) + ';' + str(liga_id) + ';' + str(liga_name) + ';\n'
                             elif liga_id not in liga_oth and liga_id not in liga_top:
