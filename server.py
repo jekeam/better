@@ -43,7 +43,7 @@ def get_state(arr):
     return state
 
 
-def run_server(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_fonbet_top_matchs, bets_olimp, bets_fonbet):
+def run_server(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_fonbet_top_matchs, bets_olimp, bets_fonbet, mathes_complite):
     class HttpProcessor(BaseHTTPRequestHandler):
         def __init__(self, forks, bar, qux, *args, **kwargs):
             self.data_str = json.dumps(forks, ensure_ascii=False)
@@ -75,6 +75,11 @@ def run_server(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_fonbet_top_matchs
                 self.send_header('content-type', 'application/json')
                 self.end_headers()
                 self.wfile.write(str(arr_fonbet_top_matchs).encode('utf-8'))
+            elif self.path == '/end':
+                self.send_response(200)
+                self.send_header('content-type', 'application/json')
+                self.end_headers()
+                self.wfile.write(str(mathes_complite).encode('utf-8'))
             elif '/fonbet/' in self.path or '/olimp/' in self.path:
                 cnt_par = str(self.path).count('/')
                 prnts('get path: {}, cnt_par: {}, arr: {}'.format(self.path, cnt_par, str(self.path.split('/'))))

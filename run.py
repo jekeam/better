@@ -1094,7 +1094,7 @@ if __name__ == '__main__':
         prnts(' ')
         prnts('START: started_stat_req')
     
-        server = threading.Thread(target=run_server, args=(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_fonbet_top_matchs, bets_olimp, bets_fonbet))
+        server = threading.Thread(target=run_server, args=(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_fonbet_top_matchs, bets_olimp, bets_fonbet, mathes_complite))
         server.start()
         prnts(' ')
         prnts('START: server')
