@@ -128,7 +128,7 @@ sport_list_raw = [
     },
 ]
 # sport_list = list(reversed(sport_list_raw))
-sport_list = list(reversed(sport_list_raw))
+sport_list = sport_list_raw.copy()
 
 opposition = [
     {'1ТБ': '1ТМ'},
