@@ -206,6 +206,7 @@ def start_seeker_matchs_olimp(gen_proxi_olimp, arr_matchs, place, arr_fonbet_top
         time_out = TIMEOUT_PRE_LIST
     else:
         time_out = TIMEOUT_LIST
+    time_resp = 0
     while True:
         try:
             if place == 'pre':
@@ -411,7 +412,7 @@ def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi
         try:
             time_resp = get_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, ps.get_next_proxy(), TIMEOUT_MATCH, pair_mathes, place, str(n))
             # print(bets_olimp)
-            stat_req_ol.append(round(time_resp, 2))
+            stat_req_ol[0].append(round(time_resp, 2))
         except OlimpMatchСompleted as e:
             cnt = 0
             prnts(e)
@@ -429,6 +430,8 @@ def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi
                 prnts('Exception: Олимп, ошибка при удалении матча ' + str(match_id_olimp) + ':' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
             raise ValueError('start_seeker_bets_olimp:' + str(e))
         except Exception as e:
+            curr_n = stat_req_ol[1]
+            stat_req_ol[1] = curr_n + 1
             exc_type, exc_value, exc_traceback = sys.exc_info()
             prnts('Exception: Олимп, ошибка при запросе матча ' + str(match_id_olimp) + ': ' +
                   str(e) + ' ' + ps.get_cur_proxy() + ' ' +
@@ -467,7 +470,7 @@ def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_p
     while True:
         try:
             time_resp = get_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, ps.get_next_proxy(), TIMEOUT_MATCH, pair_mathes, arr_fonbet_top_kofs, place)
-            stat_req_fb.append(round(time_resp, 2))
+            stat_req_fb[0].append(round(time_resp, 2))
         except FonbetMatchСompleted as e:
             cnt = 0
             prnts(e)
@@ -485,6 +488,8 @@ def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_p
                 prnts('Exception: Фонбет, ошибка при удалении матча ' + str(match_id_fonbet) + ':' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
             raise ValueError('start_seeker_bets_fonbet:' + str(e))
         except Exception as e:
+            curr_n = stat_req_fb[1]
+            stat_req_fb[1] = curr_n + 1
             exc_type, exc_value, exc_traceback = sys.exc_info()
             prnts('Exception: Фонбет, ошибка при запросе матча ' + str(match_id_fonbet) + ': ' +
                   str(e) + ' ' + ps.get_cur_proxy() + ' ' +
@@ -978,19 +983,30 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
 
 def stat_req(stat_req_olimp, stat_req_fonbet):
     while True:
-        if stat_req_olimp and stat_req_fonbet:
-            prnts('fb cnt:' + str(len(stat_req_fonbet)) +
-                  ' avg:' + str(round(sum(stat_req_fonbet) / len(stat_req_fonbet), 2)) +
-                  ' max:' + str(max(stat_req_fonbet)) +
-                  ' mode:' + str(round(find_max_mode(stat_req_fonbet), 2)) +
-                  ' median:' + str(round(median(stat_req_fonbet), 2)))
-
-            prnts('ol cnt:' + str(len(stat_req_olimp)) +
-                  ' avg:' + str(round(sum(stat_req_olimp) / len(stat_req_olimp), 2)) +
-                  ' max:' + str(max(stat_req_olimp)) +
-                  ' mode:' + str(round(find_max_mode(stat_req_olimp), 2)) +
-                  ' median:' + str(round(median(stat_req_olimp), 2)))
-        time.sleep(time_sleep_proc)
+        try:
+            olimp_err = stat_req_olimp[1]
+            fonbet_err = stat_req_fonbet[1]
+            stat_req_olimp_copy = list(stat_req_olimp[0])
+            stat_req_fonbet_copy = list(stat_req_fonbet[0])
+            if stat_req_olimp_copy and stat_req_fonbet_copy:
+                prnts('fb cnt:' + str(len(stat_req_fonbet_copy)) +
+                      '/' + str(fonbet_err) +
+                      ' err: ' + str(round(fonbet_err/len(stat_req_fonbet_copy)*100)) +
+                      '% avg:' + str(round(sum(stat_req_fonbet_copy) / len(stat_req_fonbet_copy), 2)) +
+                      ' max:' + str(max(stat_req_fonbet_copy)) +
+                      ' mode:' + str(round(find_max_mode(stat_req_fonbet_copy), 2)) +
+                      ' median:' + str(round(median(stat_req_fonbet_copy), 2)))
+    
+                prnts('ol cnt:' + str(len(stat_req_olimp_copy)) +
+                      '/' + str(olimp_err) +
+                      ' err ' + str(round(olimp_err/len(stat_req_olimp_copy)*100)) +
+                      '% avg:' + str(round(sum(stat_req_olimp_copy) / len(stat_req_olimp_copy), 2)) +
+                      ' max:' + str(max(stat_req_olimp_copy)) +
+                      ' mode:' + str(round(find_max_mode(stat_req_olimp_copy), 2)) +
+                      ' median:' + str(round(median(stat_req_olimp_copy), 2)))
+            time.sleep(time_sleep_proc)
+        except Exception as e:
+            prnts('stat_req err: ' + str(e))
 
 
 if __name__ == '__main__':
@@ -1035,8 +1051,8 @@ if __name__ == '__main__':
         forks = dict()
         forks_meta = dict()
     
-        stat_req_olimp = []
-        stat_req_fonbet = []
+        stat_req_olimp = [[], 0]
+        stat_req_fonbet = [[], 0]
     
         # List of event "at work"
         pair_mathes = []
