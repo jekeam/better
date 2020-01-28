@@ -24,7 +24,7 @@ import pandas as pd
 import sys
 import traceback
 
-def get_olimp(resp, arr_matchs, place='live', sport_id=None, liga_id=None, arr_fonbet_top_matchs=None, liga_top=None, liga_oth=None, liga_unknown=None):
+def get_olimp(resp, arr_matchs, place='live', sport_id=None, arr_fonbet_top_matchs=None, liga_top=None, liga_oth=None, liga_unknown=None):
     # Очистим дстарые данные
     for key in list(arr_matchs):
         if arr_matchs.get('olimp', '') != '':
@@ -51,41 +51,54 @@ def get_olimp(resp, arr_matchs, place='live', sport_id=None, liga_id=None, arr_f
             # 60 Beach Volleyball
             # 126 Pool
             v_sport_id = liga_info.get('sport_id', sport_id)
-            if if_exists(sport_list, 'olimp', v_sport_id) and if_exists_by_sport(sport_list, 'olimp', v_sport_id, 'place', place):
-                for math_info in liga_info.get('it'):
-                    # print(math_info.get('dt') + ' ' + str(datetime.fromtimestamp(int(math_info.get('t')) + 60 * 60).strftime('%d.%m.%Y %H:%M:%S')))
-                    # print(math_info.get('dt') == str(datetime.fromtimestamp(int(math_info.get('t'))+60*60).strftime('%d.%m.%Y %H:%M:%S')))
-                    match_id = math_info.get('id')
-                    match_id_str = str(match_id)
-                    # math_block = True if math_info.get('ms') == 1 else False
-                    # print_j(liga_info)
-                    start_time = math_info.get('t', 0)
-                    start_after_min = math.floor((start_time - int(time.time())) / 60)
-                    # print('math_info: ' + str(math_info))
-                    if start_after_min < max_min_prematch:
-                        arr_matchs[match_id_str] = {
-                            'bk_name': 'olimp',
-                            'place': place,
-                            'sport_id': v_sport_id,
-                            'sport_name': if_exists(sport_list, 'olimp', v_sport_id, 'name'),
-                            'name': liga_info[key_name],
-                            'team1': math_info.get('c1', ''),
-                            'team2': math_info.get('c2', ''),
-                            'start_time': start_time,
-                            # 'start_time_str': start_time_str,
-                            'start_after_min': start_after_min,
-                        }
-                    # if place != 'live' and v_sport_id==1:
-                    #     if liga_id in liga_top and match_id not in arr_fonbet_top_matchs:
-                    #         prnts('MY TOP ' + place + ' Event added: ' + str(match_id_str) + '-' + str(liga_info[key_name]) + ', ' + liga_info.get('cn', '') + ', ' + str(liga_id))
-                    #         arr_fonbet_top_matchs.append(match_id)
-                    #     elif liga_id not in liga_oth and liga_id not in liga_top:
-                    #         if liga_id not in liga_unknown:
-                    #             liga_unknown.append(liga_id)
-                    #             prnts(str(v_sport_id) + ';' + str(liga_id) + ';' + str(liga_info[key_name]) + ';', False, 'liga_not_found.csv', True)
-                    else:
-                        if DEBUG:
-                            prnts('Собитие исключено т.к. время начла больше: {}, мин:{}\ndata:{}'.format(max_min_prematch, start_after_min, str(math_info)), 'hide')
+            liga_id = liga_info.get('id')
+            liga_name = liga_info[key_name]
+            if '. Statistics' not in liga_name:
+                if if_exists(sport_list, 'olimp', v_sport_id) and if_exists_by_sport(sport_list, 'olimp', v_sport_id, 'place', place):
+                    for math_info in liga_info.get('it'):
+                        # print(math_info.get('dt') + ' ' + str(datetime.fromtimestamp(int(math_info.get('t')) + 60 * 60).strftime('%d.%m.%Y %H:%M:%S')))
+                        # print(math_info.get('dt') == str(datetime.fromtimestamp(int(math_info.get('t'))+60*60).strftime('%d.%m.%Y %H:%M:%S')))
+                        match_id = math_info.get('id')
+                        match_id_str = str(match_id)
+                        # math_block = True if math_info.get('ms') == 1 else False
+                        # print_j(liga_info)
+                        start_time = math_info.get('t', 0)
+                        start_after_min = math.floor((start_time - int(time.time())) / 60)
+                        # if 'France. Ligue 1' in str(liga_name):
+                        #     print('liga_info: ' + str() + ', ' + liga_id)
+                        #     1/0
+                        if start_after_min < max_min_prematch:
+                            arr_matchs[match_id_str] = {
+                                'bk_name': 'olimp',
+                                'place': place,
+                                'sport_id': v_sport_id,
+                                'sport_name': if_exists(sport_list, 'olimp', v_sport_id, 'name'),
+                                'name': liga_name,
+                                'team1': math_info.get('c1', ''),
+                                'team2': math_info.get('c2', ''),
+                                'start_time': start_time,
+                                # 'start_time_str': start_time_str,
+                                'start_after_min': start_after_min,
+                            }
+                        if place != 'live' and v_sport_id==1:
+                            if liga_id in liga_top and match_id not in arr_fonbet_top_matchs:
+                                # prnts('MY TOP ' + place + ' Event added: ' + str(match_id_str) + '-' + str(liga_name) + ', ' + liga_info.get('cn', '') + ', ' + str(liga_id))
+                                arr_fonbet_top_matchs.append(match_id)
+                                v_str = str(v_sport_id) + ';' + str(liga_id) + ';' + str(liga_name) + ';\n'
+                            elif liga_id not in liga_oth and liga_id not in liga_top:
+                                if liga_id not in liga_unknown:
+                                    liga_unknown.append(liga_id)
+                                    v_str = str(v_sport_id) + ';' + str(liga_id) + ';' + str(liga_name) + ';\n'
+                                    with open('liga_not_found.csv', 'r+') as file:
+                                        # print('file: ' + str(list(file)))
+                                        for line in list(file):
+                                            if v_str in line:
+                                               break
+                                        else: # not found, we are at the eof
+                                            file.write(v_str) # append missing data
+                        else:
+                            if DEBUG:
+                                prnts('Собитие исключено т.к. время начла больше: {}, мин:{}\ndata:{}'.format(max_min_prematch, start_after_min, str(math_info)), 'hide')
     # print_j(arr_matchs) # 50940691
 
 
@@ -199,8 +212,8 @@ def start_seeker_matchs_olimp(gen_proxi_olimp, arr_matchs, place, arr_fonbet_top
             if place == 'pre':
                 try:
                     df = pd.read_csv('top.csv', encoding='utf-8', sep=';')
-                    df = df[(df['is_top'] == 2)]
                     df_all = df[(df['is_top'] != 2)]
+                    df = df[(df['is_top'] == 2)]
                     liga_top = list(df['liga_id'])
                     liga_oth = list(df_all['liga_id'])
                     prnts('My liga_top: ' + str(liga_top))
@@ -233,7 +246,7 @@ def start_seeker_matchs_olimp(gen_proxi_olimp, arr_matchs, place, arr_fonbet_top
                                         try:
                                             prnts('request: sport_id:{}, liga_id:{}'.format(sport_id, liga_id_str))
                                             resp_matches, time_resp = get_matches_olimp(proxy, time_out, 'matches', sport_id, max_min_prematch / 60, liga_id_str)
-                                            get_olimp(resp_matches, arr_matchs, 'pre', sport_id, liga_id_str, arr_fonbet_top_matchs, liga_top, liga_oth, liga_unknown)
+                                            get_olimp(resp_matches, arr_matchs, 'pre', sport_id, arr_fonbet_top_matchs, liga_top, liga_oth, liga_unknown)
                                             # print_j(resp_matches)
                                             prnts('sport_id: {}, liga_id:{}, add matches: {}, liga name:{}'.format(sport_id, liga_id_str, len(resp_matches.get('it')), resp_matches.get('n')))
                                         except Exception as e:
@@ -349,13 +362,13 @@ def start_seeker_top_matchs_fonbet(gen_proxi_fonbet, arr_fonbet_top_matchs, pair
                     match_id = event.get('id')
                     liga_id = event.get('competitionId')
                     liga_name = event.get('competitionName')
-                    # if str(event.get('skId')) != '1' and place != 'top:pre':
-                    if match_id not in arr_fonbet_top_matchs and match_id in list_pair_mathes:
-                        prnts('TOP ' + place.split(':')[1] + ' Event added: ' + str(event.get('skId', '')) + '-' + str(event.get('skName', '')) + ': ' + str(match_id) + ', ' + event.get('eventName', '') + ', ' + str(liga_id))
-                        arr_fonbet_top_matchs.append(match_id)
-                    elif match_id in arr_fonbet_top_matchs and match_id not in list_pair_mathes:
-                        prnts('TOP ' + place.split(':')[1] + 'Event deleted: ' + str(event.get('skId', '')) + '-' + str(event.get('skName', '')) + ': ' + str(match_id) + ', ' + event.get('eventName', '') + ', ' + str(liga_id))
-                        arr_fonbet_top_matchs.remove(match_id)
+                    if str(event.get('skId')) != '1' and place != 'top:pre':
+                        if match_id not in arr_fonbet_top_matchs and match_id in list_pair_mathes:
+                            prnts('TOP ' + place.split(':')[1] + ' Event added: ' + str(event.get('skId', '')) + '-' + str(event.get('skName', '')) + ': ' + str(match_id) + ', ' + event.get('eventName', '') + ', ' + str(liga_id))
+                            arr_fonbet_top_matchs.append(match_id)
+                        elif match_id in arr_fonbet_top_matchs and match_id not in list_pair_mathes:
+                            prnts('TOP ' + place.split(':')[1] + 'Event deleted: ' + str(event.get('skId', '')) + '-' + str(event.get('skName', '')) + ': ' + str(match_id) + ', ' + event.get('eventName', '') + ', ' + str(liga_id))
+                            arr_fonbet_top_matchs.remove(match_id)
 
                     for row in event.get('markets'):
                         for cell in row.get('rows'):
