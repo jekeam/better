@@ -80,11 +80,11 @@ def get_olimp(resp, arr_matchs, place='live', sport_id=None, arr_fonbet_top_matc
                                 # 'start_time_str': start_time_str,
                                 'start_after_min': start_after_min,
                             }
-                        if place != 'live' and v_sport_id==1:
+                        if place == 'pre' and v_sport_id==1:
                             if liga_id in liga_top and match_id not in arr_fonbet_top_matchs:
-                                # prnts('MY TOP ' + place + ' Event added: ' + str(match_id_str) + '-' + str(liga_name) + ', ' + liga_info.get('cn', '') + ', ' + str(liga_id))
+                                prnts('MY TOP ' + place + ' Event added: ' + str(match_id_str) + '-' + str(liga_name) + ', ' + liga_info.get('cn', '') + ', ' + str(liga_id))
                                 arr_fonbet_top_matchs.append(match_id)
-                                v_str = str(v_sport_id) + ';' + str(liga_id) + ';' + str(liga_name) + ';\n'
+                                # v_str = str(v_sport_id) + ';' + str(liga_id) + ';' + str(liga_name) + ';\n'
                             elif liga_id not in liga_oth and liga_id not in liga_top:
                                 if liga_id not in liga_unknown:
                                     liga_unknown.append(liga_id)
