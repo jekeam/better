@@ -127,6 +127,7 @@ sport_list_raw = [
         'place': ['pre']
     },
 ]
+# sport_list = list(reversed(sport_list_raw))
 sport_list = list(reversed(sport_list_raw))
 
 opposition = [

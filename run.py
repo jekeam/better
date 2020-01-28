@@ -88,9 +88,8 @@ def get_olimp(resp, arr_matchs, place='live', sport_id=None, arr_fonbet_top_matc
                             elif liga_id not in liga_oth and liga_id not in liga_top:
                                 if liga_id not in liga_unknown:
                                     liga_unknown.append(liga_id)
-                                    v_str = str(v_sport_id) + ';' + str(liga_id) + ';' + str(liga_name) + ';\n'
+                                    v_str = str(v_sport_id) + ';' + if_exists(sport_list, 'olimp', v_sport_id, 'name') + ';' + str(liga_id) + ';' + str(liga_name) + ';\n'
                                     with open('liga_not_found.csv', 'r+') as file:
-                                        # print('file: ' + str(list(file)))
                                         for line in list(file):
                                             if v_str in line:
                                                break
