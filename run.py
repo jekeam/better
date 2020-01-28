@@ -711,7 +711,7 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
             exc_type, exc_value, exc_traceback = sys.exc_info()
             prnts('Error start_event_mapping: ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
         finally:
-            time.sleep(time_sleep_proc * 2)
+            time.sleep(time_sleep_proc)
 
 
 def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbet_top_matchs):
