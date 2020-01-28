@@ -362,7 +362,9 @@ def start_seeker_top_matchs_fonbet(gen_proxi_fonbet, arr_fonbet_top_matchs, pair
                     match_id = event.get('id')
                     liga_id = event.get('competitionId')
                     liga_name = event.get('competitionName')
-                    if str(event.get('skId')) != '1' and place != 'top:pre':
+                    if str(event.get('skId')) == '1' and place == 'top:pre':
+                        pass
+                    else:
                         if match_id not in arr_fonbet_top_matchs and match_id in list_pair_mathes:
                             prnts('TOP ' + place.split(':')[1] + ' Event added: ' + str(event.get('skId', '')) + '-' + str(event.get('skName', '')) + ': ' + str(match_id) + ', ' + event.get('eventName', '') + ', ' + str(liga_id))
                             arr_fonbet_top_matchs.append(match_id)
