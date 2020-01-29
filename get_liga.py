@@ -7,8 +7,9 @@ urllib3.disable_warnings()
 url = 'https://line-03.ccf4ab51771cacd46d.com/live/currentLine/ru/?1a4xslry59qk5s4znvy'
 UA = 'Mozilla/5.0 (Windows NT 10; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.3163.100 Safari/537.36'
 
-
 df = pd.read_csv('top.csv', encoding='utf-8', sep=';')
+df = df.fillna(0)
+df.is_top = df.is_top.astype(int)
 liga = list(df['liga_id'])
 
 df_nf = pd.read_csv('liga_not_found.csv', encoding='utf-8', sep=';')
@@ -16,8 +17,8 @@ liga_server = list(df['liga_id'])
 
 print('liga: ' + str(liga))
 
-lags = liga
-print('lags: ' + str(lags))
+ligas = liga
+print('ligas: ' + str(ligas))
 
 if 1 == 2:
     resp = requests.get(
@@ -43,17 +44,15 @@ if 1 == 2:
             sport_name = sport_list.get(str(event.get('parentId')), '')
             print('{};{};{};{}'.format(sport_name, event.get('id'), event.get('name').replace(sport_name + '. ', ''), event.get('sortOrder')))
     print(len(arr_fonbet_top_matchs))
-else:
+elif 1 == 0:  # список для разметки
+
     from utils import sport_list
 
     print('sport;liga_id;liga_name;flag;')
     # for sport_data in sport_list:
     # for 
-    # url = 'https://www.olimp.bet/apiru/prematch/sport/?id=' + str(sport_data.get('olimp'))
-    # url = 'https://www.olimp.bet/apiru/prematch/sport/?id=2'
-
-    live = True
-    url = 'https://www.olimp.bet/apiru/live/sport/menu?sportId=2'
+    # url = 'https://www.olimp.bet/apiru/prematch/sport/?id=1' + str(sport_data.get('olimp'))
+    url = 'https://www.olimp.bet/apiru/prematch/sport/?id=2'
 
     resp = requests.get(
         url,
@@ -86,3 +85,50 @@ else:
     #     if s not in liga_top and s not in liga_oth:
     #         print(s)
     # print(x)
+else:  # Обработанный список
+    # POST https://api2.olimp.bet/api/champs HTTP/1.1
+    # X-TOKEN: 5a6a276c40bf0b24c639bde74c210b98
+    # X-CUPIS: 1
+    # Content-Type: application/x-www-form-urlencoded
+    # Content-Length: 54
+    # Host: api2.olimp.bet
+    # Connection: Keep-Alive
+    # Accept-Encoding: gzip
+    # User-Agent: okhttp/3.12.1
+    # live=0&sport_id=1&session=&platforma=CUPISA2&lang_id=2
+    url = 'https://api2.olimp.bet/api/champs'
+    from util_olimp import head, olimp_data, olimp_secret_key, olimp_get_xtoken
+
+    olimp_data = olimp_data.copy()
+    olimp_data.update({'live': '0', 'sport_id': 1, 'lang_id': 2})
+    olimp_data.pop('time_shift')
+    head = head.copy()
+    head.update(olimp_get_xtoken(olimp_data, olimp_secret_key))
+    head.pop('Accept-Language', None)
+    print(head)
+    # print(v_url, olimp_data_ll, proxies)
+    # {'id': 1643805, 'cid': 1530550, 'n': 'Switzerland. Super League. Outrights', 'com': '', 'so': 1, 'sn': 'Soccer', 'max': 250000, 'cgi': 10, 'co': 204, 'io': 1, 'is': False, 'top': 0, 'top_b': 0, 'sort': 176}
+    resp = requests.post(
+        url,
+        data=olimp_data,
+        headers=head,
+        timeout=10,
+        verify=False,
+    )
+    print('liga_name;is_top;')
+    for l in resp.json().get('data'):
+        # print(l)
+        liga_name = l.get('n')
+        # if list(df[df['liga_id'] == l.get('id')]):
+        #     x = 'id'
+        # elif list(df[df['liga_id'] == l.get('cid')]):
+        #     x = 'cid'
+        if '. Statistics' not in liga_name and '. Outrights' not in liga_name and '. Special offers' not in liga_name:
+            x = ''
+            if l.get('id') in list(df['liga_id']):
+                x = l.get('id')
+            elif l.get('cid') in list(df['liga_id']):
+                x = l.get('cid')
+            # print('{}, {}, {}, {}, {}, {}'.format(x, l.get('id'), l.get('cid'), liga_name, l.get('so'), l.get('sn')))
+            # print('{}, {}, {}, {}, {}, {}'.format(x, l.get('id'), l.get('cid'), liga_name, l.get('so'), l.get('sn')))
+            print('{};{}'.format(liga_name, df[(df['liga_id'] == x)]['is_top'].values[0]))

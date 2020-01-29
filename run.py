@@ -25,7 +25,7 @@ import sys
 import traceback
 
 
-def get_olimp(resp, arr_matchs, place='live', sport_id=None, arr_top_matchs=None, my_top=None, my_middle=None, my_slag=None, my_oth=None, liga_unknown=None):
+def get_olimp(resp, arr_matchs, place='live', sport_id=None, arr_top_matchs=None, my_top=None, my_middle=None, my_slag=None, liga_unknown=None):
     # Очистим дстарые данные
     for key in list(arr_matchs):
         if arr_matchs.get('olimp', '') != '':
@@ -75,18 +75,18 @@ def get_olimp(resp, arr_matchs, place='live', sport_id=None, arr_top_matchs=None
                                 'start_after_min': start_after_min,
                             }
                         if v_sport_id in (1, 2):
-                            if liga_id in my_top and match_id not in arr_top_matchs.get('top', []):
+                            if liga_name in my_top and match_id not in arr_top_matchs.get('top', []):
                                 prnts('my_top ' + place + ' Event added: ' + str(match_id_str) + ', liga_name ' + str(liga_name) + ', liga_id: ' + str(liga_id))
                                 arr_top_matchs['top'].append(match_id)
-                            elif liga_id in my_middle and match_id not in arr_top_matchs.get('middle', []):
+                            elif liga_name in my_middle and match_id not in arr_top_matchs.get('middle', []):
                                 prnts('my_middle ' + place + ' Event added: ' + str(match_id_str) + ', liga_name ' + str(liga_name) + ', liga_id: ' + str(liga_id))
                                 arr_top_matchs['middle'].append(match_id)
-                            elif liga_id in my_slag and match_id not in arr_top_matchs.get('slag', []):
+                            elif liga_name in my_slag and match_id not in arr_top_matchs.get('slag', []):
                                 prnts('my_slag ' + place + ' Event added: ' + str(match_id_str) + ', liga_name ' + str(liga_name) + ', liga_id: ' + str(liga_id))
                                 arr_top_matchs['slag'].append(match_id)
-                            elif liga_id not in my_top + my_middle + my_slag + my_oth:
-                                if liga_id not in liga_unknown:
-                                    liga_unknown.append(liga_id)
+                            elif liga_name not in my_top + my_middle + my_slag:
+                                if liga_name not in liga_unknown:
+                                    liga_unknown.append(liga_name)
                                     v_str = str(v_sport_id) + ';' + if_exists(sport_list, 'olimp', v_sport_id, 'name') + ';' + str(liga_id) + ';' + str(liga_name) + ';\n'
                                     with open('liga_not_found.csv', 'r+') as file:
                                         for line in list(file):
@@ -207,15 +207,13 @@ def start_seeker_matchs_olimp(gen_proxi_olimp, arr_matchs, place, arr_top_matchs
         time_out = TIMEOUT_LIST
     time_resp = 0
     try:
-        df = pd.read_csv('top.csv', encoding='utf-8', sep=';')
+        df = pd.read_csv('top_by_name.csv', encoding='utf-8', sep=';')
         my_top = list(df[(df['is_top'] == 2)]['liga_id'])
         my_middle = list(df[(df['is_top'] == 1)]['liga_id'])
         my_slag = list(df[(df['is_top'] == 0)]['liga_id'])
-        my_oth = list(df[(df['is_top'].isnull())]['liga_id'])
         prnts('my_top: ' + str(my_top))
         prnts('my_middle: ' + str(my_middle))
         prnts('my_slag: ' + str(my_slag))
-        prnts('my_oth: ' + str(my_oth))
     except Exception as e:
         prnts('err liga_top: ' + str(e))
     while True:
@@ -244,7 +242,7 @@ def start_seeker_matchs_olimp(gen_proxi_olimp, arr_matchs, place, arr_top_matchs
                                         try:
                                             prnts('request: sport_id:{}, liga_id:{}'.format(sport_id, liga_id_str))
                                             resp_matches, time_resp = get_matches_olimp(proxy, time_out, 'matches', sport_id, max_min_prematch / 60, liga_id_str)
-                                            get_olimp(resp_matches, arr_matchs, 'pre', sport_id, arr_top_matchs, my_top, my_middle, my_slag, my_oth, liga_unknown)
+                                            get_olimp(resp_matches, arr_matchs, 'pre', sport_id, arr_top_matchs, my_top, my_middle, my_slag, liga_unknown)
                                             # print_j(resp_matches)
                                             prnts('sport_id: {}, liga_id:{}, add matches: {}, liga name:{}'.format(sport_id, liga_id_str, len(resp_matches.get('it')), resp_matches.get('n')))
                                         except Exception as e:
@@ -287,7 +285,7 @@ def start_seeker_matchs_olimp(gen_proxi_olimp, arr_matchs, place, arr_top_matchs
                 #         # time.sleep(5)
             else:
                 resp, time_resp = get_matches_olimp(proxy, time_out, place)
-                get_olimp(resp, arr_matchs, 'live', None, arr_top_matchs, my_top, my_middle, my_slag, my_oth, liga_unknown)
+                get_olimp(resp, arr_matchs, 'live', None, arr_top_matchs, my_top, my_middle, my_slag, liga_unknown)
         except TimeOut as e:
             err_str = 'Timeout: Олимп, ошибка призапросе списока матчей'
             prnts(err_str)
