@@ -1,34 +1,25 @@
 import requests
 import urllib3
 import pandas as pd
+
 # disable warning
 urllib3.disable_warnings()
 url = 'https://line-03.ccf4ab51771cacd46d.com/live/currentLine/ru/?1a4xslry59qk5s4znvy'
 UA = 'Mozilla/5.0 (Windows NT 10; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.3163.100 Safari/537.36'
 
-try:
-    df = pd.read_csv('top.csv', encoding='utf-8', sep=';')
-    df_all = df[(df['is_top'] != 2)]
-    df_top = df[(df['is_top'] == 2)]
-    liga_top = list(df_top['liga_id'])
-    liga_oth = list(df_all['liga_id'])
-    
-    df_nf = pd.read_csv('liga_not_found.csv', encoding='utf-8', sep=';')
-    liga_server = list(df['liga_id'])
-    
-    
-    print('My liga_top: ' + str(liga_top))
-    print('My liga_oth: ' + str(liga_oth))
-    print('liga_server: ' + str(liga_server))
-except Exception as e:
-    print('err liga_top: ' + str(e))
-    liga_top = []
-    liga_oth = []
-    
-lags = liga_top + liga_oth
-print('lags: ' + str(lags))    
 
-if 1==2:
+df = pd.read_csv('top.csv', encoding='utf-8', sep=';')
+liga = list(df['liga_id'])
+
+df_nf = pd.read_csv('liga_not_found.csv', encoding='utf-8', sep=';')
+liga_server = list(df['liga_id'])
+
+print('liga: ' + str(liga))
+
+lags = liga
+print('lags: ' + str(lags))
+
+if 1 == 2:
     resp = requests.get(
         url,
         headers={'User-Agent': UA},
@@ -46,11 +37,11 @@ if 1==2:
     print('sport;liga_id;liga_name;by_sort')
     for event in res.get('sports'):
         # if 'League VTB' in str(event):
-            # print(event)
+        # print(event)
         if str(event.get('id')) not in arr_fonbet_top_matchs and event.get('kind') == 'segment':
             arr_fonbet_top_matchs.append(str(event.get('id')))
             sport_name = sport_list.get(str(event.get('parentId')), '')
-            print('{};{};{};{}'.format(sport_name, event.get('id'), event.get('name').replace(sport_name + '. ', ''), event.get('sortOrder') ))
+            print('{};{};{};{}'.format(sport_name, event.get('id'), event.get('name').replace(sport_name + '. ', ''), event.get('sortOrder')))
     print(len(arr_fonbet_top_matchs))
 else:
     from utils import sport_list
@@ -80,12 +71,9 @@ else:
         else:
             x += 1
             # print(c)
-            if c.get('id') in liga_top:
+            if c.get('id') in liga:
                 pass
                 # print('{};{};{};{}'.format(res.get('sport').get('name'), c.get('id'), c.get('name'), 2))
-            elif c.get('id') in liga_oth:
-                pass
-                # print('{};{};{};{}'.format(res.get('sport').get('name'), c.get('id'), c.get('name'), 0))
             else:
                 print('{};{};{};{}'.format(res.get('sport').get('name'), c.get('id'), c.get('name'), ''))
     # for s in liga_server:

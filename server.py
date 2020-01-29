@@ -43,7 +43,7 @@ def get_state(arr):
     return state
 
 
-def run_server(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_fonbet_top_matchs, bets_olimp, bets_fonbet, mathes_complite):
+def run_server(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_top_matchs, bets_olimp, bets_fonbet, mathes_complite):
     class HttpProcessor(BaseHTTPRequestHandler):
         def __init__(self, forks, bar, qux, *args, **kwargs):
             self.data_str = json.dumps(forks, ensure_ascii=False)
@@ -65,16 +65,26 @@ def run_server(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_fonbet_top_matchs
                 self.send_header('content-type', 'application/json')
                 self.end_headers()
                 self.wfile.write(str(self.data_str).encode('utf-8'))
-            elif self.path == '/get_cnt_matches':
+            elif self.path == '/get_matches':
                 self.send_response(200)
                 self.send_header('content-type', 'application/json')
                 self.end_headers()
                 self.wfile.write(str(pair_mathes).encode('utf-8'))
-            elif self.path == '/get_cnt_top_matches':
+            elif self.path == '/get_top':
                 self.send_response(200)
                 self.send_header('content-type', 'application/json')
                 self.end_headers()
-                self.wfile.write(str(arr_fonbet_top_matchs).encode('utf-8'))
+                self.wfile.write(str(arr_top_matchs.get('top', [])).encode('utf-8'))
+            elif self.path == '/get_middle':
+                self.send_response(200)
+                self.send_header('content-type', 'application/json')
+                self.end_headers()
+                self.wfile.write(str(arr_top_matchs.get('middle', [])).encode('utf-8'))
+            elif self.path == '/get_slag':
+                self.send_response(200)
+                self.send_header('content-type', 'application/json')
+                self.end_headers()
+                self.wfile.write(str(arr_top_matchs.get('slag', [])).encode('utf-8'))
             elif self.path == '/end':
                 self.send_response(200)
                 self.send_header('content-type', 'application/json')
@@ -144,6 +154,7 @@ def run_server(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_fonbet_top_matchs
                 with open('access.log', 'a+', encoding='utf-8') as f:
                     f.write('ip: ' + ip_adr + ', path: ' + self.path + '\n')
                 mutex.release()
+
     try:
         handler = partial(HttpProcessor, forks, 0, 0)
         serv = HTTPServer((SERVER_IP, SERVER_PORT), handler)

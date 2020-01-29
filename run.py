@@ -24,7 +24,8 @@ import pandas as pd
 import sys
 import traceback
 
-def get_olimp(resp, arr_matchs, place='live', sport_id=None, arr_fonbet_top_matchs=None, liga_top=None, liga_oth=None, liga_unknown=None):
+
+def get_olimp(resp, arr_matchs, place='live', sport_id=None, arr_top_matchs=None, my_top=None, my_middle=None, my_slag=None, my_oth=None, liga_unknown=None):
     # Очистим дстарые данные
     for key in list(arr_matchs):
         if arr_matchs.get('olimp', '') != '':
@@ -56,17 +57,10 @@ def get_olimp(resp, arr_matchs, place='live', sport_id=None, arr_fonbet_top_matc
             if '. Statistics' not in liga_name and '. Outrights' not in liga_name and '. Special offers' not in liga_name:
                 if if_exists(sport_list, 'olimp', v_sport_id) and if_exists_by_sport(sport_list, 'olimp', v_sport_id, 'place', place):
                     for math_info in liga_info.get('it'):
-                        # print(math_info.get('dt') + ' ' + str(datetime.fromtimestamp(int(math_info.get('t')) + 60 * 60).strftime('%d.%m.%Y %H:%M:%S')))
-                        # print(math_info.get('dt') == str(datetime.fromtimestamp(int(math_info.get('t'))+60*60).strftime('%d.%m.%Y %H:%M:%S')))
                         match_id = math_info.get('id')
                         match_id_str = str(match_id)
-                        # math_block = True if math_info.get('ms') == 1 else False
-                        # print_j(liga_info)
                         start_time = math_info.get('t', 0)
                         start_after_min = math.floor((start_time - int(time.time())) / 60)
-                        # if 'France. Ligue 1' in str(liga_name):
-                        #     print('liga_info: ' + str() + ', ' + liga_id)
-                        #     1/0
                         if start_after_min < max_min_prematch:
                             arr_matchs[match_id_str] = {
                                 'bk_name': 'olimp',
@@ -80,23 +74,26 @@ def get_olimp(resp, arr_matchs, place='live', sport_id=None, arr_fonbet_top_matc
                                 # 'start_time_str': start_time_str,
                                 'start_after_min': start_after_min,
                             }
-                        # if place == 'pre' and v_sport_id==1:
                         if v_sport_id in (1, 2):
-                            # prnts('liga_id:{}, liga_top:{}, match_id:{}, arr_fonbet_top_matchs:{}'.format(liga_id, liga_top, match_id, arr_fonbet_top_matchs))
-                            if liga_id in liga_top and match_id not in arr_fonbet_top_matchs:
-                                prnts('MY TOP ' + place + ' Event added: ' + str(match_id_str) + ', liga_name ' + str(liga_name) + ', liga_id: ' + str(liga_id))
-                                arr_fonbet_top_matchs.append(match_id)
-                                # v_str = str(v_sport_id) + ';' + str(liga_id) + ';' + str(liga_name) + ';\n'
-                            elif liga_id not in liga_oth and liga_id not in liga_top:
+                            if liga_id in my_top and match_id not in arr_top_matchs.get('top', []):
+                                prnts('my_top ' + place + ' Event added: ' + str(match_id_str) + ', liga_name ' + str(liga_name) + ', liga_id: ' + str(liga_id))
+                                arr_top_matchs['top'].append(match_id)
+                            elif liga_id in my_middle and match_id not in arr_top_matchs.get('middle', []):
+                                prnts('my_middle ' + place + ' Event added: ' + str(match_id_str) + ', liga_name ' + str(liga_name) + ', liga_id: ' + str(liga_id))
+                                arr_top_matchs['middle'].append(match_id)
+                            elif liga_id in my_slag and match_id not in arr_top_matchs.get('slag', []):
+                                prnts('my_slag ' + place + ' Event added: ' + str(match_id_str) + ', liga_name ' + str(liga_name) + ', liga_id: ' + str(liga_id))
+                                arr_top_matchs['slag'].append(match_id)
+                            elif liga_id not in my_top + my_middle + my_slag + my_oth:
                                 if liga_id not in liga_unknown:
                                     liga_unknown.append(liga_id)
                                     v_str = str(v_sport_id) + ';' + if_exists(sport_list, 'olimp', v_sport_id, 'name') + ';' + str(liga_id) + ';' + str(liga_name) + ';\n'
                                     with open('liga_not_found.csv', 'r+') as file:
                                         for line in list(file):
                                             if v_str in line:
-                                               break
-                                        else: # not found, we are at the eof
-                                            file.write(v_str) # append missing data
+                                                break
+                                        else:  # not found, we are at the eof
+                                            file.write(v_str)  # append missing data
                         else:
                             if DEBUG:
                                 prnts('Собитие исключено т.к. время начла больше: {}, мин:{}\ndata:{}'.format(max_min_prematch, start_after_min, str(math_info)), 'hide')
@@ -198,7 +195,7 @@ def get_fonbet(resp, arr_matchs, place):
     # ['16453828': {'bk_name': 'fonbet', 'sport_id': 1, 'sport_name': 'Football', 'name': '', 'team1': 'Nadi', 'team2': 'Suva'}, ....]
 
 
-def start_seeker_matchs_olimp(gen_proxi_olimp, arr_matchs, place, arr_fonbet_top_matchs=None):
+def start_seeker_matchs_olimp(gen_proxi_olimp, arr_matchs, place, arr_top_matchs=None):
     global TIMEOUT_LIST, TIMEOUT_PRE_LIST
     proxy = gen_proxi_olimp.next()
     fail_proxy = 0
@@ -211,16 +208,16 @@ def start_seeker_matchs_olimp(gen_proxi_olimp, arr_matchs, place, arr_fonbet_top
     time_resp = 0
     try:
         df = pd.read_csv('top.csv', encoding='utf-8', sep=';')
-        df_all = df[(df['is_top'] != 2)]
-        df = df[(df['is_top'] == 2)]
-        liga_top = list(df['liga_id'])
-        liga_oth = list(df_all['liga_id'])
-        prnts('My liga_top: ' + str(liga_top))
-        prnts('My liga_oth: ' + str(liga_oth))
+        my_top = list(df[(df['is_top'] == 2)]['liga_id'])
+        my_middle = list(df[(df['is_top'] == 1)]['liga_id'])
+        my_slag = list(df[(df['is_top'] == 0)]['liga_id'])
+        my_oth = list(df[(df['is_top'].isnull())]['liga_id'])
+        prnts('my_top: ' + str(my_top))
+        prnts('my_middle: ' + str(my_middle))
+        prnts('my_slag: ' + str(my_slag))
+        prnts('my_oth: ' + str(my_oth))
     except Exception as e:
         prnts('err liga_top: ' + str(e))
-        liga_top = []
-        liga_oth = []
     while True:
         try:
             if place == 'pre':
@@ -247,7 +244,7 @@ def start_seeker_matchs_olimp(gen_proxi_olimp, arr_matchs, place, arr_fonbet_top
                                         try:
                                             prnts('request: sport_id:{}, liga_id:{}'.format(sport_id, liga_id_str))
                                             resp_matches, time_resp = get_matches_olimp(proxy, time_out, 'matches', sport_id, max_min_prematch / 60, liga_id_str)
-                                            get_olimp(resp_matches, arr_matchs, 'pre', sport_id, arr_fonbet_top_matchs, liga_top, liga_oth, liga_unknown)
+                                            get_olimp(resp_matches, arr_matchs, 'pre', sport_id, arr_top_matchs, my_top, my_middle, my_slag, my_oth, liga_unknown)
                                             # print_j(resp_matches)
                                             prnts('sport_id: {}, liga_id:{}, add matches: {}, liga name:{}'.format(sport_id, liga_id_str, len(resp_matches.get('it')), resp_matches.get('n')))
                                         except Exception as e:
@@ -290,7 +287,7 @@ def start_seeker_matchs_olimp(gen_proxi_olimp, arr_matchs, place, arr_fonbet_top
                 #         # time.sleep(5)
             else:
                 resp, time_resp = get_matches_olimp(proxy, time_out, place)
-                get_olimp(resp, arr_matchs, 'live', None, arr_fonbet_top_matchs, liga_top, liga_oth, liga_unknown)
+                get_olimp(resp, arr_matchs, 'live', None, arr_top_matchs, my_top, my_middle, my_slag, my_oth, liga_unknown)
         except TimeOut as e:
             err_str = 'Timeout: Олимп, ошибка призапросе списока матчей'
             prnts(err_str)
@@ -342,7 +339,7 @@ def start_seeker_matchs_fonbet(gen_proxi_fonbet, arr_matchs, place):
         time.sleep(time_sleep)
 
 
-def start_seeker_top_matchs_fonbet(gen_proxi_fonbet, arr_fonbet_top_matchs, pair_mathes, arr_fonbet_top_kofs):
+def start_seeker_top_matchs_fonbet(gen_proxi_fonbet, arr_top_matchs, pair_mathes, arr_fonbet_top_kofs):
     global TIMEOUT_LIST
     proxy = gen_proxi_fonbet.next()
 
@@ -363,15 +360,18 @@ def start_seeker_top_matchs_fonbet(gen_proxi_fonbet, arr_fonbet_top_matchs, pair
                     match_id = event.get('id')
                     liga_id = event.get('competitionId')
                     liga_name = event.get('competitionName')
-                    if str(event.get('skId')) in ('1', '2'):# and place == 'top:pre':
+                    if str(event.get('skId')) in ('1', '2'):  # and place == 'top:pre':
                         pass
                     else:
-                        if match_id not in arr_fonbet_top_matchs and match_id in list_pair_mathes:
-                            prnts('TOP ' + place.split(':')[1] + ' Event added: ' + str(event.get('skId', '')) + '-' + str(event.get('skName', '')) + ': ' + str(match_id) + ', ' + event.get('eventName', '') + ', ' + str(liga_id))
-                            arr_fonbet_top_matchs.append(match_id)
-                        elif match_id in arr_fonbet_top_matchs and match_id not in list_pair_mathes:
-                            prnts('TOP ' + place.split(':')[1] + 'Event deleted: ' + str(event.get('skId', '')) + '-' + str(event.get('skName', '')) + ': ' + str(match_id) + ', ' + event.get('eventName', '') + ', ' + str(liga_id))
-                            arr_fonbet_top_matchs.remove(match_id)
+                        if match_id not in arr_top_matchs.get('top', []) + list_pair_mathes:
+                            prnts('TOP ' + place.split(':')[1] + ' Event added: ' + str(event.get('skId', '')) + '-' + str(event.get('skName', '')) + ': ' + str(match_id) + ', ' + event.get('eventName', '') + ', ' + str(
+                                liga_id))
+                            arr_top_matchs['top'].append(match_id)
+                        elif match_id in arr_top_matchs.get('top', []) + list_pair_mathes:
+                            prnts(
+                                'TOP ' + place.split(':')[1] + 'Event deleted: ' + str(event.get('skId', '')) + '-' + str(event.get('skName', '')) + ': ' + str(match_id) + ', ' + event.get('eventName', '') + ', ' + str(
+                                    liga_id))
+                            arr_top_matchs['top'].remove(match_id)
 
                     for row in event.get('markets'):
                         for cell in row.get('rows'):
@@ -625,15 +625,15 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                                         bk2_match_info.get('team1', ''),
                                         bk2_match_info.get('team2', '')
                                     )
-                                    deff_time = abs( (bk1_match_info.get('start_time') - bk2_match_info.get('start_time')) / 60 )
+                                    deff_time = abs((bk1_match_info.get('start_time') - bk2_match_info.get('start_time')) / 60)
                                     if rate > need and (
-                                        (bk1_match_info.get('sport_name') == 'football' and deff_time > 12)
-                                        or (bk1_match_info.get('sport_name') == 'hockey' and deff_time > 30)
-                                        or (bk1_match_info.get('sport_name') == 'tennis' and deff_time > 40)
-                                        or (bk1_match_info.get('sport_name') == 'volleyball' and deff_time > 30)
-                                        or (deff_time > 300)
-                                        ):
-                                            prnts('Обнаружено различие во времени матча: {}, {}, {}'.format(deff_time, match_name, rate))
+                                            (bk1_match_info.get('sport_name') == 'football' and deff_time > 12)
+                                            or (bk1_match_info.get('sport_name') == 'hockey' and deff_time > 30)
+                                            or (bk1_match_info.get('sport_name') == 'tennis' and deff_time > 40)
+                                            or (bk1_match_info.get('sport_name') == 'volleyball' and deff_time > 30)
+                                            or (deff_time > 300)
+                                    ):
+                                        prnts('Обнаружено различие во времени матча: {}, {}, {}'.format(deff_time, match_name, rate))
                                     else:
                                         if rate > 0:
                                             bk_rate_list.append({
@@ -722,7 +722,7 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
             time.sleep(time_sleep_proc)
 
 
-def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbet_top_matchs):
+def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_top_matchs):
     global opposition
 
     def forks_meta_upd(forks_meta, forks):
@@ -734,9 +734,13 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
         try:
             for pair_math in pair_mathes:
 
-                is_top = False
-                if int(pair_math[0]) in arr_fonbet_top_matchs or int(pair_math[1]) in arr_fonbet_top_matchs:
-                    is_top = True
+                is_top = ''
+                if int(pair_math[0]) in arr_top_matchs.get('top', []) or int(pair_math[1]) in arr_top_matchs.get('top', []):
+                    is_top = 'top'
+                elif int(pair_math[0]) in arr_top_matchs.get('middle', []) or int(pair_math[1]) in arr_top_matchs.get('middle', []):
+                    is_top = 'middle'
+                elif int(pair_math[0]) in arr_top_matchs.get('slag', []) or int(pair_math[1]) in arr_top_matchs.get('slag', []):
+                    is_top = 'slag'
 
                 math_json_olimp = copy.deepcopy(bets_olimp.get(pair_math[0], {}))
                 math_json_fonbet = copy.deepcopy(bets_fonbet.get(pair_math[1], {}))
@@ -994,15 +998,15 @@ def stat_req(stat_req_olimp, stat_req_fonbet):
             if stat_req_olimp_copy and stat_req_fonbet_copy:
                 prnts('fb cnt:' + str(len(stat_req_fonbet_copy)) +
                       '/' + str(fonbet_err) +
-                      ' err: ' + str(round(fonbet_err/len(stat_req_fonbet_copy)*100)) +
+                      ' err: ' + str(round(fonbet_err / len(stat_req_fonbet_copy) * 100)) +
                       '% avg:' + str(round(sum(stat_req_fonbet_copy) / len(stat_req_fonbet_copy), 2)) +
                       ' max:' + str(max(stat_req_fonbet_copy)) +
                       ' mode:' + str(round(find_max_mode(stat_req_fonbet_copy), 2)) +
                       ' median:' + str(round(median(stat_req_fonbet_copy), 2)))
-    
+
                 prnts('ol cnt:' + str(len(stat_req_olimp_copy)) +
                       '/' + str(olimp_err) +
-                      ' err ' + str(round(olimp_err/len(stat_req_olimp_copy)*100)) +
+                      ' err ' + str(round(olimp_err / len(stat_req_olimp_copy) * 100)) +
                       '% avg:' + str(round(sum(stat_req_olimp_copy) / len(stat_req_olimp_copy), 2)) +
                       ' max:' + str(max(stat_req_olimp_copy)) +
                       ' mode:' + str(round(find_max_mode(stat_req_olimp_copy), 2)) +
@@ -1028,52 +1032,52 @@ if __name__ == '__main__':
         prnts('max_hour_prematch: ' + str(max_min_prematch / 60))
         proxy_filename_olimp = 'olimp.proxy'
         proxy_filename_fonbet = 'fonbet.proxy'
-    
+
         proxies_olimp = get_proxy_from_file(proxy_filename_olimp, uniq=False)
         proxies_fonbet = get_proxy_from_file(proxy_filename_fonbet)
-    
+
         gen_proxi_olimp = createBatchGenerator(get_next_proxy(copy.deepcopy(proxies_olimp)))
         gen_proxi_fonbet = createBatchGenerator(get_next_proxy(copy.deepcopy(proxies_fonbet)))
-    
+
         proxy_saver = threading.Thread(target=start_proxy_saver, args=(proxies_olimp, proxies_fonbet, proxy_filename_olimp, proxy_filename_fonbet))
         proxy_saver.start()
         prnts(' ')
         prnts('START: proxy_saver')
-    
+
         arr_matchs = dict()
-    
-        arr_fonbet_top_matchs = []
+
+        arr_top_matchs = {'top': [], 'middle': [], 'slag': []}
         arr_fonbet_top_kofs = {}
         # Completed Events
         mathes_complite = []
-    
+
         # json by bets event
         bets_fonbet = dict()
         bets_olimp = dict()
-    
+
         forks = dict()
         forks_meta = dict()
-    
+
         stat_req_olimp = [[], 0]
         stat_req_fonbet = [[], 0]
-    
+
         # List of event "at work"
         pair_mathes = []
-    
+
         # get event list by olimp
-        olimp_seeker_matchs = threading.Thread(target=start_seeker_matchs_olimp, args=(gen_proxi_olimp, arr_matchs, 'live'))
+        olimp_seeker_matchs = threading.Thread(target=start_seeker_matchs_olimp, args=(gen_proxi_olimp, arr_matchs, 'live', arr_top_matchs))
         olimp_seeker_matchs.start()
         prnts(' ')
         prnts('START: olimp_seeker_matchs')
         time.sleep(time_sleep_proc)
         # get pre event list by olimp
-        olimp_seeker_pre_matchs = threading.Thread(target=start_seeker_matchs_olimp, args=(gen_proxi_olimp, arr_matchs, 'pre', arr_fonbet_top_matchs))
+        olimp_seeker_pre_matchs = threading.Thread(target=start_seeker_matchs_olimp, args=(gen_proxi_olimp, arr_matchs, 'pre', arr_top_matchs))
         olimp_seeker_pre_matchs.start()
         prnts(' ')
         prnts('START: olimp_seeker_pre_matchs')
         time.sleep(time_sleep_proc)
         # time.sleep(60)
-    
+
         # get event list by fonbet
         fonbet_seeker_matchs = threading.Thread(target=start_seeker_matchs_fonbet, args=(gen_proxi_fonbet, arr_matchs, 'live'))
         fonbet_seeker_matchs.start()
@@ -1085,25 +1089,25 @@ if __name__ == '__main__':
         fonbet_seeker_pre_matchs.start()
         prnts(' ')
         prnts('START: fonbet_seeker_pre_matchs')
-        time.sleep(time_sleep_proc*2)
+        time.sleep(time_sleep_proc * 2)
         # while True:
         #     for n in list(arr_matchs):
         #         print_j(arr_matchs[n])
         #     time.sleep(15)
-    
+
         # List of TOP events
-        fonbet_seeker_top_matchs = threading.Thread(target=start_seeker_top_matchs_fonbet, args=(gen_proxi_fonbet, arr_fonbet_top_matchs, pair_mathes, arr_fonbet_top_kofs))
+        fonbet_seeker_top_matchs = threading.Thread(target=start_seeker_top_matchs_fonbet, args=(gen_proxi_fonbet, arr_top_matchs, pair_mathes, arr_fonbet_top_kofs))
         fonbet_seeker_top_matchs.start()
         prnts(' ')
         prnts('START: fonbet_seeker_top_matchs')
-    
+
         # Event mapping
         time.sleep(time_sleep_proc)
         event_mapping = threading.Thread(target=start_event_mapping, args=(pair_mathes, arr_matchs, mathes_complite))
         event_mapping.start()
         prnts(' ')
         prnts('START: event_mapping')
-    
+
         time.sleep(time_sleep_proc)
         mathes_id_is_work = []
         starter_bets = threading.Thread(
@@ -1114,22 +1118,22 @@ if __name__ == '__main__':
         starter_bets.start()
         prnts(' ')
         prnts('START: starter_bets')
-    
-        starter_forks = threading.Thread(target=get_forks, args=(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbet_top_matchs))
+
+        starter_forks = threading.Thread(target=get_forks, args=(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_top_matchs))
         starter_forks.start()
         prnts(' ')
         prnts('START: starter_forks')
-    
+
         started_stat_req = threading.Thread(target=stat_req, args=(stat_req_olimp, stat_req_fonbet))
         started_stat_req.start()
         prnts(' ')
         prnts('START: started_stat_req')
-    
-        server = threading.Thread(target=run_server, args=(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_fonbet_top_matchs, bets_olimp, bets_fonbet, mathes_complite))
+
+        server = threading.Thread(target=run_server, args=(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_top_matchs, bets_olimp, bets_fonbet, mathes_complite))
         server.start()
         prnts(' ')
         prnts('START: server')
-    
+
         proxy_saver.join()
         olimp_seeker_matchs.join()
         olimp_seeker_pre_matchs.join()
