@@ -371,7 +371,7 @@ def start_seeker_top_matchs_fonbet(gen_proxi_fonbet, arr_top_matchs, pair_mathes
                         elif match_id in arr_top_matchs.get('top', []) + list_pair_mathes:
                             prnts(
                                 'TOP ' + place.split(':')[1] + 'Event deleted: ' + str(sport_id) + '-' + str(sport_name) + ': ' + str(match_id) + ', ' + event.get('eventName', '') + ', ' + str(liga_id))
-                            top_temp = arr_top_matchs['top'].copy()
+                            top_temp = list(arr_top_matchs['top'])
                             top_temp.remove(match_id)
                             arr_top_matchs['top'] = list(top_temp)
 
