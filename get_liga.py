@@ -50,7 +50,11 @@ else:
     # for sport_data in sport_list:
     # for 
     # url = 'https://www.olimp.bet/apiru/prematch/sport/?id=' + str(sport_data.get('olimp'))
-    url = 'https://www.olimp.bet/apiru/prematch/sport/?id=2'
+    # url = 'https://www.olimp.bet/apiru/prematch/sport/?id=2'
+
+    live = True
+    url = 'https://www.olimp.bet/apiru/live/sport/menu?sportId=2'
+
     resp = requests.get(
         url,
         headers={'User-Agent': UA},
@@ -62,6 +66,8 @@ else:
     # arr_fonbet_top_matchs = []
     x = 0
     for c in res.get('champs'):
+        if live:
+            c = c.get('champ')
         if '. Итоги' in c.get('name'):
             pass
         elif '. Статистика' in c.get('name'):
