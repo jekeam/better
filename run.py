@@ -348,6 +348,8 @@ def start_seeker_top_matchs_fonbet(gen_proxi_fonbet, arr_top_matchs, pair_mathes
                 list_pair_mathes.append(int(m[0]))
                 list_pair_mathes.append(int(m[1]))
         except Exception as e:
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            e = str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
             prnts('Фонбет, ошибка при запросе списка TOP матчей: ' + str(e) + ' ' + proxy)
             raise ValueError(e)
         try:
@@ -358,18 +360,20 @@ def start_seeker_top_matchs_fonbet(gen_proxi_fonbet, arr_top_matchs, pair_mathes
                     match_id = event.get('id')
                     liga_id = event.get('competitionId')
                     liga_name = event.get('competitionName')
+                    sport_id = event.get('skId', '')
+                    sport_name = event.get('skName', '')
                     if str(event.get('skId')) in ('1', '2'):  # and place == 'top:pre':
                         pass
                     else:
                         if match_id not in arr_top_matchs.get('top', []) + list_pair_mathes:
-                            prnts('TOP ' + place.split(':')[1] + ' Event added: ' + str(event.get('skId', '')) + '-' + str(event.get('skName', '')) + ': ' + str(match_id) + ', ' + event.get('eventName', '') + ', ' + str(
-                                liga_id))
+                            prnts('TOP ' + place.split(':')[1] + ' Event added: ' + str(sport_id) + '-' + str(sport_name) + ': ' + str(match_id) + ', ' + event.get('eventName', '') + ', ' + str(liga_id))
                             arr_top_matchs['top'].append(match_id)
                         elif match_id in arr_top_matchs.get('top', []) + list_pair_mathes:
                             prnts(
-                                'TOP ' + place.split(':')[1] + 'Event deleted: ' + str(event.get('skId', '')) + '-' + str(event.get('skName', '')) + ': ' + str(match_id) + ', ' + event.get('eventName', '') + ', ' + str(
-                                    liga_id))
-                            arr_top_matchs['top'].remove(match_id)
+                                'TOP ' + place.split(':')[1] + 'Event deleted: ' + str(sport_id) + '-' + str(sport_name) + ': ' + str(match_id) + ', ' + event.get('eventName', '') + ', ' + str(liga_id))
+                            top_temp = arr_top_matchs['top'].copy()
+                            top_temp.remove(match_id)
+                            arr_top_matchs['top'] = list(top_temp)
 
                     for row in event.get('markets'):
                         for cell in row.get('rows'):
@@ -381,6 +385,8 @@ def start_seeker_top_matchs_fonbet(gen_proxi_fonbet, arr_top_matchs, pair_mathes
                                         arr_fonbet_top_kofs[event_id_str] = []
                                     arr_fonbet_top_kofs[event_id_str].append(factor_id)
         except Exception as e:
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            e = str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
             prnts('Фонбет, ошибка при запросе списка TOP матчей: ' + str(e) + ' ' + proxy)
             proxy = gen_proxi_fonbet.next()
             time_resp = TIMEOUT_LIST
