@@ -9,11 +9,17 @@ UA = 'Mozilla/5.0 (Windows NT 10; Win64; x64) AppleWebKit/537.36 (KHTML, like Ge
 try:
     df = pd.read_csv('top.csv', encoding='utf-8', sep=';')
     df_all = df[(df['is_top'] != 2)]
-    df = df[(df['is_top'] == 2)]
-    liga_top = list(df['liga_id'])
+    df_top = df[(df['is_top'] == 2)]
+    liga_top = list(df_top['liga_id'])
     liga_oth = list(df_all['liga_id'])
+    
+    df_nf = pd.read_csv('liga_not_found.csv', encoding='utf-8', sep=';')
+    liga_server = list(df['liga_id'])
+    
+    
     print('My liga_top: ' + str(liga_top))
     print('My liga_oth: ' + str(liga_oth))
+    print('liga_server: ' + str(liga_server))
 except Exception as e:
     print('err liga_top: ' + str(e))
     liga_top = []
@@ -67,15 +73,20 @@ else:
     for c in res.get('champs'):
         if '. Итоги' in c.get('name'):
             pass
+        elif '. Статистика' in c.get('name'):
+            pass
         else:
             x += 1
             # print(c)
             if c.get('id') in liga_top:
                 pass
-                print('{};{};{};{}'.format(res.get('sport').get('name'), c.get('id'), c.get('name'), 2))
+                # print('{};{};{};{}'.format(res.get('sport').get('name'), c.get('id'), c.get('name'), 2))
             elif c.get('id') in liga_oth:
                 pass
-                print('{};{};{};{}'.format(res.get('sport').get('name'), c.get('id'), c.get('name'), 0))
+                # print('{};{};{};{}'.format(res.get('sport').get('name'), c.get('id'), c.get('name'), 0))
             else:
-                print('{};{};{};{}'.format(res.get('sport').get('name'), c.get('id'), c.get('name'), None))
+                print('{};{};{};{}'.format(res.get('sport').get('name'), c.get('id'), c.get('name'), ''))
+    for s in liga_server:
+        if s not in liga_top and s not in liga_oth:
+            print(s)
     print(x)
