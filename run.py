@@ -81,7 +81,7 @@ def get_olimp(resp, arr_matchs, place='live', sport_id=None, arr_fonbet_top_matc
                                 'start_after_min': start_after_min,
                             }
                         # if place == 'pre' and v_sport_id==1:
-                        if v_sport_id==1:
+                        if v_sport_id in (1, 2):
                             # prnts('liga_id:{}, liga_top:{}, match_id:{}, arr_fonbet_top_matchs:{}'.format(liga_id, liga_top, match_id, arr_fonbet_top_matchs))
                             if liga_id in liga_top and match_id not in arr_fonbet_top_matchs:
                                 prnts('MY TOP ' + place + ' Event added: ' + str(match_id_str) + ', liga_name ' + str(liga_name) + ', liga_id: ' + str(liga_id))
@@ -363,7 +363,7 @@ def start_seeker_top_matchs_fonbet(gen_proxi_fonbet, arr_fonbet_top_matchs, pair
                     match_id = event.get('id')
                     liga_id = event.get('competitionId')
                     liga_name = event.get('competitionName')
-                    if str(event.get('skId')) == '1':# and place == 'top:pre':
+                    if str(event.get('skId')) in ('1', '2'):# and place == 'top:pre':
                         pass
                     else:
                         if match_id not in arr_fonbet_top_matchs and match_id in list_pair_mathes:
