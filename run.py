@@ -161,15 +161,15 @@ def set_api(bk_name, proxy):
             )
             resp = res.json()
             print(resp)
-            x_device_uuid = resp.get('token')
-            x_session = resp.get('transactionId')
+            x_session = resp.get('token')
+            # ??? = resp.get('transactionId')
     except Exception as e:
         exc_type, exc_value, exc_traceback = sys.exc_info()
         raise ValueError(bk_name + ', возникла ошибка при запросе ключа, код ответа ' + str(res.status_code) + ': ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
     if api_key:
         pinn_session_data.update({'api_key': api_key})
-    if x_device_uuid:
-        pinn_session_data.update({'x_device_uuid': x_device_uuid})
+    if util_pinnacle.x_device_uuid_temp:
+        pinn_session_data.update({'x_device_uuid': util_pinnacle.x_device_uuid_temp})
     if x_session:
         pinn_session_data.update({'x_session': x_session})
 

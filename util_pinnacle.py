@@ -14,21 +14,21 @@ list_matches_head = {
     'referer': 'https://www.pinnacle.com',
     'sec-fetch-mode': 'cors',
     'sec-fetch-site': 'same-site',
-    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36',
+    'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36',
 }
 list_matches_url = 'https://guest.api.arcadia.pinnacle.com/0.1/sports/{}/matchups/live'
 
 head_odds = {
     'accept': 'application/json',
-    'accept-language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7',
+    'accept-encoding': 'gzip, deflate, br',
+    'accept-language': 'ru,en;q=0.9,mg;q=0.8,cy;q=0.7',
     'cache-control': 'no-cache',
     'content-type': 'application/json',
     'origin': 'https://www.pinnacle.com',
-    'pragma': 'no-cache',
-    'referer': 'https://www.pinnacle.com/en/soccer/matchups/live',
+    'referer': 'https://www.pinnacle.com/en/',
     'sec-fetch-mode': 'cors',
     'sec-fetch-site': 'same-site',
-    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36',
+    'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36',
 }
 url_odds = 'https://guest.api.arcadia.pinnacle.com/0.1/sports/{}/markets/live/straight?primaryOnly=false'
 x_device_uuid_temp = 'f46d6637-4581a07c-36898a69-87694cf6'
@@ -212,29 +212,31 @@ def get_odds(bets, api_key, x_session, x_device_uuid, pair_mathes, sport_id, pro
             match_id_list.append(match_id2)
     # print('match_id_list: ' + str(match_id_list))
 
-    head = head_odds
+    # head = head_odds
+    head = list_matches_head
     if api_key:
         pass
-        # head.update({'x-api-key': api_key})
+        head.update({'x-api-key': api_key})
     if x_device_uuid:        
         pass
-        # head.update({'x-device-uuid': x_device_uuid})
+        head.update({'x-device-uuid': x_device_uuid})
     if x_session:
         pass
-        # head.update({'x-session': x_session})
+        head.update({'x-session': x_session})
     url = url_odds
     proxies = {'https': proxy}
     data = {}
-    print('get_odds head: ' + str(head))
+    # print('get_odds head: ' + str(head))
     resp = requests.get(
         url.format(sport_id),
+        # 'http://192.168.1.143:8888/',
         headers=head,
         timeout=timeout,
         verify=False,
         proxies=proxies,
     )
     data = resp.json()
-    print('data:' + str(resp.text)[0:300])
+    # print('data:' + str(resp.text)[0:300])
     # {'detail': 'API key is not valid', 'status': 403, 'title': 'BAD_APIKEY', 'type': 'about:blank'}
     if type(data) == dict and data.get('status'):
         utils.prnts('data' + str(data))
@@ -242,7 +244,7 @@ def get_odds(bets, api_key, x_session, x_device_uuid, pair_mathes, sport_id, pro
             utils.prnts('api_key: ' + str(api_key))
 
     for match_id in match_id_list:
-        check_vertion = True
+        check_vertion = False
         res = {}
         version = None
         # print('match_id: ' + str(match_id))
