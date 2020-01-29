@@ -734,13 +734,11 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_top_m
         try:
             for pair_math in pair_mathes:
 
-                is_top = ''
+                is_top = 'slag'
                 if int(pair_math[0]) in arr_top_matchs.get('top', []) or int(pair_math[1]) in arr_top_matchs.get('top', []):
                     is_top = 'top'
                 elif int(pair_math[0]) in arr_top_matchs.get('middle', []) or int(pair_math[1]) in arr_top_matchs.get('middle', []):
                     is_top = 'middle'
-                elif int(pair_math[0]) in arr_top_matchs.get('slag', []) or int(pair_math[1]) in arr_top_matchs.get('slag', []):
-                    is_top = 'slag'
 
                 math_json_olimp = copy.deepcopy(bets_olimp.get(pair_math[0], {}))
                 math_json_fonbet = copy.deepcopy(bets_fonbet.get(pair_math[1], {}))
