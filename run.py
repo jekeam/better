@@ -208,9 +208,9 @@ def start_seeker_matchs_olimp(gen_proxi_olimp, arr_matchs, place, arr_top_matchs
     time_resp = 0
     try:
         df = pd.read_csv('top_by_name.csv', encoding='utf-8', sep=';')
-        my_top = list(df[(df['is_top'] == 2)]['liga_id'])
-        my_middle = list(df[(df['is_top'] == 1)]['liga_id'])
-        my_slag = list(df[(df['is_top'] == 0)]['liga_id'])
+        my_top = list(df[(df['is_top'] == 2)]['liga_name'])
+        my_middle = list(df[(df['is_top'] == 1)]['liga_name'])
+        my_slag = list(df[(df['is_top'] == 0)]['liga_name'])
         prnts('my_top: ' + str(my_top))
         prnts('my_middle: ' + str(my_middle))
         prnts('my_slag: ' + str(my_slag))
