@@ -65,12 +65,12 @@ def run_server(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_top_matchs, bets_
                 self.send_header('content-type', 'application/json')
                 self.end_headers()
                 self.wfile.write(str(self.data_str).encode('utf-8'))
-            elif self.path == '/get_matches':
+            elif self.path == '/get_cnt_matches':
                 self.send_response(200)
                 self.send_header('content-type', 'application/json')
                 self.end_headers()
                 self.wfile.write(str(pair_mathes).encode('utf-8'))
-            elif self.path == '/get_top':
+            elif self.path == '/get_cnt_top_matches':
                 self.send_response(200)
                 self.send_header('content-type', 'application/json')
                 self.end_headers()
