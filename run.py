@@ -738,8 +738,8 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
                 if int(pair_math[0]) in arr_fonbet_top_matchs or int(pair_math[1]) in arr_fonbet_top_matchs:
                     is_top = True
 
-                math_json_olimp = bets_olimp.get(pair_math[0], {})
-                math_json_fonbet = bets_fonbet.get(pair_math[1], {})
+                math_json_olimp = copy.deepcopy(bets_olimp.get(pair_math[0], {}))
+                math_json_fonbet = copy.deepcopy(bets_fonbet.get(pair_math[1], {}))
                 event_type = pair_math[2]
                 type_time = pair_math[3]  # pre/live
 
