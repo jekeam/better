@@ -365,12 +365,11 @@ def start_seeker_top_matchs_fonbet(gen_proxi_fonbet, arr_top_matchs, pair_mathes
                     if str(event.get('skId')) in ('1', '2'):  # and place == 'top:pre':
                         pass
                     else:
-                        if match_id not in arr_top_matchs.get('top', []) + list_pair_mathes:
+                        if match_id not in arr_top_matchs.get('top', []) and match_id in list_pair_mathes:
                             prnts('TOP ' + place.split(':')[1] + ' Event added: ' + str(sport_id) + '-' + str(sport_name) + ': ' + str(match_id) + ', ' + event.get('eventName', '') + ', ' + str(liga_id))
                             arr_top_matchs['top'].append(match_id)
-                        elif match_id in arr_top_matchs.get('top', []) + list_pair_mathes:
-                            prnts(
-                                'TOP ' + place.split(':')[1] + 'Event deleted: ' + str(sport_id) + '-' + str(sport_name) + ': ' + str(match_id) + ', ' + event.get('eventName', '') + ', ' + str(liga_id))
+                        elif match_id in arr_top_matchs.get('top', []) and match_id not in list_pair_mathes:
+                            prnts('TOP ' + place.split(':')[1] + 'Event deleted: ' + str(sport_id) + '-' + str(sport_name) + ': ' + str(match_id) + ', ' + event.get('eventName', '') + ', ' + str(liga_id))
                             top_temp = list(arr_top_matchs['top'])
                             top_temp.remove(match_id)
                             arr_top_matchs['top'] = list(top_temp)
