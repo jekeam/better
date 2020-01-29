@@ -53,7 +53,7 @@ def get_olimp(resp, arr_matchs, place='live', sport_id=None, arr_fonbet_top_matc
             v_sport_id = int(liga_info.get('sport_id', sport_id))
             liga_id = liga_info.get('id')
             liga_name = liga_info[key_name]
-            if '. Statistics' not in liga_name and '. Outrights' not in liga_name:
+            if '. Statistics' not in liga_name and '. Outrights' not in liga_name and '. Special offers' not in liga_name:
                 if if_exists(sport_list, 'olimp', v_sport_id) and if_exists_by_sport(sport_list, 'olimp', v_sport_id, 'place', place):
                     for math_info in liga_info.get('it'):
                         # print(math_info.get('dt') + ' ' + str(datetime.fromtimestamp(int(math_info.get('t')) + 60 * 60).strftime('%d.%m.%Y %H:%M:%S')))

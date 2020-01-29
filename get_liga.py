@@ -59,7 +59,7 @@ else:
     # for sport_data in sport_list:
     # for 
     # url = 'https://www.olimp.bet/apiru/prematch/sport/?id=' + str(sport_data.get('olimp'))
-    url = 'https://www.olimp.bet/apiru/prematch/sport/?id=1'
+    url = 'https://www.olimp.bet/apiru/prematch/sport/?id=2'
     resp = requests.get(
         url,
         headers={'User-Agent': UA},
@@ -75,6 +75,8 @@ else:
             pass
         elif '. Статистика' in c.get('name'):
             pass
+        elif '. Специальные предложения' in c.get('name'):
+            pass
         else:
             x += 1
             # print(c)
@@ -86,7 +88,7 @@ else:
                 # print('{};{};{};{}'.format(res.get('sport').get('name'), c.get('id'), c.get('name'), 0))
             else:
                 print('{};{};{};{}'.format(res.get('sport').get('name'), c.get('id'), c.get('name'), ''))
-    for s in liga_server:
-        if s not in liga_top and s not in liga_oth:
-            print(s)
-    print(x)
+    # for s in liga_server:
+    #     if s not in liga_top and s not in liga_oth:
+    #         print(s)
+    # print(x)
