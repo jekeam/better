@@ -53,7 +53,7 @@ def get_olimp(resp, arr_matchs, place='live', sport_id=None, arr_fonbet_top_matc
             v_sport_id = int(liga_info.get('sport_id', sport_id))
             liga_id = liga_info.get('id')
             liga_name = liga_info[key_name]
-            if '. Statistics' not in liga_name:
+            if '. Statistics' not in liga_name and '. Outrights' not in liga_name:
                 if if_exists(sport_list, 'olimp', v_sport_id) and if_exists_by_sport(sport_list, 'olimp', v_sport_id, 'place', place):
                     for math_info in liga_info.get('it'):
                         # print(math_info.get('dt') + ' ' + str(datetime.fromtimestamp(int(math_info.get('t')) + 60 * 60).strftime('%d.%m.%Y %H:%M:%S')))
@@ -80,7 +80,8 @@ def get_olimp(resp, arr_matchs, place='live', sport_id=None, arr_fonbet_top_matc
                                 # 'start_time_str': start_time_str,
                                 'start_after_min': start_after_min,
                             }
-                        if place == 'pre' and v_sport_id==1:
+                        # if place == 'pre' and v_sport_id==1:
+                        if v_sport_id==1:
                             if liga_id in liga_top and match_id not in arr_fonbet_top_matchs:
                                 prnts('MY TOP ' + place + ' Event added: ' + str(match_id_str) + ', liga_name ' + str(liga_name) + ', liga_id: ' + str(liga_id))
                                 arr_fonbet_top_matchs.append(match_id)
@@ -362,7 +363,7 @@ def start_seeker_top_matchs_fonbet(gen_proxi_fonbet, arr_fonbet_top_matchs, pair
                     match_id = event.get('id')
                     liga_id = event.get('competitionId')
                     liga_name = event.get('competitionName')
-                    if str(event.get('skId')) == '1' and place == 'top:pre':
+                    if str(event.get('skId')) == '1':# and place == 'top:pre':
                         pass
                     else:
                         if match_id not in arr_fonbet_top_matchs and match_id in list_pair_mathes:
