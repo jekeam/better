@@ -87,7 +87,7 @@ def get_olimp(resp, arr_matchs, place='live', sport_id=None, arr_top_matchs=None
                             elif liga_name not in my_top + my_middle + my_slag:
                                 if liga_name not in liga_unknown:
                                     liga_unknown.append(liga_name)
-                                    v_str = str(v_sport_id) + ';' + if_exists(sport_list, 'olimp', v_sport_id, 'name') + ';' + str(liga_id) + ';' + str(liga_name) + ';\n'
+                                    v_str = place + '; ' + str(v_sport_id) + ';' + if_exists(sport_list, 'olimp', v_sport_id, 'name') + ';' + str(liga_id) + ';' + str(liga_name) + ';\n'
                                     with open('liga_not_found.csv', 'r+') as file:
                                         for line in list(file):
                                             if v_str in line:
