@@ -82,7 +82,7 @@ def get_olimp(resp, arr_matchs, place='live', sport_id=None, arr_fonbet_top_matc
                             }
                         # if place == 'pre' and v_sport_id==1:
                         if v_sport_id==1:
-                            prnts('liga_id:{}, liga_top:{}, match_id:{}, arr_fonbet_top_matchs:{}'.format(liga_id, liga_top, match_id, arr_fonbet_top_matchs))
+                            # prnts('liga_id:{}, liga_top:{}, match_id:{}, arr_fonbet_top_matchs:{}'.format(liga_id, liga_top, match_id, arr_fonbet_top_matchs))
                             if liga_id in liga_top and match_id not in arr_fonbet_top_matchs:
                                 prnts('MY TOP ' + place + ' Event added: ' + str(match_id_str) + ', liga_name ' + str(liga_name) + ', liga_id: ' + str(liga_id))
                                 arr_fonbet_top_matchs.append(match_id)
@@ -209,22 +209,21 @@ def start_seeker_matchs_olimp(gen_proxi_olimp, arr_matchs, place, arr_fonbet_top
     else:
         time_out = TIMEOUT_LIST
     time_resp = 0
+    try:
+        df = pd.read_csv('top.csv', encoding='utf-8', sep=';')
+        df_all = df[(df['is_top'] != 2)]
+        df = df[(df['is_top'] == 2)]
+        liga_top = list(df['liga_id'])
+        liga_oth = list(df_all['liga_id'])
+        prnts('My liga_top: ' + str(liga_top))
+        prnts('My liga_oth: ' + str(liga_oth))
+    except Exception as e:
+        prnts('err liga_top: ' + str(e))
+        liga_top = []
+        liga_oth = []
     while True:
         try:
             if place == 'pre':
-                try:
-                    df = pd.read_csv('top.csv', encoding='utf-8', sep=';')
-                    df_all = df[(df['is_top'] != 2)]
-                    df = df[(df['is_top'] == 2)]
-                    liga_top = list(df['liga_id'])
-                    liga_oth = list(df_all['liga_id'])
-                    prnts('My liga_top: ' + str(liga_top))
-                    prnts('My liga_oth: ' + str(liga_oth))
-                except Exception as e:
-                    prnts('err liga_top: ' + str(e))
-                    liga_top = []
-                    liga_oth = []
-                
                 # get leagues
                 for sport in sport_list:
                     if 'pre' in sport.get('place'):
@@ -291,7 +290,7 @@ def start_seeker_matchs_olimp(gen_proxi_olimp, arr_matchs, place, arr_fonbet_top
                 #         # time.sleep(5)
             else:
                 resp, time_resp = get_matches_olimp(proxy, time_out, place)
-                get_olimp(resp, arr_matchs, 'live')
+                get_olimp(resp, arr_matchs, 'live', None, arr_fonbet_top_matchs, liga_top, liga_oth, liga_unknown)
         except TimeOut as e:
             err_str = 'Timeout: Олимп, ошибка призапросе списока матчей'
             prnts(err_str)
