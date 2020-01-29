@@ -82,6 +82,7 @@ def get_olimp(resp, arr_matchs, place='live', sport_id=None, arr_fonbet_top_matc
                             }
                         # if place == 'pre' and v_sport_id==1:
                         if v_sport_id==1:
+                            prnts('liga_id:{}, liga_top:{}, match_id:{}, arr_fonbet_top_matchs:{}'.format(liga_id, liga_top, match_id, arr_fonbet_top_matchs))
                             if liga_id in liga_top and match_id not in arr_fonbet_top_matchs:
                                 prnts('MY TOP ' + place + ' Event added: ' + str(match_id_str) + ', liga_name ' + str(liga_name) + ', liga_id: ' + str(liga_id))
                                 arr_fonbet_top_matchs.append(match_id)
@@ -261,9 +262,9 @@ def start_seeker_matchs_olimp(gen_proxi_olimp, arr_matchs, place, arr_fonbet_top
                                                 prnts(str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
                                             if liga_id_str in arr_leagues[sport_id]:
                                                 del arr_leagues[sport_id][arr_leagues[sport_id].index(liga_id_str)]
-                                                prnts('sport_id:{}, Возникала ошибка при запросе списка матчей по лиге {}, лига удалена из списка: {}'.format(sport_id, liga_id_str, arr_leagues))
+                                                prnts('sport_id:{}, Возникала ошибка при запросе списка пре матчей по лиге {}, лига удалена из списка: {}'.format(sport_id, liga_id_str, arr_leagues))
                                             else:
-                                                prnts('sport_id:{}, Возникала ошибка при запросе списка матчей по лиге {}, но лига не найдена в списке: {}'.format(sport_id, liga_id_str, arr_leagues))
+                                                prnts('sport_id:{}, Возникала ошибка при запросе списка пре матчей по лиге {}, но лига не найдена в списке: {}'.format(sport_id, liga_id_str, arr_leagues))
                         except Exception as e:
                             if 'We are updating betting line'.lower() in str(e).lower():
                                 pass
