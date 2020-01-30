@@ -244,7 +244,7 @@ TIMEOUT_MATCH_MINUS = 8
 TIMEOUT_PRE_LIST = 60 * 15
 TIMEOUT_PRE_MATCH = 45
 TIMEOUT_PRE_MATCH_MINUS = 0
-time_sleep_proc = 5
+time_sleep_proc = 30
 
 if not DEBUG:
     SERVER_IP = get_param('server_ip')
