@@ -1098,13 +1098,13 @@ if __name__ == '__main__':
         olimp_seeker_matchs.start()
         prnts(' ')
         prnts('START: olimp_seeker_matchs')
-        time.sleep(time_sleep_proc)
+        time.sleep(time_sleep_proc/3)
         # get pre event list by olimp
         olimp_seeker_pre_matchs = threading.Thread(target=start_seeker_matchs_olimp, args=(gen_proxi_olimp, arr_matchs, 'pre', arr_top_matchs))
         olimp_seeker_pre_matchs.start()
         prnts(' ')
         prnts('START: olimp_seeker_pre_matchs')
-        time.sleep(time_sleep_proc)
+        time.sleep(time_sleep_proc/3)
         # time.sleep(60)
 
         # get event list by fonbet
@@ -1112,13 +1112,13 @@ if __name__ == '__main__':
         fonbet_seeker_matchs.start()
         prnts(' ')
         prnts('START: fonbet_seeker_matchs')
-        time.sleep(time_sleep_proc)
+        time.sleep(time_sleep_proc/3)
         # get pre event list by fonbet
         fonbet_seeker_pre_matchs = threading.Thread(target=start_seeker_matchs_fonbet, args=(gen_proxi_fonbet, arr_matchs, 'pre'))
         fonbet_seeker_pre_matchs.start()
         prnts(' ')
         prnts('START: fonbet_seeker_pre_matchs')
-        time.sleep(time_sleep_proc * 2)
+        time.sleep(time_sleep_proc/3)
         # while True:
         #     for n in list(arr_matchs):
         #         print_j(arr_matchs[n])
@@ -1131,13 +1131,13 @@ if __name__ == '__main__':
         prnts('START: fonbet_seeker_top_matchs')
 
         # Event mapping
-        time.sleep(time_sleep_proc)
+        time.sleep(time_sleep_proc/3)
         event_mapping = threading.Thread(target=start_event_mapping, args=(pair_mathes, arr_matchs, mathes_complite))
         event_mapping.start()
         prnts(' ')
         prnts('START: event_mapping')
 
-        time.sleep(time_sleep_proc)
+        time.sleep(time_sleep_proc/3)
         mathes_id_is_work = []
         starter_bets = threading.Thread(
             target=starter_bets,
