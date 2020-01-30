@@ -85,7 +85,7 @@ elif 1 == 0:  # список для разметки
     #     if s not in liga_top and s not in liga_oth:
     #         print(s)
     # print(x)
-elif 1==0:  # Обработанный список
+elif 1==1:  # Обработанный список
     # POST https://api2.olimp.bet/api/champs HTTP/1.1
     # X-TOKEN: 5a6a276c40bf0b24c639bde74c210b98
     # X-CUPIS: 1
@@ -100,7 +100,7 @@ elif 1==0:  # Обработанный список
     from util_olimp import head, olimp_data, olimp_secret_key, olimp_get_xtoken
 
     olimp_data = olimp_data.copy()
-    olimp_data.update({'live': '0', 'sport_id': 1, 'lang_id': 2})
+    olimp_data.update({'live': '0', 'sport_id': 2, 'lang_id': 2})
     olimp_data.pop('time_shift')
     head = head.copy()
     head.update(olimp_get_xtoken(olimp_data, olimp_secret_key))
@@ -116,13 +116,12 @@ elif 1==0:  # Обработанный список
         verify=False,
     )
     print('liga_name;is_top;')
+    add_cnt = 0
     for l in resp.json().get('data'):
         # print(l)
         liga_name = l.get('n')
-        # if list(df[df['liga_id'] == l.get('id')]):
-        #     x = 'id'
-        # elif list(df[df['liga_id'] == l.get('cid')]):
-        #     x = 'cid'
+        # if 'KHL.' in liga_name:# == ' Regular Season':
+            # print(l)
         if 'statistics' not in liga_name.lower() and 'outrights' not in liga_name.lower()  and 'special offers' not in liga_name.lower():
             x = ''
             if l.get('id') in list(df['liga_id']):
@@ -131,9 +130,22 @@ elif 1==0:  # Обработанный список
                 x = l.get('cid')
             # print('{}, {}, {}, {}, {}, {}'.format(x, l.get('id'), l.get('cid'), liga_name, l.get('so'), l.get('sn')))
             # print('{}, {}, {}, {}, {}, {}'.format(x, l.get('id'), l.get('cid'), liga_name, l.get('so'), l.get('sn')))
-            print('{};{}'.format(liga_name, df[(df['liga_id'] == x)]['is_top'].values[0]))
+            try:
+                v_str = '{};{}'.format(liga_name, df[(df['liga_id'] == x)]['is_top'].values[0])
+                with open('top_by_name.csv', 'r+') as file:
+                    for line in list(file):
+                        if liga_name in line:
+                            print('old: ' + v_str)
+                            break
+                    else:  # not found, we are at the eof
+                        file.write(v_str + '\n')  # append missing data
+                        print('new: ' + v_str)
+                        add_cnt += 1
+            except:
+                pass
+    print('add new: ' + str(add_cnt))
 
-if 1 == 1:
+if 1 == 0:
     import json
     text = ''
     x = 0
