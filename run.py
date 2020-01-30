@@ -20,6 +20,7 @@ from datetime import datetime
 import copy
 import math
 import pandas as pd
+import cupon
 
 import sys
 import traceback
@@ -1017,6 +1018,31 @@ def stat_req(stat_req_olimp, stat_req_fonbet):
             prnts('stat_req err: ' + str(e))
 
 
+def mon_cupon(arr_cupon):
+    file_name = 'cupon_hist.csv'
+    minute = 15
+    while True:
+        try:
+            cur_time = int(round(time.time()))
+            curr_id = cupon.get_id()
+            df = pd.read_csv(file_name, encoding='utf-8', sep=';')
+            df2 = pd.DataFrame(
+                {
+                    "time":[cur_time], 
+                    "cupon_id":[curr_id],
+            })
+            df = df.append(df2, ignore_index = True)
+            df.to_csv(file_name, encoding='utf-8', index=False, sep=';')
+            id_old = df[(df['time'] >= (cur_time - (60*minute)))]['cupon_id'].min()
+            arr_cupon[0] = int((curr_id-id_old)/15/60)
+            prnts('activity ' + str(arr_cupon[0]) + ' coupons per/sec')
+            time.sleep(time_sleep_proc)
+        except Exception as e:
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            prnts('Error mon_cupon: ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
+            
+
+
 if __name__ == '__main__':
     try:
         prnts('DEBUG: ' + str(DEBUG))
@@ -1046,6 +1072,7 @@ if __name__ == '__main__':
         prnts('START: proxy_saver')
 
         arr_matchs = dict()
+        arr_cupon = [0] 
 
         arr_top_matchs = {'top': [], 'middle': [], 'slag': []}
         arr_fonbet_top_kofs = {}
@@ -1129,8 +1156,13 @@ if __name__ == '__main__':
         started_stat_req.start()
         prnts(' ')
         prnts('START: started_stat_req')
+        
+        started_mon_cupon = threading.Thread(target=mon_cupon, args=(arr_cupon, ))
+        started_mon_cupon.start()
+        prnts(' ')
+        prnts('START: mon_cupon')
 
-        server = threading.Thread(target=run_server, args=(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_top_matchs, bets_olimp, bets_fonbet, mathes_complite))
+        server = threading.Thread(target=run_server, args=(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_top_matchs, bets_olimp, bets_fonbet, mathes_complite, arr_cupon))
         server.start()
         prnts(' ')
         prnts('START: server')
@@ -1143,6 +1175,7 @@ if __name__ == '__main__':
         event_mapping.join()
         starter_forks.join()
         started_stat_req.join()
+        started_mon_cupon.join()
         server.join()
     except Exception as e:
         exc_type, exc_value, exc_traceback = sys.exc_info()

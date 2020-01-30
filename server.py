@@ -43,7 +43,7 @@ def get_state(arr):
     return state
 
 
-def run_server(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_top_matchs, bets_olimp, bets_fonbet, mathes_complite):
+def run_server(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_top_matchs, bets_olimp, bets_fonbet, mathes_complite, arr_cupon):
     class HttpProcessor(BaseHTTPRequestHandler):
         def __init__(self, forks, bar, qux, *args, **kwargs):
             self.data_str = json.dumps(forks, ensure_ascii=False)
@@ -69,7 +69,7 @@ def run_server(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_top_matchs, bets_
                 self.send_response(200)
                 self.send_header('content-type', 'application/json')
                 self.end_headers()
-                self.wfile.write(str(pair_mathes).encode('utf-8'))
+                self.wfile.write(str(pair_mathes + arr_cupon).encode('utf-8'))
             elif self.path == '/get_cnt_top_matches':
                 self.send_response(200)
                 self.send_header('content-type', 'application/json')
