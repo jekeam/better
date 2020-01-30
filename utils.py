@@ -248,9 +248,9 @@ time_sleep_proc = 30
 
 if not DEBUG:
     SERVER_IP = get_param('server_ip')
-    time_sleep_proc = 3
 else:
     SERVER_IP = get_param('server_ip_test')
+    time_sleep_proc = 3
 SERVER_PORT = get_param('server_port')
 
 
