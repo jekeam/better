@@ -1035,7 +1035,7 @@ def mon_cupon(arr_cupon):
             df.to_csv(file_name, encoding='utf-8', index=False, sep=';')
             id_old = df[(df['time'] >= (cur_time - (60*minute)))]['cupon_id'].min()
             arr_cupon[0] = str(int((curr_id-id_old)/minute)) + 'куп./мин.'
-            prnts('activity ' + str(arr_cupon[0]) + ' coupons per/sec')
+            prnts('activity ' + str(arr_cupon[0]) + ' coupons per/min')
             time.sleep(time_sleep_proc)
         except Exception as e:
             exc_type, exc_value, exc_traceback = sys.exc_info()
