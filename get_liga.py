@@ -85,7 +85,7 @@ elif 1 == 0:  # список для разметки
     #     if s not in liga_top and s not in liga_oth:
     #         print(s)
     # print(x)
-else:  # Обработанный список
+elif 1==0:  # Обработанный список
     # POST https://api2.olimp.bet/api/champs HTTP/1.1
     # X-TOKEN: 5a6a276c40bf0b24c639bde74c210b98
     # X-CUPIS: 1
@@ -123,7 +123,7 @@ else:  # Обработанный список
         #     x = 'id'
         # elif list(df[df['liga_id'] == l.get('cid')]):
         #     x = 'cid'
-        if '. Statistics' not in liga_name and '. Outrights' not in liga_name and '. Special offers' not in liga_name:
+        if 'statistics' not in liga_name.lower() and 'outrights' not in liga_name.lower()  and 'special offers' not in liga_name.lower():
             x = ''
             if l.get('id') in list(df['liga_id']):
                 x = l.get('id')
@@ -132,3 +132,40 @@ else:  # Обработанный список
             # print('{}, {}, {}, {}, {}, {}'.format(x, l.get('id'), l.get('cid'), liga_name, l.get('so'), l.get('sn')))
             # print('{}, {}, {}, {}, {}, {}'.format(x, l.get('id'), l.get('cid'), liga_name, l.get('so'), l.get('sn')))
             print('{};{}'.format(liga_name, df[(df['liga_id'] == x)]['is_top'].values[0]))
+
+if 1 == 1:
+    import json
+    text = ''
+    x = 0
+    liga_slices_dot = []
+    liga_slices_space = []
+    with open('top_by_name.csv', 'r') as file:
+        rows = file.readlines()
+        for row in rows:
+            if x > 0:
+                liga_name = row.split(';')[0].strip()
+                liga_slice = liga_name.split('. ')
+                liga_slices_dot.append(liga_slice[0])
+                
+                liga_name = liga_name.replace('.', '').replace('  ', ' ')
+                liga_slice = liga_name.split(' ')
+                for k in liga_slice:
+                    liga_slices_space.append(k)
+                
+                # text = text + 
+            x = 1
+    liga_slices_arr = {}        
+    for i in liga_slices_dot:
+        liga_slices_arr.update({i :liga_slices_dot.count(i)})
+    print('Предложение;кол-во')
+    split_dott = {k: v for k, v in reversed(sorted(liga_slices_arr.items(), key=lambda item: item[1]))}
+    for n, c in split_dott.items():
+        print(n + ';' + str(c))
+    
+    liga_slices_arr = {}        
+    for i in liga_slices_space:
+        liga_slices_arr.update({i :liga_slices_space.count(i)})
+    print('Слово;кол-во')
+    split_space = {k: v for k, v in reversed(sorted(liga_slices_arr.items(), key=lambda item: item[1]))}
+    for n, c in split_space.items():
+        print(n + ';' + str(c))

@@ -54,7 +54,7 @@ def get_olimp(resp, arr_matchs, place='live', sport_id=None, arr_top_matchs=None
             v_sport_id = int(liga_info.get('sport_id', sport_id))
             liga_id = liga_info.get('id')
             liga_name = liga_info[key_name]
-            if '. Statistics' not in liga_name and '. Outrights' not in liga_name and '. Special offers' not in liga_name:
+            if 'statistics' not in liga_name.lower() and 'outrights' not in liga_name.lower()  and 'special offers' not in liga_name.lower():
                 if if_exists(sport_list, 'olimp', v_sport_id) and if_exists_by_sport(sport_list, 'olimp', v_sport_id, 'place', place):
                     for math_info in liga_info.get('it'):
                         match_id = math_info.get('id')
