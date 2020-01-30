@@ -429,7 +429,7 @@ def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi
                             bets_olimp.pop(str(match_id_olimp))
                         prnts('Olimp, pair mathes remove: ' + str(pair_mathes[cnt]))
                         pair_mathes.remove(pair_mathes[cnt])
-                        mathes_complite.append(match_id_olimp)
+                        mathes_complite[place].append(match_id_olimp)
                     cnt += 1
             except Exception as e:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
@@ -487,7 +487,7 @@ def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_p
                             bets_fonbet.pop(str(match_id_fonbet))
                         prnts('Fonbet, pair mathes remove: ' + str(pair_mathes[cnt]))
                         pair_mathes.remove(pair_mathes[cnt])
-                        mathes_complite.append(match_id_fonbet)
+                        mathes_complite[place].append(match_id_fonbet)
                     cnt += 1
             except Exception as e:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
@@ -604,9 +604,8 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
 
                     for bk2_match_id, bk2_match_info in json_bk2_copy.items():
                         if [bk2_name for bk2_name in bk2_match_info.values() if bk2_name is not None]:
-
                             # Проверим что матч не завершен:
-                            if bk1_match_id in mathes_complite or bk2_match_id in mathes_complite:
+                            if bk1_match_id in mathes_complite.get(bk1_match_info.get('place'), []) or bk2_match_id in mathes_complite.get(bk2_match_info.get('place'), []):
                                 pass
                             else:
 
@@ -687,8 +686,9 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                 pair = [pair[1], pair[0], pair[2], pair[3]]
                 pair.append(e.get('match_name'))
                 pair.append(e.get('rate'))
+                # ['55044469', '19123513', 'tennis', 'live', 'tennis;55044469;Halep S.;Muguruza G.;19123513;Halep S;Muguruza G;', 2.0]
 
-                if pair[0] in mathes_complite or pair[1] in mathes_complite:
+                if pair[0] in mathes_complite.get(pair[3], []) or pair[1] in mathes_complite.get(pair[3], []):
                     pass
                 else:
                     if pair not in pair_mathes:
@@ -1050,7 +1050,7 @@ if __name__ == '__main__':
         arr_top_matchs = {'top': [], 'middle': [], 'slag': []}
         arr_fonbet_top_kofs = {}
         # Completed Events
-        mathes_complite = []
+        mathes_complite = {'live': [], 'pre': []}
 
         # json by bets event
         bets_fonbet = dict()

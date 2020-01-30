@@ -90,6 +90,16 @@ def run_server(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_top_matchs, bets_
                 self.send_header('content-type', 'application/json')
                 self.end_headers()
                 self.wfile.write(str(mathes_complite).encode('utf-8'))
+            elif self.path == '/end/live':
+                self.send_response(200)
+                self.send_header('content-type', 'application/json')
+                self.end_headers()
+                self.wfile.write(str(mathes_complite.get('live', [])).encode('utf-8'))
+            elif self.path == '/end/pre':
+                self.send_response(200)
+                self.send_header('content-type', 'application/json')
+                self.end_headers()
+                self.wfile.write(str(mathes_complite.get('pre', [])).encode('utf-8'))
             elif '/fonbet/' in self.path or '/olimp/' in self.path:
                 cnt_par = str(self.path).count('/')
                 prnts('get path: {}, cnt_par: {}, arr: {}'.format(self.path, cnt_par, str(self.path.split('/'))))
