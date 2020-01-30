@@ -1020,7 +1020,7 @@ def stat_req(stat_req_olimp, stat_req_fonbet):
 
 def mon_cupon(arr_cupon):
     file_name = 'cupon_hist.csv'
-    minute = 15
+    minute = 5
     while True:
         try:
             cur_time = int(round(time.time()))
