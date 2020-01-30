@@ -6,5 +6,9 @@
   "server_olimp_del": "olimpkzapi.ru",
   "api2.olimp.bet": "api2.olimp.bet",
   "api2.olimp.bet2": "5.3.3.17 olimpkzapi.ru",
-  "debug": 0
+  "debug": 0,
+  "fonbet": {
+    "ru": "4604319/ft1304Abcft",
+    "com": "5987993/qRVcRUXz23",
+  }
 }
