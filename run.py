@@ -1040,7 +1040,7 @@ def mon_cupon(arr_cupon):
             exc_type, exc_value, exc_traceback = sys.exc_info()
             prnts('Error mon_cupon: ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
         finally:
-            time.sleep(time_sleep_proc)
+            time.sleep(minute*60-10)
             
 
 
