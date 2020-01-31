@@ -133,7 +133,7 @@ def get_matches(bk_name, proxy, timeout, api_key, x_session, x_device_uuid, prox
                                 lambda x: (
                                                   x.get('league', {}).get('sport', {}).get('name', '') != 'Hockey' and x.get('liveMode', '') == 'live_delay'
                                                   and x.get('units', '') == 'Regular'  # разкомментить для удаления угловых
-                                                  and x.get('parent', {}).get('participants', [{}])[0].get('name', '') == x.get('participants', [{}])[0].get('name', '')
+                                                  and (x.get('parent') if x.get('parent') else {}).get('participants', [{}])[0].get('name', '') == x.get('participants', [{}])[0].get('name', '')
                                                   # закомментить для добавления сетов и геймов
                                           ) or (x.get('league', {}).get('sport', {}).get('name', '') == 'Hockey'),
                                 res):
