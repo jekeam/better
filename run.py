@@ -125,7 +125,7 @@ def set_matches_pinnacle(bk_name, resp, arr_matchs, match_id_work):
         arr_matchs[str(match_id)] = match_data
 
 
-def set_api(bk_name, proxy):
+def set_api(bk_name, proxy, session):
     global pinn_session_data
     try:
         if bk_name == 'pinnacle':
@@ -147,7 +147,23 @@ def set_api(bk_name, proxy):
     
             head.update({'x-api-key': api_key})
             head.update({'x-device-uuid': util_pinnacle.x_device_uuid_temp})
-            res = requests.post(
+            if session:
+                res = session.post(
+                    url='https://guest.api.arcadia.pinnacle.com/0.1/sessions',
+                    # url='http://192.168.1.143:8888',
+                    proxies={'https': proxy},
+                    timeout=10,
+                    verify=False,
+                    headers=head,
+                    json={
+                        # "username": "ES1096942",
+                        # "password": "11112007_A"
+                        "username": "IS1204996",
+                        "password": "p1962Abce"
+                    }
+                )
+            else:
+                res = requests.post(
                 url='https://guest.api.arcadia.pinnacle.com/0.1/sessions',
                 # url='http://192.168.1.143:8888',
                 proxies={'https': proxy},
@@ -155,8 +171,10 @@ def set_api(bk_name, proxy):
                 verify=False,
                 headers=head,
                 json={
-                    "username": "ES1096942",
-                    "password": "11112007_A"
+                        # "username": "ES1096942",
+                        # "password": "11112007_A"
+                        "username": "IS1204996",
+                        "password": "p1962Abce"
                 }
             )
             resp = res.json()
@@ -182,7 +200,8 @@ def start_seeker_matchs(bk_name, proxies_container, arr_matchs):
     if 'pinnacle' == bk_name:
         while True:
             try:
-                set_api(bk_name, proxy)
+                session = requests.session()
+                set_api(bk_name, proxy, session)
                 api_key = pinn_session_data.get('api_key')
                 x_session = pinn_session_data.get('x_session')
                 x_device_uuid = pinn_session_data.get('x_device_uuid')
@@ -204,7 +223,7 @@ def start_seeker_matchs(bk_name, proxies_container, arr_matchs):
                 resp, time_resp = get_matches_fonbet(proxy, TIMEOUT_MATCHS, proxies_container[bk_name]['proxy_list'])
                 get_fonbet(resp, arr_matchs)
             elif bk_name == 'pinnacle':
-                resp, time_resp = util_pinnacle.get_matches(bk_name, proxy, TIMEOUT_MATCHS, api_key, x_session, x_device_uuid, proxies_container[bk_name]['proxy_list'])
+                resp, time_resp = util_pinnacle.get_matches(bk_name, proxy, TIMEOUT_MATCHS, api_key, x_session, x_device_uuid, proxies_container[bk_name]['proxy_list'], session)
                 set_matches_pinnacle(bk_name, resp, arr_matchs, match_id_work)
 
             # TODO ?

@@ -61,12 +61,12 @@ sport_list = [
     #     'fonbet': 9,
     #     'pinnacle': 34,
     # },
-    # {
-    #     'name': 'tennis',
-    #     'olimp': 3,
-    #     'fonbet': 4,
-    #     'pinnacle': 33,
-    # },
+    {
+        'name': 'tennis',
+        'olimp': 3,
+        'fonbet': 4,
+        'pinnacle': 33,
+    },
     # {
     #     'name': 'basketball',
     #     'olimp': 5,
@@ -74,13 +74,13 @@ sport_list = [
     #     'pinnacle': 4,
     #     'min': 40,
     # },
-    # {
-    #     'name': 'hockey',
-    #     'olimp': 2,
-    #     'fonbet': 2,
-    #     'pinnacle': 19,
-    #     'min': 60,
-    # }
+    {
+        'name': 'hockey',
+        'olimp': 2,
+        'fonbet': 2,
+        'pinnacle': 19,
+        'min': 60,
+    }
 ]
 
 opposition = {

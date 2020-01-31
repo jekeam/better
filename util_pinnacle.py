@@ -82,7 +82,7 @@ def straight_normalize(data):
         return {'error': str(e)}
 
 
-def get_matches(bk_name, proxy, timeout, api_key, x_session, x_device_uuid, proxy_list):
+def get_matches(bk_name, proxy, timeout, api_key, x_session, x_device_uuid, proxy_list, session):
     if bk_name == 'pinnacle':
         head = list_matches_head
     if api_key:
@@ -99,13 +99,22 @@ def get_matches(bk_name, proxy, timeout, api_key, x_session, x_device_uuid, prox
         sport_name = sport.get('name')
         if sport_id:
             try:
-                resp = requests.get(
-                    url.format(sport_id),
-                    headers=head,
-                    timeout=timeout,
-                    verify=False,
-                    proxies=proxies,
-                )
+                if session:
+                    resp = session.get(
+                        url.format(sport_id),
+                        headers=head,
+                        timeout=timeout,
+                        verify=False,
+                        proxies=proxies,
+                    )
+                else:
+                    resp = requests.get(
+                        url.format(sport_id),
+                        headers=head,
+                        timeout=timeout,
+                        verify=False,
+                        proxies=proxies,
+                    )
                 # print('get_matches head: ' + str(head))
                 try:
                     res = resp.json()
@@ -128,18 +137,39 @@ def get_matches(bk_name, proxy, timeout, api_key, x_session, x_device_uuid, prox
                                                   # закомментить для добавления сетов и геймов
                                           ) or (x.get('league', {}).get('sport', {}).get('name', '') == 'Hockey'),
                                 res):
-                            # print(l)
+                            if str(l.get('id')) in '1094231259':
+                                import json
+                                print(json.dumps(l))
+                            # {'ageLimit': 0, 'altTeaser': False, 'external': {}, 'hasLive': True, 'hasMarkets': True, 'id': 1094249412, 'isHighlighted': False, 'isLive': True, 'isPromoted': False, 
+                            # 'league': {'ageLimit': 0, 'external': {}, 'featureOrder': -1, 'group': 'World', 'id': 1863, 'isFeatured': False, 'isHidden': False, 'isPromoted': False, 'isSticky': False, 
+                            # 'matchupCount': 3, 'name': 'Club Friendlies', 'sport': {'featureOrder': 0, 'id': 29, 'isFeatured': True, 'isHidden': False, 'isSticky': False, 'matchupCount': 532, 
+                            # 'name': 'Soccer', 'primaryMarketType': 'moneyline'}}, 'liveMode': 'live_delay', 'parent': {'id': 1094249362, 'participants': [{'alignment': 'home', 'name': 'Club Sport Emelec', 'score': None}, 
+                            # {'alignment': 'away', 'name': 'LDU de Portoviejo', 'score': None}], 'startTime': '2020-01-31T01:30:00+00:00'}, 'parentId': 1094249362, 'parlayRestriction': 'unique_matchups', 'participants':
+                            # [{'alignment': 'home', 'name': 'Club Sport Emelec', 'order': 0, 'state': {'score': 2}}, {'alignment': 'away', 'name': 'LDU de Portoviejo', 'order': 1, 'state': {'score': 0}}], 
+                            # 'periods': [{'cutoffAt': '2020-01-31T04:14:42Z', 'period': 0, 'status': 'open'}, {'cutoffAt': None, 'period': 1, 'status': 'settled'}], 'rotation': 1301, 'startTime': '2020-01-31T01:30:00Z',
+                            # 'state': {'minutes': 39, 'state': 3}, 'status': 'started', 'totalMarketCount': 2, 'type': 'matchup', 'units': 'Regular', 'version': 256440882}
+                            participants = l.get('participants', [{}])
+                            if participants[0].get('alignment') == 'home':
+                                team1 = participants[0].get('name')
+                                score1 = participants[0].get('score')
+                                
+                                team2 = participants[1].get('name')
+                                score2 = participants[1].get('score')
+                            elif participants[0].get('alignment') == 'away':
+                                team2 = participants[0].get('name')
+                                score2 = participants[0].get('score')
+                                
+                                team1 = participants[1].get('name')
+                                score1 = participants[1].get('score')
                             data[l.get('id')] = {
                                 'time_req': int(datetime.datetime.now().timestamp()),
                                 'bk_name': bk_name,
                                 'match_id': l.get('id'),
                                 'league': l.get('league', {}).get('group') + '-' + l.get('league', {}).get('name'),
-                                'team_alignment1': l.get('participants', [{}])[0].get('alignment'),
-                                'team1': l.get('participants', [{}])[0].get('name'),
-                                'team_alignment2': l.get('participants', [{}, {}])[1].get('alignment'),
-                                'team2': l.get('participants', [{}, {}])[1].get('name'),
-                                'name': l.get('participants', [{}, {}])[0].get('name') + '-' + l.get('participants', [{}, {}])[1].get('name'),
-                                'score': str(l.get('participants', [{}, {}])[0].get('score')) + ':' + str(l.get('participants', [{}, {}])[0].get('score')),
+                                'team1': team1,
+                                'team2': team2,
+                                'name': team1 + '-' + team2,
+                                'score': str(score1) + ':' + str(score2),
                                 'state': l.get('state', {}).get('state'),
                                 'minute': float(l.get('state', {}).get('minutes', 0)),
                                 'sport_id': sport_id,
@@ -238,10 +268,14 @@ def get_odds(bets, api_key, x_session, x_device_uuid, pair_mathes, sport_id, pro
     data = resp.json()
     # print('data:' + str(resp.text)[0:300])
     # {'detail': 'API key is not valid', 'status': 403, 'title': 'BAD_APIKEY', 'type': 'about:blank'}
+    # {'detail': 'Session superseded by a login on another device', 'status': 401, 'title': 'AUTH_SUPERSEDED', 'type': 'about:blank'} -- SESSION EXPIRED
     if type(data) == dict and data.get('status'):
-        utils.prnts('data' + str(data))
-        if data.get('title') == 'BAD_APIKEY':
+        utils.prnts('data: ' + str(data))
+        title_err = data.get('title')
+        if title_err == 'BAD_APIKEY':
             utils.prnts('api_key: ' + str(api_key))
+        elif title_err == 'AUTH_SUPERSEDED':
+            utils.prnts('Session expired! TODO: relogin')
 
     for match_id in match_id_list:
         check_vertion = False
@@ -250,6 +284,8 @@ def get_odds(bets, api_key, x_session, x_device_uuid, pair_mathes, sport_id, pro
         # print('match_id: ' + str(match_id))
         for bet in filter(lambda x: x['matchupId'] == int(match_id), data):
             version = bet.get('version', -1)
+            if str(match_id) == '1094231259':
+                print(bet)
             if (check_vertion and version > MAX_VERSION.get(str(sport_id), 0)) or not check_vertion:
                 MAX_VERSION.update({str(sport_id): version})
                 for price in bet.get('prices', []):
