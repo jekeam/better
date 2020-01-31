@@ -6,6 +6,7 @@ import datetime
 import sys
 import traceback
 import time
+import json
 
 list_matches_head = {
     'accept': 'application/json',
@@ -120,8 +121,8 @@ def get_matches(bk_name, proxy, timeout, api_key, x_session, x_device_uuid, prox
                 try:
                     res = resp.json()
                     # {'detail': 'The requested URL was not found on the server.  If you entered the URL manually please check your spelling and try again.', 'status': 404, 'title': 'Not Found', 'type': 'about:blank'}
-                    # print(res)
-                    # print('---')
+                    print(json.dumps(res))
+                    print('---')
                     res_status = 200
                     if type(res) != list:
                         res_status = res.get('status', 404)
@@ -138,8 +139,7 @@ def get_matches(bk_name, proxy, timeout, api_key, x_session, x_device_uuid, prox
                                                   # закомментить для добавления сетов и геймов
                                           ) or (x.get('league', {}).get('sport', {}).get('name', '') == 'Hockey'),
                                 res):
-                            if str(l.get('id')) in '1094353468':
-                                import json
+                            if str(l.get('id')) in '1094354154':
                                 print(json.dumps(l))
                             # {'ageLimit': 0, 'altTeaser': False, 'external': {}, 'hasLive': True, 'hasMarkets': True, 'id': 1094249412, 'isHighlighted': False, 'isLive': True, 'isPromoted': False, 
                             # 'league': {'ageLimit': 0, 'external': {}, 'featureOrder': -1, 'group': 'World', 'id': 1863, 'isFeatured': False, 'isHidden': False, 'isPromoted': False, 'isSticky': False, 
@@ -296,8 +296,8 @@ def get_odds(bets, api_key, x_session, x_device_uuid, pair_mathes, sport_id, pro
         # print('match_id: ' + str(match_id))
         for bet in filter(lambda x: x['matchupId'] == int(match_id), data):
             version = bet.get('version', -1)
-            if str(match_id) == '1094353468':
-                print(bet)
+            # if str(match_id) == '1094354154':
+                # print(bet)
             if (check_vertion and version > MAX_VERSION.get(str(sport_id), 0)) or not check_vertion:
                 MAX_VERSION.update({str(sport_id): version})
                 for price in bet.get('prices', []):
