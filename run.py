@@ -192,7 +192,7 @@ def set_api(bk_name, proxy, session):
         pinn_session_data.update({'x_session': x_session})
 
 
-def start_seeker_matchs(bk_name, proxies_container, arr_matchs):
+def start_seeker_matchs(bk_name, proxies_container, arr_matchs, session):
     global TIMEOUT_MATCHS, pinn_session_data
     proxy = proxies_container[bk_name]['gen_proxi'].next()
     fail_proxy = 0
@@ -200,7 +200,6 @@ def start_seeker_matchs(bk_name, proxies_container, arr_matchs):
     if 'pinnacle' == bk_name:
         while True:
             try:
-                session = requests.session()
                 set_api(bk_name, proxy, session)
                 api_key = pinn_session_data.get('api_key')
                 x_session = pinn_session_data.get('x_session')
@@ -208,6 +207,7 @@ def start_seeker_matchs(bk_name, proxies_container, arr_matchs):
                 prnts('get api_key from ' + bk_name + ': ' + str(api_key))
                 prnts('get x_session(token) from ' + bk_name + ': ' + str(x_session))
                 prnts('get x_device_uuid from ' + bk_name + ': ' + str(x_device_uuid))
+                prnts('session: ' + str(session))
                 break
             except Exception as e:
                 prnts(bk_name + ', код ошибки Exception: ' + str(e))
@@ -417,7 +417,7 @@ def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_p
         time.sleep(time_sleep)
 
 
-def start_seeker_bets(bk_name, def_bk, bets, sport_id, proxies_container, pair_mathes, stat_reqs, arr_matchs):
+def start_seeker_bets(bk_name, def_bk, bets, sport_id, proxies_container, pair_mathes, stat_reqs, arr_matchs, session):
     global TIMEOUT_MATCH, TIMEOUT_MATCH_MINUS, pinn_session_data
     api_key = pinn_session_data.get('api_key')
     x_session = pinn_session_data.get('x_session')
@@ -433,7 +433,7 @@ def start_seeker_bets(bk_name, def_bk, bets, sport_id, proxies_container, pair_m
     prnts(bk_name + ', start sport_id: ' + str(sport_id))
     while True:
         try:
-            time_resp = def_bk(bets, api_key, x_session, x_device_uuid, pair_mathes, sport_id, proxies_container[bk_name]['gen_proxi'], ps.get_next_proxy(), TIMEOUT_MATCH, arr_matchs)
+            time_resp = def_bk(bets, api_key, x_session, x_device_uuid, pair_mathes, sport_id, proxies_container[bk_name]['gen_proxi'], ps.get_next_proxy(), TIMEOUT_MATCH, arr_matchs, session)
             if stat_reqs.get(bk_name) is None:
                 stat_reqs[bk_name] = []
             else:
@@ -463,7 +463,8 @@ def starter_bets(
         proxies_fonbet, gen_proxi_fonbet,
         proxies_container,
         stat_reqs, arr_fonbet_top_kofs,
-        arr_matchs
+        arr_matchs,
+        session
 ):
     global pinn_session_data
     while True:
@@ -507,7 +508,7 @@ def starter_bets(
                     mathes_id_is_work.append(sport_id)
                     start_seeker_fonbet_bets_by_id = threading.Thread(
                         target=start_seeker_bets,
-                        args=('pinnacle', util_pinnacle.get_odds, bets, sport_id, proxies_container, pair_mathes, stat_reqs, arr_matchs)
+                        args=('pinnacle', util_pinnacle.get_odds, bets, sport_id, proxies_container, pair_mathes, stat_reqs, arr_matchs, session)
                     )
                     start_seeker_fonbet_bets_by_id.start()
         time.sleep(20)
@@ -1007,8 +1008,9 @@ if __name__ == '__main__':
     pair_mathes = []
     # get event list by bk
     bk_seeker_matchs = []
+    session = requests.session()
     for bk_name in bk_working:
-        seeker_matchs = threading.Thread(target=start_seeker_matchs, args=(bk_name, proxies_container, arr_matchs))
+        seeker_matchs = threading.Thread(target=start_seeker_matchs, args=(bk_name, proxies_container, arr_matchs, session))
         bk_seeker_matchs.append(seeker_matchs)
         seeker_matchs.start()
     time.sleep(4)
@@ -1048,7 +1050,8 @@ if __name__ == '__main__':
             stat_reqs,
             arr_fonbet_top_kofs,
 
-            arr_matchs
+            arr_matchs,
+            session
         )
     )
     starter_bets.start()

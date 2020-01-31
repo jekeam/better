@@ -100,6 +100,7 @@ def get_matches(bk_name, proxy, timeout, api_key, x_session, x_device_uuid, prox
         if sport_id:
             try:
                 if session:
+                    utils.prnts('session get_matches: ' + str(session))
                     resp = session.get(
                         url.format(sport_id),
                         headers=head,
@@ -137,7 +138,7 @@ def get_matches(bk_name, proxy, timeout, api_key, x_session, x_device_uuid, prox
                                                   # закомментить для добавления сетов и геймов
                                           ) or (x.get('league', {}).get('sport', {}).get('name', '') == 'Hockey'),
                                 res):
-                            if str(l.get('id')) in '123':
+                            if str(l.get('id')) in '1094361849':
                                 import json
                                 print(json.dumps(l))
                             # {'ageLimit': 0, 'altTeaser': False, 'external': {}, 'hasLive': True, 'hasMarkets': True, 'id': 1094249412, 'isHighlighted': False, 'isLive': True, 'isPromoted': False, 
@@ -227,7 +228,7 @@ def get_matches(bk_name, proxy, timeout, api_key, x_session, x_device_uuid, prox
 MAX_VERSION = {}
 
 
-def get_odds(bets, api_key, x_session, x_device_uuid, pair_mathes, sport_id, proxi_list, proxy, timeout, arr_matchs):
+def get_odds(bets, api_key, x_session, x_device_uuid, pair_mathes, sport_id, proxi_list, proxy, timeout, arr_matchs, session):
     global MAX_VERSION
     match_id_list = []
     bk_mame = 'pinnacle'
@@ -257,14 +258,25 @@ def get_odds(bets, api_key, x_session, x_device_uuid, pair_mathes, sport_id, pro
     proxies = {'https': proxy}
     data = {}
     # print('get_odds head: ' + str(head))
-    resp = requests.get(
-        url.format(sport_id),
-        # 'http://192.168.1.143:8888/',
-        headers=head,
-        timeout=timeout,
-        verify=False,
-        proxies=proxies,
-    )
+    if session:
+        utils.prnts('session get_odds: ' + str(session))
+        resp = session.get(
+            url.format(sport_id),
+            # 'http://192.168.1.143:8888/',
+            headers=head,
+            timeout=timeout,
+            verify=False,
+            proxies=proxies,
+        )
+    else:
+        resp = requests.get(
+            url.format(sport_id),
+            # 'http://192.168.1.143:8888/',
+            headers=head,
+            timeout=timeout,
+            verify=False,
+            proxies=proxies,
+        )
     data = resp.json()
     # print('data:' + str(resp.text)[0:300])
     # {'detail': 'API key is not valid', 'status': 403, 'title': 'BAD_APIKEY', 'type': 'about:blank'}
@@ -284,7 +296,7 @@ def get_odds(bets, api_key, x_session, x_device_uuid, pair_mathes, sport_id, pro
         # print('match_id: ' + str(match_id))
         for bet in filter(lambda x: x['matchupId'] == int(match_id), data):
             version = bet.get('version', -1)
-            if str(match_id) == '123':
+            if str(match_id) == '1094361849':
                 print(bet)
             if (check_vertion and version > MAX_VERSION.get(str(sport_id), 0)) or not check_vertion:
                 MAX_VERSION.update({str(sport_id): version})
