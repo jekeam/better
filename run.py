@@ -744,8 +744,8 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_top_m
                 elif int(pair_math[0]) in arr_top_matchs.get('middle', []) or int(pair_math[1]) in arr_top_matchs.get('middle', []):
                     is_top = 'middle'
 
-                math_json_olimp = bets_olimp.copy().get(pair_math[0], {}))
-                math_json_fonbet = bets_fonbet.copy().get(pair_math[1], {}))
+                math_json_olimp = bets_olimp.copy().get(pair_math[0], {})
+                math_json_fonbet = bets_fonbet.copy().get(pair_math[1], {})
                 event_type = pair_math[2]
                 type_time = pair_math[3]  # pre/live
 
