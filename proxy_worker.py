@@ -375,5 +375,5 @@ if __name__ == '__main__':
     proxy_list_pinnacle = get_proxy_from_file('proxy_for_olimp.txt')
     proxy_list_pinnacle = (list(filter(lambda p: 'https' in p, proxy_list_pinnacle)))
     proxy_list_pinnacle = check_proxies(proxy_list_pinnacle, url_pinnacle, headers_pinnacle)
-    save_list(proxy_list_pinnacle, pn_fl, clone=2000)
+    save_list([proxy_list_pinnacle[0]], pn_fl, clone=2000)
     time.sleep(3)

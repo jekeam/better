@@ -9,6 +9,7 @@ import statistics
 import re
 import sys
 import traceback
+import itertools
 
 
 def print_j(j, ret=False):
@@ -40,6 +41,7 @@ bk_working = [
     # 'olimp',
     'fonbet',
 ]
+bk_working = list(itertools.combinations(bk_working, 2))
 
 sport_list = [
     {
@@ -49,31 +51,31 @@ sport_list = [
         'pinnacle': 29,
         'min': 90,
     },
-    # {
-    #     'name': 'esports',
-    #     'olimp': 112,
-    #     'fonbet': 29086,
-    #     'pinnacle': 12,
-    # },
-    # {
-    #     'name': 'volleyball',
-    #     'olimp': 10,
-    #     'fonbet': 9,
-    #     'pinnacle': 34,
-    # },
+    {
+        'name': 'esports',
+        'olimp': 112,
+        'fonbet': 29086,
+        'pinnacle': 12,
+    },
+    {
+        'name': 'volleyball',
+        'olimp': 10,
+        'fonbet': 9,
+        'pinnacle': 34,
+    },
     {
         'name': 'tennis',
         'olimp': 3,
         'fonbet': 4,
         'pinnacle': 33,
     },
-    # {
-    #     'name': 'basketball',
-    #     'olimp': 5,
-    #     'fonbet': 3,
-    #     'pinnacle': 4,
-    #     'min': 40,
-    # },
+    {
+        'name': 'basketball',
+        'olimp': 5,
+        'fonbet': 3,
+        'pinnacle': 4,
+        'min': 40,
+    },
     {
         'name': 'hockey',
         'olimp': 2,

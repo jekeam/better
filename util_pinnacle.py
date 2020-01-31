@@ -137,7 +137,7 @@ def get_matches(bk_name, proxy, timeout, api_key, x_session, x_device_uuid, prox
                                                   # закомментить для добавления сетов и геймов
                                           ) or (x.get('league', {}).get('sport', {}).get('name', '') == 'Hockey'),
                                 res):
-                            if str(l.get('id')) in '1094231259':
+                            if str(l.get('id')) in '123':
                                 import json
                                 print(json.dumps(l))
                             # {'ageLimit': 0, 'altTeaser': False, 'external': {}, 'hasLive': True, 'hasMarkets': True, 'id': 1094249412, 'isHighlighted': False, 'isLive': True, 'isPromoted': False, 
@@ -284,11 +284,16 @@ def get_odds(bets, api_key, x_session, x_device_uuid, pair_mathes, sport_id, pro
         # print('match_id: ' + str(match_id))
         for bet in filter(lambda x: x['matchupId'] == int(match_id), data):
             version = bet.get('version', -1)
-            if str(match_id) == '1094231259':
+            if str(match_id) == '123':
                 print(bet)
             if (check_vertion and version > MAX_VERSION.get(str(sport_id), 0)) or not check_vertion:
                 MAX_VERSION.update({str(sport_id): version})
                 for price in bet.get('prices', []):
+                    status = bet.get('status')
+                    if status == 'open':
+                        v_kof = str(price.get('price')) + ' -> ' + str(american_to_decimal(price.get('price'), bet.get('status')))
+                    else:
+                        v_kof = 0
                     res.update(straight_normalize({
                         'time_req': round(time.time()),
                         'match_id': match_id,
@@ -299,7 +304,7 @@ def get_odds(bets, api_key, x_session, x_device_uuid, pair_mathes, sport_id, pro
                         'period': bet.get('period'),
                         'designation': price.get('designation'),
                         'points': price.get('points'),
-                        'value': str(price.get('price')) + ' -> ' + str(american_to_decimal(price.get('price'), bet.get('status'))),
+                        'value': v_kof,
                         'version': version,
                         # 'units':res[match_id]['units'], Нужно для угловых - они отключены
                         # 'vector':'UP' if price.get('price') > 0 else 'DOWN'
