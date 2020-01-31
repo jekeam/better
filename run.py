@@ -132,10 +132,10 @@ def set_api(bk_name, proxy, session):
             head = {
                 'accept': 'application/json',
                 'content-type': 'application/json',
-                'origin': 'https://www.pinnacle.com',
-                'referer': 'https://www.pinnacle.com',
-                'sec-fetch-mode': 'cors',
-                'sec-fetch-site': 'same-site',
+                # 'origin': 'https://www.pinnacle.com',
+                # 'referer': 'https://www.pinnacle.com',
+                # 'sec-fetch-mode': 'cors',
+                # 'sec-fetch-site': 'same-site',
                 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36',
             }
             res = requests.get(url='https://www.pinnacle.com/config/app.json', proxies={'https': proxy}, timeout=10, verify=False)
@@ -149,7 +149,7 @@ def set_api(bk_name, proxy, session):
             head.update({'x-device-uuid': util_pinnacle.x_device_uuid_temp})
             if session:
                 res = session.post(
-                    url='https://guest.api.arcadia.pinnacle.com/0.1/sessions',
+                    url='https://api.arcadia.pinnacle.com/0.1/sessions',
                     # url='http://192.168.1.143:8888',
                     proxies={'https': proxy},
                     timeout=10,
@@ -164,7 +164,7 @@ def set_api(bk_name, proxy, session):
                 )
             else:
                 res = requests.post(
-                url='https://guest.api.arcadia.pinnacle.com/0.1/sessions',
+                url='https://api.arcadia.pinnacle.com/0.1/sessions',
                 # url='http://192.168.1.143:8888',
                 proxies={'https': proxy},
                 timeout=10,

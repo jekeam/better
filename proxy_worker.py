@@ -363,8 +363,8 @@ if __name__ == '__main__':
         'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36',
         'x-api-key': app_key
     }
-    # url_pinnacle = 'guest.api.arcadia.pinnacle.com/0.1/sports/29/matchups/live'
-    url_pinnacle = 'guest.api.arcadia.pinnacle.com/0.1/sports/29/markets/live/straight?primaryOnly=false'
+    # url_pinnacle = 'api.arcadia.pinnacle.com/0.1/sports/29/matchups/live'
+    url_pinnacle = 'api.arcadia.pinnacle.com/0.1/sports/29/markets/live/straight?primaryOnly=false'
 
     # proxy_list_pinnacle = get_proxy_from_file('proxy_by_pinnacle.txt')
     # proxy_list_pinnacle = proxy_list
@@ -375,5 +375,5 @@ if __name__ == '__main__':
     proxy_list_pinnacle = get_proxy_from_file('proxy_for_olimp.txt')
     proxy_list_pinnacle = (list(filter(lambda p: 'https' in p, proxy_list_pinnacle)))
     proxy_list_pinnacle = check_proxies(proxy_list_pinnacle, url_pinnacle, headers_pinnacle)
-    save_list(list(proxy_list_pinnacle[0]), pn_fl, clone=2000)
+    save_list([proxy_list_pinnacle[0]], pn_fl, clone=2000)
     time.sleep(3)

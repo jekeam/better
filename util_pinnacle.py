@@ -10,11 +10,11 @@ import time
 list_matches_head = {
     'accept': 'application/json',
     'content-type': 'application/json',
-    'origin': 'https://www.pinnacle.com',
-    'referer': 'https://www.pinnacle.com',
-    'sec-fetch-mode': 'cors',
-    'sec-fetch-site': 'same-site',
-    'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36',
+    # 'origin': 'https://www.pinnacle.com',
+    # 'referer': 'https://www.pinnacle.com',
+    # 'sec-fetch-mode': 'cors',
+    # 'sec-fetch-site': 'same-site',
+    'user-agent': 'Mozilla/5.0 (WindoWs nt 10.0; wiN64; X64) applewebkiT/537.36 (khTml, liKe gecko) chrome/78.0.3904.108 safari/537.36',
 }
 list_matches_url = 'https://guest.api.arcadia.pinnacle.com/0.1/sports/{}/matchups/live'
 
@@ -24,11 +24,11 @@ head_odds = {
     'accept-language': 'ru,en;q=0.9,mg;q=0.8,cy;q=0.7',
     'cache-control': 'no-cache',
     'content-type': 'application/json',
-    'origin': 'https://www.pinnacle.com',
-    'referer': 'https://www.pinnacle.com/en/',
-    'sec-fetch-mode': 'cors',
-    'sec-fetch-site': 'same-site',
-    'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36',
+    # 'origin': 'https://www.pinnacle.com',
+    # 'referer': 'https://www.pinnacle.com/en/',
+    # 'sec-fetch-mode': 'cors',
+    # 'sec-fetch-site': 'same-site',
+    'user-agent': 'Mozilla/5.0 (WindoWs nt 10.0; wiN64; X64) applewebkiT/537.36 (khTml, liKe gecko) chrome/78.0.3904.108 safari/537.36',
 }
 url_odds = 'https://guest.api.arcadia.pinnacle.com/0.1/sports/{}/markets/live/straight?primaryOnly=false'
 x_device_uuid_temp = 'f46d6637-4581a07c-36898a69-87694cf6'
@@ -116,7 +116,7 @@ def get_matches(bk_name, proxy, timeout, api_key, x_session, x_device_uuid, prox
                         verify=False,
                         proxies=proxies,
                     )
-                # print('get_matches head: ' + str(head))
+                print('get_matches head: ' + str(head))
                 try:
                     res = resp.json()
                     # {'detail': 'The requested URL was not found on the server.  If you entered the URL manually please check your spelling and try again.', 'status': 404, 'title': 'Not Found', 'type': 'about:blank'}
@@ -138,7 +138,7 @@ def get_matches(bk_name, proxy, timeout, api_key, x_session, x_device_uuid, prox
                                                   # закомментить для добавления сетов и геймов
                                           ) or (x.get('league', {}).get('sport', {}).get('name', '') == 'Hockey'),
                                 res):
-                            if str(l.get('id')) in '1094361849':
+                            if str(l.get('id')) in '1094353468':
                                 import json
                                 print(json.dumps(l))
                             # {'ageLimit': 0, 'altTeaser': False, 'external': {}, 'hasLive': True, 'hasMarkets': True, 'id': 1094249412, 'isHighlighted': False, 'isLive': True, 'isPromoted': False, 
@@ -257,7 +257,7 @@ def get_odds(bets, api_key, x_session, x_device_uuid, pair_mathes, sport_id, pro
     url = url_odds
     proxies = {'https': proxy}
     data = {}
-    # print('get_odds head: ' + str(head))
+    print('get_odds head: ' + str(head))
     if session:
         utils.prnts('session get_odds: ' + str(session))
         resp = session.get(
@@ -296,7 +296,7 @@ def get_odds(bets, api_key, x_session, x_device_uuid, pair_mathes, sport_id, pro
         # print('match_id: ' + str(match_id))
         for bet in filter(lambda x: x['matchupId'] == int(match_id), data):
             version = bet.get('version', -1)
-            if str(match_id) == '1094361849':
+            if str(match_id) == '1094353468':
                 print(bet)
             if (check_vertion and version > MAX_VERSION.get(str(sport_id), 0)) or not check_vertion:
                 MAX_VERSION.update({str(sport_id): version})

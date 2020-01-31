@@ -80,7 +80,7 @@ def get_matchups(sess, app_key, sprt_nm, sprt_id, prxy):
         'x-api-key': app_key
         }
 
-    live=proxy_request(sess, requests.Request('GET', 'https://guest.api.arcadia.pinnacle.com/0.1/sports/{}/matchups/live'.format(sprt_id), headers=head), prxy).json()
+    live=proxy_request(sess, requests.Request('GET', 'https://api.arcadia.pinnacle.com/0.1/sports/{}/matchups/live'.format(sprt_id), headers=head), prxy).json()
 
     data={}
     
@@ -127,7 +127,7 @@ def get_odds(sess, app_key, p_matchups, sprt_id, prxy):
         'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36',
         'x-api-key': app_key}
 
-    straight=proxy_request(sess, requests.Request('GET', 'https://guest.api.arcadia.pinnacle.com/0.1/sports/{}/markets/live/straight?primaryOnly=false'.format(sprt_id), headers=head), prxy).json()
+    straight=proxy_request(sess, requests.Request('GET', 'https://api.arcadia.pinnacle.com/0.1/sports/{}/markets/live/straight?primaryOnly=false'.format(sprt_id), headers=head), prxy).json()
 
     for matchupId in matchups.keys():
         res={}
