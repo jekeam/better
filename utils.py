@@ -9,7 +9,6 @@ import statistics
 import re
 import sys
 import traceback
-import itertools
 
 
 def print_j(j, ret=False):
@@ -41,7 +40,6 @@ bk_working = [
     # 'olimp',
     'fonbet',
 ]
-bk_working = list(itertools.combinations(bk_working, 2))
 
 sport_list = [
     {

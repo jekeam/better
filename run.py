@@ -18,6 +18,7 @@ import os
 from statistics import median
 from datetime import datetime
 import copy
+import itertools
 
 import sys
 import traceback
@@ -560,7 +561,7 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
     # prnts('arr_matchs: ' + str(arr_matchs))
     while True:
         try:
-            pair_bk = bk_working
+            pair_bk = list(itertools.combinations(bk_working, 2))
             # pair_bk = list(itertools.combinations(['fonbet', 'pinnacle'], 2))
             for bk_name1, bk_name2 in pair_bk:
                 json_bk1_copy = dict()
