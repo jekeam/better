@@ -1036,11 +1036,12 @@ def mon_cupon(arr_cupon):
             id_old = df[(df['time'] >= (cur_time - (60*minute)))]['cupon_id'].min()
             arr_cupon[0] = str(int((curr_id-id_old)/minute)) + ' куп./мин.'
             prnts('activity ' + str(arr_cupon[0]) + ' coupons per/min')
+            time.sleep(minute*60-20)
         except Exception as e:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             prnts('Error mon_cupon: ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
         finally:
-            time.sleep(time_sleep_proc)
+            time.sleep(10)
             
 
 
