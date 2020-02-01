@@ -53,7 +53,7 @@ def if_exists_by_sport(jsos_list: dict, bk_name: str, sport_id: str, check_key: 
 bk_fork_name = ['olimp', 'fonbet']  # , 'pinnacle']
 # bk_fork_name = ['fonbet']  # , 'pinnacle']
 
-max_min_prematch = 1440 / 2  # 120 = 2 hour
+max_min_prematch = 1440/4  # 120 = 2 hour
 assert max_min_prematch % 60 == 0, 'Время должно быть кратно 60 минутам'
 assert max_min_prematch >= 60, 'Время должно быть больше 60 минут'
 
@@ -240,7 +240,7 @@ else:
     
 TIMEOUT_LIST = 10
 TIMEOUT_MATCH = 10
-TIMEOUT_MATCH_MINUS = 8
+TIMEOUT_MATCH_MINUS = 9
 TIMEOUT_PRE_LIST = 60 * 15
 TIMEOUT_PRE_MATCH = 45
 TIMEOUT_PRE_MATCH_MINUS = 0
