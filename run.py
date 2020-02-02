@@ -55,7 +55,7 @@ def get_olimp(resp, arr_matchs, place='live', sport_id=None, arr_top_matchs=None
             v_sport_id = int(liga_info.get('sport_id', sport_id))
             liga_id = liga_info.get('id')
             liga_name = liga_info[key_name]
-            if 'statistics' not in liga_name.lower() and 'outrights' not in liga_name.lower()  and 'special offers' not in liga_name.lower():
+            if 'statistics' not in liga_name.lower() and 'outrights' not in liga_name.lower() and 'special offers' not in liga_name.lower():
                 if if_exists(sport_list, 'olimp', v_sport_id) and if_exists_by_sport(sport_list, 'olimp', v_sport_id, 'place', place):
                     for math_info in liga_info.get('it'):
                         match_id = math_info.get('id')
@@ -1028,21 +1028,20 @@ def mon_cupon(arr_cupon):
             df = pd.read_csv(file_name, encoding='utf-8', sep=';')
             df2 = pd.DataFrame(
                 {
-                    "time":[cur_time], 
-                    "cupon_id":[curr_id],
-            })
-            df = df.append(df2, ignore_index = True)
+                    "time": [cur_time],
+                    "cupon_id": [curr_id],
+                })
+            df = df.append(df2, ignore_index=True)
             df.to_csv(file_name, encoding='utf-8', index=False, sep=';')
-            id_old = df[(df['time'] >= (cur_time - (60*minute)))]['cupon_id'].min()
-            arr_cupon[0] = str(int((curr_id-id_old)/minute)) + ' куп./мин.'
+            id_old = df[(df['time'] >= (cur_time - (60 * minute)))]['cupon_id'].min()
+            arr_cupon[0] = str(int((curr_id - id_old) / minute)) + ' куп./мин.'
             prnts('activity ' + str(arr_cupon[0]) + ' coupons per/min')
-            time.sleep(minute*60-20)
+            time.sleep(minute * 60 - 20)
         except Exception as e:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             prnts('Error mon_cupon: ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
         finally:
             time.sleep(10)
-            
 
 
 if __name__ == '__main__':
@@ -1074,7 +1073,7 @@ if __name__ == '__main__':
         prnts('START: proxy_saver')
 
         arr_matchs = dict()
-        arr_cupon = [0] 
+        arr_cupon = [0]
 
         arr_top_matchs = {'top': [], 'middle': [], 'slag': []}
         arr_fonbet_top_kofs = {}
@@ -1099,13 +1098,13 @@ if __name__ == '__main__':
         olimp_seeker_matchs.start()
         prnts(' ')
         prnts('START: olimp_seeker_matchs')
-        time.sleep(time_sleep_proc/3)
+        time.sleep(time_sleep_proc / 3)
         # get pre event list by olimp
         olimp_seeker_pre_matchs = threading.Thread(target=start_seeker_matchs_olimp, args=(gen_proxi_olimp, arr_matchs, 'pre', arr_top_matchs))
         olimp_seeker_pre_matchs.start()
         prnts(' ')
         prnts('START: olimp_seeker_pre_matchs')
-        time.sleep(time_sleep_proc/3)
+        time.sleep(time_sleep_proc / 3)
         # time.sleep(60)
 
         # get event list by fonbet
@@ -1113,13 +1112,13 @@ if __name__ == '__main__':
         fonbet_seeker_matchs.start()
         prnts(' ')
         prnts('START: fonbet_seeker_matchs')
-        time.sleep(time_sleep_proc/3)
+        time.sleep(time_sleep_proc / 3)
         # get pre event list by fonbet
         fonbet_seeker_pre_matchs = threading.Thread(target=start_seeker_matchs_fonbet, args=(gen_proxi_fonbet, arr_matchs, 'pre'))
         fonbet_seeker_pre_matchs.start()
         prnts(' ')
         prnts('START: fonbet_seeker_pre_matchs')
-        time.sleep(time_sleep_proc/3)
+        time.sleep(time_sleep_proc / 3)
         # while True:
         #     for n in list(arr_matchs):
         #         print_j(arr_matchs[n])
@@ -1132,13 +1131,13 @@ if __name__ == '__main__':
         prnts('START: fonbet_seeker_top_matchs')
 
         # Event mapping
-        time.sleep(time_sleep_proc/3)
+        time.sleep(time_sleep_proc / 3)
         event_mapping = threading.Thread(target=start_event_mapping, args=(pair_mathes, arr_matchs, mathes_complite))
         event_mapping.start()
         prnts(' ')
         prnts('START: event_mapping')
 
-        time.sleep(time_sleep_proc/3)
+        time.sleep(time_sleep_proc / 3)
         mathes_id_is_work = []
         starter_bets = threading.Thread(
             target=starter_bets,
@@ -1158,8 +1157,8 @@ if __name__ == '__main__':
         started_stat_req.start()
         prnts(' ')
         prnts('START: started_stat_req')
-        
-        started_mon_cupon = threading.Thread(target=mon_cupon, args=(arr_cupon, ))
+
+        started_mon_cupon = threading.Thread(target=mon_cupon, args=(arr_cupon,))
         started_mon_cupon.start()
         prnts(' ')
         prnts('START: mon_cupon')
