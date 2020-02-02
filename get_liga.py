@@ -2,6 +2,8 @@
 import requests
 import urllib3
 import pandas as pd
+import json
+import re
 
 # disable warning
 urllib3.disable_warnings()
@@ -86,7 +88,7 @@ elif 1 == 0:  # список для разметки
     #     if s not in liga_top and s not in liga_oth:
     #         print(s)
     # print(x)
-elif 1 == 1:  # Обработанный список
+elif 1 == 0:  # Обработанный список
     # POST https://api2.olimp.bet/api/champs HTTP/1.1
     # X-TOKEN: 5a6a276c40bf0b24c639bde74c210b98
     # X-CUPIS: 1
@@ -145,7 +147,33 @@ elif 1 == 1:  # Обработанный список
             except:
                 pass
     print('add new: ' + str(add_cnt))
-
+elif 1 == 1:  # добавлдение из списка не найденного
+    print('liga_name;is_top;')
+    add_cnt = 0
+    dfj = df.to_json(orient='records')
+    dfj = json.loads(dfj)
+    for l in dfj:
+        liga_name = l.get('liga_name')
+        liga_id = l.get('liga_id')
+        is_top = l.get('is_top')
+        if liga_name:
+            if not re.findall(r'[А-Яа-я]+', liga_name):
+                if 'statistics' not in liga_name.lower() and 'outrights' not in liga_name.lower() and 'special offers' not in liga_name.lower():
+                    x = ''
+                    try:
+                        v_str = '{};{}'.format(liga_name, is_top)
+                        with open('top_by_name.csv', 'r+') as file:
+                            for line in list(file):
+                                if liga_name in line:
+                                    print('old: ' + v_str)
+                                    break
+                            else:  # not found, we are at the eof
+                                file.write(v_str + '\n')  # append missing data
+                                print('new: ' + v_str)
+                                add_cnt += 1
+                    except:
+                        pass
+    print('add new: ' + str(add_cnt))
 if 1 == 0:
     import json
 
