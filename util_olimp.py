@@ -256,7 +256,7 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out, pair_mathes, place):
                 raise ValueError(err_str)
         except Exception as e:
             if resp:
-                text = 'status_code: ' + str(resp.status_code) + ', text: '+ str(resp.text)
+                text = 'status_code: ' + str(resp.status_code) + ', text: ' + str(resp.text)
             else:
                 text = 'resp is None'
             exc_type, exc_value, exc_traceback = sys.exc_info()
@@ -265,7 +265,7 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out, pair_mathes, place):
         # {"error": {"err_code": 404, "err_desc": "Прием ставок приостановлен"}, "data": null}
         # {"error": {"err_code": 511, "err_desc": "Sign access denied"}, "data": null}
         # {'err_code': 423, 'err_desc': 'Переменная: id запрещена в данном методе!'}
-        if res.get("error").get('err_code', 999) in (0, 404, 511, 423):
+        if res.get("error").get('err_code', 999) in (0, 511, 423):  # 404,
             return resp, resp.elapsed.total_seconds()
         else:
             err = 'Олимп ' + str(match_id) + res.get("error")
@@ -289,9 +289,9 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out, pair_mathes, place):
         proxi_list = del_proxy(proxy, proxi_list)
         raise ValueError(err_str)
     except ValueError as e:
-        # if str(e) == '404':
-        #     prnts(e)
-        #     raise OlimpMatchСompleted('Олимп, матч ' + str(match_id) + ' завершен, поток выключен!')
+        if str(e) == '404':
+            prnts(e)
+            raise OlimpMatchСompleted('Олимп, матч ' + str(match_id) + ' завершен, поток выключен!')
         err_str = 'Олимп ' + str(match_id) + ', код ошибки ValueError: ' + str(e)
         prnts(err_str)
         proxi_list = del_proxy(proxy, proxi_list)
@@ -342,7 +342,7 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
                 if str(resp.get('ms', '')) == '4':
                     err_str = 'Олимп: матч, ' + my_sport_name + ' - ' + str(match_id) + ' завершен, т.к. ms=4'
                     raise OlimpMatchСompleted(err_str)
-                
+
         if not math_block:
             timer = resp.get('t', '')
             minute = -1  # (2:0) Перерыв
