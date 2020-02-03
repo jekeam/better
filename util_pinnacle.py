@@ -17,7 +17,8 @@ list_matches_head = {
     # 'sec-fetch-site': 'same-site',
     'user-agent': 'Mozilla/5.0 (WindoWs nt 10.0; wiN64; X64) applewebkiT/537.36 (khTml, liKe gecko) chrome/78.0.3904.108 safari/537.36',
 }
-list_matches_url = 'https://guest.api.arcadia.pinnacle.com/0.1/sports/{}/matchups/live'
+url_live = 'https://guest.api.arcadia.pinnacle.com/0.1/sports/{}/matchups/live'
+url_pre = 'https://guest.api.arcadia.pinnacle.com/0.1/sports/{}/matchups/'
 
 head_odds = {
     'accept': 'application/json',
@@ -31,7 +32,8 @@ head_odds = {
     # 'sec-fetch-site': 'same-site',
     'user-agent': 'Mozilla/5.0 (WindoWs nt 10.0; wiN64; X64) applewebkiT/537.36 (khTml, liKe gecko) chrome/78.0.3904.108 safari/537.36',
 }
-url_odds = 'https://guest.api.arcadia.pinnacle.com/0.1/sports/{}/markets/live/straight?primaryOnly=false'
+url_live_odds = 'https://guest.api.arcadia.pinnacle.com/0.1/sports/{}/markets/live/straight?primaryOnly=false'  
+url_pre_odds = 'https://guest.api.arcadia.pinnacle.com/0.1/sports/{}/markets/straight?primaryOnly=false'  
 x_device_uuid_temp = 'f46d6637-4581a07c-36898a69-87694cf6'
 # x_session = '8rnHMqfFTy5osJ59q9vytaWgGytFiW0v'
 
@@ -92,7 +94,10 @@ def get_matches(bk_name, proxy, timeout, api_key, x_session, x_device_uuid, prox
         head.update({'x-device-uuid': x_device_uuid})
     if x_session:
         head.update({'x-session': x_session})
-        url = list_matches_url
+    if 'live' == 'live':
+        url = url_live
+    else:
+        url = url_pre
     proxies = {'https': proxy}
     data = {}
     for sport in utils.sport_list:
@@ -254,7 +259,10 @@ def get_odds(bets, api_key, x_session, x_device_uuid, pair_mathes, sport_id, pro
     if x_session:
         pass
         head.update({'x-session': x_session})
-    url = url_odds
+    if 'live' == 'live':
+        url = url_live_odds
+    else:
+        url = url_pre_odds
     proxies = {'https': proxy}
     data = {}
     # print('get_odds head: ' + str(head))

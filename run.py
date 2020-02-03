@@ -555,7 +555,7 @@ def get_rate(team1_bk1, team2_bk1, team1_bk2, team2_bk2, debug=False):
 
 def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
     # need = 1.5
-    need = 1
+    need = 0.5
     prnts('start_event_mapping, need: ' + str(need))
 
     not_compare = list()
