@@ -159,13 +159,13 @@ def get_matches(bk_name, proxy, timeout, api_key, x_session, x_device_uuid, prox
                             participant_1 = participants[1]
                             if participant_0.get('alignment') == 'home':
                                 team1 = participant_0.get('name')
-                                score1 = participant_0.get('state', {}).get('score', participant_0.get('score'))
                                 team2 = participant_1.get('name')
+                                score1 = participant_0.get('state', {}).get('score', participant_0.get('score'))
                                 score2 = participant_1.get('state', {}).get('score', participant_1.get('score'))
                             elif participant_0.get('alignment') == 'away':
                                 team2 = participant_0.get('name')
-                                score2 = participant_0.get('state', {}).get('score', participant_0.get('score'))
                                 team1 = participant_1.get('name')
+                                score2 = participant_0.get('state', {}).get('score', participant_0.get('score'))
                                 score1 = participant_1.get('state', {}).get('score', participant_1.get('score'))
                             data[l.get('id')] = {
                                 'time_req': int(datetime.datetime.now().timestamp()),
