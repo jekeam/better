@@ -62,7 +62,7 @@ def american_to_decimal(odd, status):
 def straight_normalize(data):
     designations = {'over': 'Б', 'under': 'М', 'home': '1', 'away': '2', 'draw': 'Н', None: ''}
     periods = {1: '1', 2: '2', 0: '', None: ''}
-    types = {'team_total': 'ИТ', 'total': 'Т', 'moneyline': '', 'spread': 'Ф', None: ''}
+    types = {'team_total': 'Т', 'total': 'Т', 'moneyline': '', 'spread': 'Ф', None: ''}
     sides = {'home': '1', 'away': '2', None: ''}
 
     norm_designations = lambda x: x if x == 'Н' else 'П' + x
@@ -144,7 +144,7 @@ def get_matches(bk_name, proxy, timeout, api_key, x_session, x_device_uuid, prox
                                                   # закомментить для добавления сетов и геймов
                                           ) or (x.get('league', {}).get('sport', {}).get('name', '') == 'Hockey'),
                                 res):
-                            if str(l.get('id')) in '1094354154':
+                            if str(l.get('id')) in '123':
                                 print(json.dumps(l))
                             # {'ageLimit': 0, 'altTeaser': False, 'external': {}, 'hasLive': True, 'hasMarkets': True, 'id': 1094249412, 'isHighlighted': False, 'isLive': True, 'isPromoted': False, 
                             # 'league': {'ageLimit': 0, 'external': {}, 'featureOrder': -1, 'group': 'World', 'id': 1863, 'isFeatured': False, 'isHidden': False, 'isPromoted': False, 'isSticky': False, 
@@ -157,16 +157,14 @@ def get_matches(bk_name, proxy, timeout, api_key, x_session, x_device_uuid, prox
                             participants = l.get('participants', [{}])
                             if participants[0].get('alignment') == 'home':
                                 team1 = participants[0].get('name')
-                                score1 = participants[0].get('score')
-                                
+                                score1 = participants[0].get('state', {}).get('score')
                                 team2 = participants[1].get('name')
-                                score2 = participants[1].get('score')
+                                score2 = participants[1].get('state', {}).get('score')
                             elif participants[0].get('alignment') == 'away':
                                 team2 = participants[0].get('name')
-                                score2 = participants[0].get('score')
-                                
+                                score2 = participants[0].get('state', {}).get('score')
                                 team1 = participants[1].get('name')
-                                score1 = participants[1].get('score')
+                                score1 = participants[1].get('state', {}).get('score')
                             data[l.get('id')] = {
                                 'time_req': int(datetime.datetime.now().timestamp()),
                                 'bk_name': bk_name,
@@ -298,13 +296,13 @@ def get_odds(bets, api_key, x_session, x_device_uuid, pair_mathes, sport_id, pro
             utils.prnts('Session expired! TODO: relogin')
 
     for match_id in match_id_list:
-        check_vertion = False
+        check_vertion = True
         res = {}
         version = None
         # print('match_id: ' + str(match_id))
         for bet in filter(lambda x: x['matchupId'] == int(match_id), data):
             version = bet.get('version', -1)
-            if str(match_id) == '1094354154':
+            if str(match_id) == '123':
                 print(json.dumps(bet))
             if (check_vertion and version > MAX_VERSION.get(str(sport_id), 0)) or not check_vertion:
                 MAX_VERSION.update({str(sport_id): version})
