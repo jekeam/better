@@ -251,7 +251,7 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out, pair_mathes, place):
         try:
             if resp.status_code == 200:
                 res = resp.json()
-            elif resp.status_code == 200:
+            elif resp.status_code == 404:
                 raise OlimpMatchСompleted('Олимп, матч ' + str(match_id) + ' завершен, поток выключен!')
             else:
                 err_str = 'Олимп ' + str(match_id) + ', get bad status_code: ' + str(resp.status_code)
