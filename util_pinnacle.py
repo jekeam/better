@@ -50,7 +50,7 @@ def american_to_decimal(odd, status):
         if odd > 0:
             return round((odd / 100) + 1, 3)
         elif odd < 0:
-            return round((100 / odd) + 1, 3)
+            return round(100 / abs(odd) + 1, 3)
         else:
             return 0
     else:
@@ -302,16 +302,17 @@ def get_odds(bets, api_key, x_session, x_device_uuid, pair_mathes, sport_id, pro
                 MAX_VERSION.update({str(sport_id): version})
                 for price in bet.get('prices', []):
                     status = bet.get('status')
-                    if status == 'open':
-                        v_kof = str(price.get('price')) + ' -> ' + str(american_to_decimal(price.get('price'), bet.get('status')))
-                    else:
-                        v_kof = 0
+                    # if status == 'open':
+                    # v_kof = str(price.get('price')) + ' -> ' + str(american_to_decimal(price.get('price'), status))
+                    v_kof = str(american_to_decimal(price.get('price'), status))
+                    # else:
+                        # v_kof = 0
                     res.update(straight_normalize({
                         'time_req': round(time.time()),
                         'match_id': match_id,
                         # 'name': arr_matchs.get(match_id, {}).get('name', ''),
                         'type': bet.get('type'),
-                        'status': bet.get('status'),
+                        'status': status,
                         'side': bet.get('side'),
                         'period': bet.get('period'),
                         'designation': price.get('designation'),
