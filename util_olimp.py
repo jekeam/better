@@ -273,7 +273,8 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out, pair_mathes, place):
             err = 'Олимп ' + str(match_id) + res.get("error")
             prnts(str(err))
             raise ValueError(str(err.get('err_code')))
-
+    except OlimpMatchСompleted as e:
+        raise OlimpMatchСompleted(str(e))
     except requests.exceptions.Timeout as e:
         err_str = 'Олимп ' + str(match_id) + ', код ошибки Timeout: ' + str(e)
         prnts(err_str)
