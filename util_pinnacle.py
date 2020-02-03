@@ -155,16 +155,18 @@ def get_matches(bk_name, proxy, timeout, api_key, x_session, x_device_uuid, prox
                             # 'periods': [{'cutoffAt': '2020-01-31T04:14:42Z', 'period': 0, 'status': 'open'}, {'cutoffAt': None, 'period': 1, 'status': 'settled'}], 'rotation': 1301, 'startTime': '2020-01-31T01:30:00Z',
                             # 'state': {'minutes': 39, 'state': 3}, 'status': 'started', 'totalMarketCount': 2, 'type': 'matchup', 'units': 'Regular', 'version': 256440882}
                             participants = l.get('participants', [{}])
-                            if participants[0].get('alignment') == 'home':
-                                team1 = participants[0].get('name')
-                                score1 = participants[0].get('state', {}).get('score')
-                                team2 = participants[1].get('name')
-                                score2 = participants[1].get('state', {}).get('score')
-                            elif participants[0].get('alignment') == 'away':
-                                team2 = participants[0].get('name')
-                                score2 = participants[0].get('state', {}).get('score')
-                                team1 = participants[1].get('name')
-                                score1 = participants[1].get('state', {}).get('score')
+                            participant_0 = participants[0]
+                            participant_1 = participants[1]
+                            if participant_0.get('alignment') == 'home':
+                                team1 = participant_0.get('name')
+                                score1 = participant_0.get('state', {}).get('score', participant_0.get('score'))
+                                team2 = participant_1.get('name')
+                                score2 = participant_1.get('state', {}).get('score', participant_1.get('score'))
+                            elif participant_0.get('alignment') == 'away':
+                                team2 = participant_0.get('name')
+                                score2 = participant_0.get('state', {}).get('score', participant_0.get('score'))
+                                team1 = participant_1.get('name')
+                                score1 = participant_1.get('state', {}).get('score', participant_1.get('score'))
                             data[l.get('id')] = {
                                 'time_req': int(datetime.datetime.now().timestamp()),
                                 'bk_name': bk_name,
