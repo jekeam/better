@@ -382,11 +382,13 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
                 try:
                     sc1 = int(score.split(':')[0])
                 except Exception as e:
-                    prnts('err util_olimp sc1: ' + str(e))
+                    pass
+                    # prnts('err util_olimp sc1: ' + str(e))
                 try:
                     sc2 = int(score.split(':')[1])
                 except Exception as e:
-                    prnts('err util_olimp sc2: ' + str(e))
+                    pass
+                    # prnts('err util_olimp sc2: ' + str(e))
             except:
                 if DEBUG:
                     prnts('err util_olimp error split: ' + str(resp.get('sc', '0:0')))
