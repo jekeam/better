@@ -251,8 +251,9 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out, pair_mathes, place):
         try:
             if resp.status_code == 200:
                 res = resp.json()
-            elif resp.status_code == 404:
-                raise OlimpMatchСompleted('Олимп, матч ' + str(match_id) + ' завершен, поток выключен!')
+                if res.get('error', {}).get('err_code') == 404 or resp.status_code == 404: 
+                    # {"error": {"err_code": 404, "err_desc": "Прием ставок приостановлен"}, "data": null}
+                    raise OlimpMatchСompleted('Олимп, матч ' + str(match_id) + ' завершен, поток выключен!')
             else:
                 err_str = 'Олимп ' + str(match_id) + ', get bad status_code: ' + str(resp.status_code)
                 raise ValueError(err_str)
@@ -264,7 +265,6 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out, pair_mathes, place):
             exc_type, exc_value, exc_traceback = sys.exc_info()
             err_str = 'Олимп ' + str(match_id) + ': ' + str(str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))) + ', text: ' + str(text)
             raise ValueError(err_str)
-        # {"error": {"err_code": 404, "err_desc": "Прием ставок приостановлен"}, "data": null}
         # {"error": {"err_code": 511, "err_desc": "Sign access denied"}, "data": null}
         # {'err_code': 423, 'err_desc': 'Переменная: id запрещена в данном методе!'}
         if res.get("error").get('err_code', 999) in (0, 511, 423):  # 404,
@@ -292,9 +292,6 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out, pair_mathes, place):
         proxi_list = del_proxy(proxy, proxi_list)
         raise ValueError(err_str)
     except ValueError as e:
-        if str(e) == '404':
-            prnts(e)
-            raise OlimpMatchСompleted('Олимп, матч ' + str(match_id) + ' завершен, поток выключен!')
         err_str = 'Олимп ' + str(match_id) + ', код ошибки ValueError: ' + str(e)
         prnts(err_str)
         proxi_list = del_proxy(proxy, proxi_list)
