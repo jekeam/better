@@ -586,11 +586,17 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
     prnts('start_event_mapping, need: ' + str(need))
 
     not_compare = list()
+    pair_mathes_found = dict()
 
     # prnts(arr_matchs)
     while True:
         try:
-            prnts('Events found: ' + str(len(pair_mathes)) + ' ' + str(pair_mathes))
+            for key in list(pair_mathes_found):
+                if pair_mathes_found.get(key) == 0:
+                    prnts('Event add: ' + str(key))
+                    pair_mathes_found.update({key: 1})
+                    
+            #     pair_mathes_found = list()
             bk_rate_list = list()
             bk_rate_sorted = list()
 
@@ -714,9 +720,17 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                                 serv_log('compare_teams', 'del;' + str(p[-2]) + 'conflict')
                                 pair_mathes.append(pair)
                                 serv_log('compare_teams', 'add;' + pair[-2] + 'conflict')
+                            
+                                pair_key = str(pair[0])+ '-' + str(pair[1])
+                                if not pair_mathes_found.get(pair_key):
+                                    pair_mathes_found.update({pair_key: 0})
                         if not conflict and not is_exists:
                             pair_mathes.append(pair)
                             serv_log('compare_teams', 'add;' + pair[-2])
+                            
+                            pair_key = str(pair[0])+ '-' + str(pair[1])
+                            if not pair_mathes_found.get(pair_key):
+                                pair_mathes_found.update({pair_key: 0})
             # for x in pair_mathes:
             # print(x)
         except Exception as e:
