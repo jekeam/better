@@ -254,6 +254,8 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out, pair_mathes, place):
             else:
                 err_str = 'Олимп ' + str(match_id) + ', get bad status_code: ' + str(resp.status_code)
                 raise ValueError(err_str)
+        except OlimpMatchСompleted as e:
+            raise OlimpMatchСompleted(str(e))
         except Exception as e:
             if resp:
                 text = 'status_code: ' + str(resp.status_code) + ', text: ' + str(resp.text)
