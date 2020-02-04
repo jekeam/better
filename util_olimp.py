@@ -163,9 +163,6 @@ def get_matches_olimp(proxy, time_out, place, sport_id=None, time=6, liga_id=Non
         proxies = del_proxy(proxy, proxies)
         raise ValueError(err_str)
     except ValueError as e:
-        if str(e) == '404':
-            raise OlimpMatchСompleted('Олимп, матч завершен, поток выключен!')
-
         if resp.text:
             text = resp.text
         err_str = 'Олимп, код ошибки ValueError: ' + str(e) + str(text)
@@ -249,7 +246,7 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out, pair_mathes, place):
             proxies=proxies
         )
         try:
-            if resp.status_code == 200:
+            if resp.status_code in (200, 404):
                 res = resp.json()
                 if res.get('error', {}).get('err_code') == 404 or resp.status_code == 404: 
                     # {"error": {"err_code": 404, "err_desc": "Прием ставок приостановлен"}, "data": null}
