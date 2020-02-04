@@ -591,11 +591,6 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
     # prnts(arr_matchs)
     while True:
         try:
-            for key in list(pair_mathes_found):
-                if pair_mathes_found.get(key) == 0:
-                    prnts('Event add: ' + str(key))
-                    pair_mathes_found.update({key: 1})
-                    
             #     pair_mathes_found = list()
             bk_rate_list = list()
             bk_rate_sorted = list()
@@ -733,6 +728,10 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                                 pair_mathes_found.update({pair_key: 0})
             # for x in pair_mathes:
             # print(x)
+            for key in list(pair_mathes_found):
+                if pair_mathes_found.get(key) == 0:
+                    prnts('Event add: ' + str(key))
+                    pair_mathes_found.update({key: 1})
         except Exception as e:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             prnts('Error start_event_mapping: ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
