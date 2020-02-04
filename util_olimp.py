@@ -261,7 +261,7 @@ def get_match_olimp(match_id, proxi_list, proxy, time_out, pair_mathes, place):
             if resp:
                 text = 'status_code: ' + str(resp.status_code) + ', text: ' + str(resp.text)
             else:
-                text = 'resp is None'
+                text = 'resp is None, status_code: ' + str(resp.status_code)
             exc_type, exc_value, exc_traceback = sys.exc_info()
             err_str = 'Олимп ' + str(match_id) + ': ' + str(str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))) + ', text: ' + str(text)
             raise ValueError(err_str)
