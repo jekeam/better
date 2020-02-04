@@ -25,7 +25,7 @@ import traceback
 
 TIMEOUT_MATCHS = 10
 TIMEOUT_MATCH = 10
-TIMEOUT_MATCH_MINUS = 0
+TIMEOUT_MATCH_MINUS = 7
 
 if not DEBUG:
     SERVER_IP = get_param('server_ip')
