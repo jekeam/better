@@ -428,7 +428,7 @@ def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi
                     if match_id_olimp in pair_match:
                         if bets_olimp.get(str(match_id_olimp)):
                             bets_olimp.pop(str(match_id_olimp))
-                        prnts('Olimp, pair mathes remove: ' + str(pair_mathes[cnt]))
+                        prnts('Olim (OlimpMatchСompleted), pair mathes remove: ' + str(pair_mathes[cnt]))
                         pair_mathes.remove(pair_mathes[cnt])
                         mathes_complite[place].append(match_id_olimp)
                     cnt += 1
@@ -486,7 +486,7 @@ def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_p
                     if match_id_fonbet in pair_match:
                         if bets_fonbet.get(str(match_id_fonbet)):
                             bets_fonbet.pop(str(match_id_fonbet))
-                        prnts('Fonbet, pair mathes remove: ' + str(pair_mathes[cnt]))
+                        prnts('Fonbet (FonbetMatchСompleted), pair mathes remove: ' + str(pair_mathes[cnt]))
                         pair_mathes.remove(pair_mathes[cnt])
                         mathes_complite[place].append(match_id_fonbet)
                     cnt += 1
