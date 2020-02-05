@@ -298,13 +298,13 @@ def get_odds(bets, api_key, x_session, x_device_uuid, pair_mathes, sport_id, pro
             utils.prnts('Session expired! TODO: relogin')
 
     for match_id in match_id_list:
-        check_vertion = True
+        check_vertion = False # vershion check need by kof
         res = {}
         version = None
         # print('match_id: ' + str(match_id))
         for bet in filter(lambda x: x['matchupId'] == int(match_id), data):
             version = bet.get('version', -1)
-            if str(match_id) == '1095950676':
+            if str(match_id) == '1096244139':
                 print(json.dumps(bet))
             if (check_vertion and version > MAX_VERSION.get(str(sport_id), 0)) or not check_vertion:
                 MAX_VERSION.update({str(sport_id): version})
