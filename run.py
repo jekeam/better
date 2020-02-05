@@ -554,8 +554,7 @@ def get_rate(team1_bk1, team2_bk1, team1_bk2, team2_bk2, debug=False):
 
 
 def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
-    # need = 1.5
-    need = 0.9
+    need = 1.5
     prnts('start_event_mapping, need: ' + str(need))
 
     not_compare = list()
@@ -564,6 +563,8 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
     while True:
         try:
             pair_bk = list(itertools.combinations(bk_working, 2))
+            print('delete fb-ol - pair')
+            pair_bk.pop(2)
             # pair_bk = list(itertools.combinations(['fonbet', 'pinnacle'], 2))
             for bk_name1, bk_name2 in pair_bk:
                 json_bk1_copy = dict()

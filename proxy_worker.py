@@ -19,7 +19,7 @@ urllib3.disable_warnings()
 
 TIME_OUT = 3
 # CHUNKS = 500
-CHUNKS = 20
+CHUNKS = 10
 
 UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3163.100 Safari/537.36'
 
@@ -339,15 +339,15 @@ if __name__ == '__main__':
     prnts('cnt all: ' + str(len(proxy_list)))
     time.sleep(3)
     # # OL
-    # proxy_list_ol = get_proxy_from_file('proxy_for_olimp.txt')
-    # proxy_list_ol = (list(filter(lambda p: 'https' in p, proxy_list_ol)))
-    # proxy_list_olimp = check_proxies_olimp(proxy_list_ol)
-    # save_list(proxy_list_olimp, ol_fl, clone=2000)
-    # time.sleep(3)
+    proxy_list_ol = get_proxy_from_file('proxy_for_olimp.txt')
+    proxy_list_ol = (list(filter(lambda p: 'https' in p, proxy_list_ol)))
+    proxy_list_olimp = check_proxies_olimp(proxy_list_ol)
+    save_list(proxy_list_olimp, ol_fl, clone=2000)
+    time.sleep(3)
     # # FB
-    # proxy_list_fonbet = check_proxies_fonbet(proxy_list)
-    # save_list(proxy_list_fonbet, fb_fl)
-    # time.sleep(3)
+    proxy_list_fonbet = check_proxies_fonbet(proxy_list)
+    save_list(proxy_list_fonbet, fb_fl)
+    time.sleep(3)
     # PINNACLE
     prnts('get api_key from pinnacle')
     url_pinnacle = 'www.pinnacle.bet'

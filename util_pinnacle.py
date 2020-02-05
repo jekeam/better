@@ -17,8 +17,8 @@ list_matches_head = {
     # 'sec-fetch-site': 'same-site',
     'user-agent': 'Mozilla/5.0 (WindoWs nt 10.0; wiN64; X64) applewebkiT/537.36 (khTml, liKe gecko) chrome/78.0.3904.108 safari/537.36',
 }
-url_live = 'https://guest.api.arcadia.pinnacle.com/0.1/sports/{}/matchups/live'
-url_pre = 'https://guest.api.arcadia.pinnacle.com/0.1/sports/{}/matchups/'
+url_live = 'https://api.arcadia.pinnacle.com/0.1/sports/{}/matchups/live'
+url_pre = 'https://api.arcadia.pinnacle.com/0.1/sports/{}/matchups/'
 
 head_odds = {
     'accept': 'application/json',
@@ -32,8 +32,8 @@ head_odds = {
     # 'sec-fetch-site': 'same-site',
     'user-agent': 'Mozilla/5.0 (WindoWs nt 10.0; wiN64; X64) applewebkiT/537.36 (khTml, liKe gecko) chrome/78.0.3904.108 safari/537.36',
 }
-url_live_odds = 'https://guest.api.arcadia.pinnacle.com/0.1/sports/{}/markets/live/straight?primaryOnly=false'  
-url_pre_odds = 'https://guest.api.arcadia.pinnacle.com/0.1/sports/{}/markets/straight?primaryOnly=false'  
+url_live_odds = 'https://api.arcadia.pinnacle.com/0.1/sports/{}/markets/live/straight?primaryOnly=false'  
+url_pre_odds = 'https://api.arcadia.pinnacle.com/0.1/sports/{}/markets/straight?primaryOnly=false'  
 x_device_uuid_temp = 'f46d6637-4581a07c-36898a69-87694cf6'
 # x_session = '8rnHMqfFTy5osJ59q9vytaWgGytFiW0v'
 
@@ -62,7 +62,7 @@ def american_to_decimal(odd, status):
 def straight_normalize(data):
     designations = {'over': 'Б', 'under': 'М', 'home': '1', 'away': '2', 'draw': 'Н', None: ''}
     periods = {1: '1', 2: '2', 0: '', None: ''}
-    types = {'team_total': 'Т', 'total': 'Т', 'moneyline': '', 'spread': 'Ф', None: ''}
+    types = {'team_total': 'ИТ', 'total': 'Т', 'moneyline': '', 'spread': 'Ф', None: ''}
     sides = {'home': '1', 'away': '2', None: ''}
 
     norm_designations = lambda x: x if x == 'Н' else 'П' + x

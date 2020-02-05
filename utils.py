@@ -37,7 +37,7 @@ def if_exists(jsos_list: dict, key_name: str, val: str, get_key: str = ''):
 # !!! IMPORTANT: ORDER
 bk_working = [
     'pinnacle',
-    # 'olimp',
+    'olimp',
     'fonbet',
 ]
 
