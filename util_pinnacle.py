@@ -7,6 +7,8 @@ import sys
 import traceback
 import time
 import json
+import sys
+import traceback
 
 list_matches_head = {
     'accept': 'application/json',
@@ -60,28 +62,66 @@ def american_to_decimal(odd, status):
 
 
 def straight_normalize(data):
-    designations = {'over': 'Б', 'under': 'М', 'home': '1', 'away': '2', 'draw': 'Н', None: ''}
-    periods = {1: '1', 2: '2', 0: '', None: ''}
-    types = {'team_total': 'ИТ', 'total': 'Т', 'moneyline': '', 'spread': 'Ф', None: ''}
-    sides = {'home': '1', 'away': '2', None: ''}
-
+    def designations(d:str):
+        if d == 'over':
+            return 'Б'
+        elif d=='under':
+            return 'М'
+        elif d=='home':
+            return '1'
+        elif d=='away':
+            return '2'
+        elif d == 'draw':
+            return 'Н'
+        else:
+            return ''
+    def periods(p:str):
+        try:
+            p = int(p)
+            return str(p)
+        except:
+            return ''
+    def types(t:str):
+        if 'total' in t:
+            return 'Т'
+        elif t=='spread':
+            return 'Ф'
+        else:
+            return ''
+    def sides(s:str):
+        if s == 'home':
+            return '1'
+        elif s == 'away':
+            return '2'
+        else:
+            ''
     norm_designations = lambda x: x if x == 'Н' else 'П' + x
-    norm_periods = lambda x: '' if ~x else x if x != '0' else ''
+    def norm_periods(p:str):
+        if p:
+            if str(p) == '0':
+                return ''
+            else:
+                return str(p)
+        else:
+            return ''
 
     unit = 'У' if data.get('units', '') == 'Corners' else ''
+    # print('period:{}, type:{}, designation:{}, side:{}, points:{}, unit:{}'.format(data.get('period', ''), data.get('type'), data.get('designation'), data.get('side'), data.get('points'), unit))
     try:
         if data.get('type', '') == 'team_total':
-            return {norm_periods(data.get('period')) + unit + types[data.get('type')] + designations[data.get('designation')] + sides[data.get('side')] + '({})'.format(data.get('points')).replace('+', ''): data}
+            return {norm_periods(data.get('period', '')) + unit + types(data.get('type','')) + designations(data.get('designation', '')) + sides(data.get('side')) + '({})'.format(data.get('points')).replace('+', ''): data}
         if data.get('type', '') == 'total':
-            return {norm_periods(data.get('period')) + unit + types[data.get('type')] + designations[data.get('designation')] + '({})'.format(data.get('points')).replace('+', ''): data}
+            return {norm_periods(data.get('period', '')) + unit + types(data.get('type','')) + designations(data.get('designation', '')) + '({})'.format(data.get('points')).replace('+', ''): data}
         if data.get('type', '') == 'moneyline':
-            return {unit + norm_designations(designations[data.get('designation')]): data}
+            return {unit + norm_designations(designations(data.get('designation', ''))): data}
         if data.get('type', '') == 'spread':
-            return {norm_periods(data.get('period')) + unit + types[data.get('type')] + designations[data.get('designation')] + '({})'.format(
+            return {norm_periods(data.get('period', '')) + unit + types(data.get('type','')) + designations(data.get('designation', '')) + '({})'.format(
                 '+' + str(data.get('points', '')) if data.get('points') > 0 != '-' else data.get('points')).replace('+', ''): data}
         else:
             return {}
     except Exception as e:
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        print('Error straight_normalize: ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))) + '\ndata:' + str(data.get('bet', '')) + '\n\n')
         return {'error': str(e)}
 
 
@@ -304,8 +344,8 @@ def get_odds(bets, api_key, x_session, x_device_uuid, pair_mathes, sport_id, pro
         # print('match_id: ' + str(match_id))
         for bet in filter(lambda x: x['matchupId'] == int(match_id), data):
             version = bet.get('version', -1)
-            if str(match_id) == '1096244139':
-                print(json.dumps(bet))
+            # if str(match_id) == '1096611547':
+                # print(json.dumps(bet))
             if (check_vertion and version > MAX_VERSION.get(str(sport_id), 0)) or not check_vertion:
                 MAX_VERSION.update({str(sport_id): version})
                 for price in bet.get('prices', []):
@@ -327,6 +367,7 @@ def get_odds(bets, api_key, x_session, x_device_uuid, pair_mathes, sport_id, pro
                         'points': price.get('points'),
                         'value': v_kof,
                         'version': version,
+                        'bet': bet
                         # 'units':res[match_id]['units'], Нужно для угловых - они отключены
                         # 'vector':'UP' if price.get('price') > 0 else 'DOWN'
                     }))

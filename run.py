@@ -700,6 +700,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_fonbe
     while True:
         try:
             for pair_math in pair_mathes:
+                # print(pair_math)
 
                 is_top = False
                 if int(pair_math[0]) in arr_fonbet_top_matchs or int(pair_math[1]) in arr_fonbet_top_matchs:
