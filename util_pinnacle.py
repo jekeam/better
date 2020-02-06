@@ -104,6 +104,12 @@ def straight_normalize(data):
                 return str(p)
         else:
             return ''
+            
+    def norm_total(t:str):
+        if t in ('(-0.0)', '(0.0)'):
+            return '(0)'
+        else:
+            return t
 
     unit = 'У' if data.get('units', '') == 'Corners' else ''
     # print('period:{}, type:{}, designation:{}, side:{}, points:{}, unit:{}'.format(data.get('period', ''), data.get('type'), data.get('designation'), data.get('side'), data.get('points'), unit))
@@ -116,7 +122,7 @@ def straight_normalize(data):
             return {unit + norm_designations(designations(data.get('designation', ''))): data}
         if data.get('type', '') == 'spread':
             return {norm_periods(data.get('period', '')) + unit + types(data.get('type','')) + designations(data.get('designation', '')) + '({})'.format(
-                '+' + str(data.get('points', '')) if data.get('points') > 0 != '-' else data.get('points')).replace('+', ''): data}
+                str(data.get('points', '')) if data.get('points') >= 0 != '-' else data.get('points')).replace('+', ''): data}
         else:
             return {}
     except Exception as e:
@@ -352,7 +358,7 @@ def get_odds(bets, api_key, x_session, x_device_uuid, pair_mathes, sport_id, pro
                     status = bet.get('status')
                     # if status == 'open':
                     # v_kof = str(price.get('price')) + ' -> ' + str(american_to_decimal(price.get('price'), status))
-                    v_kof = str(american_to_decimal(price.get('price'), status))
+                    v_kof = float(american_to_decimal(price.get('price'), status))
                     # else:
                         # v_kof = 0
                     res.update(straight_normalize({
