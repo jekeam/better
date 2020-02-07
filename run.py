@@ -20,7 +20,9 @@ from datetime import datetime
 import copy
 import math
 import pandas as pd
+
 import cupon
+import bot
 
 import sys
 import traceback
@@ -1064,6 +1066,7 @@ def mon_cupon(arr_cupon):
 
 if __name__ == '__main__':
     try:
+        bot.send_msg('Перезапуск сканера...')
         prnts('DEBUG: ' + str(DEBUG))
         prnts('SPORT_LIST: ' + str(sport_list))
         prnts('TIMEOUT_MATCHS: ' + str(TIMEOUT_LIST))
@@ -1185,6 +1188,7 @@ if __name__ == '__main__':
         server.start()
         prnts(' ')
         prnts('START: server')
+        bot.send_msg('Сканер начал работу.')
 
         proxy_saver.join()
         olimp_seeker_matchs.join()
