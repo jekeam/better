@@ -55,7 +55,7 @@ def get_olimp(resp, arr_matchs, place='live', sport_id=None, arr_top_matchs=None
             v_sport_id = int(liga_info.get('sport_id', sport_id))
             liga_id = liga_info.get('id')
             liga_name = liga_info[key_name]
-            if 'statistics' not in liga_name.lower() and 'outrights' not in liga_name.lower() and 'special offers' not in liga_name.lower():
+            if 'statistics' not in liga_name.lower() and 'outrights' not in liga_name.lower() and 'special offers' not in liga_name.lower() and 'head-to-head' not in liga_name.lower():
                 if if_exists(sport_list, 'olimp', v_sport_id) and if_exists_by_sport(sport_list, 'olimp', v_sport_id, 'place', place):
                     for math_info in liga_info.get('it'):
                         match_id = math_info.get('id')
@@ -76,16 +76,20 @@ def get_olimp(resp, arr_matchs, place='live', sport_id=None, arr_top_matchs=None
                                 'start_after_min': start_after_min,
                             }
                         if v_sport_id in (1, 2):
-                            if liga_name in my_top and match_id not in arr_top_matchs.get('top', []):
+                            # if liga_name in my_top and match_id not in arr_top_matchs.get('top', []):
+                            if max(list(map(lambda s: 1 if liga_name.lower() in s.lower()[0:len(liga_name)] else 0, my_top))) == 1 and match_id not in arr_top_matchs.get('top', []):
                                 prnts('my_top ' + place + ' Event added: ' + str(match_id_str) + ', liga_name ' + str(liga_name) + ', liga_id: ' + str(liga_id))
                                 arr_top_matchs['top'].append(match_id)
-                            elif liga_name in my_middle and match_id not in arr_top_matchs.get('middle', []):
+                            # elif liga_name in my_middle and match_id not in arr_top_matchs.get('middle', []):
+                            elif max(list(map(lambda s: 1 if liga_name.lower() in s.lower()[0:len(liga_name)] else 0, my_middle))) == 1 and match_id not in arr_top_matchs.get('middle', []):
                                 prnts('my_middle ' + place + ' Event added: ' + str(match_id_str) + ', liga_name ' + str(liga_name) + ', liga_id: ' + str(liga_id))
                                 arr_top_matchs['middle'].append(match_id)
-                            elif liga_name in my_slag and match_id not in arr_top_matchs.get('slag', []):
+                            # elif liga_name in my_slag and match_id not in arr_top_matchs.get('slag', []):
+                            elif max(list(map(lambda s: 1 if liga_name.lower() in s.lower()[0:len(liga_name)] else 0, my_slag))) == 1 and match_id not in arr_top_matchs.get('slag', []):
                                 prnts('my_slag ' + place + ' Event added: ' + str(match_id_str) + ', liga_name ' + str(liga_name) + ', liga_id: ' + str(liga_id))
                                 arr_top_matchs['slag'].append(match_id)
-                            elif liga_name not in my_top + my_middle + my_slag:
+                            # elif liga_name not in my_top + my_middle + my_slag:
+                            elif max(list(map(lambda s: 1 if liga_name.lower() in s.lower()[0:len(liga_name)] else 0,  my_top + my_middle + my_slag))) == 0:
                                 if liga_name not in liga_unknown:
                                     liga_unknown.append(liga_name)
                                     v_str = if_exists(sport_list, 'olimp', v_sport_id, 'name') + ';' + str(liga_name) + ';\n'
