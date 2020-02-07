@@ -784,7 +784,9 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_top_m
                                 else:
                                     curr_opposition.append({tot_abrr + '({})'.format(tot_val): tot_abrr_opp + '({})'.format(tot_val)})
                 # print(event_type)
-                if event_type in ('volleyball', 'tennis', 'basketball', 'esports', 'table-tennis'):
+                draw_bk1 = math_json_olimp.get('kofs', {}).get('Н', 0)
+                draw_bk2 = math_json_fonbet.get('kofs', {}).get('Н', 0)
+                if event_type in ('volleyball', 'tennis', 'basketball', 'esports', 'table-tennis') and draw_bk1 == 0 and draw_bk2 == 0:
                     curr_opposition.append({'П1': 'П2'})
                     curr_opposition.append({'П2': 'П1'})
                     for pair in add_if_not_draw:
@@ -793,7 +795,6 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_top_m
                     for pair in add_if_draw:
                         curr_opposition.append(pair)
                 # if 18967944 == int(pair_math[0]) or 18967944 == int(pair_math[1]):
-                #     print('curr_opposition:' + str(curr_opposition))
                 for opposition_pair in curr_opposition:
                     for kof_type_olimp, kof_type_fonbet in opposition_pair.items():
                         # print(kof_type_olimp, kof_type_fonbet)
