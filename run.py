@@ -834,10 +834,10 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_top_m
                             # if event_type in ('football', 'hockey'):
                                 # ОП=В*(К-1)*С-(1-В)*С
                                 value_arr = [
-                                    [v_olimp, v_fonbet2, 'Валуйная ставка в\nОлимп на {}\nсобытие:' + kof_type_olimp + '({})\nзавышен ~ на: {}\nожидаемая прибыль: {}%', kof_type_olimp],
-                                    [v_fonbet, v_olimp2, 'Валуйная ставка в\nФонбет на {}\nсобытие:' + kof_type_fonbet + '({})\nзавышен ~ на: {}\nожидаемая прибыль: {}%', kof_type_fonbet], 
-                                    [v_fonbet2, v_olimp, 'Валуйная ставка в\nФонбет на {}\nсобытие:' + kof_type_olimp + '({})\nзавышен ~ на: {}\nожидаемая прибыль: {}%', kof_type_olimp], 
-                                    [v_olimp2, v_fonbet, 'Валуйная ставка в\nОлимп на {}\nсобытие:' + kof_type_fonbet + '({})\nзавышен ~ на: {}\nожидаемая прибыль: {}%', kof_type_fonbet]
+                                    [v_olimp, v_fonbet2, 'Валуйная ставка в\nОлимп на {}\nсобытие:' + kof_type_olimp + '={}\nзавышен ~ на: {}\nожидаемая прибыль: {}%', kof_type_olimp],
+                                    [v_fonbet, v_olimp2, 'Валуйная ставка в\nФонбет на {}\nсобытие:' + kof_type_fonbet + '={}\nзавышен ~ на: {}\nожидаемая прибыль: {}%', kof_type_fonbet], 
+                                    [v_fonbet2, v_olimp, 'Валуйная ставка в\nФонбет на {}\nсобытие:' + kof_type_olimp + '={}\nзавышен ~ на: {}\nожидаемая прибыль: {}%', kof_type_olimp], 
+                                    [v_olimp2, v_fonbet, 'Валуйная ставка в\nОлимп на {}\nсобытие:' + kof_type_fonbet + '={}\nзавышен ~ на: {}\nожидаемая прибыль: {}%', kof_type_fonbet]
                                 ]
                                 for p_vals in value_arr:
                                     K = p_vals[0] # Коф в одной БК
