@@ -842,18 +842,17 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_top_m
                                 for p_vals in value_arr:
                                     K = p_vals[0] # Коф в одной БК
                                     V = p_vals[1] # Коф в другой БК (считаем как нашу вероятность)
-                                    if K and V:
+                                    if K and V and K <= 2.5:
                                         # ОП=В*(К-1)*С-(1-В)*С, где
                                         # ОП — ожидаемая прибыль;
                                         # В — математическая вероятность наступления исхода (выражается значением от 0 до 1);
                                         # С — сумма ставки;
                                         # К — котировка события.
-                                        
                                         B = 1/V
                                         C = 1000
                                         val = round((B*(K-1)*C) -((1-B)*C), 2)
                                         msg = p_vals[2].format(event_type[0:1].upper() + event_type[1:] + '\n' + v_name, K, round(K-V, 2), round(val/C*100, 2))
-                                        if val >= 300:
+                                        if val >= 100:
                                             # TODO_REF
                                             # bet_key_values = v_name + ' ' + str(K) + '/' + str(V)
                                             temp_key = v_name+p_vals[3]
