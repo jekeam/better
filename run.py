@@ -853,10 +853,11 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_top_m
                                         val = round((B*(K-1)*C) -((1-B)*C), 2)
                                         msg = p_vals[2].format(event_type + ' ' + v_name, K, round(K-V, 2), round(val/C*100, 2))
                                         if val > 300:
-                                            bet_key_values = v_name + ' ' + str(K) + '/' + str(V)
-                                            if bet_key_values not in arr_values:
+                                            # TODO_REF
+                                            # bet_key_values = v_name + ' ' + str(K) + '/' + str(V)
+                                            if bet_key not in arr_values:
                                                 prnts(bet_key + '\npush msg: ' + msg +'\narr: ' + str(value_arr) + '\nbet_key_values:' + bet_key_values)
-                                                arr_values.append(bet_key_values)
+                                                arr_values.append(bet_key)
                                                 bot.send_msg(msg)
                                         # skolko stavit (КхV-1)/(К-1)=% от банка.
                         except Exception as e:
