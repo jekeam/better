@@ -857,7 +857,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_top_m
                                               round(K-V, 2), 
                                               round(val/C*100, 2)
                                         )
-                                        if val >= 100:
+                                        if val >= 150:
                                             # TODO_REF
                                             # bet_key_values = v_name + ' ' + str(K) + '/' + str(V)
                                             temp_key = v_name+p_vals[3]
