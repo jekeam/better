@@ -842,7 +842,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_top_m
                                 for p_vals in value_arr:
                                     K = p_vals[0] # Коф в одной БК
                                     V = p_vals[1] # Коф в другой БК (считаем как нашу вероятность)
-                                    if K and V and K <= 2 and start_after_min <= 60*20:
+                                    if K and V and K <= 2.5 and start_after_min <= 60*20:
                                         # ОП=В*(К-1)*С-(1-В)*С, где
                                         # ОП — ожидаемая прибыль;
                                         # В — математическая вероятность наступления исхода (выражается значением от 0 до 1);
