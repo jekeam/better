@@ -267,7 +267,7 @@ def start_seeker_matchs_olimp(gen_proxi_olimp, arr_matchs, place, arr_top_matchs
                                             else:
                                                 prnts('sport_id:{}, Возникала ошибка при запросе списка пре матчей по лиге {}, но лига не найдена в списке: {}'.format(sport_id, liga_id_str, arr_leagues))
                         except Exception as e:
-                            if 'We are updating betting line'.lower() in str(e).lower():
+                            if 'scan error: We are updating betting line'.lower() in str(e).lower():
                                 pass
                                 prnts(e)
                             else:
@@ -740,7 +740,7 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                     pair_mathes_found.update({key: 1})
         except Exception as e:
             exc_type, exc_value, exc_traceback = sys.exc_info()
-            prnts('Error start_event_mapping: ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
+            prnts('scan error start_event_mapping: ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
         finally:
             time.sleep(time_sleep_proc)
 
@@ -1005,7 +1005,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_top_m
                                 pass
         except Exception as e:
             exc_type, exc_value, exc_traceback = sys.exc_info()
-            prnts('Error forks: ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
+            prnts('scan error forks: ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
         finally:
             time.sleep(1)
 
@@ -1035,7 +1035,7 @@ def stat_req(stat_req_olimp, stat_req_fonbet):
                       ' median:' + str(round(median(stat_req_olimp_copy), 2)))
             time.sleep(time_sleep_proc)
         except Exception as e:
-            prnts('stat_req err: ' + str(e))
+            prnts('scan error stat_req: ' + str(e))
 
 
 def mon_cupon(arr_cupon):
@@ -1059,7 +1059,7 @@ def mon_cupon(arr_cupon):
             time.sleep( (minute * 60 - 20) / 3 )
         except Exception as e:
             exc_type, exc_value, exc_traceback = sys.exc_info()
-            prnts('Error mon_cupon: ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
+            prnts('scan error mon_cupon: ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
         finally:
             time.sleep(10)
 
@@ -1202,4 +1202,4 @@ if __name__ == '__main__':
         server.join()
     except Exception as e:
         exc_type, exc_value, exc_traceback = sys.exc_info()
-        prnts('server error:' + str(traceback.format_exception(exc_type, exc_value, exc_traceback)))
+        prnts('scan error:' + str(traceback.format_exception(exc_type, exc_value, exc_traceback)))
