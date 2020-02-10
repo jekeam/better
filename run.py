@@ -805,15 +805,30 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_top_m
                     for kof_type_olimp, kof_type_fonbet in opposition_pair.items():
                         # print(kof_type_olimp, kof_type_fonbet)
                         bet_key = str(pair_math[0]) + '@' + str(pair_math[1]) + '@' + kof_type_olimp + '@' + kof_type_fonbet
-                        k_olimp = math_json_olimp.get('kofs', {}).get(kof_type_olimp, {})
-                        k_fonbet = math_json_fonbet.get('kofs', {}).get(kof_type_fonbet, {})
 
                         ol_start = math_json_olimp.get('start_time', 0)
                         fb_start = math_json_fonbet.get('start_time', 0)
                         start_after_min = max(math_json_fonbet.get('start_after_min', 0), math_json_olimp.get('start_after_min', 0))
 
-                        v_olimp = k_olimp.get('value', 0.0)
-                        v_fonbet = k_fonbet.get('value', 0.0)
+                        k_olimp = math_json_olimp.get('kofs', {}).get(kof_type_olimp, {})
+                        
+                        k_fonbet = math_json_fonbet.get('kofs', {}).get(kof_type_fonbet, {})
+                        
+                        v_olimp = k_olimp.get('value', 0.0) # 1
+                        v_olimp2 = math_json_olimp.get('kofs', {}).get(kof_type_fonbet, {}).get('value', 0.0) # X2
+                        if v_olimp and v_olimp2:
+                            v_olimp_margin = (1/v_olimp+1/v_olimp2-1) * 100
+                        else:
+                            v_olimp_margin = None
+                            
+                        v_fonbet = k_fonbet.get('value', 0.0) # X2
+                        v_fonbet2 = math_json_fonbet.get('kofs', {}).get(kof_type_olimp, {}).get('value', 0.0) # 1
+                        if v_fonbet and v_fonbet2:
+                            v_fonbet_margin = (1/v_fonbet+1/v_fonbet2-1) * 100
+                        else:
+                            v_fonbet_margin = None
+                        
+                        # =(1/C2+1/D2-1)
                         # print(kof_type_fonbet, str(v_fonbet), kof_type_olimp, str(v_olimp), sep=";")
 
                         if DEBUG and (kof_type_olimp in 'П1' or kof_type_fonbet in 'П1'):
@@ -897,7 +912,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_top_m
                                                     'event_type;place;time;time_create;created_fork;cut_time;ol_time;fb_time;live_fork;live_fork_total;'
                                                     'match_ol;match_fb;kof_ol;kof_fb;name;l;l_first;bk1_score;bk2_score;'
                                                     'vect_ol;vect_fb;time;'
-                                                    'minute;ol_kof;ol_avg_change;fb_kof;fb_avg_change;'
+                                                    'minute;ol_kof;ol_kof2;ol_margin;ol_avg_change;fb_kof;fb_kof2;fb_margin;fb_avg_change;'
                                                     'time_break_fonbet;is_top;is_hot;base_line;'
                                                     'period;'
                                                     # 'ol_avg_change_total;fb_avg_change_total;'
@@ -931,9 +946,13 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_top_m
                                                     str(k_fonbet.get('vector')) + ';' +
                                                     str(math_json_fonbet.get('time', '00:00')) + ';' +
                                                     str(math_json_fonbet.get('minute', 0)) + ';' +
-                                                    str(k_olimp.get('value')) + ';' +
+                                                    str(v_olimp) + ';' +
+                                                    str(v_olimp2) + ';' +
+                                                    str(v_olimp_margin) + ';' +
                                                     str(k_olimp.get('hist', {}).get('avg_change', [])) + ';' +
-                                                    str(k_fonbet.get('value')) + ';' +
+                                                    str(v_fonbet) + ';' +
+                                                    str(v_fonbet2) + ';' +
+                                                    str(v_fonbet_margin) + ';' +
                                                     str(k_fonbet.get('hist', {}).get('avg_change', [])) + ';' +
                                                     str(time_break_fonbet) + ';' +
                                                     str(is_top) + ';' +
