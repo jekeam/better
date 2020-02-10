@@ -830,8 +830,8 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_top_m
                         v_name = math_json_olimp.get('name', '')
                         
                         try:
-                            # if type_time == 'pre':
-                            if event_type in ('football', 'hockey'):
+                            if type_time == 'pre':
+                            # if event_type in ('football', 'hockey'):
                                 # ОП=В*(К-1)*С-(1-В)*С
                                 value_arr = [
                                     [v_olimp, v_fonbet2, 'Валуйная ставка в\nОлимп на {}\nсобытие:' + kof_type_olimp + '({})\nзавышен ~ на: {}\nожидаемая прибыль: {}%'],
