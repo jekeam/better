@@ -851,8 +851,8 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_top_m
                                         B = 1/V
                                         C = 1000
                                         val = round((B*(K-1)*C) -((1-B)*C), 2)
-                                        msg = p_vals[2].format(v_name, K, round(K-V, 2), val/C*100)
-                                        if val > 100:
+                                        msg = p_vals[2].format(event_type + ' ' + v_name, K, round(K-V, 2), round(val/C*100, 2))
+                                        if val > 300:
                                             bet_key_values = v_name + ' ' + str(K) + '/' + str(V)
                                             if bet_key_values not in arr_values:
                                                 prnts(bet_key + '\npush msg: ' + msg +'\narr: ' + str(value_arr) + '\nbet_key_values:' + bet_key_values)
