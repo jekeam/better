@@ -1257,6 +1257,7 @@ if __name__ == '__main__':
         started_stat_req.join()
         started_mon_cupon.join()
         server.join()
+        bot.send_msg('Сканнер выключен')
     except Exception as e:
         exc_type, exc_value, exc_traceback = sys.exc_info()
         prnts('scan error:' + str(traceback.format_exception(exc_type, exc_value, exc_traceback)))
