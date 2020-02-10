@@ -833,10 +833,10 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_top_m
                             if type_time == 'pre':
                                 # ОП=В*(К-1)*С-(1-В)*С
                                 value_arr = [
-                                    [v_olimp, v_fonbet2, 'Валуйная ставка в Олимп на {}, событие: ' + kof_type_olimp + ', коф-т: {}, завышен на: {}, ожидаемая прибыль: {}%'],
-                                    [v_fonbet, v_olimp2, 'Валуйная ставка в Фонбет на {}, событие:' + kof_type_fonbet + ', коф-т: {}, завышен на: {}, ожидаемая прибыль: {}%'], 
-                                    [v_fonbet2, v_olimp, 'Валуйная ставка в Фонбет на {}, событие:' + kof_type_olimp + ' коф-т: {}, завышен на: {}, ожидаемая прибыль: {}%'], 
-                                    [v_olimp2, v_fonbet, 'Валуйная ставка в Олимп на {}, событие:' + kof_type_fonbet + ', коф-т: {}, завышен на: {}, ожидаемая прибыль: {}%']
+                                    [v_olimp, v_fonbet2, 'Валуйная ставка в Олимп на {}, событие: ' + kof_type_olimp + '({}), завышен на: {}, ожидаемая прибыль: {}%'],
+                                    [v_fonbet, v_olimp2, 'Валуйная ставка в Фонбет на {}, событие:' + kof_type_fonbet + '({}), завышен на: {}, ожидаемая прибыль: {}%'], 
+                                    [v_fonbet2, v_olimp, 'Валуйная ставка в Фонбет на {}, событие:' + kof_type_olimp + '({}), завышен на: {}, ожидаемая прибыль: {}%'], 
+                                    [v_olimp2, v_fonbet, 'Валуйная ставка в Олимп на {}, событие:' + kof_type_fonbet + '({}), завышен на: {}, ожидаемая прибыль: {}%']
                                 ]
                                 for p_vals in value_arr:
                                     K = p_vals[0] # Коф в одной БК
@@ -850,9 +850,9 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_top_m
                                         
                                         B = 1/V
                                         C = 1000
-                                        val = (B*(K-1)*C) -((1-B)*C)
-                                        msg = p_vals[2].format(v_name, K, K-V, val/C*100)
-                                        if val > 0:
+                                        val = round((B*(K-1)*C) -((1-B)*C), 2)
+                                        msg = p_vals[2].format(v_name, K, round(K-V, 2), val/C*100)
+                                        if val > 100:
                                             bet_key_values = v_name + ' ' + str(K) + '/' + str(V)
                                             if bet_key_values not in arr_values:
                                                 prnts(bet_key + '\npush msg: ' + msg +'\narr: ' + str(value_arr) + '\nbet_key_values:' + bet_key_values)
@@ -908,7 +908,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_top_m
                                         # 'created_fork': created_fork,
                                         'time_last_upd': cur_time,
                                         'name': math_json_fonbet.get('name', ''),
-                                            'name_rus': v_name,
+                                        'name_rus': v_name,
                                         'time_req_olimp': ol_time_req,
                                         'time_req_fonbet': fb_time_req,
                                         'l': L,
