@@ -860,7 +860,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_top_m
                                             if temp_key not in arr_values:
                                                 arr_values.append(temp_key)
                                                 # prnts(bet_key + '\npush msg: ' + msg) # + '\nbet_key_values:' + bet_key_values)
-                                                bot.send_msg(temp_key)
+                                                bot.send_msg(msg)
                                         # skolko stavit (КхV-1)/(К-1)=% от банка.
                         except Exception as e:
                             exc_type, exc_value, exc_traceback = sys.exc_info()
