@@ -59,15 +59,15 @@ assert max_min_prematch >= 60, 'Время должно быть больше 60
 
 # TODO, ADD FLAG: LIVE, LINE/PRE
 sport_list_raw = [
-    # {
-    #     'name': 'football',
-    #     'olimp': 1,
-    #     'fonbet': 1,
-    #     'pinn': 29,
-    #     'min': 90,
-    #     'place': ['live', 'pre']
-    #     # 'place': ['pre']
-    # },
+    {
+        'name': 'football',
+        'olimp': 1,
+        'fonbet': 1,
+        'pinn': 29,
+        'min': 90,
+        'place': ['live', 'pre']
+        # 'place': ['pre']
+    },
     {
         'name': 'esports',
         'olimp': 112,
@@ -101,15 +101,15 @@ sport_list_raw = [
         'place': ['live', 'pre']
         # 'place': ['pre']
     },
-    # {
-    #     'name': 'hockey',
-    #     'olimp': 2,
-    #     'fonbet': 2,
-    #     'pinn': 19,
-    #     'min': 60,
-    #     'place': ['live', 'pre']
-    #     # 'place': ['pre']
-    # },
+    {
+        'name': 'hockey',
+        'olimp': 2,
+        'fonbet': 2,
+        'pinn': 19,
+        'min': 60,
+        'place': ['live', 'pre']
+        # 'place': ['pre']
+    },
     {
         'name': 'table-tennis',
         'olimp': 40,
