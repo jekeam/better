@@ -851,8 +851,9 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_top_m
                                         B = 1/V
                                         C = 1000
                                         val = round((B*(K-1)*C) -((1-B)*C), 2)
-                                        msg = p_vals[2].format(event_type[0:1].upper() + event_type[1:] + ', risk:' + str(is_top) + '\n'  + 
-                                              'Старт через: ' + str(round(start_after_min/60, 2)) + 'ч.\n' + v_name,
+                                        msg = p_vals[2].format(event_type[0:1].upper() + event_type[1:] + ', risk:' + str(is_top) + '\n' + 
+                                              v_name + '\n' + 
+                                              'Старт через: ' + str(round(start_after_min/60, 2)) + 'ч.\n',
                                               K, 
                                               round(K-V, 2), 
                                               round(val/C*100, 2)
