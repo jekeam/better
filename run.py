@@ -829,36 +829,39 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_top_m
                             
                         v_name = math_json_olimp.get('name', '')
                         
-                        if type_time == 'pre':
-                            # ОП=В*(К-1)*С-(1-В)*С
-                            value_arr = [
-                                [v_olimp, v_fonbet2, 'Валуйная ставка в Олимп на {}, событие: ' + kof_type_olimp + ', коф-т: {}, завышен на: {}, ожидаемая прибыль: {}%'],
-                                [v_fonbet, v_olimp2, 'Валуйная ставка в Фонбет на {}, событие:' + kof_type_fonbet + ', коф-т: {}, завышен на: {}, ожидаемая прибыль: {}%'], 
-                                [v_fonbet2, v_olimp, 'Валуйная ставка в Фонбет на {}, событие:' + kof_type_olimp + ' коф-т: {}, завышен на: {}, ожидаемая прибыль: {}%'], 
-                                [v_olimp2, v_fonbet, 'Валуйная ставка в Олимп на {}, событие:' + kof_type_fonbet + ', коф-т: {}, завышен на: {}, ожидаемая прибыль: {}%']
-                            ]
-                            for p_vals in value_arr:
-                                K = p_vals[0] # Коф в одной БК
-                                V = p_vals[1] # Коф в другой БК (считаем как нашу вероятность)
-                                
-                                # ОП=В*(К-1)*С-(1-В)*С, где
-                                # ОП — ожидаемая прибыль;
-                                # В — математическая вероятность наступления исхода (выражается значением от 0 до 1);
-                                # С — сумма ставки;
-                                # К — котировка события.
-                                
-                                B = 1/V
-                                C = 1000
-                                val = (B*(K-1)*C) -((1-B)*C)
-                                msg = p_vals[2].format(v_name, K, K-V, val/C*100)
-                                if val > 0:
-                                    bet_key_values = v_name + ' ' + str(K) + '/' + str(V)
-                                    if bet_key_values not in arr_values:
-                                        prnts(bet_key + '\npush msg: ' + msg +'\narr: ' + str(value_arr) + '\nbet_key_values:' + bet_key_values)
-                                        arr_values.append(bet_key_values)
-                                        bot.send_msg(msg)
-                                # skolko stavit (КхV-1)/(К-1)=% от банка.
-                        
+                        try:
+                            if type_time == 'pre':
+                                # ОП=В*(К-1)*С-(1-В)*С
+                                value_arr = [
+                                    [v_olimp, v_fonbet2, 'Валуйная ставка в Олимп на {}, событие: ' + kof_type_olimp + ', коф-т: {}, завышен на: {}, ожидаемая прибыль: {}%'],
+                                    [v_fonbet, v_olimp2, 'Валуйная ставка в Фонбет на {}, событие:' + kof_type_fonbet + ', коф-т: {}, завышен на: {}, ожидаемая прибыль: {}%'], 
+                                    [v_fonbet2, v_olimp, 'Валуйная ставка в Фонбет на {}, событие:' + kof_type_olimp + ' коф-т: {}, завышен на: {}, ожидаемая прибыль: {}%'], 
+                                    [v_olimp2, v_fonbet, 'Валуйная ставка в Олимп на {}, событие:' + kof_type_fonbet + ', коф-т: {}, завышен на: {}, ожидаемая прибыль: {}%']
+                                ]
+                                for p_vals in value_arr:
+                                    K = p_vals[0] # Коф в одной БК
+                                    V = p_vals[1] # Коф в другой БК (считаем как нашу вероятность)
+                                    if K and V:
+                                        # ОП=В*(К-1)*С-(1-В)*С, где
+                                        # ОП — ожидаемая прибыль;
+                                        # В — математическая вероятность наступления исхода (выражается значением от 0 до 1);
+                                        # С — сумма ставки;
+                                        # К — котировка события.
+                                        
+                                        B = 1/V
+                                        C = 1000
+                                        val = (B*(K-1)*C) -((1-B)*C)
+                                        msg = p_vals[2].format(v_name, K, K-V, val/C*100)
+                                        if val > 0:
+                                            bet_key_values = v_name + ' ' + str(K) + '/' + str(V)
+                                            if bet_key_values not in arr_values:
+                                                prnts(bet_key + '\npush msg: ' + msg +'\narr: ' + str(value_arr) + '\nbet_key_values:' + bet_key_values)
+                                                arr_values.append(bet_key_values)
+                                                bot.send_msg(msg)
+                                        # skolko stavit (КхV-1)/(К-1)=% от банка.
+                        except Exception as e:
+                            exc_type, exc_value, exc_traceback = sys.exc_info()
+                            prnts('scan error values: ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
                         # print(kof_type_fonbet, str(v_fonbet), kof_type_olimp, str(v_olimp), sep=";")
 
                         if DEBUG and (kof_type_olimp in 'П1' or kof_type_fonbet in 'П1'):
