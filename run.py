@@ -856,8 +856,8 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_top_m
                                             # TODO_REF
                                             # bet_key_values = v_name + ' ' + str(K) + '/' + str(V)
                                             if bet_key not in arr_values:
-                                                prnts(bet_key + '\npush msg: ' + msg +'\narr: ' + str(value_arr)) # + '\nbet_key_values:' + bet_key_values)
                                                 arr_values.append(bet_key)
+                                                prnts(bet_key + '\npush msg: ' + msg +'\narr: ' + str(value_arr)) # + '\nbet_key_values:' + bet_key_values)
                                                 bot.send_msg(msg)
                                         # skolko stavit (КхV-1)/(К-1)=% от банка.
                         except Exception as e:
