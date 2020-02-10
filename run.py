@@ -540,7 +540,7 @@ def starter_bets(bets_olimp, bets_fonbet, pair_mathes, mathes_complite, mathes_i
                     target=start_seeker_bets_fonbet,
                     args=(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_proxi_fonbet, pair_mathes, mathes_complite, stat_req_fonbet, arr_fonbet_top_kofs, place))
                 start_seeker_fonbet_bets_by_id.start()
-        time.sleep(time_sleep_proc * 2)
+        time.sleep(time_sleep_proc)
 
 
 def sort_by_rate(val):
@@ -742,7 +742,7 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
             exc_type, exc_value, exc_traceback = sys.exc_info()
             prnts('Error start_event_mapping: ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
         finally:
-            time.sleep(time_sleep_proc*3)
+            time.sleep(time_sleep_proc)
 
 
 def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_top_matchs):
