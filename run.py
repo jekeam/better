@@ -816,14 +816,14 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_top_m
                         v_olimp = k_olimp.get('value', 0.0) # 1
                         v_olimp2 = math_json_olimp.get('kofs', {}).get(kof_type_fonbet, {}).get('value', 0.0) # X2
                         if v_olimp and v_olimp2:
-                            v_olimp_margin = (1/v_olimp+1/v_olimp2-1) * 100
+                            v_olimp_margin = round((1/v_olimp+1/v_olimp2-1) * 100, 2)
                         else:
                             v_olimp_margin = None
                             
                         v_fonbet = k_fonbet.get('value', 0.0) # X2
                         v_fonbet2 = math_json_fonbet.get('kofs', {}).get(kof_type_olimp, {}).get('value', 0.0) # 1
                         if v_fonbet and v_fonbet2:
-                            v_fonbet_margin = (1/v_fonbet+1/v_fonbet2-1) * 100
+                            v_fonbet_margin = round((1/v_fonbet+1/v_fonbet2-1) * 100, 2)
                         else:
                             v_fonbet_margin = None
                             
