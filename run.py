@@ -834,8 +834,8 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_top_m
                             # if event_type in ('football', 'hockey'):
                                 # ОП=В*(К-1)*С-(1-В)*С
                                 value_arr = [
-                                    [v_olimp, v_fonbet2, 'Олимп на\n{}\nсобытие:' + kof_type_olimp + '={}\nзавышен ~ на: {}\nожидаемая прибыль: {}%', kof_type_olimp],
-                                    [v_fonbet, v_olimp2, 'Фонбет на\n{}\nсобытие:' + kof_type_fonbet + '={}\nзавышен ~ на: {}\nожидаемая прибыль: {}%', kof_type_fonbet], 
+                                    [v_olimp, v_fonbet2, 'Олимп на {}\nсобытие:' + kof_type_olimp + '={}\nзавышен ~ на: {}\nожидаемая прибыль: {}%', kof_type_olimp],
+                                    [v_fonbet, v_olimp2, 'Фонбет на {}\nсобытие:' + kof_type_fonbet + '={}\nзавышен ~ на: {}\nожидаемая прибыль: {}%', kof_type_fonbet], 
                                     # [v_fonbet2, v_olimp, 'Валуйная ставка в\nФонбет на {}\nсобытие:' + kof_type_olimp + '={}\nзавышен ~ на: {}\nожидаемая прибыль: {}%', kof_type_olimp], 
                                     # [v_olimp2, v_fonbet, 'Валуйная ставка в\nОлимп на {}\nсобытие:' + kof_type_fonbet + '={}\nзавышен ~ на: {}\nожидаемая прибыль: {}%', kof_type_fonbet]
                                 ]
@@ -857,7 +857,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_top_m
                                                 msg = msg + '\n\nили\n\n'
                                             else:
                                                 msg = 'Валуйная ставка в\n'
-                                            msg = msg + p_vals[2].format(event_type[0:1].upper() + event_type[1:] + '\nлига:' + str(is_top) + '\n' + 
+                                            msg = msg + p_vals[2].format(event_type[0:1].upper() + event_type[1:] + ', лига:' + str(is_top) + '\n' + 
                                               v_name + '\n' + 
                                               'Старт через: ' + str(round(start_after_min/60, 2)) + 'ч.',
                                               K, 
