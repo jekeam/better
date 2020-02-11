@@ -953,7 +953,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_top_m
                                                     'event_type;place;time;time_create;created_fork;cut_time;ol_time;fb_time;live_fork;live_fork_total;'
                                                     'match_ol;match_fb;name;l;l_first;bk1_score;bk2_score;'
                                                     'vect_ol;vect_fb;time;'
-                                                    'minute;kof_ol;ol_kof;kof_ol2;ol_kof2;ol_margin;ol_avg_change;kof_fb;fb_kof;kof_fb2;fb_kof2;fb_margin;fb_avg_change;'
+                                                    'minute;kof_ol;ol_kof_val;kof_ol2;ol_kof2_val;ol_margin;ol_avg_change;kof_fb;fb_kof_val;kof_fb2;fb_kof2_val;fb_margin;fb_avg_change;'
                                                     'time_break_fonbet;is_top;is_hot;base_line;'
                                                     'period;'
                                                     # 'ol_avg_change_total;fb_avg_change_total;'
