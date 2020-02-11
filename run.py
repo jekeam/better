@@ -834,11 +834,12 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_top_m
                             # if event_type in ('football', 'hockey'):
                                 # ОП=В*(К-1)*С-(1-В)*С
                                 value_arr = [
-                                    [v_olimp, v_fonbet2, 'Валуйная ставка в\nОлимп на {}\nсобытие:' + kof_type_olimp + '={}\nзавышен ~ на: {}\nожидаемая прибыль: {}%', kof_type_olimp],
-                                    [v_fonbet, v_olimp2, 'Валуйная ставка в\nФонбет на {}\nсобытие:' + kof_type_fonbet + '={}\nзавышен ~ на: {}\nожидаемая прибыль: {}%', kof_type_fonbet], 
-                                    [v_fonbet2, v_olimp, 'Валуйная ставка в\nФонбет на {}\nсобытие:' + kof_type_olimp + '={}\nзавышен ~ на: {}\nожидаемая прибыль: {}%', kof_type_olimp], 
-                                    [v_olimp2, v_fonbet, 'Валуйная ставка в\nОлимп на {}\nсобытие:' + kof_type_fonbet + '={}\nзавышен ~ на: {}\nожидаемая прибыль: {}%', kof_type_fonbet]
+                                    [v_olimp, v_fonbet2, 'Олимп на {}\nсобытие:' + kof_type_olimp + '={}\nзавышен ~ на: {}\nожидаемая прибыль: {}%', kof_type_olimp],
+                                    [v_fonbet, v_olimp2, 'Фонбет на {}\nсобытие:' + kof_type_fonbet + '={}\nзавышен ~ на: {}\nожидаемая прибыль: {}%', kof_type_fonbet], 
+                                    # [v_fonbet2, v_olimp, 'Валуйная ставка в\nФонбет на {}\nсобытие:' + kof_type_olimp + '={}\nзавышен ~ на: {}\nожидаемая прибыль: {}%', kof_type_olimp], 
+                                    # [v_olimp2, v_fonbet, 'Валуйная ставка в\nОлимп на {}\nсобытие:' + kof_type_fonbet + '={}\nзавышен ~ на: {}\nожидаемая прибыль: {}%', kof_type_fonbet]
                                 ]
+                                msg = ''
                                 for p_vals in value_arr:
                                     K = p_vals[0] # Коф в одной БК
                                     V = p_vals[1] # Коф в другой БК (считаем как нашу вероятность)
@@ -851,22 +852,26 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_top_m
                                         B = 1/V
                                         C = 1000
                                         val = round((B*(K-1)*C) -((1-B)*C), 2)
-                                        msg = p_vals[2].format(event_type[0:1].upper() + event_type[1:] + ', risk:' + str(is_top) + '\n' + 
+                                        if val >= 150:
+                                            if msg!='':
+                                                msg = msg + '\n\nили\n\n'
+                                            else:
+                                                msg = 'Валуйная ставка в\n'
+                                            msg = msg + p_vals[2].format(event_type[0:1].upper() + event_type[1:] + ', risk:' + str(is_top) + '\n' + 
                                               v_name + '\n' + 
                                               'Старт через: ' + str(round(start_after_min/60, 2)) + 'ч.',
                                               K, 
                                               round(K-V, 2), 
                                               round(val/C*100, 2)
-                                        )
-                                        if val >= 150:
+                                            )
                                             # TODO_REF
                                             # bet_key_values = v_name + ' ' + str(K) + '/' + str(V)
-                                            temp_key = v_name+p_vals[3]
-                                            if temp_key not in arr_values:
-                                                arr_values.append(temp_key)
-                                                # prnts(bet_key + '\npush msg: ' + msg) # + '\nbet_key_values:' + bet_key_values)
-                                                bot.send_msg(msg)
-                                        # skolko stavit (КхV-1)/(К-1)=% от банка.
+                                            # skolko stavit (КхV-1)/(К-1)=% от банка.
+                                if msg != '':
+                                    temp_key = v_name+p_vals[3]
+                                    if temp_key not in arr_values:
+                                        arr_values.append(temp_key)
+                                        bot.send_msg(msg)
                         except Exception as e:
                             exc_type, exc_value, exc_traceback = sys.exc_info()
                             prnts('scan error values: ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
