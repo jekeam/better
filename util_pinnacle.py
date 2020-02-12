@@ -20,7 +20,7 @@ list_matches_head = {
     'user-agent': 'Mozilla/5.0 (WindoWs nt 10.0; wiN64; X64) applewebkiT/537.36 (khTml, liKe gecko) chrome/78.0.3904.108 safari/537.36',
 }
 url_live = 'https://api.arcadia.pinnacle.com/0.1/sports/{}/matchups/live'
-url_pre = 'https://api.arcadia.pinnacle.com/0.1/sports/{}/matchups/'
+url_pre = 'https://api.arcadia.pinnacle.com/0.1/sports/{}/matchups'
 
 head_odds = {
     'accept': 'application/json',
