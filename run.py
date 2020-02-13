@@ -859,7 +859,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_top_m
                                                 msg = 'Валуйная ставка в\n'
                                             msg = msg + p_vals[2].format(event_type[0:1].upper() + event_type[1:] + ', лига:' + str(is_top) + '\n' + 
                                               v_name + '\n' + 
-                                              'Старт через: ' + str(round(start_after_min/60, 2)) + 'ч.',
+                                              'Старт через: ' + str(round(start_after_min/60, 1)) + 'ч.',
                                               K, 
                                               round(K-V, 2), 
                                               round(val/C*100, 2)
