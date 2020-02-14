@@ -1108,6 +1108,7 @@ def stat_req(stat_req_olimp, stat_req_fonbet):
 
 
 def mon_cupon(arr_cupon):
+    global max_min_prematch
     file_name = 'cupon_hist.csv'
     minute = 30
     while True:
@@ -1123,7 +1124,7 @@ def mon_cupon(arr_cupon):
             df = df.append(df2, ignore_index=True)
             df.to_csv(file_name, encoding='utf-8', index=False, sep=';')
             id_old = df[(df['time'] >= (cur_time - (60 * minute)))]['cupon_id'].min()
-            arr_cupon[0] = str(int((curr_id - id_old) / minute)) + ' куп./мин.'
+            arr_cupon[0] = str(int((curr_id - id_old) / minute)) + ' куп./мин.\n' + 'Премат доступен на ' + str(round(max_min_prematch / 60)) + ' ч.'
             prnts('activity ' + str(arr_cupon[0]) + ' coupons per/min')
             time.sleep( (minute * 60 - 20) / 3 )
         except Exception as e:
