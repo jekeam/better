@@ -830,7 +830,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_top_m
                         v_name = math_json_olimp.get('name', '')
                         
                         try:
-                            if type_time == 'pre':
+                            if type_time == 'pre' and 1==0:
                             # if event_type in ('football', 'hockey'):
                                 # ОП=В*(К-1)*С-(1-В)*С
                                 value_arr = [
