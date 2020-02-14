@@ -774,7 +774,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_top_m
                 # prnts(math_json_olimp)
                 # prnts(math_json_fonbet)
 
-                for kof_type in math_json_olimp.get('kofs', {}):
+                for kof_type in list(math_json_olimp.get('kofs', {})):
                     if '(' in kof_type:
                         tot_abrr = re.sub('\((.*)\)', '', kof_type)
                         tot_val = re.findall('\((.*)\)', kof_type)[0]
@@ -1021,8 +1021,8 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_top_m
                                                 )
                                 else:
                                     created_fork = ''
-                                    ol_time_chage = k_olimp.get('hist', {}).get('time_change')
-                                    fb_time_chage = k_fonbet.get('hist', {}).get('time_change')
+                                    ol_time_chage = k_olimp.get('hist', {}).get('time_change', 0)
+                                    fb_time_chage = k_fonbet.get('hist', {}).get('time_change', 0)
                                     # prnts('{}, {}, {}, {}, {}'.format(event_type, fb_time_chage, ol_time_chage, k_fonbet, k_olimp))
                                     if ol_time_chage and fb_time_chage:
                                         if ol_time_chage > fb_time_chage:
