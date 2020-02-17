@@ -1,6 +1,6 @@
 liga_name;is_top;comment
-UEFA Champions League. 1/8 finals. First leg;2;
-UEFA Europa League. 1/16 finals. First leg;2;
+UEFA Champions League.;2;
+UEFA Europa League.;2;
 England. Premier League;2;
 Spain. La Liga;2;
 Italy. Serie A;2;
@@ -9,11 +9,11 @@ France. Ligue 1;2;
 Russia. Premier League;2;
 Netherlands. Eredivisie;2;
 Portugal. Primeira Liga;2;
-England. FA Cup. Play-off. 1/16 finals. Replay;2;
-Copa Del Rey. 1/8 finals;2;
-Italian Cup. Semi-Finals. First leg;2;
-Germany. DFB Pokal. 1/8 finals;2;
-France. Coupe de France. Play-off. 1/8 finals;2;
+England. FA Cup. Play-off.;2;
+Copa Del Rey;2;
+Italian Cup. Semi-Finals.;2;
+Germany. DFB Pokal;2;
+France. Coupe de France;2;
 England. EFL Championship;1;
 National teams. International friendlies;0;
 Argentina. Superleague;1;
@@ -67,11 +67,11 @@ Germany. 3. Liga;1;
 Germany. Regionalliga. North-East;1;
 Germany. Regionalliga. West;1;
 Gibraltar. National League, Challenge Group;0;
-Greece Cup. 1/8 finals. Second leg;1;
+Greece Cup.;1;
 Greece. Football league;1;
 Greece. Super League;1;
 Greece. Super League 2;1;
-Greek Cup. Play-off. Quarter Finals. First leg;1;
+Greek Cup. Play-off. Quarter Finals.;1;
 Guatemala. Nacional Liga. Clausura;0;
 Honduras. National league. Clausura;0;
 Hungary. League NB II;0;
@@ -83,7 +83,7 @@ Italy. Serie B;1;
 Jamaica. Premier League;0;
 Japan. Super Cup;1;
 Kuwait. Premier League;1;
-Mexico Cup. Apertura. 1/8 finals. Second leg;0;
+Mexico Cup. Apertura;0;
 Mexico. Liga de Ascenso. Clausura;0;
 Mexico. Primera Division. Clausura;1;
 Mexico. Youth League (U20);0;
@@ -203,7 +203,7 @@ Great Britain. Elite League;2;
 World Championships (U20). Division IIB. South Korea;0;
 England. EFL Cup. Play-off. Final;0;
 France. Coupe de France. Play-off. Quarter-Finals;2;
-Portugal. Taca de Portugal. Play-off. Semi-Finals. First leg;0;
+Portugal. Taca de Portugal. Play-off. Semi-Finals.;0;
 Match Premier Cup;2;
 Argentina. Primera B, Clausura;0;
 Azerbaijan. Premier League;0;
@@ -257,7 +257,7 @@ Spain. Tercera Division. Group 7;0;
 Spain. Tercera Division. Group 8;0;
 Spain. Tercera Division. Group 9;0;
 Sweden. Svenska Cupen. Group stage;0;
-Women. French Cup. 1/8 finals;1;
+Women. French Cup.;1;
 Women. Spain. Primera Division;1;
 Germany. A-Junioren-Bundesliga. Nordost;0;
 Spain. Youth Division de Honor (U19);0;
@@ -274,7 +274,7 @@ League of Legends. VCS;0;
 Gambia. Second Division;0;
 Women. Friendly matches;0;
 Jordan. League Cup. Group stage;0;
-Cyprus Cup. 1/8 finals. Second Leg;0;
+Cyprus Cup.;0;
 Saudi Arabia. First Division;0;
 Qatar. League 2;0;
 Guatemala. Reserve league;0;
@@ -401,36 +401,36 @@ Argentina. Primera C Metropolitana.Clausura;0;
 Bahrain. Division 2;0;
 Bahrain. Premier League;0;
 Clubs. Atlantic Cup. Portugal;0;
-Copa Libertadores. Qualification. 2nd stage. First leg;0;
-Copa Sudamericana. First stage. First leg;0;
-Coppa Italia Primavera. Semi-finals. First leg;2;
+Copa Libertadores. Qualification. 2nd stage.;0;
+Copa Sudamericana. First stage.;0;
+Coppa Italia Primavera. Semi-finals.;2;
 Croatia Cup. Quarter-Finals;0;
 Czech Cup. Play-off. Quarter-finals;0;
 Danish Cup. Quarter-finals;0;
 England. EFL Trophy. Quarter Finals;1;
-England. FA Trophy. Play-off. 1/8 finals;0;
+England. FA Trophy.;0;
 Netherlands. Reserves;0;
 Northern Ireland. NIFL Championship 1;0;
 Northern Ireland. Premier League;0;
 Oman. Sultan Cup. Play-off. Quarter Finals. Second leg;0;
-Scottish Cup. 1/8 finals;0;
+Scottish Cup.;0;
 Tunisia. Ligue 1;0;
-Turkish Cup. Quarter Finals. First leg;1;
+Turkish Cup. Quarter Finals.;1;
 Austria. EBEL. Champion group;0;
 Austria. EBEL. Play-out group;0;
 International Friendlies. Women;0;
 AFC Cup. Qualification;0;
 England. EFL Cup. Final;1;
-England. FA Cup. 1/16 finals. Replay;0;
+England. FA Cup.;0;
 France. Coupe de France. Quarter-Finals;2;
-Portugal. Taca de Portugal. Semi-Finals. First leg;0;
+Portugal. Taca de Portugal. Semi-Finals.;0;
 Austrian Cup. Quarter Final;0;
 Czech Cup. Quarter-finals;0;
-England. FA Trophy. 1/8 finals;0;
-Greek Cup. Quarter Finals. First leg;0;
+England. FA Trophy.;0;
+Greek Cup. Quarter Finals.;0;
 Oman. Sultan Cup. Quarter Finals. Second leg;0;
 Cambodia Prime Minister Cup;0;
-Nedbank Cup. Play-off. 1/16 finals;0;
+Nedbank Cup.;0;
 Friendly matches. Match duration is 80 min;0;
 Belarus. Major League;1;
 National teams. Friendly matches (U19);0;
@@ -470,7 +470,7 @@ International. Olympic Qualification, Group H;1
 International. Olympic Qualification, Group J;1
 Friendly Internationals. Friendly Matches (U19);0
 Kuwait. Youth League. (U20);0
-Nedbank Cup. 1/16 finals;0
+Nedbank Cup.;0
 Spain. Supercup, Women;0
 Sudan. Premier League;0
 Бразилия. Сул-Матогроссенсе;0
@@ -479,9 +479,9 @@ Iceland. League Cup;0
 Aland Islands. Campeonato Sul-Mato-Grossense;0
 Sweden. 4th league;0
 Iceland. Women. Faxafloi Cup. Group Stage;0
-Copa Argentina. 1/16 finals;1
+Copa Argentina.;1
 England. Northern Premier League. 1st Division;0
-England. FA Cup. Play-off. 1/8 finals;1
+England. FA Cup.;1
 International Friendlies;0
 Iceland. League Cup. Group stage;0
 Uruguay Cup;0
@@ -498,7 +498,7 @@ Palestine. Premier League;0
 Argentina. Primera B Nacional;0
 Rwanda. Premier League;0
 Cyprus Cup;1
-England. FA Cup. 1/8 finals;1
+England. FA Cup.;1
 Olympic. Qualification. Great Britain;1
 Olympic. Qualification. Slovenia;1
 Israel. Liga Alef;0
@@ -511,11 +511,11 @@ Wales. 1st Division. North;0
 Canada. SJHL;0
 Canada. VIJHL;0
 Australia. NPL. Queensland;0
-Женщины. Кубок Италии. 1/4 финала. Первые матчи;0
+Женщины. Кубок Италии.;0
 AFC Champions League. Group stage;0
-Greece Cup. 1/4 finals. Second leg;1
+Greece Cup.;1
 Paraguay. Primera División. Reserves;0
-Women. Italy Cup. 1/4 finals. First Leg;0
+Women. Italy Cup.;0
 Syrian Cup;0
 Tunisia. 2nd League;0
 Belarus. U18 Championship;0
@@ -547,7 +547,7 @@ Women. Argentina. Primera Division;0
 Netherlands. Eredivise (U19);0
 Wales. Cymru Alliance;0
 Germany. Oberliga. Niederrhein;0
-Кубок Португалии. 1/2 финала. Ответные матчи;2
+Кубок Португалии.;2
 Portugal. Cup. Semi-Finals. Second leg;2
 Women. Supercopa. Spain. Final;0
 France. National 2;0
@@ -571,13 +571,13 @@ AFC Cup. Group stage;0
 France Ligue National 3 Group A;0
 International Olympic Qualification, Group L;1
 Qatar. Youth League;0
-Кубок Турции. 1/4 финала. Ответные матчи;0
+Кубок Турции.;0
 South American Development League U19 Women;0
 Brazil. Supercopa do Brasil;0
 Scotland. Reserve League;0
 Canada. ECHL;0
 Jamaica. 2nd division;0
-Turkish Cup. 1/4 finals. Second leg;0
+Turkish Cup.;0
 Australia. Pre-season Cup;0
 Kazakhstan. League (U20);0
 German Cup. Quarter-finals;2
@@ -586,22 +586,22 @@ Ethiopia. Premier League;0
 Cameroon. Championship - Women;0
 Denmark. Reserve league;0
 Copa Libertadores. Qualification. 2-nd Stage. Second leg;1
-Copa MX. Apertura. Quarter Finals. First Leg;0
-Hungary. Magyar Kupa. 1/8 finals. First leg;0
+Copa MX. Apertura. Quarter Finals.;0
+Hungary. Magyar Kupa.;0
 Netherlands Cup. Quarter-final;1
-Женщины. Кубок Испании. 1/8 финала;0
-Women. Spain Cup. 1/8 finals;0
-Кубок Шотландии. 1/8 финала. Ответные матчи;0
+Женщины. Кубок Испании.;0
+Women. Spain Cup.;0
+Кубок Шотландии.;0
 Oman. 1-st division;0
-Scottish Cup. 1/8 finals. Second Leg;0
+Scottish Cup.;0
 Northern Ireland. CIS Insurance Cup. Final;0
 International Youth. UEFA Youth League, Knockout Stage;1
 Senegal. League 2;0
 Sweden. Youth league (U20);0
 Scotland Reserve League 2;0
 Women. Icelandic Cup;0
-Cyprus. Cyprus Cup. Quarter-Finals. First leg;0
-UEFA Youth League (U19). 1/16 finals;1
+Cyprus. Cyprus Cup. Quarter-Finals.;0
+UEFA Youth League (U19).;1
 AFC Cup. Qualification. Second leg;0
 Gibraltar Championship;0
 Vietnam. Youth League (U21);0
@@ -617,14 +617,14 @@ Germany. Regionalliga. South-West;0
 Romanian Cup. Play-off. Quarter Finals;0
 French Cup. Final;2
 Brazil. Carioca. Taca Guanabara. Semi-finals;0
-Algerian Cup. Play-off. 1/8 final;0
+Algerian Cup.;0
 Canada. NOJHL;0
 Australia. NPL. Victoria;0
-Algerian Cup. 1/8 final;0
+Algerian Cup.;0
 Romanian Cup. Quarter Finals;0
 Scotland. Challenge Cup. Semi-final;0
 Kazakhstan. League (U20). Regular season;0
-Albania Cup. Playoffs. 1/8 finals. Second leg;0
+Albania Cup.;0
 Qatar. League Cup. Quarter final;0
 Bhutan. Premier League;0
 Greece. Regional Cup. East Attica;0
@@ -642,7 +642,7 @@ Andorra. Copa Constitucio;0
 Salvador. Segunda Division;0
 Bangladesh. Premier League;0
 Copa del Rey. Semi-Finals. Second Leg;2
-Кубок Италии. 1/2 финала. Ответные матчи;2
+Кубок Италии.;2
 Polish Cup. Quarter Final;0
 Alps Hockey League. Play-out group;0
 International. Alps Hockey League, Master Round;0
@@ -670,7 +670,7 @@ Thailand. Premier League;0
 FNL OLIMP CUP. Cyprus;0
 Myanmar. National League 2;0
 Bulgaria. Second League;0
-Egypt Cup. Play-off. 1/8 finals;0
+Egypt Cup.;0
 Copa Libertadores (U20);0
 Cyprus. 2nd Division, Promotion Round;0
 Cyprus. 2nd Division, Relegation Round;0
@@ -708,7 +708,7 @@ Gibraltar Cup;0
 Andorra. 2nd Division;0
 Brazil Campeonato Rondoniense;0
 Jamaica. 2-nd Division;0
-Women. FA Cup. Play-off. 1/8 finals;0
+Women. FA Cup.;0
 CONCACAF (U20) Championship;0
 Portugal (U19). North group;0
 Portugal (U19). South group;0
