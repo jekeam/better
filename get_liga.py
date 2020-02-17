@@ -147,7 +147,7 @@ elif 1 == 0:  # Обработанный список
             except:
                 pass
     print('add new: ' + str(add_cnt))
-elif 1 == 1:  # добавлдение из списка не найденного
+elif 1 == 10:  # добавлдение из списка не найденного
     print('liga_name;is_top;')
     add_cnt = 0
     dfj = df.to_json(orient='records')
@@ -174,7 +174,7 @@ elif 1 == 1:  # добавлдение из списка не найденног
                     except:
                         pass
     print('add new: ' + str(add_cnt))
-if 1 == 0:
+if 1 == 1:
     import json
 
     text = ''
@@ -186,13 +186,15 @@ if 1 == 0:
         for row in rows:
             if x > 0:
                 liga_name = row.split(';')[0].strip()
-                liga_slice = liga_name.split('. ')
-                liga_slices_dot.append(liga_slice[0])
+                # print(liga_name)
+                liga_slice = liga_name.split('.')
+                for l in liga_slice:
+                    liga_slices_dot.append(l.strip())
 
-                liga_name = liga_name.replace('.', '').replace('  ', ' ')
-                liga_slice = liga_name.split(' ')
-                for k in liga_slice:
-                    liga_slices_space.append(k)
+                # liga_name = liga_name.replace('.', '').replace('  ', ' ')
+                # liga_slice = liga_name.split(' ')
+                # for k in liga_slice:
+                #     liga_slices_space.append(k)
 
                 # text = text + 
             x = 1
@@ -204,10 +206,10 @@ if 1 == 0:
     for n, c in split_dott.items():
         print(n + ';' + str(c))
 
-    liga_slices_arr = {}
-    for i in liga_slices_space:
-        liga_slices_arr.update({i: liga_slices_space.count(i)})
-    print('Слово;кол-во')
-    split_space = {k: v for k, v in reversed(sorted(liga_slices_arr.items(), key=lambda item: item[1]))}
-    for n, c in split_space.items():
-        print(n + ';' + str(c))
+    # liga_slices_arr = {}
+    # for i in liga_slices_space:
+    #     liga_slices_arr.update({i: liga_slices_space.count(i)})
+    # print('Слово;кол-во')
+    # split_space = {k: v for k, v in reversed(sorted(liga_slices_arr.items(), key=lambda item: item[1]))}
+    # for n, c in split_space.items():
+    #     print(n + ';' + str(c))
