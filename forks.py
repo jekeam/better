@@ -15,13 +15,13 @@ if 1 == 1:
     df = df.round({'minute': 2})
 
     idx = df.groupby(
-        ['time_create', 'kof_ol', 'kof_fb', 'name'], sort=False
+        ['time_create', 'kof_bk1', 'kof_bk2', 'name'], sort=False
     )['live_fork'].transform('max') == df['live_fork']
 
     df = df[idx]
 
     idx = df.groupby(
-        ['time_create', 'kof_ol', 'kof_fb', 'name'], sort=False
+        ['time_create', 'kof_bk1', 'kof_bk2', 'name'], sort=False
     )['minute'].transform('min') == df['minute']
     
     csv_file_name = cur_date_str + '_forks_simple.csv'
@@ -57,13 +57,13 @@ else:
         df = df.round({'minute': 2})
 
         idx = df.groupby(
-            ['match_ol', 'match_fb', 'kof_ol', 'kof_fb', 'name'], sort=False
+            ['match_bk1', 'match_bk2', 'kof_bk1', 'kof_bk2', 'name'], sort=False
         )['live_fork'].transform('max') == df['live_fork']
 
         df = df[idx]
 
         idx = df.groupby(
-            ['match_ol', 'match_fb', 'kof_ol', 'kof_fb', 'name'], sort=False
+            ['match_bk1', 'match_bk2', 'kof_bk1', 'kof_bk2', 'name'], sort=False
         )['minute'].transform('min') == df['minute']
 
         with open('forks_live.csv', 'a') as f:

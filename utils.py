@@ -50,8 +50,11 @@ def if_exists_by_sport(jsos_list: dict, bk_name: str, sport_id: str, check_key: 
     return False
 
 
-bk_fork_name = ['olimp', 'fonbet']  # , 'pinnacle']
-# bk_fork_name = ['fonbet']  # , 'pinnacle']
+bk_working = [
+    # 'pinnacle',
+    'olimp',
+    'fonbet',
+]
 
 max_min_prematch = 1440 / 2  # 120 = 2 hour
 assert max_min_prematch % 60 == 0, 'Время должно быть кратно 60 минутам'
@@ -127,8 +130,8 @@ sport_list_raw = [
         'place': ['pre']
     },
 ]
-# sport_list = list(reversed(sport_list_raw))
-sport_list = sport_list_raw.copy()
+sport_list = list(reversed(sport_list_raw))
+# sport_list = sport_list_raw.copy()
 
 opposition = [
     {'1ТБ': '1ТМ'},

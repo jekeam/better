@@ -408,6 +408,7 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
                 })
             except:
                 bets_olimp[key_id] = {
+                    'bk_name': 'olimp',
                     'sport_id': skId,
                     'place': place,
                     'sport_name': skName,

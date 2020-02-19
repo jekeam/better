@@ -246,21 +246,17 @@ def get_proxy_from_file(filename=None, uniq=True):
     if not filename:
         global proxy_file_name
         filename = proxy_file_name
-
     try:
         with open(filename, 'r') as f:
             proxys = list(f)
             proxys = list(map(str.strip, proxys))
     except:
         pass
-
     for proxy in proxys:
         if proxy not in proxy_uniq:
             proxy_uniq.append(proxy)
-
     if uniq:
         proxys = proxy_uniq
-
     return proxys
 
 
@@ -296,13 +292,11 @@ def join_proxies_to_file(n=50):
     return proxy_from_file
 
 
-def start_proxy_saver(proxies_olimp, proxies_fonbet, proxy_filename_olimp, proxy_filename_fonbet):  # , gen_proxi_olimp, gen_proxi_fonbet
+def start_proxy_saver(proxies_container):
     while True:
-        prnts('Proxies by Olimp: ' + str(len(proxies_olimp)))  # + '/' + str(gen_proxi_olimp.__next__()))  # , 'hide'
-        prnts('Proxies by Fonbet: ' + str(len(proxies_fonbet)))  # + '/' + str(gen_proxi_fonbet.__next__()))
-
-        save_list(proxies_olimp, proxy_filename_olimp)
-        save_list(proxies_fonbet, proxy_filename_fonbet)
+        for bk_name in proxies_container.keys():
+            prnts('Proxies by ' + bk_name + ': ' + str(len(proxies_container.get(bk_name, {}).get('proxy_list'))))
+            save_list(proxies_container.get(bk_name, {}).get('proxy_list'), proxies_container.get(bk_name, {}).get('proxy_filename'))
         time.sleep(15)
 
 

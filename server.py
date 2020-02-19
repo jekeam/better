@@ -43,7 +43,7 @@ def get_state(arr):
     return state
 
 
-def run_server(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_top_matchs, bets_olimp, bets_fonbet, mathes_complite, arr_cupon):
+def run_server(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_top_matchs, bets, mathes_complite, arr_cupon):
     class HttpProcessor(BaseHTTPRequestHandler):
         def __init__(self, forks, bar, qux, *args, **kwargs):
             self.data_str = json.dumps(forks, ensure_ascii=False)
@@ -109,17 +109,11 @@ def run_server(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_top_matchs, bets_
                     answer = None
                     if cnt_par == 2:
                         balnk, bk_name, match_id = self.path.split('/')
-                        if '/fonbet/' in self.path:
-                            answer = get_state(bets_fonbet.get(match_id, {}))
-                        elif '/olimp/' in self.path:
-                            answer = get_state(bets_olimp.get(match_id, {}))
+                        answer = get_state(bets.get(match_id, {}))
                     elif cnt_par == 3:
                         balnk, bk_name, match_id, kof = self.path.split('/')
                         kof = unquote(kof)
-                        if '/fonbet/' in self.path:
-                            answer = bets_fonbet.get(match_id, {}).get('kofs', {}).get(kof)
-                        elif '/olimp/' in self.path:
-                            answer = bets_olimp.get(match_id, {}).get('kofs', {}).get(kof)
+                        answer = bets.get(match_id, {}).get('kofs', {}).get(kof)
                     if answer:
                         try:
                             answer.pop('hist')

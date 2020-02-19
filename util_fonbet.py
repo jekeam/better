@@ -278,6 +278,7 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
                             })
                         except Exception as e:
                             bets_fonbet[key_id] = {
+                                'bk_name': 'fonbet',
                                 'sport_id': skId,
                                 'liga_id': liga_id,
                                 'place': place,

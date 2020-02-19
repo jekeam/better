@@ -1,6 +1,7 @@
 # coding:utf-8
 from util_olimp import *
 from util_fonbet import *
+import util_pinnacle
 from proxy_worker import get_proxy_from_file, start_proxy_saver, createBatchGenerator, get_next_proxy
 import time
 from json import loads, dumps
@@ -11,6 +12,7 @@ from exceptions import *
 from server import run_server
 from utils import prnts, DEBUG, find_max_mode, opposition, add_if_draw, add_if_not_draw, serv_log, get_param, sport_list, if_exists, print_j, max_min_prematch, if_exists_by_sport
 from utils import TIMEOUT_LIST, TIMEOUT_MATCH, TIMEOUT_MATCH_MINUS, TIMEOUT_PRE_LIST, TIMEOUT_PRE_MATCH, TIMEOUT_PRE_MATCH_MINUS, SERVER_IP, SERVER_PORT, time_sleep_proc
+from utils import bk_working
 from proxy_switcher import ProxySwitcher
 import json
 import os.path
@@ -20,6 +22,7 @@ from datetime import datetime
 import copy
 import math
 import pandas as pd
+import itertools
 
 import cupon
 import bot
@@ -200,19 +203,87 @@ def get_fonbet(resp, arr_matchs, place):
         # if event['id'] == mid and event['kind'] > 1 and event['name'] in ['1st half', '2nd half', 'corners']:
     # print_j(len(arr_matchs))
     # ['16453828': {'bk_name': 'fonbet', 'sport_id': 1, 'sport_name': 'Football', 'name': '', 'team1': 'Nadi', 'team2': 'Suva'}, ....]
+    
+def set_matches_pinnacle(bk_name, resp, arr_matchs, match_id_work):
+    for match_id, match_data in resp.items():
+        for key in copy.deepcopy(match_data).keys():
+            if key not in ('bk_name', 'sport_id', 'sport_name', 'name', 'team1', 'team2', 'start_timestamp', 'minute', 'score'):
+                match_data.pop(key)
+        arr_matchs[str(match_id)] = match_data
 
 
-def start_seeker_matchs_olimp(gen_proxi_olimp, arr_matchs, place, arr_top_matchs=None):
-    global TIMEOUT_LIST, TIMEOUT_PRE_LIST
-    proxy = gen_proxi_olimp.next()
+def set_api(bk_name, proxy, session):
+    global pinn_session_data
+    try:
+        if bk_name == 'pinnacle':
+            head = {
+                'accept': 'application/json',
+                'content-type': 'application/json',
+                # 'origin': 'https://www.pinnacle.com',
+                # 'referer': 'https://www.pinnacle.com',
+                # 'sec-fetch-mode': 'cors',
+                # 'sec-fetch-site': 'same-site',
+                'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36',
+            }
+            res = requests.get(url='https://www.pinnacle.com/config/app.json', proxies={'https': proxy}, timeout=10, verify=False)
+            try:
+                api_key = res.json()['api']['haywire']['apiKey']
+            except Exception as e:
+                # print(res.status_code, res.text)
+                raise ValueError(bk_name + ', возникла ошибка при запросе ключа, код ответа ' + str(res.status_code) + ': ' + str(e))
+    
+            head.update({'x-api-key': api_key})
+            head.update({'x-device-uuid': util_pinnacle.x_device_uuid_temp})
+            if session:
+                res = session.post(
+                    url='https://api.arcadia.pinnacle.com/0.1/sessions',
+                    # url='http://192.168.1.143:8888',
+                    proxies={'https': proxy},
+                    timeout=10,
+                    verify=False,
+                    headers=head,
+                    json={
+                        # "username": "ES1096942",
+                        # "password": "11112007_A"
+                        "username": "IS1204996",
+                        "password": "p1962Abce"
+                    }
+                )
+            else:
+                res = requests.post(
+                url='https://api.arcadia.pinnacle.com/0.1/sessions',
+                # url='http://192.168.1.143:8888',
+                proxies={'https': proxy},
+                timeout=10,
+                verify=False,
+                headers=head,
+                json={
+                        # "username": "ES1096942",
+                        # "password": "11112007_A"
+                        "username": "IS1204996",
+                        "password": "p1962Abce"
+                }
+            )
+            resp = res.json()
+            print(resp)
+            x_session = resp.get('token')
+            # ??? = resp.get('transactionId')
+    except Exception as e:
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        raise ValueError(bk_name + ', возникла ошибка при запросе ключа, код ответа ' + str(res.status_code) + ': ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
+    if api_key:
+        pinn_session_data.update({'api_key': api_key})
+    if util_pinnacle.x_device_uuid_temp:
+        pinn_session_data.update({'x_device_uuid': util_pinnacle.x_device_uuid_temp})
+    if x_session:
+        pinn_session_data.update({'x_session': x_session})    
+
+def start_seeker_matchs(bk_name, proxies_container, arr_matchs, place, session):
+    print(bk_name, arr_matchs, place)
+    global TIMEOUT_LIST, TIMEOUT_PRE_LIST, pinn_session_data
+    proxy = proxies_container[bk_name]['gen_proxi'].next()
     fail_proxy = 0
-    arr_leagues = {}
-    liga_unknown = []
-    if place == 'pre':
-        time_out = TIMEOUT_PRE_LIST
-    else:
-        time_out = TIMEOUT_LIST
-    time_resp = 0
+    
     try:
         df = pd.read_csv('top_by_name.csv', encoding='utf-8', sep=';')
         my_top = list(df[(df['is_top'] == 2)]['liga_name'])
@@ -223,130 +294,159 @@ def start_seeker_matchs_olimp(gen_proxi_olimp, arr_matchs, place, arr_top_matchs
         prnts('my_slag: ' + str(my_slag))
     except Exception as e:
         prnts('err liga_top: ' + str(e))
+    
+    if 'pinnacle' == bk_name:
+        while True:
+            try:
+                set_api(bk_name, proxy, session)
+                api_key = pinn_session_data.get('api_key')
+                x_session = pinn_session_data.get('x_session')
+                x_device_uuid = pinn_session_data.get('x_device_uuid')
+                prnts('get api_key from ' + bk_name + ': ' + str(api_key))
+                prnts('get x_session(token) from ' + bk_name + ': ' + str(x_session))
+                prnts('get x_device_uuid from ' + bk_name + ': ' + str(x_device_uuid))
+                prnts('session: ' + str(session))
+                break
+            except Exception as e:
+                prnts(bk_name + ', код ошибки Exception: ' + str(e))
+                proxies_container[bk_name]['proxy_list'] = del_proxy(proxy, proxies_container[bk_name]['proxy_list'])
+                proxy = proxies_container[bk_name]['gen_proxi'].next()
+                
     while True:
+        match_id_work = []
+        if place == 'pre':
+            time_out = TIMEOUT_PRE_LIST
+        else:
+            time_out = TIMEOUT_LIST
+        proxy = proxies_container[bk_name]['gen_proxi'].next()
+        fail_proxy = 0
+        arr_leagues = {}
+        liga_unknown = []
+        time_resp = 0
         try:
-            if place == 'pre':
-                # get leagues
-                for sport in sport_list:
-                    if 'pre' in sport.get('place'):
-                        sport_id = sport.get('olimp')
-                        resp_leagues = {}
-                        try:
-                            resp_leagues, time_resp = get_matches_olimp(proxy, time_out, 'champs', sport_id, max_min_prematch / 60)
-                            # print_j(resp_leagues)                            
-                            if resp_leagues:
-                                l = 0
-                                for leagues_arr in resp_leagues:
-                                    l = l + 1
-                                    prnts('sport_id: {}, get leagues: {}/{}'.format(sport_id, len(resp_leagues), l))
-                                    liga_id_str = str(leagues_arr.get('id'))
-                                    if liga_id_str not in arr_leagues.get(sport_id, {}):
-                                        if arr_leagues.get(sport_id) is not None:
-                                            arr_leagues[sport_id].append(liga_id_str)
-                                        else:
-                                            arr_leagues[sport_id] = []
-                                            arr_leagues[sport_id].append(liga_id_str)
-                                        try:
-                                            prnts('request: sport_id:{}, liga_id:{}'.format(sport_id, liga_id_str))
-                                            resp_matches, time_resp = get_matches_olimp(proxy, time_out, 'matches', sport_id, max_min_prematch / 60, liga_id_str)
-                                            get_olimp(resp_matches, arr_matchs, 'pre', sport_id, arr_top_matchs, my_top, my_middle, my_slag, liga_unknown)
-                                            # print_j(resp_matches)
-                                            prnts('sport_id: {}, liga_id:{}, add matches: {}, liga name:{}'.format(sport_id, liga_id_str, len(resp_matches.get('it')), resp_matches.get('n')))
-                                        except Exception as e:
-                                            if 'We are updating betting line'.lower() in str(e).lower():
-                                                pass
-                                                prnts(e)
+            if bk_name == 'olimp':
+                if place == 'pre':
+                    # get leagues
+                    for sport in sport_list:
+                        if 'pre' in sport.get('place'):
+                            sport_id = sport.get('olimp')
+                            resp_leagues = {}
+                            try:
+                                resp_leagues, time_resp = get_matches_olimp(proxy, time_out, 'champs', sport_id, max_min_prematch / 60)
+                                # print_j(resp_leagues)                            
+                                if resp_leagues:
+                                    l = 0
+                                    for leagues_arr in resp_leagues:
+                                        l = l + 1
+                                        prnts('sport_id: {}, get leagues: {}/{}'.format(sport_id, len(resp_leagues), l))
+                                        liga_id_str = str(leagues_arr.get('id'))
+                                        if liga_id_str not in arr_leagues.get(sport_id, {}):
+                                            if arr_leagues.get(sport_id) is not None:
+                                                arr_leagues[sport_id].append(liga_id_str)
                                             else:
-                                                pass
-                                                # raise ValueError(str(e))
-                                                exc_type, exc_value, exc_traceback = sys.exc_info()
-                                                prnts(str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
-                                            if liga_id_str in arr_leagues[sport_id]:
-                                                del arr_leagues[sport_id][arr_leagues[sport_id].index(liga_id_str)]
-                                                prnts('sport_id:{}, Возникала ошибка при запросе списка пре матчей по лиге {}, лига удалена из списка: {}'.format(sport_id, liga_id_str, arr_leagues))
-                                            else:
-                                                prnts('sport_id:{}, Возникала ошибка при запросе списка пре матчей по лиге {}, но лига не найдена в списке: {}'.format(sport_id, liga_id_str, arr_leagues))
-                        except Exception as e:
-                            if 'scan error: We are updating betting line'.lower() in str(e).lower():
-                                pass
-                                prnts(e)
-                            else:
-                                exc_type, exc_value, exc_traceback = sys.exc_info()
-                                prnts(str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
-                                pass
-                                # raise ValueError(str(e))
-                        if DEBUG:
-                            prnts('sport ' + str(sport_id) + ': ' + str(len(resp_leagues)))
-                # # get matches by liga_id
-                # ligu = {}
-                # l = 0
-                # for sport_id in list(arr_leagues):
-                #     l = l + 1
-                #     m = 0
-                #     for liga_id in arr_leagues[sport_id]:
-                #         # print(liga_id)
-                #
-                #
-                #         # print_j(arr_matchs)
-                #         # print(len(arr_matchs))
-                #         # time.sleep(5)
-            else:
-                resp, time_resp = get_matches_olimp(proxy, time_out, place)
-                get_olimp(resp, arr_matchs, 'live', None, arr_top_matchs, my_top, my_middle, my_slag, liga_unknown)
+                                                arr_leagues[sport_id] = []
+                                                arr_leagues[sport_id].append(liga_id_str)
+                                            try:
+                                                prnts('request: sport_id:{}, liga_id:{}'.format(sport_id, liga_id_str))
+                                                resp_matches, time_resp = get_matches_olimp(proxy, time_out, 'matches', sport_id, max_min_prematch / 60, liga_id_str)
+                                                get_olimp(resp_matches, arr_matchs, 'pre', sport_id, arr_top_matchs, my_top, my_middle, my_slag, liga_unknown)
+                                                # print_j(resp_matches)
+                                                prnts('sport_id: {}, liga_id:{}, add matches: {}, liga name:{}'.format(sport_id, liga_id_str, len(resp_matches.get('it')), resp_matches.get('n')))
+                                            except Exception as e:
+                                                if 'We are updating betting line'.lower() in str(e).lower():
+                                                    pass
+                                                    prnts(e)
+                                                else:
+                                                    pass
+                                                    # raise ValueError(str(e))
+                                                    exc_type, exc_value, exc_traceback = sys.exc_info()
+                                                    prnts(str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
+                                                if liga_id_str in arr_leagues[sport_id]:
+                                                    del arr_leagues[sport_id][arr_leagues[sport_id].index(liga_id_str)]
+                                                    prnts('sport_id:{}, Возникала ошибка при запросе списка пре матчей по лиге {}, лига удалена из списка: {}'.format(sport_id, liga_id_str, arr_leagues))
+                                                else:
+                                                    prnts('sport_id:{}, Возникала ошибка при запросе списка пре матчей по лиге {}, но лига не найдена в списке: {}'.format(sport_id, liga_id_str, arr_leagues))
+                            except Exception as e:
+                                if 'scan error: We are updating betting line'.lower() in str(e).lower():
+                                    pass
+                                    prnts(e)
+                                else:
+                                    exc_type, exc_value, exc_traceback = sys.exc_info()
+                                    prnts(str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
+                                    pass
+                                    # raise ValueError(str(e))
+                            if DEBUG:
+                                prnts('sport ' + str(sport_id) + ': ' + str(len(resp_leagues)))
+                    # # get matches by liga_id
+                    # ligu = {}
+                    # l = 0
+                    # for sport_id in list(arr_leagues):
+                    #     l = l + 1
+                    #     m = 0
+                    #     for liga_id in arr_leagues[sport_id]:
+                    #         # print(liga_id)
+                    #
+                    #
+                    #         # print_j(arr_matchs)
+                    #         # print(len(arr_matchs))
+                    #         # time.sleep(5)
+                else:
+                    resp, time_resp = get_matches_olimp(proxy, time_out, place)
+                    get_olimp(resp, arr_matchs, 'live', None, arr_top_matchs, my_top, my_middle, my_slag, liga_unknown)
+                time_sleep = max(0, (time_out - time_resp))
+                if DEBUG:
+                    pass
+                    # prnts('Олимп, поиск матчей, время ответа: ' + str(time_resp) + ', запрос через ' +
+                    #       str(time_sleep) + ' ' + proxy)
+                time.sleep(time_sleep)
+            elif bk_name == 'fonbet':
+                resp, time_resp = get_matches_fonbet(proxy, time_out, place)
+                get_fonbet(resp, arr_matchs, place)
+                time_sleep = max(0, (time_out - time_resp))
+                if DEBUG:
+                    pass
+                    # prnts('Фонбет, поиск матчей, время ответа: ' + str(time_resp) + ', запрос через ' +
+                    #       str(time_sleep) + ' ' + proxy)
+                time.sleep(time_sleep)
+            elif bk_name == 'pinnacle':
+                resp, time_resp = util_pinnacle.get_matches(bk_name, proxy, TIMEOUT_LIST, api_key, x_session, x_device_uuid, proxies_container[bk_name]['proxy_list'], session)
+                set_matches_pinnacle(bk_name, resp, arr_matchs, match_id_work)
+            # print(bk_name, place, str(arr_matchs))
         except TimeOut as e:
-            err_str = 'Timeout: Олимп, ошибка призапросе списока матчей'
+            err_str = 'Timeout: ошибка призапросе списока матчей из ' + bk_name
             prnts(err_str)
-            time_resp = time_out
+            time_resp = TIMEOUT_LIST
+
             if fail_proxy >= 3:
-                proxy = gen_proxi_olimp.next()
+                proxy = proxies_container[bk_name]['gen_proxi'].next()
             else:
                 fail_proxy = fail_proxy + 1
                 time.sleep(3)
+
         except Exception as e:
-            exc_type, exc_value, exc_traceback = sys.exc_info()
-            err_str = str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
-            prnts('Exception: Олимп, ошибка при запросе списка матчей: ' + proxy + str(err_str))
-            time_resp = time_out
+            prnts('Exception: ошибка при запросе списка матчей из ' + bk_name + ':' + str(e))
+            time_resp = TIMEOUT_LIST
+
             if fail_proxy >= 3:
-                proxy = gen_proxi_olimp.next()
+                proxy = proxies_container[bk_name]['gen_proxi'].next()
                 fail_proxy = 0
             else:
                 fail_proxy = fail_proxy + 1
                 time.sleep(3)
-        time_sleep = max(0, (time_out - time_resp))
-        if DEBUG:
-            pass
-            # prnts('Олимп, поиск матчей, время ответа: ' + str(time_resp) + ', запрос через ' +
-            #       str(time_sleep) + ' ' + proxy)
-        time.sleep(time_sleep)
+
+        time_sleep = max(0, (TIMEOUT_LIST - time_resp))
+
+        # if DEBUG:
+        # pass
+        # prnts('Олимп, поиск матчей, время ответа: ' + str(time_resp) + ', запрос через ' + str(time_sleep) + ' ' + proxy)
+
+        time.sleep(time_sleep)        
 
 
-def start_seeker_matchs_fonbet(gen_proxi_fonbet, arr_matchs, place):
-    global TIMEOUT_LIST, TIMEOUT_PRE_LIST
-    if place == 'pre':
-        time_out = TIMEOUT_PRE_LIST
-    else:
-        time_out = TIMEOUT_LIST
-    proxy = gen_proxi_fonbet.next()
-    while True:
-        try:
-            resp, time_resp = get_matches_fonbet(proxy, time_out, place)
-            get_fonbet(resp, arr_matchs, place)
-        except Exception as e:
-            prnts('Фонбет, ошибка при запросе списка матчей: ' + str(place) + ' ' + str(e) + ' ' + proxy)
-            proxy = gen_proxi_fonbet.next()
-            time_resp = time_out
-        time_sleep = max(0, (time_out - time_resp))
-        if DEBUG:
-            pass
-            # prnts('Фонбет, поиск матчей, время ответа: ' + str(time_resp) + ', запрос через ' +
-            #       str(time_sleep) + ' ' + proxy)
-        time.sleep(time_sleep)
-
-
-def start_seeker_top_matchs_fonbet(gen_proxi_fonbet, arr_top_matchs, pair_mathes, arr_fonbet_top_kofs):
+def start_seeker_top_matchs_fonbet(proxies_container, arr_top_matchs, pair_mathes, arr_fonbet_top_kofs):
     global TIMEOUT_LIST
-    proxy = gen_proxi_fonbet.next()
+    bk_name = 'fonbet'
+    proxy = proxies_container[bk_name]['gen_proxi'].next()
 
     while True:
         try:
@@ -366,7 +466,7 @@ def start_seeker_top_matchs_fonbet(gen_proxi_fonbet, arr_top_matchs, pair_mathes
                 for event in resp.get('events'):
                     match_id = event.get('id')
                     liga_id = event.get('competitionId')
-                    liga_name = event.get('competitionName')
+                    # liga_name = event.get('competitionName')
                     sport_id = event.get('skId', '')
                     sport_name = event.get('skName', '')
                     if str(event.get('skId')) in ('1', '2'):  # and place == 'top:pre':
@@ -394,7 +494,7 @@ def start_seeker_top_matchs_fonbet(gen_proxi_fonbet, arr_top_matchs, pair_mathes
             exc_type, exc_value, exc_traceback = sys.exc_info()
             e = str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
             prnts('Фонбет, ошибка при запросе списка TOP матчей: ' + str(e) + ' ' + proxy)
-            proxy = gen_proxi_fonbet.next()
+            proxy = proxies_container[bk_name]['gen_proxi'].next()
             time_resp = TIMEOUT_LIST
 
         time_sleep = max(0, (TIMEOUT_LIST - time_resp))
@@ -407,33 +507,33 @@ def start_seeker_top_matchs_fonbet(gen_proxi_fonbet, arr_top_matchs, pair_mathes
         time.sleep(time_sleep)
 
 
-def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi_olimp, pair_mathes, mathes_complite, stat_req_ol, place):
+def start_seeker_bets_olimp(bets, match_id_olimp, proxies_container, pair_mathes, mathes_complite, stat_reqs, place):
     global TIMEOUT_MATCH, TIMEOUT_MATCH_MINUS
     global TIMEOUT_PRE_MATCH, TIMEOUT_PRE_MATCH_MINUS
-
+    bk_name = 'olimp'
     fail_proxy = 0
     proxy_size = 10
     proxy = []
     i = 0
     n = 1
     while i < proxy_size:
-        proxy.append(gen_proxi_olimp.next())
+        proxy.append(proxies_container[bk_name]['gen_proxi'].next())
         i = i + 1
     ps = ProxySwitcher(proxy_size, proxy)
 
     while True:
         try:
-            time_resp = get_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, ps.get_next_proxy(), TIMEOUT_MATCH, pair_mathes, place, str(n))
-            # print(bets_olimp)
-            stat_req_ol[0].append(round(time_resp, 2))
+            time_resp = get_bets_olimp(bets, match_id_olimp, proxies_container[bk_name]['proxy_list'], ps.get_next_proxy(), TIMEOUT_MATCH, pair_mathes, place, str(n))
+            # print(bets)
+            set_stat_reqs(stat_reqs, bk_name, time_resp)
         except OlimpMatchСompleted as e:
             cnt = 0
             prnts(e)
             try:
                 for pair_match in pair_mathes:
                     if match_id_olimp in pair_match:
-                        if bets_olimp.get(str(match_id_olimp)):
-                            bets_olimp.pop(str(match_id_olimp))
+                        if bets.get(str(match_id_olimp)):
+                            bets.pop(str(match_id_olimp))
                         prnts('Olim (OlimpMatchСompleted), pair mathes remove: ' + str(pair_mathes[cnt]))
                         pair_mathes.remove(pair_mathes[cnt])
                         mathes_complite[place].append(match_id_olimp)
@@ -443,8 +543,7 @@ def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi
                 prnts('Exception: Олимп, ошибка при удалении матча ' + str(match_id_olimp) + ':' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
             raise ValueError('start_seeker_bets_olimp:' + str(e))
         except Exception as e:
-            curr_n = stat_req_ol[1]
-            stat_req_ol[1] = curr_n + 1
+            set_stat_reqs(stat_reqs, bk_name)
             exc_type, exc_value, exc_traceback = sys.exc_info()
             prnts('Exception: Олимп, ошибка при запросе матча ' + str(match_id_olimp) + ': ' +
                   str(e) + ' ' + ps.get_cur_proxy() + ' ' +
@@ -452,7 +551,7 @@ def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi
             time_resp = TIMEOUT_MATCH
 
             if fail_proxy >= 3:
-                ps.rep_cur_proxy(gen_proxi_olimp.next())
+                ps.rep_cur_proxy(proxies_container[bk_name]['gen_proxi'].next())
                 fail_proxy = 0
             else:
                 fail_proxy = fail_proxy + 1
@@ -468,30 +567,29 @@ def start_seeker_bets_olimp(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi
         n = n + 1
         time.sleep(time_sleep)
 
-
-def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_proxi_fonbet, pair_mathes, mathes_complite, stat_req_fb, arr_fonbet_top_kofs, place):
+def start_seeker_bets_fonbet(bets, match_id_fonbet, proxies_container, pair_mathes, mathes_complite, stat_reqs, arr_fonbet_top_kofs, place):
     global TIMEOUT_MATCH, TIMEOUT_MATCH_MINUS
     global TIMEOUT_PRE_MATCH, TIMEOUT_PRE_MATCH_MINUS
-
+    bk_name = 'fonbet'
     proxy_size = 5
     proxy = []
     i = 0
     while i < proxy_size:
-        proxy.append(gen_proxi_fonbet.next())
+        proxy.append(proxies_container[bk_name]['gen_proxi'].next())
         i = i + 1
     ps = ProxySwitcher(proxy_size, proxy)
     while True:
         try:
-            time_resp = get_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, ps.get_next_proxy(), TIMEOUT_MATCH, pair_mathes, arr_fonbet_top_kofs, place)
-            stat_req_fb[0].append(round(time_resp, 2))
+            time_resp = get_bets_fonbet(bets, match_id_fonbet, proxies_container[bk_name]['proxy_list'], ps.get_next_proxy(), TIMEOUT_MATCH, pair_mathes, arr_fonbet_top_kofs, place)
+            set_stat_reqs(stat_reqs, bk_name, time_resp)
         except FonbetMatchСompleted as e:
             cnt = 0
             prnts(e)
             try:
                 for pair_match in pair_mathes:
                     if match_id_fonbet in pair_match:
-                        if bets_fonbet.get(str(match_id_fonbet)):
-                            bets_fonbet.pop(str(match_id_fonbet))
+                        if bets.get(str(match_id_fonbet)):
+                            bets.pop(str(match_id_fonbet))
                         prnts('Fonbet (FonbetMatchСompleted), pair mathes remove: ' + str(pair_mathes[cnt]))
                         pair_mathes.remove(pair_mathes[cnt])
                         mathes_complite[place].append(match_id_fonbet)
@@ -501,13 +599,12 @@ def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_p
                 prnts('Exception: Фонбет, ошибка при удалении матча ' + str(match_id_fonbet) + ':' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
             raise ValueError('start_seeker_bets_fonbet:' + str(e))
         except Exception as e:
-            curr_n = stat_req_fb[1]
-            stat_req_fb[1] = curr_n + 1
+            set_stat_reqs(stat_reqs, bk_name)
             exc_type, exc_value, exc_traceback = sys.exc_info()
             prnts('Exception: Фонбет, ошибка при запросе матча ' + str(match_id_fonbet) + ': ' +
                   str(e) + ' ' + ps.get_cur_proxy() + ' ' +
                   str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
-            ps.rep_cur_proxy(gen_proxi_fonbet.next())
+            ps.rep_cur_proxy(proxies_container[bk_name]['gen_proxi'].next())
             time_resp = TIMEOUT_MATCH
         if place == 'live':
             time_sleep = max(0, (TIMEOUT_MATCH - (TIMEOUT_MATCH_MINUS + time_resp)))
@@ -520,31 +617,90 @@ def start_seeker_bets_fonbet(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_p
         time.sleep(time_sleep)
 
 
-def starter_bets(bets_olimp, bets_fonbet, pair_mathes, mathes_complite, mathes_id_is_work,
-                 proxies_olimp, gen_proxi_olimp, proxies_fonbet, gen_proxi_fonbet, stat_req_olimp, stat_req_fonbet,
-                 arr_fonbet_top_kofs):
+def start_seeker_bets(bk_name, def_bk, bets, sport_id, proxies_container, pair_mathes, stat_reqs, arr_matchs, session):
+    global TIMEOUT_MATCH, TIMEOUT_MATCH_MINUS, pinn_session_data
+    api_key = pinn_session_data.get('api_key')
+    x_session = pinn_session_data.get('x_session')
+    x_device_uuid = pinn_session_data.get('x_device_uuid')
+    proxy_size = 5
+    proxy = []
+    i = 0
+    while i < proxy_size:
+        proxy.append(proxies_container[bk_name]['gen_proxi'].next())
+        i = i + 1
+    ps = ProxySwitcher(proxy_size, proxy)
+
+    prnts(bk_name + ', start sport_id: ' + str(sport_id))
     while True:
+        try:
+            time_resp = def_bk(bets, api_key, x_session, x_device_uuid, pair_mathes, sport_id, proxies_container[bk_name]['gen_proxi'], ps.get_next_proxy(), TIMEOUT_MATCH, arr_matchs, session)
+            set_stat_reqs(stat_reqs, bk_name, time_resp)
+        # TODO Удаления котировок при завершении матча
+        # Удалять катировки будем глубще в def_bk?
+        except Exception as e:
+            set_stat_reqs(stat_reqs, bk_name)
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            prnts('Exception: ' + bk_name + ', ошибка при запросе котировок по спорту ' + str(sport_id) + ': ' +
+                  str(e) + ' ' + ps.get_cur_proxy() + ' ' +
+                  str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
+            ps.rep_cur_proxy(proxies_container[bk_name]['gen_proxi'].next())
+            time_resp = TIMEOUT_MATCH
+
+        time_sleep = max(0, (TIMEOUT_MATCH - (TIMEOUT_MATCH_MINUS + time_resp)))
+        if DEBUG:
+            pass
+            # prnts(str(bk_name + ', матч ' + str(match_id) + '. Время ответа: ' + str(time_resp) + ', запрос через ' + str(time_sleep)) + ' ' + ps.get_cur_proxy(), 'hide')
+        time.sleep(time_sleep)
+
+
+def starter_bets(bets, pair_mathes, mathes_complite, mathes_id_is_work, proxies_container, stat_reqs, arr_fonbet_top_kofs, arr_matchs, session):
+    global pinn_session_data, bk_working
+    while True:
+        matchs_id = None
         for pair_match in pair_mathes:
-            # prnts(pair_match)
-            match_id_olimp, match_id_fonbet, event_type, place, pass2, pass3 = pair_match
-            if match_id_olimp not in mathes_id_is_work:
-                mathes_id_is_work.append(match_id_olimp)
-                # print(match_id_olimp, place)
-                start_seeker_olimp_bets_by_id = threading.Thread(
-                    target=start_seeker_bets_olimp,
-                    args=(bets_olimp, match_id_olimp, proxies_olimp, gen_proxi_olimp, pair_mathes, mathes_complite, stat_req_olimp, place))
-                start_seeker_olimp_bets_by_id.start()
-            if match_id_fonbet not in mathes_id_is_work:
-                mathes_id_is_work.append(match_id_fonbet)
-                start_seeker_fonbet_bets_by_id = threading.Thread(
-                    target=start_seeker_bets_fonbet,
-                    args=(bets_fonbet, match_id_fonbet, proxies_fonbet, gen_proxi_fonbet, pair_mathes, mathes_complite, stat_req_fonbet, arr_fonbet_top_kofs, place))
-                start_seeker_fonbet_bets_by_id.start()
-        time.sleep(time_sleep_proc)
-
-
-def sort_by_rate(val):
-    return val.get('rate', 0)
+            # pair_match: ['55486968', '19530853', 'volleyball', 'live', 'volleyball;55486968;Metallurg (W);Chromtau Women;19530853;Metallurg Temirtau (w);Hromtay (w);', 1.381, 'olimp', 'fonbet']
+            match_id_bk1, match_id_bk2, event_type, place, event_name, kof_compare, bk_name1, bk_name2 = pair_match
+            
+            if bk_name1 == 'olimp':
+                matchs_id = match_id_bk1
+            elif bk_name2 == 'olimp':
+                matchs_id = match_id_bk2
+            if 'olimp' in bk_name1+bk_name2:
+                if matchs_id:
+                    if matchs_id not in mathes_id_is_work:
+                        mathes_id_is_work.append(matchs_id)
+                        start_seeker_olimp_bets_by_id = threading.Thread(
+                            target=start_seeker_bets_olimp,
+                            args=(bets, matchs_id, proxies_container, pair_mathes, mathes_complite, stat_reqs, place)
+                        )
+                        start_seeker_olimp_bets_by_id.start()
+                        
+            if bk_name1 == 'fonbet':
+                matchs_id = match_id_bk1
+            elif bk_name2 == 'fonbet':
+                matchs_id = match_id_bk2
+            if 'fonbet' in bk_name1+bk_name2:
+                if matchs_id not in mathes_id_is_work:
+                    mathes_id_is_work.append(matchs_id)
+    
+                    start_seeker_fonbet_bets_by_id = threading.Thread(
+                        target=start_seeker_bets_fonbet,
+                        args=(bets, matchs_id, proxies_container, pair_mathes, mathes_complite, stat_reqs, arr_fonbet_top_kofs, place))
+                    start_seeker_fonbet_bets_by_id.start()
+        
+            v_bk_name = 'pinnacle'
+            if v_bk_name in bk_working:
+                # TODO onle exists successfull compare matches
+                for sport_arr in sport_list:
+                    sport_id = sport_arr.get(v_bk_name)
+                    if sport_id not in mathes_id_is_work:
+                        mathes_id_is_work.append(sport_id)
+                        start_seeker_fonbet_bets_by_id = threading.Thread(
+                            target=start_seeker_bets,
+                            args=('pinnacle', util_pinnacle.get_odds, bets, sport_id, proxies_container, pair_mathes, stat_reqs, arr_matchs, session)
+                        )
+                        start_seeker_fonbet_bets_by_id.start()
+        time.sleep(20)
 
 
 def get_rate(team1_bk1, team2_bk1, team1_bk2, team2_bk2, debug=False):
@@ -553,6 +709,7 @@ def get_rate(team1_bk1, team2_bk1, team1_bk2, team2_bk2, debug=False):
     team1_bk1 = str(team1_bk1).lower()
     team2_bk1 = str(team2_bk1).lower()
     team1_bk2 = str(team1_bk2).lower()
+
     team2_bk2 = str(team2_bk2).lower()
 
     if 'corners'.lower() in team1_bk1 + team2_bk1 + team1_bk2 + team2_bk2:
@@ -588,156 +745,157 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
     json_bk1_copy = dict()
     json_bk2_copy = dict()
 
-    need = 1.5
+    need = 0.1
     prnts('start_event_mapping, need: ' + str(need))
 
     not_compare = list()
     pair_mathes_found = dict()
-
     # prnts(arr_matchs)
     while True:
         try:
-            #     pair_mathes_found = list()
+            pair_bk = list(itertools.combinations(bk_working, 2))
+            # print('delete fb-ol - pair')
+            # pair_bk.pop(2)
             bk_rate_list = list()
             bk_rate_sorted = list()
-
-            for j in list(arr_matchs):
-                if arr_matchs[j].get('bk_name', '') == 'olimp':
-                    json_bk1_copy[j] = arr_matchs[j]
-                elif arr_matchs[j].get('bk_name', '') == 'fonbet':
-                    json_bk2_copy[j] = arr_matchs[j]
-
-            for bk1_match_id, bk1_match_info in json_bk1_copy.items():
-                if [bk1_name for bk1_name in bk1_match_info.values() if bk1_name is not None]:
-
-                    for bk2_match_id, bk2_match_info in json_bk2_copy.items():
-                        if [bk2_name for bk2_name in bk2_match_info.values() if bk2_name is not None]:
-                            # Проверим что матч не завершен:
-                            if bk1_match_id in mathes_complite.get(bk1_match_info.get('place'), []) or bk2_match_id in mathes_complite.get(bk2_match_info.get('place'), []):
-                                pass
-                            else:
-
-                                match_name = str(bk1_match_info.get('sport_name')) + ';' + \
-                                             str(bk1_match_id) + ';' + \
-                                             str(bk1_match_info.get('team1')) + ';' + \
-                                             str(bk1_match_info.get('team2')) + ';' + \
-                                             str(bk2_match_id) + ';' + \
-                                             str(bk2_match_info.get('team1')) + ';' + \
-                                             str(bk2_match_info.get('team2')) + ';'
-                                # print(bk2_match_info)
-                                # print(bk2_match_info.get('place'))
-                                # print(bk1_match_info.get('sport_name'), bk2_match_info.get('sport_name') )
-                                if bk1_match_info.get('sport_name') == bk2_match_info.get('sport_name') and bk1_match_info.get('place') == bk2_match_info.get('place'):
-                                    place = bk1_match_info.get('place')
-                                    r1, r2, rate = get_rate(
-                                        bk1_match_info.get('team1', ''),
-                                        bk1_match_info.get('team2', ''),
-                                        bk2_match_info.get('team1', ''),
-                                        bk2_match_info.get('team2', '')
-                                    )
-                                    deff_time = abs((bk1_match_info.get('start_time') - bk2_match_info.get('start_time')) / 60)
-                                    if rate < 2.0 and rate > need and (
-                                            (bk1_match_info.get('sport_name') == 'football' and deff_time > 12)
-                                            or (bk1_match_info.get('sport_name') == 'hockey' and deff_time > 30)
-                                            or (bk1_match_info.get('sport_name') == 'tennis' and deff_time > 40)
-                                            or (bk1_match_info.get('sport_name') == 'volleyball' and deff_time > 30)
-                                            or (deff_time > 300)
-                                    ):
-                                        prnts('Обнаружено различие во времени матча: {}, {}, {}'.format(deff_time, match_name, rate))
-                                    else:
-                                        if rate > 0:
-                                            bk_rate_list.append({
-                                                str(bk1_match_id): {
-                                                    'bk1_t1': bk1_match_info.get('team1'),
-                                                    'bk1_t2': bk1_match_info.get('team2'),
-                                                    'rate': r1,
-                                                    'sport_name': bk1_match_info.get('sport_name'),
+            for bk_name1, bk_name2 in pair_bk:
+                for j in list(arr_matchs):
+                    if arr_matchs[j].get('bk_name', '') == bk_name1:
+                        json_bk1_copy[j] = arr_matchs[j]
+                    elif arr_matchs[j].get('bk_name', '') == bk_name2:
+                        json_bk2_copy[j] = arr_matchs[j]
+                for bk1_match_id, bk1_match_info in json_bk1_copy.items():
+                    if [bk_name1 for bk_name1 in bk1_match_info.values() if bk_name1 is not None]:
+    
+                        for bk2_match_id, bk2_match_info in json_bk2_copy.items():
+                            if [bk_name2 for bk_name2 in bk2_match_info.values() if bk_name2 is not None]:
+                                # Проверим что матч не завершен:
+                                if bk1_match_id in mathes_complite.get(bk1_match_info.get('place'), []) or bk2_match_id in mathes_complite.get(bk2_match_info.get('place'), []):
+                                    pass
+                                else:
+    
+                                    match_name = str(bk1_match_info.get('sport_name')) + ';' + \
+                                                 str(bk1_match_id) + ';' + \
+                                                 str(bk1_match_info.get('team1')) + ';' + \
+                                                 str(bk1_match_info.get('team2')) + ';' + \
+                                                 str(bk2_match_id) + ';' + \
+                                                 str(bk2_match_info.get('team1')) + ';' + \
+                                                 str(bk2_match_info.get('team2')) + ';'
+                                    # print(bk2_match_info)
+                                    # print(bk2_match_info.get('place'))
+                                    # print(bk1_match_info.get('sport_name'), bk2_match_info.get('sport_name') )
+                                    if bk1_match_info.get('sport_name') == bk2_match_info.get('sport_name') and bk1_match_info.get('place') == bk2_match_info.get('place'):
+                                        place = bk1_match_info.get('place')
+                                        r1, r2, rate = get_rate(
+                                            bk1_match_info.get('team1', ''),
+                                            bk1_match_info.get('team2', ''),
+                                            bk2_match_info.get('team1', ''),
+                                            bk2_match_info.get('team2', '')
+                                        )
+                                        deff_time = abs((bk1_match_info.get('start_time') - bk2_match_info.get('start_time')) / 60)
+                                        if rate < 2.0 and rate > need and (
+                                                (bk1_match_info.get('sport_name') == 'football' and deff_time > 12)
+                                                or (bk1_match_info.get('sport_name') == 'hockey' and deff_time > 30)
+                                                or (bk1_match_info.get('sport_name') == 'tennis' and deff_time > 40)
+                                                or (bk1_match_info.get('sport_name') == 'volleyball' and deff_time > 30)
+                                                or (deff_time > 300)
+                                        ):
+                                            prnts('Обнаружено различие во времени матча: {}, {}, {}'.format(deff_time, match_name, rate))
+                                        else:
+                                            if rate > 0:
+                                                bk_rate_list.append({
+                                                    str(bk1_match_id): {
+                                                        'bk1_t1': bk1_match_info.get('team1'),
+                                                        'bk1_t2': bk1_match_info.get('team2'),
+                                                        'rate': r1,
+                                                        'sport_name': bk1_match_info.get('sport_name'),
+                                                        'place': place,
+                                                    },
+                                                    str(bk2_match_id): {
+                                                        'bk2_t1': bk2_match_info.get('team1'),
+                                                        'bk2_t2': bk2_match_info.get('team2'),
+                                                        'rate': r2,
+                                                        'sport_name': bk2_match_info.get('sport_name'),
+                                                        'place': place,
+                                                    },
+                                                    'rate': rate,
+                                                    'match_name': match_name,
                                                     'place': place,
-                                                },
-                                                str(bk2_match_id): {
-                                                    'bk2_t1': bk2_match_info.get('team1'),
-                                                    'bk2_t2': bk2_match_info.get('team2'),
-                                                    'rate': r2,
-                                                    'sport_name': bk2_match_info.get('sport_name'),
-                                                    'place': place,
-                                                },
-                                                'rate': rate,
-                                                'match_name': match_name,
-                                                'place': place,
-                                            })
-            for bkr in bk_rate_list:
-                if bkr.get('rate', 0) > need:
-                    bk_rate_sorted.append(bkr)
-                else:
-                    if 'del;' + bkr.get('match_name') not in not_compare:
-                        serv_log('compare_teams', 'del;' + bkr.get('match_name'))
-                        not_compare.append('del;' + bkr.get('match_name'))
-            bk_rate_sorted = list(filter(lambda x: x is not None, bk_rate_sorted))
-            bk_rate_sorted.sort(key=sort_by_rate, reverse=True)
-
-            for e in bk_rate_sorted:
-                pair = []
-                main_rate = e.get('rate', 0)
-                for m, v in e.items():
-                    try:
-                        if v.get('sport_name'):
-                            pair.append(m)
-                            if v.get('sport_name') not in pair:
-                                pair.append(v.get('sport_name'))
-                            if v.get('place') not in pair:
-                                pair.append(v.get('place'))
-                    except:
+                                                })
+                for bkr in bk_rate_list:
+                    if bkr.get('rate', 0) > need:
+                        bk_rate_sorted.append(bkr)
+                    else:
+                        if 'del;' + bkr.get('match_name') not in not_compare:
+                            serv_log('compare_teams', 'del;' + bkr.get('match_name'))
+                            not_compare.append('del;' + bkr.get('match_name'))
+                bk_rate_sorted = list(filter(lambda x: x is not None, bk_rate_sorted))
+                bk_rate_sorted.sort(key=lambda val: val.get('rate', 0), reverse=True)
+    
+                for e in bk_rate_sorted:
+                    pair = []
+                    # main_rate = e.get('rate', 0)
+                    for m, v in e.items():
+                        try:
+                            if v.get('sport_name'):
+                                pair.append(m)
+                                if v.get('sport_name') not in pair:
+                                    pair.append(v.get('sport_name'))
+                                if v.get('place') not in pair:
+                                    pair.append(v.get('place'))
+                        except:
+                            pass
+                    pair.sort(key=lambda p: 'z' if p in ('live', 'pre') else p)
+                    pair = [pair[1], pair[0], pair[2], pair[3]]
+                    pair.append(e.get('match_name'))
+                    pair.append(e.get('rate'))
+                    pair.append(bk_name1)
+                    pair.append(bk_name2)
+                    # ['55492410', '19534237', 'volleyball', 'live', 'volleyball;55492410;BGPU Minsk (W);Immanuel Kant Baltic Federal University (W);19534237;BGPU Minsk (w);BFU im. I. Kant (w);', 1.298, 'olimp', 'fonbet']
+                    
+                    if pair[0] in mathes_complite.get(pair[3], []) or pair[1] in mathes_complite.get(pair[3], []):
                         pass
-                # print(pair)
-                pair.sort(key=lambda p: 'z' if p in ('live', 'pre') else p)
-                # print(pair)
-                pair = [pair[1], pair[0], pair[2], pair[3]]
-                pair.append(e.get('match_name'))
-                pair.append(e.get('rate'))
-                # ['55044469', '19123513', 'tennis', 'live', 'tennis;55044469;Halep S.;Muguruza G.;19123513;Halep S;Muguruza G;', 2.0]
-
-                if pair[0] in mathes_complite.get(pair[3], []) or pair[1] in mathes_complite.get(pair[3], []):
-                    pass
-                else:
-                    if pair not in pair_mathes:
-                        conflict = False
-                        is_exists = False
-                        for p in pair_mathes:
-                            id1, id2 = pair[0], pair[1]
-                            if id1 in p:
-                                if float(pair[-1]) > float(p[-1]):
-                                    prnts('Math conflict: ' + str(id1) + ', p: ' + str(p) + ', need: ' + str(pair))
-                                    conflict = True
-                                else:
-                                    is_exists = True
-                            if id2 in p:
-                                if float(pair[-1]) > float(p[-1]):
-                                    prnts('Math conflict: ' + str(id2) + ', p: ' + str(p) + ', need: ' + str(pair))
-                                    conflict = True
-                                else:
-                                    is_exists = True
-                            if conflict:
-                                pair_mathes.remove(p)
-                                serv_log('compare_teams', 'del;' + str(p[-2]) + 'conflict')
+                    else:
+                        poz_rate = 5
+                        if pair not in pair_mathes:
+                            conflict = False
+                            is_exists = False
+                            for p in pair_mathes:
+                                id1, id2 = pair[0], pair[1]
+                                if id1 in p:
+                                    if float(pair[poz_rate]) > float(p[poz_rate]):
+                                        prnts('Math conflict: ' + str(id1) + ', p: ' + str(p) + ', need: ' + str(pair))
+                                        conflict = True
+                                    else:
+                                        is_exists = True
+                                if id2 in p:
+                                    if float(pair[poz_rate]) > float(p[poz_rate]):
+                                        prnts('Math conflict: ' + str(id2) + ', p: ' + str(p) + ', need: ' + str(pair))
+                                        conflict = True
+                                    else:
+                                        is_exists = True
+                                if conflict:
+                                    pair_mathes.remove(p)
+                                    serv_log('compare_teams', 'del;' + str(p[poz_rate-1]) + 'conflict')
+                                    pair_mathes.append(pair)
+                                    serv_log('compare_teams', 'add;' + pair[poz_rate-1] + 'conflict')
+                                
+                                    pair_key = str(pair[0])+ '-' + str(pair[1])
+                                    if not pair_mathes_found.get(pair_key):
+                                        pair_mathes_found.update({pair_key: 0})
+                            if not conflict and not is_exists:
                                 pair_mathes.append(pair)
-                                serv_log('compare_teams', 'add;' + pair[-2] + 'conflict')
-                            
+                                serv_log('compare_teams', 'add;' + pair[poz_rate-1])
+                                
                                 pair_key = str(pair[0])+ '-' + str(pair[1])
                                 if not pair_mathes_found.get(pair_key):
                                     pair_mathes_found.update({pair_key: 0})
-                        if not conflict and not is_exists:
-                            pair_mathes.append(pair)
-                            serv_log('compare_teams', 'add;' + pair[-2])
-                            
-                            pair_key = str(pair[0])+ '-' + str(pair[1])
-                            if not pair_mathes_found.get(pair_key):
-                                pair_mathes_found.update({pair_key: 0})
-            # for x in pair_mathes:
-            # print(x)
-            for key in list(pair_mathes_found):
-                if pair_mathes_found.get(key) == 0:
-                    prnts('Event add: ' + str(key))
-                    pair_mathes_found.update({key: 1})
+                # for x in pair_mathes:
+                #     print(x)
+                for key in list(pair_mathes_found):
+                    if pair_mathes_found.get(key) == 0:
+                        prnts('Event add: ' + str(key))
+                        pair_mathes_found.update({key: 1})
         except Exception as e:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             prnts('scan error start_event_mapping: ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
@@ -745,9 +903,8 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
             time.sleep(time_sleep_proc)
 
 
-def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_top_matchs, arr_values):
+def get_forks(forks, forks_meta, pair_mathes, bets, arr_top_matchs, arr_values):
     global opposition
-
     def forks_meta_upd(forks_meta, forks):
         # Перед удалением сохраним время жизни вылки
         live_fork_total = forks_meta.get(bet_key, {}).get('live_fork_total', 0) + forks.get(bet_key, {}).get('live_fork', 0)
@@ -762,19 +919,22 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_top_m
                     is_top = 'top'
                 elif int(pair_math[0]) in arr_top_matchs.get('middle', []) or int(pair_math[1]) in arr_top_matchs.get('middle', []):
                     is_top = 'middle'
-
-                math_json_olimp = bets_olimp.copy().get(pair_math[0], {})
-                math_json_fonbet = bets_fonbet.copy().get(pair_math[1], {})
+                
+                # BK1 - old - olimp
+                math_json_bk1 = bets.copy().get(pair_math[0], {})
+                math_json_bk2 = bets.copy().get(pair_math[1], {})
                 event_type = pair_math[2]
                 type_time = pair_math[3]  # pre/live
+                name_bk1 = pair_math[-2]
+                name_bk2 = pair_math[-1]
 
                 curr_opposition = opposition.copy()
 
                 # prnts(pair_math)
-                # prnts(math_json_olimp)
-                # prnts(math_json_fonbet)
+                # prnts(math_json_bk1)
+                # prnts(math_json_bk2)
 
-                for kof_type in list(math_json_olimp.get('kofs', {})):
+                for kof_type in list(math_json_bk1.get('kofs', {})):
                     if '(' in kof_type:
                         tot_abrr = re.sub('\((.*)\)', '', kof_type)
                         tot_val = re.findall('\((.*)\)', kof_type)[0]
@@ -790,8 +950,8 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_top_m
                                 else:
                                     curr_opposition.append({tot_abrr + '({})'.format(tot_val): tot_abrr_opp + '({})'.format(tot_val)})
                 # print(event_type)
-                draw_bk1 = math_json_olimp.get('kofs', {}).get('Н', {}).get('value', 0.0)
-                draw_bk2 = math_json_fonbet.get('kofs', {}).get('Н', {}).get('value', 0.0)
+                draw_bk1 = math_json_bk1.get('kofs', {}).get('Н', {}).get('value', 0.0)
+                draw_bk2 = math_json_bk2.get('kofs', {}).get('Н', {}).get('value', 0.0)
                 if event_type in ('volleyball', 'tennis', 'basketball', 'esports', 'table-tennis') and draw_bk1 == 0 and draw_bk2 == 0:
                     curr_opposition.append({'П1': 'П2'})
                     curr_opposition.append({'П2': 'П1'})
@@ -802,42 +962,42 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_top_m
                         curr_opposition.append(pair)
                 # if 18967944 == int(pair_math[0]) or 18967944 == int(pair_math[1]):
                 for opposition_pair in curr_opposition:
-                    for kof_type_olimp, kof_type_fonbet in opposition_pair.items():
-                        # print(kof_type_olimp, kof_type_fonbet)
-                        bet_key = str(pair_math[0]) + '@' + str(pair_math[1]) + '@' + kof_type_olimp + '@' + kof_type_fonbet
+                    for kof_type_bk1, kof_type_bk2 in opposition_pair.items():
+                        # print(kof_type_bk1, kof_type_bk2)
+                        bet_key = str(pair_math[0]) + '@' + str(pair_math[1]) + '@' + kof_type_bk1 + '@' + kof_type_bk2
 
-                        ol_start = math_json_olimp.get('start_time', 0)
-                        fb_start = math_json_fonbet.get('start_time', 0)
-                        start_after_min = max(math_json_fonbet.get('start_after_min', 0), math_json_olimp.get('start_after_min', 0))
+                        bk1_start = math_json_bk1.get('start_time', 0)
+                        bk2_start = math_json_bk2.get('start_time', 0)
+                        start_after_min = max(math_json_bk2.get('start_after_min', 0), math_json_bk1.get('start_after_min', 0))
 
-                        k_olimp = math_json_olimp.get('kofs', {}).get(kof_type_olimp, {})
-                        k_fonbet = math_json_fonbet.get('kofs', {}).get(kof_type_fonbet, {})
+                        k_bk1 = math_json_bk1.get('kofs', {}).get(kof_type_bk1, {})
+                        k_bk2 = math_json_bk2.get('kofs', {}).get(kof_type_bk2, {})
                         
-                        v_olimp = k_olimp.get('value', 0.0) # 1
-                        v_olimp2 = math_json_olimp.get('kofs', {}).get(kof_type_fonbet, {}).get('value', 0.0) # X2
-                        if v_olimp and v_olimp2:
-                            v_olimp_margin = round((1/v_olimp+1/v_olimp2-1) * 100, 2)
+                        v_bk1 = k_bk1.get('value', 0.0) # 1
+                        v_bk1_2 = math_json_bk1.get('kofs', {}).get(kof_type_bk2, {}).get('value', 0.0) # X2
+                        if v_bk1 and v_bk1_2:
+                            v_bk1_margin = round((1/v_bk1+1/v_bk1_2-1) * 100, 2)
                         else:
-                            v_olimp_margin = None
+                            v_bk1_margin = None
                             
-                        v_fonbet = k_fonbet.get('value', 0.0) # X2
-                        v_fonbet2 = math_json_fonbet.get('kofs', {}).get(kof_type_olimp, {}).get('value', 0.0) # 1
-                        if v_fonbet and v_fonbet2:
-                            v_fonbet_margin = round((1/v_fonbet+1/v_fonbet2-1) * 100, 2)
+                        v_bk2 = k_bk2.get('value', 0.0) # X2
+                        v_bk2_2 = math_json_bk2.get('kofs', {}).get(kof_type_bk1, {}).get('value', 0.0) # 1
+                        if v_bk2 and v_bk2_2:
+                            v_bk2_margin = round((1/v_bk2+1/v_bk2_2-1) * 100, 2)
                         else:
-                            v_fonbet_margin = None
+                            v_bk2_margin = None
                             
-                        v_name = math_json_olimp.get('name', '')
+                        v_name = math_json_bk1.get('name', '')
                         
                         try:
                             if type_time == 'pre' and 1==0:
                             # if event_type in ('football', 'hockey'):
                                 # ОП=В*(К-1)*С-(1-В)*С
                                 value_arr = [
-                                    [v_olimp, v_fonbet2, 'Олимп на {}\nсобытие:' + kof_type_olimp + '={}\nзавышен ~ на: {}\nожидаемая прибыль: {}%', kof_type_olimp],
-                                    [v_fonbet, v_olimp2, 'Фонбет на {}\nсобытие:' + kof_type_fonbet + '={}\nзавышен ~ на: {}\nожидаемая прибыль: {}%', kof_type_fonbet], 
-                                    # [v_fonbet2, v_olimp, 'Валуйная ставка в\nФонбет на {}\nсобытие:' + kof_type_olimp + '={}\nзавышен ~ на: {}\nожидаемая прибыль: {}%', kof_type_olimp], 
-                                    # [v_olimp2, v_fonbet, 'Валуйная ставка в\nОлимп на {}\nсобытие:' + kof_type_fonbet + '={}\nзавышен ~ на: {}\nожидаемая прибыль: {}%', kof_type_fonbet]
+                                    [v_bk1, v_bk2_2, 'Олимп на {}\nсобытие:' + kof_type_bk1 + '={}\nзавышен ~ на: {}\nожидаемая прибыль: {}%', kof_type_bk1],
+                                    [v_bk2, v_bk1_2, 'Фонбет на {}\nсобытие:' + kof_type_bk2 + '={}\nзавышен ~ на: {}\nожидаемая прибыль: {}%', kof_type_bk2], 
+                                    # [v_bk2_2, v_bk1, 'Валуйная ставка в\nФонбет на {}\nсобытие:' + kof_type_bk1 + '={}\nзавышен ~ на: {}\nожидаемая прибыль: {}%', kof_type_bk1], 
+                                    # [v_bk1_2, v_bk2, 'Валуйная ставка в\nОлимп на {}\nсобытие:' + kof_type_bk2 + '={}\nзавышен ~ на: {}\nожидаемая прибыль: {}%', kof_type_bk2]
                                 ]
                                 msg = ''
                                 for p_vals in value_arr:
@@ -873,24 +1033,24 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_top_m
                                         arr_values.append(temp_key)
                                         arr_values.append(msg)
                                         bot.send_msg(msg)
-                        except Exception as e:
+                        except Exception:
                             exc_type, exc_value, exc_traceback = sys.exc_info()
                             prnts('scan error values: ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
-                        # print(kof_type_fonbet, str(v_fonbet), kof_type_olimp, str(v_olimp), sep=";")
+                        # print(kof_type_bk2, str(v_bk2), kof_type_bk1, str(v_bk1), sep=";")
 
-                        if DEBUG and (kof_type_olimp in 'П1' or kof_type_fonbet in 'П1'):
+                        if DEBUG and (kof_type_bk1 in 'П1' or kof_type_bk2 in 'П1'):
                             pass
-                            v_olimp = v_olimp * 2
-                            v_fonbet = v_fonbet * 2
+                            v_bk1 = v_bk1 * 2
+                            v_bk2 = v_bk2 * 2
 
-                        if v_olimp > 0.0 and v_fonbet > 0.0:
+                        if v_bk1 > 0.0 and v_bk2 > 0.0:
 
-                            ol_time_req = math_json_olimp.get('time_req', 0)
-                            fb_time_req = math_json_fonbet.get('time_req', 0)
+                            bk1_time_req = math_json_bk1.get('time_req', 0)
+                            bk2_time_req = math_json_bk2.get('time_req', 0)
                             cur_time = round(time.time())
-                            deff_time = max((cur_time - ol_time_req), (cur_time - fb_time_req))
+                            deff_time = max((cur_time - bk1_time_req), (cur_time - bk2_time_req))
 
-                            L = (1 / float(v_olimp)) + (1 / float(v_fonbet))
+                            L = (1 / float(v_bk1)) + (1 / float(v_bk2))
 
                             if type_time == 'pre':
                                 fork_hide_time = TIMEOUT_PRE_MATCH + 4
@@ -898,21 +1058,22 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_top_m
                                 fork_hide_time = 4
                             is_fork = True if L < 1 and deff_time < fork_hide_time else False
                             if is_fork:  # or True
-
+                                
+                                # TODO ID BK_NAME = FONBET
                                 time_break_fonbet = False
                                 period = 0
 
                                 if event_type == 'football':
                                     period = 1
-                                    if re.match('\(\d+:\d+\)', math_json_fonbet.get('score_1st', '').replace(' ', '')) and \
-                                            str(math_json_fonbet.get('time', '')) == '45:00' and \
-                                            round(math_json_fonbet.get('minute', ''), 2) == 45.0:
+                                    if re.match('\(\d+:\d+\)', math_json_bk2.get('score_1st', '').replace(' ', '')) and \
+                                            str(math_json_bk2.get('time', '')) == '45:00' and \
+                                            round(math_json_bk2.get('minute', ''), 2) == 45.0:
                                         time_break_fonbet = True
-                                    elif re.match('\(\d+:\d+\)', math_json_fonbet.get('score_1st', '').replace(' ', '')) and \
-                                            round(math_json_fonbet.get('minute', ''), 2) > 45.0:
+                                    elif re.match('\(\d+:\d+\)', math_json_bk2.get('score_1st', '').replace(' ', '')) and \
+                                            round(math_json_bk2.get('minute', ''), 2) > 45.0:
                                         period = 2
                                 elif event_type in ['basketball', 'volleyball']:
-                                    if 'timeout' in math_json_fonbet.get('score_1st', '').lower():
+                                    if 'timeout' in math_json_bk2.get('score_1st', '').lower():
                                         time_break_fonbet = True
 
                                 if forks.get(bet_key, '') != '':
@@ -921,24 +1082,20 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_top_m
                                     forks[bet_key].update({
                                         # 'created_fork': created_fork,
                                         'time_last_upd': cur_time,
-                                        'name': math_json_fonbet.get('name', ''),
+                                        'name': math_json_bk2.get('name', ''),
                                         'name_rus': v_name,
-                                        'time_req_olimp': ol_time_req,
-                                        'time_req_fonbet': fb_time_req,
+                                        'time_req' + name_bk1: bk1_time_req,
+                                        'time_req' + name_bk2: bk2_time_req,
                                         'l': L,
                                         'pair_math': pair_math,
-                                        'bk1_score': math_json_olimp.get('score', ''),
-                                        'bk2_score': math_json_fonbet.get('score', ''),
-                                        'time': math_json_fonbet.get('time', '00:00'),
-                                        'minute': math_json_fonbet.get('minute', 0),
-                                        'kof_olimp': k_olimp,
-                                        'kof_fonbet': k_fonbet,
-                                        'time_break_fonbet': time_break_fonbet,
+                                        'bk1_score': math_json_bk1.get('score', ''),
+                                        'bk2_score': math_json_bk2.get('score', ''),
+                                        'time': math_json_bk2.get('time', '00:00'),
+                                        'minute': math_json_bk2.get('minute', 0),
+                                        'kof' + name_bk1: k_bk1,
+                                        'kof' + name_bk2: k_bk2,
+                                        'time_break' + name_bk2: time_break_fonbet,
                                         'period': period,
-                                        # 'ol_time_change_total': math_json_olimp.get('time_change_total', 0),
-                                        # 'ol_avg_change_total': math_json_olimp.get('avg_change_total', []),
-                                        # 'fb_time_change_total': math_json_fonbet.get('time_change_total', 0),
-                                        # 'fb_avg_change_total': math_json_fonbet.get('avg_change_total', []),
                                         'live_fork': live_fork,
                                         'live_fork_total': forks_meta.get(bet_key, dict()).get('live_fork_total', 0) + live_fork,
                                     })
@@ -956,105 +1113,109 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_top_m
                                         if not os.path.isfile(file_forks):
                                             with open(file_forks, 'w', encoding='utf-8') as csv:
                                                 csv.write(
-                                                    'event_type;place;time;time_create;created_fork;cut_time;ol_time;fb_time;live_fork;live_fork_total;'
-                                                    'match_ol;match_fb;name;l;l_first;bk1_score;bk2_score;'
-                                                    'vect_ol;vect_fb;time;'
-                                                    'minute;kof_ol;ol_kof_val;kof_ol2;ol_kof2_val;ol_margin;ol_avg_change;kof_fb;fb_kof_val;kof_fb2;fb_kof2_val;fb_margin;fb_avg_change;'
+                                                    'name_bk1;name_bk2;event_type;place;time;time_create;created_fork;cut_time;bk1_time;bk2_time;live_fork;live_fork_total;'
+                                                    'match_bk1;match_bk2;name;l;l_first;bk1_score;bk2_score;'
+                                                    'vect_bk1;vect_bk2;time;'
+                                                    'minute;kof_bk1;bk1_kof_val;kof_bk1_2;bk1_kof2_val;bk1_margin;bk1_avg_change;kof_bk2;bk2_kof_val;kof_bk2_2;bk2_kof2_val;bk2_margin;bk2_avg_change;'
                                                     'time_break_fonbet;is_top;is_hot;base_line;'
                                                     'period;'
-                                                    # 'ol_avg_change_total;fb_avg_change_total;'
-                                                    'ol_time_change;'
-                                                    'ol_kof_order;'
-                                                    'fb_time_change;'
-                                                    'fb_kof_order;'
-                                                    'ol_start;'
-                                                    'fb_start'
+                                                    # 'bk1_avg_change_total;bk2_avg_change_total;'
+                                                    'bk1_time_change;'
+                                                    'bk1_kof_order;'
+                                                    'bk2_time_change;'
+                                                    'bk2_kof_order;'
+                                                    'bk1_start;'
+                                                    'bk2_start'
                                                     '\n'
                                                 )
                                         else:
                                             with open(file_forks, 'a', encoding='utf-8') as csv:
                                                 csv.write(
+                                                    name_bk1 + ';' +
+                                                    name_bk2 + ';' +
                                                     event_type + ';' +
                                                     type_time + ';' +
                                                     str(datetime.fromtimestamp(int(round(time.time()))).strftime('%d.%m.%Y %H:%M:%S')) + ';' +
                                                     str(datetime.fromtimestamp(int(forks.get(bet_key).get('create_fork'))).strftime('%d.%m.%Y %H:%M:%S')) + ';' +
                                                     str(forks.get(bet_key).get('created_fork')) + ';' +
                                                     str(datetime.fromtimestamp(int(cur_time)).strftime('%d.%m.%Y %H:%M:%S')) + ';' +
-                                                    str(datetime.fromtimestamp(int(math_json_olimp.get('time_req', ''))).strftime('%d.%m.%Y %H:%M:%S')) + ';' +
-                                                    str(datetime.fromtimestamp(int(math_json_fonbet.get('time_req', ''))).strftime('%d.%m.%Y %H:%M:%S')) + ';' +
+                                                    str(datetime.fromtimestamp(int(math_json_bk1.get('time_req', ''))).strftime('%d.%m.%Y %H:%M:%S')) + ';' +
+                                                    str(datetime.fromtimestamp(int(math_json_bk2.get('time_req', ''))).strftime('%d.%m.%Y %H:%M:%S')) + ';' +
                                                     str(live_fork) + ';' +
                                                     str(forks_meta.get(bet_key, dict()).get('live_fork_total', 0) + live_fork) + ';' +
                                                     str(bet_key.split('@')[0]) + ';' + str(bet_key.split('@')[1]) + ';' +
                                                     v_name + ';' + str(L) + ';' + str(forks.get(bet_key).get('l_fisrt')) + ';' +
-                                                    math_json_olimp.get('score', '') + ';' +
-                                                    math_json_fonbet.get('score', '') + ';' +
-                                                    str(k_olimp.get('vector')) + ';' +
-                                                    str(k_fonbet.get('vector')) + ';' +
-                                                    str(math_json_fonbet.get('time', '00:00')) + ';' +
-                                                    str(math_json_fonbet.get('minute', 0)) + ';' +
+                                                    math_json_bk1.get('score', '') + ';' +
+                                                    math_json_bk2.get('score', '') + ';' +
+                                                    str(k_bk1.get('vector')) + ';' +
+                                                    str(k_bk2.get('vector')) + ';' +
+                                                    str(math_json_bk2.get('time', '00:00')) + ';' +
+                                                    str(math_json_bk2.get('minute', 0)) + ';' +
                                                     str(bet_key.split('@')[2]) + ';' +
-                                                    str(v_olimp) + ';' +
+                                                    str(v_bk1) + ';' +
                                                     str(bet_key.split('@')[3]) + ';' +
-                                                    str(v_olimp2) + ';' +
-                                                    str(v_olimp_margin) + ';' +
-                                                    str(k_olimp.get('hist', {}).get('avg_change', [])) + ';' +
+                                                    str(v_bk1_2) + ';' +
+                                                    str(v_bk1_margin) + ';' +
+                                                    str(k_bk1.get('hist', {}).get('avg_change', [])) + ';' +
                                                     str(bet_key.split('@')[3]) + ';' +
-                                                    str(v_fonbet) + ';' +
+                                                    str(v_bk2) + ';' +
                                                     str(bet_key.split('@')[2]) + ';' +
-                                                    str(v_fonbet2) + ';' +
-                                                    str(v_fonbet_margin) + ';' +
-                                                    str(k_fonbet.get('hist', {}).get('avg_change', [])) + ';' +
+                                                    str(v_bk2_2) + ';' +
+                                                    str(v_bk2_margin) + ';' +
+                                                    str(k_bk2.get('hist', {}).get('avg_change', [])) + ';' +
                                                     str(time_break_fonbet) + ';' +
                                                     str(is_top) + ';' +
-                                                    str(k_fonbet.get('is_hot', False)) + ';' +
-                                                    str(k_fonbet.get('base_line', False)) + ';' +
+                                                    str(k_bk2.get('is_hot', False)) + ';' +
+                                                    str(k_bk2.get('base_line', False)) + ';' +
                                                     str(period) + ';' +
-                                                    # str(math_json_olimp.get('avg_change_total', [])) + ';' +
-                                                    # str(math_json_fonbet.get('avg_change_total', [])) + ';' +
-                                                    str(k_olimp.get('hist', {}).get('time_change', '')) + ';' +
-                                                    str(k_olimp.get('hist', {}).get('order', [])) + ';' +
-                                                    str(k_fonbet.get('hist', {}).get('time_change', '')) + ';' +
-                                                    str(k_fonbet.get('hist', {}).get('order', [])) + ';' +
-                                                    str(datetime.fromtimestamp(int(ol_start)).strftime('%d.%m.%Y %H:%M:%S')) + ';' +
-                                                    str(datetime.fromtimestamp(int(fb_start)).strftime('%d.%m.%Y %H:%M:%S')) +
+                                                    # str(math_json_bk1.get('avg_change_total', [])) + ';' +
+                                                    # str(math_json_bk2.get('avg_change_total', [])) + ';' +
+                                                    str(k_bk1.get('hist', {}).get('time_change', '')) + ';' +
+                                                    str(k_bk1.get('hist', {}).get('order', [])) + ';' +
+                                                    str(k_bk2.get('hist', {}).get('time_change', '')) + ';' +
+                                                    str(k_bk2.get('hist', {}).get('order', [])) + ';' +
+                                                    str(datetime.fromtimestamp(int(bk1_start)).strftime('%d.%m.%Y %H:%M:%S')) + ';' +
+                                                    str(datetime.fromtimestamp(int(bk2_start)).strftime('%d.%m.%Y %H:%M:%S')) +
                                                     '\n'
                                                 )
                                 else:
                                     created_fork = ''
-                                    ol_time_chage = k_olimp.get('hist', {}).get('time_change', 0)
-                                    fb_time_chage = k_fonbet.get('hist', {}).get('time_change', 0)
-                                    # prnts('{}, {}, {}, {}, {}'.format(event_type, fb_time_chage, ol_time_chage, k_fonbet, k_olimp))
-                                    if ol_time_chage and fb_time_chage:
-                                        if ol_time_chage > fb_time_chage:
-                                            created_fork = 'olimp'
-                                        if fb_time_chage > ol_time_chage:
-                                            created_fork = 'fonbet'
+                                    bk1_time_chage = k_bk1.get('hist', {}).get('time_change', 0)
+                                    bk2_time_chage = k_bk2.get('hist', {}).get('time_change', 0)
+                                    # prnts('{}, {}, {}, {}, {}'.format(event_type, bk2_time_chage, bk1_time_chage, k_bk2, k_bk1))
+                                    if bk1_time_chage and bk2_time_chage:
+                                        if bk1_time_chage > bk2_time_chage:
+                                            created_fork = name_bk1
+                                        if bk2_time_chage > bk1_time_chage:
+                                            created_fork = name_bk2
 
                                     forks[bet_key] = {
+                                        'name_bk1': name_bk1,
+                                        'name_bk2': name_bk2,
                                         'time_last_upd': cur_time,
                                         'start_after_min': start_after_min,
-                                        'name': math_json_fonbet.get('name', ''),
+                                        'name': math_json_bk2.get('name', ''),
                                         'name_rus': v_name,
-                                        'time_req_olimp': ol_time_req,
-                                        'time_req_fonbet': fb_time_req,
+                                        'time_req' + name_bk1: bk1_time_req,
+                                        'time_req' + name_bk2: bk2_time_req,
                                         'l': L,
                                         'l_fisrt': L,
                                         'pair_math': pair_math,
-                                        'bk1_score': math_json_olimp.get('score', ''),
-                                        'bk2_score': math_json_fonbet.get('score', ''),
-                                        'time': math_json_fonbet.get('time', '00:00'),
-                                        'minute': math_json_fonbet.get('minute', 0),
-                                        'kof_olimp': k_olimp,
-                                        'kof_fonbet': k_fonbet,
-                                        'time_break_fonbet': time_break_fonbet,
+                                        'bk1_score': math_json_bk1.get('score', ''),
+                                        'bk2_score': math_json_bk2.get('score', ''),
+                                        'time': math_json_bk2.get('time', '00:00'),
+                                        'minute': math_json_bk2.get('minute', 0),
+                                        'kof' + name_bk1: k_bk1,
+                                        'kof' + name_bk2: k_bk2,
+                                        'time_break' + name_bk2: time_break_fonbet,
                                         'period': period,
                                         'live_fork': 0,
                                         'live_fork_total': forks_meta.get(bet_key, dict()).get('live_fork_total', 0),
-                                        'create_fork': round(max(ol_time_chage, fb_time_chage)),
+                                        'create_fork': round(max(bk1_time_chage, bk2_time_chage)),
                                         'created_fork': created_fork,
                                         'is_top': is_top,
-                                        'is_hot': k_fonbet.get('is_hot'),
-                                        'base_line': k_fonbet.get('base_line'),
+                                        'is_hot': k_bk2.get('is_hot'),
+                                        'base_line': k_bk2.get('base_line'),
                                         'event_type': event_type,
                                         'fonbet_maxbet_fact': {},
                                         'place': type_time,
@@ -1072,39 +1233,43 @@ def get_forks(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_top_m
                                 forks.pop(bet_key)
                             except:
                                 pass
-        except Exception as e:
+        except Exception:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             prnts('scan error forks: ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
         finally:
             time.sleep(1)
 
+def set_stat_reqs(stat_reqs, bk_name, time_resp=None):
+    if stat_reqs.get(bk_name) is None:
+        stat_reqs[bk_name] = [[], 0]
+    else:
+        if time_resp:
+            stat_reqs[bk_name][0].append(round(time_resp, 2))
+        else:
+            stat_reqs[bk_name][1] = stat_reqs[bk_name][1] + 1
 
-def stat_req(stat_req_olimp, stat_req_fonbet):
+
+def stat_req(stat_reqs):
     while True:
         try:
-            olimp_err = stat_req_olimp[1]
-            fonbet_err = stat_req_fonbet[1]
-            stat_req_olimp_copy = list(stat_req_olimp[0])
-            stat_req_fonbet_copy = list(stat_req_fonbet[0])
-            if stat_req_olimp_copy and stat_req_fonbet_copy:
-                prnts('fb cnt:' + str(len(stat_req_fonbet_copy)) +
-                      '/' + str(fonbet_err) +
-                      ' err: ' + str(round(fonbet_err / len(stat_req_fonbet_copy) * 100)) +
-                      '% avg:' + str(round(sum(stat_req_fonbet_copy) / len(stat_req_fonbet_copy), 2)) +
-                      ' max:' + str(max(stat_req_fonbet_copy)) +
-                      ' mode:' + str(round(find_max_mode(stat_req_fonbet_copy), 2)) +
-                      ' median:' + str(round(median(stat_req_fonbet_copy), 2)))
-
-                prnts('ol cnt:' + str(len(stat_req_olimp_copy)) +
-                      '/' + str(olimp_err) +
-                      ' err ' + str(round(olimp_err / len(stat_req_olimp_copy) * 100)) +
-                      '% avg:' + str(round(sum(stat_req_olimp_copy) / len(stat_req_olimp_copy), 2)) +
-                      ' max:' + str(max(stat_req_olimp_copy)) +
-                      ' mode:' + str(round(find_max_mode(stat_req_olimp_copy), 2)) +
-                      ' median:' + str(round(median(stat_req_olimp_copy), 2)))
+            for bk_name, cnt in stat_reqs.items():
+                if cnt:
+                    err_cnt = cnt[1]
+                    req_cnt = list(cnt[0])
+                    if req_cnt:
+                        prnts(bk_name + ' cnt:' + str(len(req_cnt)) + 
+                              '/' + str(err_cnt) +
+                              ' err: ' + str(round(err_cnt / len(req_cnt) * 100)) +
+                              '% avg:' + str(round(sum(req_cnt) / len(req_cnt), 2)) +
+                              ' max:' + str(max(req_cnt)) +
+                              ' mode:' + str(round(find_max_mode(req_cnt), 2)) +
+                              ' median:' + str(round(median(req_cnt), 2))
+                        )
             time.sleep(time_sleep_proc)
-        except Exception as e:
-            prnts('scan error stat_req: ' + str(e))
+        except Exception:
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            prnts('scan error stat_req: ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
+            time.sleep(time_sleep_proc/3)
 
 
 def mon_cupon(arr_cupon):
@@ -1127,7 +1292,7 @@ def mon_cupon(arr_cupon):
             arr_cupon[0] = str(int((curr_id - id_old) / minute)) + ' куп./мин.\n' + 'Прематч доступен на ' + str(round(max_min_prematch / 60)) + ' ч.'
             prnts('activity ' + str(arr_cupon[0]) + ' coupons per/min')
             time.sleep( (minute * 60 - 20) / 3 )
-        except Exception as e:
+        except Exception:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             prnts('scan error mon_cupon: ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
         finally:
@@ -1138,8 +1303,9 @@ if __name__ == '__main__':
     try:
         bot.send_msg('Перезапуск сканера...')
         prnts('DEBUG: ' + str(DEBUG))
+        prnts('BK WORKING: ' + str(bk_working))
         prnts('SPORT_LIST: ' + str(sport_list))
-        prnts('TIMEOUT_MATCHS: ' + str(TIMEOUT_LIST))
+        prnts('TIMEOUT_LIST: ' + str(TIMEOUT_LIST))
         prnts('TIMEOUT_MATCH: ' + str(TIMEOUT_MATCH))
         prnts('TIMEOUT_MATCH_MINUS: ' + str(TIMEOUT_MATCH_MINUS))
         prnts('TIMEOUT_PRE_MATCHS: ' + str(TIMEOUT_PRE_LIST))
@@ -1149,16 +1315,20 @@ if __name__ == '__main__':
         prnts('SERVER_PORT: ' + str(SERVER_PORT))
         prnts('time_sleep_proc: ' + str(time_sleep_proc))
         prnts('max_hour_prematch: ' + str(max_min_prematch / 60))
-        proxy_filename_olimp = 'olimp.proxy'
-        proxy_filename_fonbet = 'fonbet.proxy'
+        
+        pinn_session_data = {}
+        
+        proxies_container = dict()
+        for bk_name in bk_working:
+            proxies_container[bk_name] = {}
+            proxies_container[bk_name]['proxy_filename'] = bk_name + '.proxy'
+            if bk_name in ('olimp', 'pinnacle'):
+                proxies_container[bk_name]['proxy_list'] = get_proxy_from_file(proxies_container[bk_name]['proxy_filename'], uniq=False)
+            else:
+                proxies_container[bk_name]['proxy_list'] = get_proxy_from_file(proxies_container[bk_name]['proxy_filename'])
+            proxies_container[bk_name]['gen_proxi'] = createBatchGenerator(get_next_proxy(copy.deepcopy(proxies_container[bk_name]['proxy_list'])))
 
-        proxies_olimp = get_proxy_from_file(proxy_filename_olimp, uniq=False)
-        proxies_fonbet = get_proxy_from_file(proxy_filename_fonbet)
-
-        gen_proxi_olimp = createBatchGenerator(get_next_proxy(copy.deepcopy(proxies_olimp)))
-        gen_proxi_fonbet = createBatchGenerator(get_next_proxy(copy.deepcopy(proxies_fonbet)))
-
-        proxy_saver = threading.Thread(target=start_proxy_saver, args=(proxies_olimp, proxies_fonbet, proxy_filename_olimp, proxy_filename_fonbet))
+        proxy_saver = threading.Thread(target=start_proxy_saver, args=(proxies_container, ))
         proxy_saver.start()
         prnts(' ')
         prnts('START: proxy_saver')
@@ -1170,108 +1340,83 @@ if __name__ == '__main__':
         arr_fonbet_top_kofs = {}
         # Completed Events
         mathes_complite = {'live': [], 'pre': []}
-
-        # json by bets event
-        bets_fonbet = dict()
-        bets_olimp = dict()
-
+        
+        # univers
+        bets = dict()
         forks = dict()
         forks_meta = dict()
-
-        stat_req_olimp = [[], 0]
-        stat_req_fonbet = [[], 0]
-
-        # List of event "at work"
+        stat_reqs = {}
         pair_mathes = []
-
-        # get event list by olimp
-        olimp_seeker_matchs = threading.Thread(target=start_seeker_matchs_olimp, args=(gen_proxi_olimp, arr_matchs, 'live', arr_top_matchs))
-        olimp_seeker_matchs.start()
+        
+        bk_seeker_matchs = []
+        session = requests.session()
+        for bk_name in bk_working:
+            # for place in ['pre', 'live']:
+            for place in ['live']:
+                seeker_matchs = threading.Thread(target=start_seeker_matchs, args=(bk_name, proxies_container, arr_matchs, place, session))
+                bk_seeker_matchs.append(seeker_matchs)
+                seeker_matchs.start()
+        time.sleep(4)
         prnts(' ')
-        prnts('START: olimp_seeker_matchs')
+        prnts('START: seeker_matchs')
         time.sleep(time_sleep_proc / 3)
-        # get pre event list by olimp
-        olimp_seeker_pre_matchs = threading.Thread(target=start_seeker_matchs_olimp, args=(gen_proxi_olimp, arr_matchs, 'pre', arr_top_matchs))
-        olimp_seeker_pre_matchs.start()
-        prnts(' ')
-        prnts('START: olimp_seeker_pre_matchs')
-        time.sleep(time_sleep_proc / 3)
-        # time.sleep(60)
-
-        # get event list by fonbet
-        fonbet_seeker_matchs = threading.Thread(target=start_seeker_matchs_fonbet, args=(gen_proxi_fonbet, arr_matchs, 'live'))
-        fonbet_seeker_matchs.start()
-        prnts(' ')
-        prnts('START: fonbet_seeker_matchs')
-        time.sleep(time_sleep_proc / 3)
-        # get pre event list by fonbet
-        fonbet_seeker_pre_matchs = threading.Thread(target=start_seeker_matchs_fonbet, args=(gen_proxi_fonbet, arr_matchs, 'pre'))
-        fonbet_seeker_pre_matchs.start()
-        prnts(' ')
-        prnts('START: fonbet_seeker_pre_matchs')
-        time.sleep(time_sleep_proc / 3)
-        # while True:
-        #     for n in list(arr_matchs):
-        #         print_j(arr_matchs[n])
-        #     time.sleep(15)
 
         # List of TOP events
-        fonbet_seeker_top_matchs = threading.Thread(target=start_seeker_top_matchs_fonbet, args=(gen_proxi_fonbet, arr_top_matchs, pair_mathes, arr_fonbet_top_kofs))
+        fonbet_seeker_top_matchs = threading.Thread(target=start_seeker_top_matchs_fonbet, args=(proxies_container, arr_top_matchs, pair_mathes, arr_fonbet_top_kofs))
         fonbet_seeker_top_matchs.start()
         prnts(' ')
         prnts('START: fonbet_seeker_top_matchs')
-
-        # Event mapping
         time.sleep(time_sleep_proc / 3)
+        
+        # Event mapping
         event_mapping = threading.Thread(target=start_event_mapping, args=(pair_mathes, arr_matchs, mathes_complite))
         event_mapping.start()
         prnts(' ')
         prnts('START: event_mapping')
-
         time.sleep(time_sleep_proc / 3)
+        
         mathes_id_is_work = []
         starter_bets = threading.Thread(
-            target=starter_bets,
-            args=(bets_olimp, bets_fonbet, pair_mathes, mathes_complite, mathes_id_is_work,
-                  proxies_olimp, gen_proxi_olimp, proxies_fonbet, gen_proxi_fonbet, stat_req_olimp, stat_req_fonbet,
-                  arr_fonbet_top_kofs))
+            target=starter_bets, 
+            args=(bets, pair_mathes, mathes_complite, mathes_id_is_work, proxies_container, stat_reqs, arr_fonbet_top_kofs, arr_matchs, session)
+        )
         starter_bets.start()
         prnts(' ')
         prnts('START: starter_bets')
     
-        arr_values = []
-        starter_forks = threading.Thread(target=get_forks, args=(forks, forks_meta, pair_mathes, bets_olimp, bets_fonbet, arr_top_matchs, arr_values))
-        starter_forks.start()
-        prnts(' ')
-        prnts('START: starter_forks')
-
-        started_stat_req = threading.Thread(target=stat_req, args=(stat_req_olimp, stat_req_fonbet))
+        started_stat_req = threading.Thread(target=stat_req, args=(stat_reqs, ))
         started_stat_req.start()
         prnts(' ')
         prnts('START: started_stat_req')
-
-        started_mon_cupon = threading.Thread(target=mon_cupon, args=(arr_cupon,))
-        started_mon_cupon.start()
+    
+        arr_values = []
+        starter_forks = threading.Thread(target=get_forks, args=(forks, forks_meta, pair_mathes, bets, arr_top_matchs, arr_values))
+        starter_forks.start()
         prnts(' ')
-        prnts('START: mon_cupon')
+        prnts('START: starter_forks')
+        
+        if not DEBUG:
+            started_mon_cupon = threading.Thread(target=mon_cupon, args=(arr_cupon,))
+            started_mon_cupon.start()
+            prnts(' ')
+            prnts('START: mon_cupon')
 
-        server = threading.Thread(target=run_server, args=(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_top_matchs, bets_olimp, bets_fonbet, mathes_complite, arr_cupon))
+        server = threading.Thread(target=run_server, args=(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_top_matchs, bets, mathes_complite, arr_cupon))
         server.start()
         prnts(' ')
         prnts('START: server')
         bot.send_msg('Сканер начал работу.')
 
-        proxy_saver.join()
-        olimp_seeker_matchs.join()
-        olimp_seeker_pre_matchs.join()
-        fonbet_seeker_matchs.join()
-        fonbet_seeker_pre_matchs.join()
-        event_mapping.join()
-        starter_forks.join()
-        started_stat_req.join()
-        started_mon_cupon.join()
-        server.join()
-        bot.send_msg('Сканнер выключен')
+        # proxy_saver.join()
+        # event_mapping.join()
+        # starter_forks.join()
+        # started_stat_req.join()
+        # # bk_seeker_matchs
+        # started_mon_cupon.join()
+        # server.join()
+        # bot.send_msg('Сканнер выключен')
     except Exception as e:
         exc_type, exc_value, exc_traceback = sys.exc_info()
-        prnts('scan error:' + str(traceback.format_exception(exc_type, exc_value, exc_traceback)))
+        err_msg = str(traceback.format_exception(exc_type, exc_value, exc_traceback))
+        prnts('scan error:' + err_msg)
+        bot.send_msg('Сканнер упал с ошибкой: ' + str(e))
