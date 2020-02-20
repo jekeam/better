@@ -736,9 +736,9 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
             pair_bk = list(itertools.combinations(bk_working, 2))
             # print('pair_bk: ' + str(pair_bk))
             # pair_bk.pop(2)
-            bk_rate_list = list()
-            bk_rate_sorted = list()
             for bk_name1, bk_name2 in pair_bk:
+                bk_rate_list = list()
+                bk_rate_sorted = list()
                 json_bk1_copy = dict()
                 json_bk2_copy = dict()
                 for j in list(arr_matchs):
