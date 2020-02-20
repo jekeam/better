@@ -66,7 +66,7 @@ sport_list_raw = [
         'name': 'football',
         'olimp': 1,
         'fonbet': 1,
-        'pinn': 29,
+        'pinnacle': 29,
         'min': 90,
         'place': ['live', 'pre']
         # 'place': ['pre']
@@ -75,7 +75,7 @@ sport_list_raw = [
         'name': 'esports',
         'olimp': 112,
         'fonbet': 29086,
-        'pinn': 12,
+        'pinnacle': 12,
         'place': ['live', 'pre']
         # 'place': ['pre']
     },
@@ -83,7 +83,7 @@ sport_list_raw = [
         'name': 'volleyball',
         'olimp': 10,
         'fonbet': 9,
-        'pinn': 34,
+        'pinnacle': 34,
         'place': ['live', 'pre']
         # 'place': ['pre']
     },
@@ -91,7 +91,7 @@ sport_list_raw = [
         'name': 'tennis',
         'olimp': 3,
         'fonbet': 4,
-        'pinn': 33,
+        'pinnacle': 33,
         'place': ['live', 'pre']
         # 'place': ['pre']
     },
@@ -99,7 +99,7 @@ sport_list_raw = [
         'name': 'basketball',
         'olimp': 5,
         'fonbet': 3,
-        'pinn': None,  # TODO
+        'pinnacle': None,  # TODO
         'min': 40,
         'place': ['live', 'pre']
         # 'place': ['pre']
@@ -108,7 +108,7 @@ sport_list_raw = [
         'name': 'hockey',
         'olimp': 2,
         'fonbet': 2,
-        'pinn': 19,
+        'pinnacle': 19,
         'min': 60,
         'place': ['live', 'pre']
         # 'place': ['pre']
@@ -117,7 +117,7 @@ sport_list_raw = [
         'name': 'table-tennis',
         'olimp': 40,
         'fonbet': 3088,
-        'pinn': None,  # TODO
+        'pinnacle': None,  # TODO
         # 'place': ['live', 'pre']
         'place': ['pre']
     },
@@ -125,7 +125,7 @@ sport_list_raw = [
         'name': 'futsal',
         'olimp': 11,
         'fonbet': 1434,
-        'pinn': None,  # TODO
+        'pinnacle': None,  # TODO
         # 'place': ['live', 'pre']
         'place': ['pre']
     },

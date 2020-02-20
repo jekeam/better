@@ -282,7 +282,7 @@ def start_seeker_matchs(bk_name, proxies_container, arr_matchs, place, session):
     proxy = proxies_container[bk_name]['gen_proxi'].next()
     fail_proxy = 0
     
-    if 'pinnacle' == bk_name:
+    if 'pinnacle' == bk_name and place == 'live':
         while True:
             try:
                 set_api(bk_name, proxy, session)
@@ -408,8 +408,9 @@ def start_seeker_matchs(bk_name, proxies_container, arr_matchs, place, session):
                     #       str(time_sleep) + ' ' + proxy)
                 time.sleep(time_sleep)
             elif bk_name == 'pinnacle':
-                resp, time_resp = util_pinnacle.get_matches(bk_name, proxy, TIMEOUT_LIST, api_key, x_session, x_device_uuid, proxies_container[bk_name]['proxy_list'], session)
-                set_matches_pinnacle(bk_name, resp, arr_matchs, match_id_work)
+                if place == 'live':
+                    resp, time_resp = util_pinnacle.get_matches(bk_name, proxy, TIMEOUT_LIST, api_key, x_session, x_device_uuid, proxies_container[bk_name]['proxy_list'], session, place)
+                    set_matches_pinnacle(bk_name, resp, arr_matchs, match_id_work)
             # print(bk_name, place, str(arr_matchs))
         except TimeOut as e:
             err_str = 'Timeout: ошибка призапросе списока матчей из ' + bk_name
@@ -847,6 +848,7 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                         except:
                             pass
                     pair.sort(key=lambda p: 'z' if p in ('live', 'pre') else p)
+                    # print(pair)
                     pair = [pair[1], pair[0], pair[2], pair[3]]
                     pair.append(e.get('match_name'))
                     pair.append(e.get('rate'))
@@ -1303,7 +1305,8 @@ def mon_cupon(arr_cupon):
 
 if __name__ == '__main__':
     try:
-        bot.send_msg('Перезапуск сканера...')
+        if not DEBUG:
+            bot.send_msg('Перезапуск сканера...')
         prnts('DEBUG: ' + str(DEBUG))
         prnts('BK WORKING: ' + str(bk_working))
         prnts('SPORT_LIST: ' + str(sport_list))
@@ -1407,7 +1410,8 @@ if __name__ == '__main__':
         server.start()
         prnts(' ')
         prnts('START: server')
-        bot.send_msg('Сканер начал работу.')
+        if not DEBUG:
+            bot.send_msg('Сканер начал работу.')
 
         # proxy_saver.join()
         # event_mapping.join()

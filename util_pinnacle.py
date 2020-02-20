@@ -131,7 +131,7 @@ def straight_normalize(data):
         return {'error': str(e)}
 
 
-def get_matches(bk_name, proxy, timeout, api_key, x_session, x_device_uuid, proxy_list, session):
+def get_matches(bk_name, proxy, timeout, api_key, x_session, x_device_uuid, proxy_list, session, place):
     if bk_name == 'pinnacle':
         head = list_matches_head
     if api_key:
@@ -140,13 +140,14 @@ def get_matches(bk_name, proxy, timeout, api_key, x_session, x_device_uuid, prox
         head.update({'x-device-uuid': x_device_uuid})
     if x_session:
         head.update({'x-session': x_session})
-    if 'live' == 'live':
+    if 'live' == place:
         url = url_live
     else:
         url = url_pre
     proxies = {'https': proxy}
     data = {}
     res = {}
+    resp = {}
     for sport in utils.sport_list:
         sport_id = sport.get('pinnacle')
         sport_name = sport.get('name')
@@ -169,7 +170,6 @@ def get_matches(bk_name, proxy, timeout, api_key, x_session, x_device_uuid, prox
                         verify=False,
                         proxies=proxies,
                     )
-                # print('get_matches head: ' + str(head))
                 try:
                     res = resp.json()
                     # {'detail': 'The requested URL was not found on the server.  If you entered the URL manually please check your spelling and try again.', 'status': 404, 'title': 'Not Found', 'type': 'about:blank'}
@@ -231,6 +231,7 @@ def get_matches(bk_name, proxy, timeout, api_key, x_session, x_device_uuid, prox
                                 'units': l.get('units'),
                                 'liveMode': l.get('liveMode')
                             }
+                            return data, resp.elapsed.total_seconds()
                 except Exception as e:
                     exc_type, exc_value, exc_traceback = sys.exc_info()
                     err_str = bk_name + ' ' + url.format(sport_id) + ' ' + 'error: ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
@@ -274,7 +275,6 @@ def get_matches(bk_name, proxy, timeout, api_key, x_session, x_device_uuid, prox
                 utils.prnts(err_str)
                 proxies = proxy_worker.del_proxy(proxy, proxy_list)
                 raise ValueError(err_str)
-    return data, resp.elapsed.total_seconds()
 
 
 MAX_VERSION = {}
