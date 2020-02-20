@@ -326,7 +326,6 @@ def get_odds(bets, api_key, x_session, x_device_uuid, pair_mathes, sport_id, pro
         proxies=proxies,
     )
     data = resp.json()
-    utils.prnts('data: ' + place + ' ' + str(sport_id) + ' '  + str(data)[0:300], hide=True)
     # {'detail': 'API key is not valid', 'status': 403, 'title': 'BAD_APIKEY', 'type': 'about:blank'}
     # {'detail': 'Session superseded by a login on another device', 'status': 401, 'title': 'AUTH_SUPERSEDED', 'type': 'about:blank'} -- SESSION EXPIRED
     # {"detail": "The requested URL was not found on the server.  If you entered the URL manually please check your spelling and try again.", "status": 404, "title": "Not Found", "type": "about:blank"}
@@ -337,6 +336,8 @@ def get_odds(bets, api_key, x_session, x_device_uuid, pair_mathes, sport_id, pro
             utils.prnts('api_key: ' + str(api_key))
         elif title_err == 'AUTH_SUPERSEDED':
             utils.prnts('Session expired! TODO: relogin')
+        else:
+            utils.prnts('error data: ' + place + ' ' + str(sport_id) + ' '  + str(data), hide=True)
     
     for match_id in match_id_list:
         check_vertion = False # vershion check need by kof
