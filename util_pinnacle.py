@@ -146,6 +146,7 @@ def get_matches(bk_name, proxy, timeout, api_key, x_session, x_device_uuid, prox
         url = url_pre
     proxies = {'https': proxy}
     data = {}
+    res = {}
     for sport in utils.sport_list:
         sport_id = sport.get('pinnacle')
         sport_name = sport.get('name')

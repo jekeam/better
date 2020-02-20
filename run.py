@@ -265,7 +265,6 @@ def set_api(bk_name, proxy, session):
                 }
             )
             resp = res.json()
-            print(resp)
             x_session = resp.get('token')
             # ??? = resp.get('transactionId')
     except Exception as e:
@@ -279,21 +278,9 @@ def set_api(bk_name, proxy, session):
         pinn_session_data.update({'x_session': x_session})    
 
 def start_seeker_matchs(bk_name, proxies_container, arr_matchs, place, session):
-    print(bk_name, arr_matchs, place)
     global TIMEOUT_LIST, TIMEOUT_PRE_LIST, pinn_session_data
     proxy = proxies_container[bk_name]['gen_proxi'].next()
     fail_proxy = 0
-    
-    try:
-        df = pd.read_csv('top_by_name.csv', encoding='utf-8', sep=';')
-        my_top = list(df[(df['is_top'] == 2)]['liga_name'])
-        my_middle = list(df[(df['is_top'] == 1)]['liga_name'])
-        my_slag = list(df[(df['is_top'] == 0)]['liga_name'])
-        prnts('my_top: ' + str(my_top))
-        prnts('my_middle: ' + str(my_middle))
-        prnts('my_slag: ' + str(my_slag))
-    except Exception as e:
-        prnts('err liga_top: ' + str(e))
     
     if 'pinnacle' == bk_name:
         while True:
@@ -311,6 +298,18 @@ def start_seeker_matchs(bk_name, proxies_container, arr_matchs, place, session):
                 prnts(bk_name + ', код ошибки Exception: ' + str(e))
                 proxies_container[bk_name]['proxy_list'] = del_proxy(proxy, proxies_container[bk_name]['proxy_list'])
                 proxy = proxies_container[bk_name]['gen_proxi'].next()
+    time.sleep(5)
+    
+    try:
+        df = pd.read_csv('top_by_name.csv', encoding='utf-8', sep=';')
+        my_top = list(df[(df['is_top'] == 2)]['liga_name'])
+        my_middle = list(df[(df['is_top'] == 1)]['liga_name'])
+        my_slag = list(df[(df['is_top'] == 0)]['liga_name'])
+        prnts('my_top: ' + str(my_top))
+        prnts('my_middle: ' + str(my_middle))
+        prnts('my_slag: ' + str(my_slag))
+    except Exception as e:
+        prnts('err liga_top: ' + str(e))
                 
     while True:
         match_id_work = []
@@ -424,6 +423,8 @@ def start_seeker_matchs(bk_name, proxies_container, arr_matchs, place, session):
                 time.sleep(3)
 
         except Exception as e:
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            e = str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
             prnts('Exception: ошибка при запросе списка матчей из ' + bk_name + ':' + str(e))
             time_resp = TIMEOUT_LIST
 
@@ -927,6 +928,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets, arr_top_matchs, arr_values):
                 type_time = pair_math[3]  # pre/live
                 name_bk1 = pair_math[-2]
                 name_bk2 = pair_math[-1]
+                print(name_bk1, name_bk2)
 
                 curr_opposition = opposition.copy()
 
@@ -1315,7 +1317,7 @@ if __name__ == '__main__':
         prnts('SERVER_PORT: ' + str(SERVER_PORT))
         prnts('time_sleep_proc: ' + str(time_sleep_proc))
         prnts('max_hour_prematch: ' + str(max_min_prematch / 60))
-        
+        time.sleep(3)
         pinn_session_data = {}
         
         proxies_container = dict()
@@ -1351,8 +1353,8 @@ if __name__ == '__main__':
         bk_seeker_matchs = []
         session = requests.session()
         for bk_name in bk_working:
-            # for place in ['pre', 'live']:
-            for place in ['live']:
+            for place in ['pre', 'live']:
+            # for place in ['live']:
                 seeker_matchs = threading.Thread(target=start_seeker_matchs, args=(bk_name, proxies_container, arr_matchs, place, session))
                 bk_seeker_matchs.append(seeker_matchs)
                 seeker_matchs.start()
