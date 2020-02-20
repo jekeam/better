@@ -828,10 +828,12 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                                     pair.append(v.get('place'))
                         except:
                             pass
-                    pair.sort(key=lambda p: 'z' if p in ('live', 'pre') else p)
-                    
                     # print('pair: ' + str(pair))
-                    pair = [pair[0], pair[1], pair[2], pair[3]]
+                    # pair.sort(key=lambda p: 'z' if p in ('live', 'pre') else p)
+                    pair = [pair[0], pair[-1], pair[1], pair[2]]
+                    # print('pair: ' + str(pair))
+                    # print('---')
+                    # pair = [pair[0], pair[1], pair[2], pair[3]]
                     pair.append(e.get('match_name'))
                     pair.append(e.get('rate'))
                     pair.append(bk_name1)
