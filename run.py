@@ -842,19 +842,22 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                         pass
                     else:
                         poz_rate = 5
+                        poz_bk1 = -2
+                        poz_bk2 = -1
                         if pair not in pair_mathes:
+                            print('pair: ' + str(pair))
                             conflict = False
                             is_exists = False
                             for p in pair_mathes:
                                 id1, id2 = pair[0], pair[1]
                                 if id1 in p:
-                                    if float(pair[poz_rate]) > float(p[poz_rate]):
+                                    if float(pair[poz_rate]) > float(p[poz_rate]) and pair[poz_bk1] == p[poz_bk1] and pair[poz_bk2] == p[poz_bk2]:
                                         prnts('Math conflict: ' + str(id1) + ', p: ' + str(p) + ', need: ' + str(pair))
                                         conflict = True
                                     else:
                                         is_exists = True
                                 if id2 in p:
-                                    if float(pair[poz_rate]) > float(p[poz_rate]):
+                                    if float(pair[poz_rate]) > float(p[poz_rate]) and pair[poz_bk1] == p[poz_bk1] and pair[poz_bk2] == p[poz_bk2]:
                                         prnts('Math conflict: ' + str(id2) + ', p: ' + str(p) + ', need: ' + str(pair))
                                         conflict = True
                                     else:
