@@ -284,9 +284,10 @@ def start_seeker_matchs(bk_name, proxies_container, arr_matchs, place, session):
             my_top = list(df[(df['is_top'] == 2)]['liga_name'])
             my_middle = list(df[(df['is_top'] == 1)]['liga_name'])
             my_slag = list(df[(df['is_top'] == 0)]['liga_name'])
-            prnts('my_top: ' + str(my_top))
-            prnts('my_middle: ' + str(my_middle))
-            prnts('my_slag: ' + str(my_slag))
+            if place == 'live':
+                prnts('my_top: ' + str(my_top))
+                prnts('my_middle: ' + str(my_middle))
+                prnts('my_slag: ' + str(my_slag))
         except Exception as e:
             prnts('err liga_top: ' + str(e))
                 
@@ -1318,8 +1319,8 @@ if __name__ == '__main__':
         pinn_session_data = {}
         session = requests.session()
         if 'pinnacle' in bk_working:
+            x = 0
             while True:
-                x = 0
                 try:
                     set_api('pinnacle', proxies_container['pinnacle']['gen_proxi'].next(), session)
                     api_key = pinn_session_data.get('api_key')
