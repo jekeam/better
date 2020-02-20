@@ -726,8 +726,6 @@ def get_rate(team1_bk1, team2_bk1, team1_bk2, team2_bk2, debug=False):
 def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
     need = 1.5
     prnts('start_event_mapping, need: ' + str(need))
-    not_compare = list()
-    pair_mathes_found = dict()
     # for id, js in arr_matchs.items():
     #     print(id, str(js))
     
@@ -737,6 +735,8 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
             # print('pair_bk: ' + str(pair_bk))
             # pair_bk.pop(2)
             for bk_name1, bk_name2 in pair_bk:
+                not_compare = list()
+                pair_mathes_found = dict()
                 bk_rate_list = list()
                 bk_rate_sorted = list()
                 json_bk1_copy = dict()
