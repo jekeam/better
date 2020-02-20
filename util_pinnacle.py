@@ -215,7 +215,8 @@ def get_matches(bk_name, proxy, timeout, api_key, x_session, x_device_uuid, prox
                                 score2 = participant_0.get('state', {}).get('score', participant_0.get('score', ''))
                                 score1 = participant_1.get('state', {}).get('score', participant_1.get('score', ''))
                             data[l.get('id')] = {
-                                'time_req': int(datetime.datetime.now().timestamp()),
+                                'time_req': round(time.time()),
+                                'place': place,
                                 'bk_name': bk_name,
                                 'match_id': l.get('id'),
                                 'league': l.get('league', {}).get('group') + '-' + l.get('league', {}).get('name'),
@@ -227,11 +228,10 @@ def get_matches(bk_name, proxy, timeout, api_key, x_session, x_device_uuid, prox
                                 'minute': float(l.get('state', {}).get('minutes', 0)),
                                 'sport_id': sport_id,
                                 'sport_name': sport_name,
-                                'start_timestamp': int(datetime.datetime.strptime(l.get('startTime'), '%Y-%m-%dT%H:%M:%SZ').timestamp()),
+                                'start_time': int(datetime.datetime.strptime(l.get('startTime'), '%Y-%m-%dT%H:%M:%SZ').timestamp()),
                                 'units': l.get('units'),
                                 'liveMode': l.get('liveMode')
                             }
-                            return data, resp.elapsed.total_seconds()
                 except Exception as e:
                     exc_type, exc_value, exc_traceback = sys.exc_info()
                     err_str = bk_name + ' ' + url.format(sport_id) + ' ' + 'error: ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
@@ -262,8 +262,6 @@ def get_matches(bk_name, proxy, timeout, api_key, x_session, x_device_uuid, prox
                 proxies = proxy_worker.del_proxy(proxy, proxy_list)
                 raise ValueError(err_str)
             except ValueError as e:
-                if resp.text:
-                    text = resp.text
                 exc_type, exc_value, exc_traceback = sys.exc_info()
                 err_str = bk_name + ' ' + url.format(sport_id) + ' ' + 'error1: ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
                 utils.prnts(err_str)
@@ -275,12 +273,13 @@ def get_matches(bk_name, proxy, timeout, api_key, x_session, x_device_uuid, prox
                 utils.prnts(err_str)
                 proxies = proxy_worker.del_proxy(proxy, proxy_list)
                 raise ValueError(err_str)
+    return data, resp.elapsed.total_seconds()
 
 
 MAX_VERSION = {}
 
 
-def get_odds(bets, api_key, x_session, x_device_uuid, pair_mathes, sport_id, proxi_list, proxy, timeout, arr_matchs, session):
+def get_odds(bets, api_key, x_session, x_device_uuid, pair_mathes, sport_id, proxi_list, proxy, timeout, arr_matchs, session, place):
     global MAX_VERSION
     match_id_list = []
     bk_mame = 'pinnacle'
@@ -306,7 +305,7 @@ def get_odds(bets, api_key, x_session, x_device_uuid, pair_mathes, sport_id, pro
     if x_session:
         pass
         head.update({'x-session': x_session})
-    if 'live' == 'live':
+    if 'live' == place:
         url = url_live_odds
     else:
         url = url_pre_odds
@@ -314,28 +313,23 @@ def get_odds(bets, api_key, x_session, x_device_uuid, pair_mathes, sport_id, pro
     data = {}
     # print('get_odds head: ' + str(head))
     if session:
-        # utils.prnts('session get_odds: ' + str(session))
-        resp = session.get(
-            url.format(sport_id),
-            # 'http://192.168.1.143:8888/',
-            headers=head,
-            timeout=timeout,
-            verify=False,
-            proxies=proxies,
-        )
+        xs = session.get
     else:
-        resp = requests.get(
-            url.format(sport_id),
-            # 'http://192.168.1.143:8888/',
-            headers=head,
-            timeout=timeout,
-            verify=False,
-            proxies=proxies,
-        )
+        xs = requests.get
+    # utils.prnts('session get_odds: ' + str(session))
+    resp = xs(
+        url.format(sport_id),
+        # 'http://192.168.1.143:8888/',
+        headers=head,
+        timeout=timeout,
+        verify=False,
+        proxies=proxies,
+    )
     data = resp.json()
-    # print('data:' + str(resp.text)[0:300])
+    utils.prnts('data: ' + place + ' ' + str(sport_id) + ' '  + str(data)[0:300], hide=True)
     # {'detail': 'API key is not valid', 'status': 403, 'title': 'BAD_APIKEY', 'type': 'about:blank'}
     # {'detail': 'Session superseded by a login on another device', 'status': 401, 'title': 'AUTH_SUPERSEDED', 'type': 'about:blank'} -- SESSION EXPIRED
+    # {"detail": "The requested URL was not found on the server.  If you entered the URL manually please check your spelling and try again.", "status": 404, "title": "Not Found", "type": "about:blank"}
     if type(data) == dict and data.get('status'):
         utils.prnts('data: ' + str(data))
         title_err = data.get('title')
@@ -343,13 +337,13 @@ def get_odds(bets, api_key, x_session, x_device_uuid, pair_mathes, sport_id, pro
             utils.prnts('api_key: ' + str(api_key))
         elif title_err == 'AUTH_SUPERSEDED':
             utils.prnts('Session expired! TODO: relogin')
-
+    
     for match_id in match_id_list:
         check_vertion = False # vershion check need by kof
         res = {}
         version = None
         # print('match_id: ' + str(match_id))
-        for bet in filter(lambda x: x['matchupId'] == int(match_id), data):
+        for bet in filter(lambda x: str(x.get('matchupId')) == str(match_id), data):
             version = bet.get('version', -1)
             # if str(match_id) == '1096611547':
                 # print(json.dumps(bet))

@@ -100,7 +100,7 @@ def run_server(SERVER_IP, SERVER_PORT, forks, pair_mathes, arr_top_matchs, bets,
                 self.send_header('content-type', 'application/json')
                 self.end_headers()
                 self.wfile.write(str(mathes_complite.get('pre', [])).encode('utf-8'))
-            elif '/fonbet/' in self.path or '/olimp/' in self.path:
+            elif '/fonbet/' in self.path or '/olimp/' in self.path or '/pinnacle/' in self.path:
                 cnt_par = str(self.path).count('/')
                 prnts('get path: {}, cnt_par: {}, arr: {}'.format(self.path, cnt_par, str(self.path.split('/'))))
                 answer = 'ok'

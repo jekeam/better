@@ -206,10 +206,11 @@ def get_fonbet(resp, arr_matchs, place):
     
 def set_matches_pinnacle(bk_name, resp, arr_matchs, match_id_work):
     for match_id, match_data in resp.items():
-        for key in copy.deepcopy(match_data).keys():
-            if key not in ('bk_name', 'sport_id', 'sport_name', 'name', 'team1', 'team2', 'start_timestamp', 'minute', 'score'):
+        for key in list(match_data):
+            if key not in ('bk_name', 'sport_id', 'sport_name', 'name', 'team1', 'team2', 'start_time', 'minute', 'score', 'place', 'time_req'):
                 match_data.pop(key)
         arr_matchs[str(match_id)] = match_data
+        # print(str(match_id) + ' ' + match_data.get('sport_name') + ' ' + match_data.get('name'))
 
 
 def set_api(bk_name, proxy, session):
@@ -235,22 +236,10 @@ def set_api(bk_name, proxy, session):
             head.update({'x-api-key': api_key})
             head.update({'x-device-uuid': util_pinnacle.x_device_uuid_temp})
             if session:
-                res = session.post(
-                    url='https://api.arcadia.pinnacle.com/0.1/sessions',
-                    # url='http://192.168.1.143:8888',
-                    proxies={'https': proxy},
-                    timeout=10,
-                    verify=False,
-                    headers=head,
-                    json={
-                        # "username": "ES1096942",
-                        # "password": "11112007_A"
-                        "username": "IS1204996",
-                        "password": "p1962Abce"
-                    }
-                )
+                xs = session.post
             else:
-                res = requests.post(
+                xs = requests.post
+            res = xs(
                 url='https://api.arcadia.pinnacle.com/0.1/sessions',
                 # url='http://192.168.1.143:8888',
                 proxies={'https': proxy},
@@ -258,13 +247,14 @@ def set_api(bk_name, proxy, session):
                 verify=False,
                 headers=head,
                 json={
-                        # "username": "ES1096942",
-                        # "password": "11112007_A"
-                        "username": "IS1204996",
-                        "password": "p1962Abce"
+                    # "username": "ES1096942",
+                    # "password": "11112007_A"
+                    "username": "IS1204996",
+                    "password": "p1962Abce"
                 }
             )
             resp = res.json()
+            prnts(resp)
             x_session = resp.get('token')
             # ??? = resp.get('transactionId')
     except Exception as e:
@@ -279,37 +269,26 @@ def set_api(bk_name, proxy, session):
 
 def start_seeker_matchs(bk_name, proxies_container, arr_matchs, place, session):
     global TIMEOUT_LIST, TIMEOUT_PRE_LIST, pinn_session_data
+    
     proxy = proxies_container[bk_name]['gen_proxi'].next()
     fail_proxy = 0
     
-    if 'pinnacle' == bk_name and place == 'live':
-        while True:
-            try:
-                set_api(bk_name, proxy, session)
-                api_key = pinn_session_data.get('api_key')
-                x_session = pinn_session_data.get('x_session')
-                x_device_uuid = pinn_session_data.get('x_device_uuid')
-                prnts('get api_key from ' + bk_name + ': ' + str(api_key))
-                prnts('get x_session(token) from ' + bk_name + ': ' + str(x_session))
-                prnts('get x_device_uuid from ' + bk_name + ': ' + str(x_device_uuid))
-                prnts('session: ' + str(session))
-                break
-            except Exception as e:
-                prnts(bk_name + ', код ошибки Exception: ' + str(e))
-                proxies_container[bk_name]['proxy_list'] = del_proxy(proxy, proxies_container[bk_name]['proxy_list'])
-                proxy = proxies_container[bk_name]['gen_proxi'].next()
-    time.sleep(5)
+    if 'pinnacle' == bk_name:
+        api_key = pinn_session_data.get('api_key')
+        x_session = pinn_session_data.get('x_session')
+        x_device_uuid = pinn_session_data.get('x_device_uuid')
     
-    try:
-        df = pd.read_csv('top_by_name.csv', encoding='utf-8', sep=';')
-        my_top = list(df[(df['is_top'] == 2)]['liga_name'])
-        my_middle = list(df[(df['is_top'] == 1)]['liga_name'])
-        my_slag = list(df[(df['is_top'] == 0)]['liga_name'])
-        prnts('my_top: ' + str(my_top))
-        prnts('my_middle: ' + str(my_middle))
-        prnts('my_slag: ' + str(my_slag))
-    except Exception as e:
-        prnts('err liga_top: ' + str(e))
+    if 'olimp' == bk_name and place == 'pre':
+        try:
+            df = pd.read_csv('top_by_name.csv', encoding='utf-8', sep=';')
+            my_top = list(df[(df['is_top'] == 2)]['liga_name'])
+            my_middle = list(df[(df['is_top'] == 1)]['liga_name'])
+            my_slag = list(df[(df['is_top'] == 0)]['liga_name'])
+            prnts('my_top: ' + str(my_top))
+            prnts('my_middle: ' + str(my_middle))
+            prnts('my_slag: ' + str(my_slag))
+        except Exception as e:
+            prnts('err liga_top: ' + str(e))
                 
     while True:
         match_id_work = []
@@ -408,9 +387,8 @@ def start_seeker_matchs(bk_name, proxies_container, arr_matchs, place, session):
                     #       str(time_sleep) + ' ' + proxy)
                 time.sleep(time_sleep)
             elif bk_name == 'pinnacle':
-                if place == 'live':
-                    resp, time_resp = util_pinnacle.get_matches(bk_name, proxy, TIMEOUT_LIST, api_key, x_session, x_device_uuid, proxies_container[bk_name]['proxy_list'], session, place)
-                    set_matches_pinnacle(bk_name, resp, arr_matchs, match_id_work)
+                resp, time_resp = util_pinnacle.get_matches(bk_name, proxy, TIMEOUT_LIST, api_key, x_session, x_device_uuid, proxies_container[bk_name]['proxy_list'], session, place)
+                set_matches_pinnacle(bk_name, resp, arr_matchs, match_id_work)
             # print(bk_name, place, str(arr_matchs))
         except TimeOut as e:
             err_str = 'Timeout: ошибка призапросе списока матчей из ' + bk_name
@@ -619,7 +597,7 @@ def start_seeker_bets_fonbet(bets, match_id_fonbet, proxies_container, pair_math
         time.sleep(time_sleep)
 
 
-def start_seeker_bets(bk_name, def_bk, bets, sport_id, proxies_container, pair_mathes, stat_reqs, arr_matchs, session):
+def start_seeker_bets(bk_name, def_bk, bets, sport_id, proxies_container, pair_mathes, stat_reqs, arr_matchs, session, place):
     global TIMEOUT_MATCH, TIMEOUT_MATCH_MINUS, pinn_session_data
     api_key = pinn_session_data.get('api_key')
     x_session = pinn_session_data.get('x_session')
@@ -635,7 +613,7 @@ def start_seeker_bets(bk_name, def_bk, bets, sport_id, proxies_container, pair_m
     prnts(bk_name + ', start sport_id: ' + str(sport_id))
     while True:
         try:
-            time_resp = def_bk(bets, api_key, x_session, x_device_uuid, pair_mathes, sport_id, proxies_container[bk_name]['gen_proxi'], ps.get_next_proxy(), TIMEOUT_MATCH, arr_matchs, session)
+            time_resp = def_bk(bets, api_key, x_session, x_device_uuid, pair_mathes, sport_id, proxies_container[bk_name]['gen_proxi'], ps.get_next_proxy(), TIMEOUT_MATCH, arr_matchs, session, place)
             set_stat_reqs(stat_reqs, bk_name, time_resp)
         # TODO Удаления котировок при завершении матча
         # Удалять катировки будем глубще в def_bk?
@@ -660,6 +638,7 @@ def starter_bets(bets, pair_mathes, mathes_complite, mathes_id_is_work, proxies_
     while True:
         matchs_id = None
         for pair_match in pair_mathes:
+            # print(pair_match)
             # pair_match: ['55486968', '19530853', 'volleyball', 'live', 'volleyball;55486968;Metallurg (W);Chromtau Women;19530853;Metallurg Temirtau (w);Hromtay (w);', 1.381, 'olimp', 'fonbet']
             match_id_bk1, match_id_bk2, event_type, place, event_name, kof_compare, bk_name1, bk_name2 = pair_match
             
@@ -695,11 +674,11 @@ def starter_bets(bets, pair_mathes, mathes_complite, mathes_id_is_work, proxies_
                 # TODO onle exists successfull compare matches
                 for sport_arr in sport_list:
                     sport_id = sport_arr.get(v_bk_name)
-                    if sport_id not in mathes_id_is_work:
+                    if sport_id and sport_id not in mathes_id_is_work:
                         mathes_id_is_work.append(sport_id)
                         start_seeker_fonbet_bets_by_id = threading.Thread(
                             target=start_seeker_bets,
-                            args=('pinnacle', util_pinnacle.get_odds, bets, sport_id, proxies_container, pair_mathes, stat_reqs, arr_matchs, session)
+                            args=('pinnacle', util_pinnacle.get_odds, bets, sport_id, proxies_container, pair_mathes, stat_reqs, arr_matchs, session, place)
                         )
                         start_seeker_fonbet_bets_by_id.start()
         time.sleep(20)
@@ -752,7 +731,9 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
 
     not_compare = list()
     pair_mathes_found = dict()
-    # prnts(arr_matchs)
+    # for id, js in arr_matchs.items():
+    #     print(id, str(js))
+    
     while True:
         try:
             pair_bk = list(itertools.combinations(bk_working, 2))
@@ -783,6 +764,7 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                                                  str(bk2_match_id) + ';' + \
                                                  str(bk2_match_info.get('team1')) + ';' + \
                                                  str(bk2_match_info.get('team2')) + ';'
+                                    # print(match_name)
                                     # print(bk2_match_info)
                                     # print(bk2_match_info.get('place'))
                                     # print(bk1_match_info.get('sport_name'), bk2_match_info.get('sport_name') )
@@ -795,6 +777,7 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                                             bk2_match_info.get('team2', '')
                                         )
                                         deff_time = abs((bk1_match_info.get('start_time') - bk2_match_info.get('start_time')) / 60)
+                                        # print(deff_time)
                                         if rate < 2.0 and rate > need and (
                                                 (bk1_match_info.get('sport_name') == 'football' and deff_time > 12)
                                                 or (bk1_match_info.get('sport_name') == 'hockey' and deff_time > 30)
@@ -849,7 +832,7 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                             pass
                     pair.sort(key=lambda p: 'z' if p in ('live', 'pre') else p)
                     # print(pair)
-                    pair = [pair[1], pair[0], pair[2], pair[3]]
+                    pair = [pair[0], pair[1], pair[2], pair[3]]
                     pair.append(e.get('match_name'))
                     pair.append(e.get('rate'))
                     pair.append(bk_name1)
@@ -930,7 +913,6 @@ def get_forks(forks, forks_meta, pair_mathes, bets, arr_top_matchs, arr_values):
                 type_time = pair_math[3]  # pre/live
                 name_bk1 = pair_math[-2]
                 name_bk2 = pair_math[-1]
-                print(name_bk1, name_bk2)
 
                 curr_opposition = opposition.copy()
 
@@ -1309,6 +1291,7 @@ if __name__ == '__main__':
             bot.send_msg('Перезапуск сканера...')
         prnts('DEBUG: ' + str(DEBUG))
         prnts('BK WORKING: ' + str(bk_working))
+        prnts(str(list(itertools.combinations(bk_working, 2))))
         prnts('SPORT_LIST: ' + str(sport_list))
         prnts('TIMEOUT_LIST: ' + str(TIMEOUT_LIST))
         prnts('TIMEOUT_MATCH: ' + str(TIMEOUT_MATCH))
@@ -1321,7 +1304,6 @@ if __name__ == '__main__':
         prnts('time_sleep_proc: ' + str(time_sleep_proc))
         prnts('max_hour_prematch: ' + str(max_min_prematch / 60))
         time.sleep(3)
-        pinn_session_data = {}
         
         proxies_container = dict()
         for bk_name in bk_working:
@@ -1332,6 +1314,31 @@ if __name__ == '__main__':
             else:
                 proxies_container[bk_name]['proxy_list'] = get_proxy_from_file(proxies_container[bk_name]['proxy_filename'])
             proxies_container[bk_name]['gen_proxi'] = createBatchGenerator(get_next_proxy(copy.deepcopy(proxies_container[bk_name]['proxy_list'])))
+            
+        pinn_session_data = {}
+        session = requests.session()
+        if 'pinnacle' in bk_working:
+            while True:
+                x = 0
+                try:
+                    set_api('pinnacle', proxies_container['pinnacle']['gen_proxi'].next(), session)
+                    api_key = pinn_session_data.get('api_key')
+                    x_session = pinn_session_data.get('x_session')
+                    x_device_uuid = pinn_session_data.get('x_device_uuid')
+                    prnts('get api_key from pinnacle: ' + str(api_key))
+                    prnts('get x_session(token) from pinnacle: ' + str(x_session))
+                    prnts('get x_device_uuid from pinnacle: ' + str(x_device_uuid))
+                    prnts('session: ' + str(session) + '\n')
+                    if x_session:
+                        break
+                except Exception as e:
+                    x += 1
+                    err_msg = 'scan error, set_api: ' + str(e) + ', attempt: ' + str(x)
+                    if x > 5:
+                        raise ValueError(err_msg)
+                    else:
+                        prnts(err_msg)
+        time.sleep(3)
 
         proxy_saver = threading.Thread(target=start_proxy_saver, args=(proxies_container, ))
         proxy_saver.start()
@@ -1354,7 +1361,6 @@ if __name__ == '__main__':
         pair_mathes = []
         
         bk_seeker_matchs = []
-        session = requests.session()
         for bk_name in bk_working:
             for place in ['pre', 'live']:
             # for place in ['live']:
@@ -1425,4 +1431,5 @@ if __name__ == '__main__':
         exc_type, exc_value, exc_traceback = sys.exc_info()
         err_msg = str(traceback.format_exception(exc_type, exc_value, exc_traceback))
         prnts('scan error:' + err_msg)
-        bot.send_msg('Сканнер упал с ошибкой: ' + str(e))
+        if not DEBUG:
+            bot.send_msg('Сканнер упал с ошибкой: ' + str(e))
