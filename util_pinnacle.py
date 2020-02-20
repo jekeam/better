@@ -234,9 +234,8 @@ def get_matches(bk_name, proxy, timeout, api_key, x_session, x_device_uuid, prox
                 except Exception as e:
                     exc_type, exc_value, exc_traceback = sys.exc_info()
                     err_str = bk_name + ' ' + url.format(sport_id) + ' ' + 'error: ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
-                    if res:
-                        if res.text:
-                            err_str + '\ndata:' + res.text
+                    if resp:
+                        err_str + '\ndata:' + resp.text
                     utils.prnts(err_str)
                     raise ValueError('Exception: ' + str(e))
                 if resp.status_code != 200:
