@@ -343,7 +343,7 @@ if __name__ == '__main__':
     # PINNACLE
     prnts('get api_key from pinnacle')
     url_pinnacle = 'www.pinnacle.com'
-    app_key = requests.get('https://' + url_pinnacle + '/config/app.json').json()['api']['haywire']['apiKey']
+    app_key = requests.get('https://' + url_pinnacle + '/config/app.json', verify=False, timeout=10, proxy={'https':'https://Sela89823703090:H5f7LlK@176.114.8.78:45785'}).json()['api']['haywire']['apiKey']
     prnts('pinnacle app_key: ' + app_key)
     headers_pinnacle = {
         'accept': 'application/json',
