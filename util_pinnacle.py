@@ -153,24 +153,20 @@ def get_matches(bk_name, proxy, timeout, api_key, x_session, x_device_uuid, prox
         if sport_id:
             try:
                 if session:
-                    # utils.prnts('session get_matches: ' + str(session))
-                    resp = session.get(
-                        url.format(sport_id),
-                        headers=head,
-                        timeout=timeout,
-                        verify=False,
-                        proxies=proxies,
-                    )
+                    sx = session.get
                 else:
-                    resp = requests.get(
-                        url.format(sport_id),
-                        headers=head,
-                        timeout=timeout,
-                        verify=False,
-                        proxies=proxies,
-                    )
+                    sx = requests.get
+                    # utils.prnts('session get_matches: ' + str(session))
+                resp = sx(
+                    url.format(sport_id),
+                    headers=head,
+                    timeout=timeout,
+                    verify=False,
+                    proxies=proxies,
+                )
                 try:
                     res = resp.json()
+                    check_data(res, sport_id, place, api_key)
                     # {'detail': 'The requested URL was not found on the server.  If you entered the URL manually please check your spelling and try again.', 'status': 404, 'title': 'Not Found', 'type': 'about:blank'}
                     # print(json.dumps(res))
                     # print('---')
@@ -279,6 +275,17 @@ def get_matches(bk_name, proxy, timeout, api_key, x_session, x_device_uuid, prox
 
 MAX_VERSION = {}
 
+def check_data(data, sport_id, place, api_key):
+    if type(data) == dict and data.get('status'):
+        utils.prnts('data: ' + str(data))
+        title_err = data.get('title')
+        if title_err == 'BAD_APIKEY':
+            utils.prnts('api_key: ' + str(api_key))
+        elif title_err == 'AUTH_SUPERSEDED':
+            utils.prnts('Session expired! TODO: relogin')
+        else:
+            utils.prnts('error data: ' + place + ' ' + str(sport_id) + ' '  + str(data), hide=True)
+
 
 def get_odds(bets, api_key, x_session, x_device_uuid, pair_mathes, sport_id, proxi_list, proxy, timeout, arr_matchs, session, place):
     global MAX_VERSION
@@ -330,15 +337,7 @@ def get_odds(bets, api_key, x_session, x_device_uuid, pair_mathes, sport_id, pro
     # {'detail': 'API key is not valid', 'status': 403, 'title': 'BAD_APIKEY', 'type': 'about:blank'}
     # {'detail': 'Session superseded by a login on another device', 'status': 401, 'title': 'AUTH_SUPERSEDED', 'type': 'about:blank'} -- SESSION EXPIRED
     # {"detail": "The requested URL was not found on the server.  If you entered the URL manually please check your spelling and try again.", "status": 404, "title": "Not Found", "type": "about:blank"}
-    if type(data) == dict and data.get('status'):
-        utils.prnts('data: ' + str(data))
-        title_err = data.get('title')
-        if title_err == 'BAD_APIKEY':
-            utils.prnts('api_key: ' + str(api_key))
-        elif title_err == 'AUTH_SUPERSEDED':
-            utils.prnts('Session expired! TODO: relogin')
-        else:
-            utils.prnts('error data: ' + place + ' ' + str(sport_id) + ' '  + str(data), hide=True)
+    check_data(data, sport_id, place, api_key)
     
     for match_id in match_id_list:
         check_vertion = False # vershion check need by kof
