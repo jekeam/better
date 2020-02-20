@@ -201,7 +201,7 @@ def get_matches(bk_name, proxy, timeout, api_key, x_session, x_device_uuid, prox
                             participant_1 = participants[1]
                             # TODO witout home/ away
                             # [{'alignment': 'neutral', 'id': 1103553309, 'name': 'Over', 'order': 0, 'rotation': 16}, {'alignment': 'neutral', 'id': 1103553310, 'name': 'Under', 'order': 0, 'rotation': 17}]
-                            if participant_0.get('alignment') != 'neutral':
+                            if participant_0.get('alignment') in ('home', 'away'):
                                 if participant_0.get('alignment') == 'home':
                                     team1 = participant_0.get('name')
                                     team2 = participant_1.get('name')
