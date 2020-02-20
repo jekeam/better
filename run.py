@@ -241,11 +241,11 @@ def set_api(bk_name, proxy, session):
                 xs = requests.post
                 
             if DEBUG:
-                username: "ES1096942"
-                password: "11112007_A"
+                username = "ES1096942"
+                password = "11112007_A"
             else:
-                username: "IS1204996"
-                password: "p1962Abce"
+                username = "IS1204996"
+                password = "p1962Abce"
             res = xs(
                 url='https://api.arcadia.pinnacle.com/0.1/sessions',
                 # url='http://192.168.1.143:8888',
