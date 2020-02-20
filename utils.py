@@ -105,15 +105,6 @@ sport_list_raw = [
         # 'place': ['pre']
     },
     {
-        'name': 'hockey',
-        'olimp': 2,
-        'fonbet': 2,
-        'pinnacle': 19,
-        'min': 60,
-        'place': ['live', 'pre']
-        # 'place': ['pre']
-    },
-    {
         'name': 'table-tennis',
         'olimp': 40,
         'fonbet': 3088,
@@ -128,6 +119,15 @@ sport_list_raw = [
         'pinnacle': None,  # TODO
         # 'place': ['live', 'pre']
         'place': ['pre']
+    },
+    {
+        'name': 'hockey',
+        'olimp': 2,
+        'fonbet': 2,
+        'pinnacle': 19,
+        'min': 60,
+        'place': ['live', 'pre']
+        # 'place': ['pre']
     },
 ]
 sport_list = list(reversed(sport_list_raw))

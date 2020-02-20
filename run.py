@@ -724,12 +724,8 @@ def get_rate(team1_bk1, team2_bk1, team1_bk2, team2_bk2, debug=False):
 
 
 def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
-    json_bk1_copy = dict()
-    json_bk2_copy = dict()
-
     need = 1.5
     prnts('start_event_mapping, need: ' + str(need))
-
     not_compare = list()
     pair_mathes_found = dict()
     # for id, js in arr_matchs.items():
@@ -738,11 +734,13 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
     while True:
         try:
             pair_bk = list(itertools.combinations(bk_working, 2))
-            # print('delete fb-ol - pair')
+            # print('pair_bk: ' + str(pair_bk))
             # pair_bk.pop(2)
             bk_rate_list = list()
             bk_rate_sorted = list()
             for bk_name1, bk_name2 in pair_bk:
+                json_bk1_copy = dict()
+                json_bk2_copy = dict()
                 for j in list(arr_matchs):
                     if arr_matchs[j].get('bk_name', '') == bk_name1:
                         json_bk1_copy[j] = arr_matchs[j]
@@ -817,7 +815,6 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                             not_compare.append('del;' + bkr.get('match_name'))
                 bk_rate_sorted = list(filter(lambda x: x is not None, bk_rate_sorted))
                 bk_rate_sorted.sort(key=lambda val: val.get('rate', 0), reverse=True)
-    
                 for e in bk_rate_sorted:
                     pair = []
                     # main_rate = e.get('rate', 0)
@@ -832,8 +829,9 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                         except:
                             pass
                     pair.sort(key=lambda p: 'z' if p in ('live', 'pre') else p)
-                    # print(pair)
-                    pair = [pair[0], pair[1], pair[2], pair[3]]
+                    
+                    # print('pair: ' + str(pair))
+                    # pair = [pair[0], pair[1], pair[2], pair[3]]
                     pair.append(e.get('match_name'))
                     pair.append(e.get('rate'))
                     pair.append(bk_name1)

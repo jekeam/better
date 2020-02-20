@@ -186,7 +186,7 @@ def get_matches(bk_name, proxy, timeout, api_key, x_session, x_device_uuid, prox
                                                   # закомментить для добавления сетов и геймов
                                           ) or (x.get('league', {}).get('sport', {}).get('name', '') == 'Hockey'),
                                 res):
-                            if str(l.get('id')) in '1095950676':
+                            if str(l.get('id')) in '1102576922':
                                 print(json.dumps(l))
                             # {'ageLimit': 0, 'altTeaser': False, 'external': {}, 'hasLive': True, 'hasMarkets': True, 'id': 1094249412, 'isHighlighted': False, 'isLive': True, 'isPromoted': False, 
                             # 'league': {'ageLimit': 0, 'external': {}, 'featureOrder': -1, 'group': 'World', 'id': 1863, 'isFeatured': False, 'isHidden': False, 'isPromoted': False, 'isSticky': False, 
@@ -199,34 +199,37 @@ def get_matches(bk_name, proxy, timeout, api_key, x_session, x_device_uuid, prox
                             participants = l.get('participants', [{}])
                             participant_0 = participants[0]
                             participant_1 = participants[1]
-                            if participant_0.get('alignment') == 'home':
-                                team1 = participant_0.get('name')
-                                team2 = participant_1.get('name')
-                                score1 = participant_0.get('state', {}).get('score', participant_0.get('score', ''))
-                                score2 = participant_1.get('state', {}).get('score', participant_1.get('score', ''))
-                            elif participant_0.get('alignment') == 'away':
-                                team2 = participant_0.get('name')
-                                team1 = participant_1.get('name')
-                                score2 = participant_0.get('state', {}).get('score', participant_0.get('score', ''))
-                                score1 = participant_1.get('state', {}).get('score', participant_1.get('score', ''))
-                            data[l.get('id')] = {
-                                'time_req': round(time.time()),
-                                'place': place,
-                                'bk_name': bk_name,
-                                'match_id': l.get('id'),
-                                'league': l.get('league', {}).get('group') + '-' + l.get('league', {}).get('name'),
-                                'team1': team1,
-                                'team2': team2,
-                                'name': team1 + '-' + team2,
-                                'score': str(score1) + ':' + str(score2),
-                                'state': l.get('state', {}).get('state'),
-                                'minute': float(l.get('state', {}).get('minutes', 0)),
-                                'sport_id': sport_id,
-                                'sport_name': sport_name,
-                                'start_time': int(datetime.datetime.strptime(l.get('startTime'), '%Y-%m-%dT%H:%M:%SZ').timestamp()),
-                                'units': l.get('units'),
-                                'liveMode': l.get('liveMode')
-                            }
+                            # TODO witout home/ away
+                            # [{'alignment': 'neutral', 'id': 1103553309, 'name': 'Over', 'order': 0, 'rotation': 16}, {'alignment': 'neutral', 'id': 1103553310, 'name': 'Under', 'order': 0, 'rotation': 17}]
+                            if participant_0.get('alignment') != 'neutral':
+                                if participant_0.get('alignment') == 'home':
+                                    team1 = participant_0.get('name')
+                                    team2 = participant_1.get('name')
+                                    score1 = participant_0.get('state', {}).get('score', participant_0.get('score', ''))
+                                    score2 = participant_1.get('state', {}).get('score', participant_1.get('score', ''))
+                                elif participant_0.get('alignment') == 'away':
+                                    team2 = participant_0.get('name')
+                                    team1 = participant_1.get('name')
+                                    score2 = participant_0.get('state', {}).get('score', participant_0.get('score', ''))
+                                    score1 = participant_1.get('state', {}).get('score', participant_1.get('score', ''))
+                                data[l.get('id')] = {
+                                    'time_req': round(time.time()),
+                                    'place': place,
+                                    'bk_name': bk_name,
+                                    'match_id': l.get('id'),
+                                    'league': l.get('league', {}).get('group') + '-' + l.get('league', {}).get('name'),
+                                    'team1': team1,
+                                    'team2': team2,
+                                    'name': team1 + '-' + team2,
+                                    'score': str(score1) + ':' + str(score2),
+                                    'state': l.get('state', {}).get('state'),
+                                    'minute': float(l.get('state', {}).get('minutes', 0)),
+                                    'sport_id': sport_id,
+                                    'sport_name': sport_name,
+                                    'start_time': int(datetime.datetime.strptime(l.get('startTime'), '%Y-%m-%dT%H:%M:%SZ').timestamp()),
+                                    'units': l.get('units'),
+                                    'liveMode': l.get('liveMode')
+                                }
                 except Exception as e:
                     exc_type, exc_value, exc_traceback = sys.exc_info()
                     err_str = bk_name + ' ' + url.format(sport_id) + ' ' + 'error: ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
