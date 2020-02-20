@@ -188,6 +188,8 @@ def get_matches(bk_name, proxy, timeout, api_key, x_session, x_device_uuid, prox
                                 res):
                             if str(l.get('id')) in '1102576922':
                                 print(json.dumps(l))
+                            # if place == 'pre':
+                            #     print(l)
                             # {'ageLimit': 0, 'altTeaser': False, 'external': {}, 'hasLive': True, 'hasMarkets': True, 'id': 1094249412, 'isHighlighted': False, 'isLive': True, 'isPromoted': False, 
                             # 'league': {'ageLimit': 0, 'external': {}, 'featureOrder': -1, 'group': 'World', 'id': 1863, 'isFeatured': False, 'isHidden': False, 'isPromoted': False, 'isSticky': False, 
                             # 'matchupCount': 3, 'name': 'Club Friendlies', 'sport': {'featureOrder': 0, 'id': 29, 'isFeatured': True, 'isHidden': False, 'isSticky': False, 'matchupCount': 532, 

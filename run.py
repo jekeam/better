@@ -395,7 +395,6 @@ def start_seeker_matchs(bk_name, proxies_container, arr_matchs, place, session):
             elif bk_name == 'pinnacle':
                 resp, time_resp = util_pinnacle.get_matches(bk_name, proxy, TIMEOUT_LIST, api_key, x_session, x_device_uuid, proxies_container[bk_name]['proxy_list'], session, place)
                 set_matches_pinnacle(bk_name, resp, arr_matchs, match_id_work)
-            # print(bk_name, place, str(arr_matchs))
         except TimeOut as e:
             err_str = 'Timeout: ошибка призапросе списока матчей из ' + bk_name
             prnts(err_str)
