@@ -51,7 +51,7 @@ def if_exists_by_sport(jsos_list: dict, bk_name: str, sport_id: str, check_key: 
 
 
 bk_working = [
-    'pinnacle',
+    # 'pinnacle',
     'olimp',
     'fonbet',
 ]

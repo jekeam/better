@@ -18,7 +18,8 @@ from utils import DEBUG
 urllib3.disable_warnings()
 
 TIME_OUT = 4
-CHUNKS = 550
+# CHUNKS = 550
+CHUNKS = 5
 
 UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3163.100 Safari/537.36'
 
@@ -130,12 +131,12 @@ def check_proxy(proxies_for_check, valid_proxies, url, headers):
                 timeout=TIME_OUT,
                 verify=False
             )
-            print('f valid: ' + str(prx), str(resp.status_code))
+            print('valid: ' + str(prx), str(resp.status_code))
             if prx not in valid_proxies:
                 valid_proxies.append(prx)
         except Exception as e:
             pass
-            print('f invalid: ' + str(prx), str(e))
+            print('invalid: ' + str(prx), str(e))
 
 
 def check_proxies(proxies_list, url, headers):
@@ -354,11 +355,11 @@ if __name__ == '__main__':
         'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36',
         'x-api-key': app_key
     }
-    # url_pinnacle = 'guest.api.arcadia.pinnacle.com/0.1/sports/29/matchups/live'
-    url_pinnacle = 'api.arcadia.pinnacle.com/0.1/sports/29/markets/live/straight?primaryOnly=false'
-    proxy_list_pinnacle = get_proxy_from_file('proxy_by_pinnacle.txt')
-    proxy_list_pinnacle = proxy_list
-    proxy_list_https = (list(filter(lambda p: 'https' in p, proxy_list_pinnacle)))
-    proxy_list_pinnacle = check_proxies(proxy_list_https, url_pinnacle, headers_pinnacle)
+    url_pinnacle = 'api.arcadia.pinnacle.com/0.1/sports/29/matchups/live'
+    # url_pinnacle = 'api.arcadia.pinnacle.com/0.1/sports/29/markets/live/straight?primaryOnly=false'
+    # proxy_list_pinnacle = get_proxy_from_file('proxy_by_pinnacle.txt')
+    # proxy_list_pinnacle = proxy_list
+    # proxy_list_https = (list(filter(lambda p: 'https' in p, proxy_list_pinnacle)))
+    proxy_list_pinnacle = check_proxies(proxy_list_ol, url_pinnacle, headers_pinnacle)
     save_list(proxy_list_pinnacle, pn_fl)
     time.sleep(3)
