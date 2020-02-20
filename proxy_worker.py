@@ -361,5 +361,5 @@ if __name__ == '__main__':
     # proxy_list_pinnacle = proxy_list
     # proxy_list_https = (list(filter(lambda p: 'https' in p, proxy_list_pinnacle)))
     proxy_list_pinnacle = check_proxies(proxy_list_ol, url_pinnacle, headers_pinnacle)
-    save_list(proxy_list_pinnacle, pn_fl)
+    save_list(proxy_list_pinnacle, pn_fl, clone=4000)
     time.sleep(3)
