@@ -278,7 +278,7 @@ def start_seeker_matchs(bk_name, proxies_container, arr_matchs, place, session):
         x_session = pinn_session_data.get('x_session')
         x_device_uuid = pinn_session_data.get('x_device_uuid')
     
-    if 'olimp' == bk_name and place == 'pre':
+    if 'olimp' == bk_name:
         try:
             df = pd.read_csv('top_by_name.csv', encoding='utf-8', sep=';')
             my_top = list(df[(df['is_top'] == 2)]['liga_name'])
