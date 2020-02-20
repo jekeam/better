@@ -146,7 +146,6 @@ def get_matches(bk_name, proxy, timeout, api_key, x_session, x_device_uuid, prox
         url = url_pre
     proxies = {'https': proxy}
     data = {}
-    res = {}
     resp = {}
     for sport in utils.sport_list:
         sport_id = sport.get('pinnacle')
@@ -179,7 +178,7 @@ def get_matches(bk_name, proxy, timeout, api_key, x_session, x_device_uuid, prox
                     if type(res) != list:
                         res_status = res.get('status', 404)
                     if res_status != 200:
-                        err_str = bk_name + ' ' + url.format(sport_id) + ' ' + 'error, res_status: ' + str(res_status) + ', res: ' + str(res)
+                        err_str = bk_name + ' ' + url.format(sport_id) + ' ' + 'error, res_status: ' + str(res_status) + ', res: ' + str(res.text)
                         utils.prnts(err_str)
                         pass
                     else:
@@ -235,6 +234,9 @@ def get_matches(bk_name, proxy, timeout, api_key, x_session, x_device_uuid, prox
                 except Exception as e:
                     exc_type, exc_value, exc_traceback = sys.exc_info()
                     err_str = bk_name + ' ' + url.format(sport_id) + ' ' + 'error: ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
+                    if res:
+                        if res.text:
+                            err_str + '\ndata:' + res.text
                     utils.prnts(err_str)
                     raise ValueError('Exception: ' + str(e))
                 if resp.status_code != 200:
