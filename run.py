@@ -239,6 +239,13 @@ def set_api(bk_name, proxy, session):
                 xs = session.post
             else:
                 xs = requests.post
+                
+            if DEBUG:
+                username: "ES1096942"
+                password: "11112007_A"
+            else:
+                username: "IS1204996"
+                password: "p1962Abce"
             res = xs(
                 url='https://api.arcadia.pinnacle.com/0.1/sessions',
                 # url='http://192.168.1.143:8888',
@@ -247,10 +254,8 @@ def set_api(bk_name, proxy, session):
                 verify=False,
                 headers=head,
                 json={
-                    # "username": "ES1096942",
-                    # "password": "11112007_A"
-                    "username": "IS1204996",
-                    "password": "p1962Abce"
+                    "username": username,
+                    "password": password
                 }
             )
             resp = res.json()
@@ -726,8 +731,8 @@ def get_rate(team1_bk1, team2_bk1, team1_bk2, team2_bk2, debug=False):
 def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
     need = 1.5
     prnts('start_event_mapping, need: ' + str(need))
-    # for id, js in arr_matchs.items():
-    #     print(id, str(js))
+    for id, js in arr_matchs.items():
+        print(id, str(js))
     
     while True:
         try:
@@ -847,7 +852,7 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                         poz_bk1 = -2
                         poz_bk2 = -1
                         if pair not in pair_mathes:
-                            print('pair: ' + str(pair))
+                            # print('pair: ' + str(pair))
                             conflict = False
                             is_exists = False
                             for p in pair_mathes:
