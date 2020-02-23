@@ -1296,8 +1296,8 @@ def mon_cupon(arr_cupon, stat_reqs):
                     req_cnt = list(cnt[0])
                     if req_cnt:
                         bk_stat = bk_stat + '\n' + bk_name + \
-                                  ', err = ' + str(round(err_cnt / len(req_cnt) * 100, 1)) + '%' + \
-                                  ', avg_sec = ' + str(round(median(req_cnt), 2))
+                                  '  err=' + str(round(err_cnt / len(req_cnt) * 100, 1)) + '%' + \
+                                  '  avg_sec=' + str(round(median(req_cnt), 2))
             arr_cupon[0] = str(int((curr_id - id_old) / minute)) + ' куп./мин.\n' + 'Прематч доступен на ' + str(round(max_min_prematch / 60)) + ' ч.' + bk_stat
 
             prnts('activity ' + str(arr_cupon[0]) + ' coupons per/min')
