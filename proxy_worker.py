@@ -332,7 +332,8 @@ if __name__ == '__main__':
     time.sleep(3)
     # OL
     proxy_list_ol = get_proxy_from_file('proxy_for_olimp.txt')
-    proxy_list_ol = (list(filter(lambda p: 'https' in p, proxy_list_ol)))
+    # proxy_list_ol = (list(filter(lambda p: 'https' in p, proxy_list_ol)))
+    proxy_list_ol = (list(filter(lambda p: 'http' in p, proxy_list_ol)))
     proxy_list_olimp = check_proxies_olimp(proxy_list_ol)
     save_list(proxy_list_olimp, ol_fl, clone=4000)
     time.sleep(3)
