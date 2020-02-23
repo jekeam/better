@@ -205,13 +205,13 @@ def get_fonbet(resp, arr_matchs, place):
     # ['16453828': {'bk_name': 'fonbet', 'sport_id': 1, 'sport_name': 'Football', 'name': '', 'team1': 'Nadi', 'team2': 'Suva'}, ....]
 
 
-def set_matches_pinnacle(bk_name, resp, arr_matchs, match_id_work):
+def set_matches_pinnacle(bk_name, resp, arr_matchs, match_id_work, place):
     for match_id, match_data in resp.items():
         for key in list(match_data):
             if key not in ('bk_name', 'sport_id', 'sport_name', 'name', 'team1', 'team2', 'start_time', 'minute', 'score', 'place', 'time_req'):
                 match_data.pop(key)
         arr_matchs[str(match_id)] = match_data
-        # print(str(match_id) + ' ' + match_data.get('sport_name') + ' ' + match_data.get('name'))
+        # print(str(match_id) + ' ' + match_data.get('sport_name') + ' ' + match_data.get('name') + ' ' + place)
 
 
 def set_api(bk_name, proxy, session):
@@ -391,12 +391,11 @@ def start_seeker_matchs(bk_name, proxies_container, arr_matchs, place, session):
                 time_sleep = max(0, (time_out - time_resp))
                 if DEBUG:
                     pass
-                    # prnts('Фонбет, поиск матчей, время ответа: ' + str(time_resp) + ', запрос через ' +
-                    #       str(time_sleep) + ' ' + proxy)
+                    # prnts('Фонбет, поиск матчей, время ответа: ' + str(time_resp) + ', запрос через ' + str(time_sleep) + ' ' + proxy)
                 time.sleep(time_sleep)
             elif bk_name == 'pinnacle':
                 resp, time_resp = util_pinnacle.get_matches(bk_name, proxy, TIMEOUT_LIST, api_key, x_session, x_device_uuid, proxies_container[bk_name]['proxy_list'], session, place)
-                set_matches_pinnacle(bk_name, resp, arr_matchs, match_id_work)
+                set_matches_pinnacle(bk_name, resp, arr_matchs, match_id_work, place)
         except TimeOut as e:
             err_str = 'Timeout: ошибка призапросе списока матчей из ' + bk_name
             prnts(err_str)
@@ -733,8 +732,8 @@ def get_rate(team1_bk1, team2_bk1, team1_bk2, team2_bk2, debug=False):
 def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
     need = 1.5
     prnts('start_event_mapping, need: ' + str(need))
-    for id, js in arr_matchs.items():
-        print(id, str(js))
+    # for id, js in arr_matchs.items():
+    #     print(id, str(js))
 
     while True:
         try:
@@ -783,7 +782,6 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                                             bk2_match_info.get('team2', '')
                                         )
                                         deff_time = abs((bk1_match_info.get('start_time') - bk2_match_info.get('start_time')) / 60)
-                                        # print(deff_time)
                                         if rate < 2.0 and rate > need and (
                                                 (bk1_match_info.get('sport_name') == 'football' and deff_time > 12)
                                                 or (bk1_match_info.get('sport_name') == 'hockey' and deff_time > 30)

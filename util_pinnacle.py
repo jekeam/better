@@ -157,132 +157,135 @@ def get_matches(bk_name, proxy, timeout, api_key, x_session, x_device_uuid, prox
     for sport in utils.sport_list:
         sport_id = sport.get('pinnacle')
         sport_name = sport.get('name')
-        if sport_id:
-            try:
-                if session:
-                    sx = session.get
-                else:
-                    sx = requests.get
-                    # utils.prnts('session get_matches: ' + str(session))
-                resp = sx(
-                    url.format(sport_id),
-                    headers=head,
-                    timeout=timeout,
-                    verify=False,
-                    proxies=proxies,
-                )
+        if utils.if_exists_by_sport(utils.sport_list, bk_name, sport_id, 'place', place):
+            if sport_id:
                 try:
-                    res = resp.json()
-                    check_data(res, sport_id, place, api_key)
-                    # {'detail': 'The requested URL was not found on the server.  If you entered the URL manually please check your spelling and try again.', 'status': 404, 'title': 'Not Found', 'type': 'about:blank'}
-                    # print(json.dumps(res))
-                    # print('---')
-                    res_status = 200
-                    if type(res) != list:
-                        res_status = res.get('status', 404)
-                    if res_status != 200:
-                        err_str = bk_name + ' ' + url.format(sport_id) + ' ' + 'error, res_status: ' + str(res_status) + ', res: ' + str(res.text)
-                        utils.prnts(err_str)
-                        pass
+                    if session:
+                        sx = session.get
                     else:
-                        for l in filter(
-                                lambda x: (
-                                                  x.get('league', {}).get('sport', {}).get('name', '') != 'Hockey' and x.get('liveMode', '') == 'live_delay'
-                                                  and x.get('units', '') == 'Regular'  # разкомментить для удаления угловых
-                                                  and (x.get('parent') if x.get('parent') else {}).get('participants', [{}])[0].get('name', '') == x.get('participants', [{}])[0].get('name', '')
-                                                  # закомментить для добавления сетов и геймов
-                                          ) or (x.get('league', {}).get('sport', {}).get('name', '') == 'Hockey'),
-                                res):
-                            if str(l.get('id')) in '1102576922':
-                                print(json.dumps(l))
-                            # if place == 'pre':
-                            #     print(l)
-                            # {'ageLimit': 0, 'altTeaser': False, 'external': {}, 'hasLive': True, 'hasMarkets': True, 'id': 1094249412, 'isHighlighted': False, 'isLive': True, 'isPromoted': False, 
-                            # 'league': {'ageLimit': 0, 'external': {}, 'featureOrder': -1, 'group': 'World', 'id': 1863, 'isFeatured': False, 'isHidden': False, 'isPromoted': False, 'isSticky': False, 
-                            # 'matchupCount': 3, 'name': 'Club Friendlies', 'sport': {'featureOrder': 0, 'id': 29, 'isFeatured': True, 'isHidden': False, 'isSticky': False, 'matchupCount': 532, 
-                            # 'name': 'Soccer', 'primaryMarketType': 'moneyline'}}, 'liveMode': 'live_delay', 'parent': {'id': 1094249362, 'participants': [{'alignment': 'home', 'name': 'Club Sport Emelec', 'score': None}, 
-                            # {'alignment': 'away', 'name': 'LDU de Portoviejo', 'score': None}], 'startTime': '2020-01-31T01:30:00+00:00'}, 'parentId': 1094249362, 'parlayRestriction': 'unique_matchups', 'participants':
-                            # [{'alignment': 'home', 'name': 'Club Sport Emelec', 'order': 0, 'state': {'score': 2}}, {'alignment': 'away', 'name': 'LDU de Portoviejo', 'order': 1, 'state': {'score': 0}}], 
-                            # 'periods': [{'cutoffAt': '2020-01-31T04:14:42Z', 'period': 0, 'status': 'open'}, {'cutoffAt': None, 'period': 1, 'status': 'settled'}], 'rotation': 1301, 'startTime': '2020-01-31T01:30:00Z',
-                            # 'state': {'minutes': 39, 'state': 3}, 'status': 'started', 'totalMarketCount': 2, 'type': 'matchup', 'units': 'Regular', 'version': 256440882}
-                            participants = l.get('participants', [{}])
-                            participant_0 = participants[0]
-                            participant_1 = participants[1]
-                            # TODO witout home/ away
-                            # [{'alignment': 'neutral', 'id': 1103553309, 'name': 'Over', 'order': 0, 'rotation': 16}, {'alignment': 'neutral', 'id': 1103553310, 'name': 'Under', 'order': 0, 'rotation': 17}]
-                            if participant_0.get('alignment') in ('home', 'away'):
-                                if participant_0.get('alignment') == 'home':
-                                    team1 = participant_0.get('name')
-                                    team2 = participant_1.get('name')
-                                    score1 = participant_0.get('state', {}).get('score', participant_0.get('score', ''))
-                                    score2 = participant_1.get('state', {}).get('score', participant_1.get('score', ''))
-                                elif participant_0.get('alignment') == 'away':
-                                    team2 = participant_0.get('name')
-                                    team1 = participant_1.get('name')
-                                    score2 = participant_0.get('state', {}).get('score', participant_0.get('score', ''))
-                                    score1 = participant_1.get('state', {}).get('score', participant_1.get('score', ''))
-                                data[l.get('id')] = {
-                                    'time_req': round(time.time()),
-                                    'place': place,
-                                    'bk_name': bk_name,
-                                    'match_id': l.get('id'),
-                                    'league': l.get('league', {}).get('group') + '-' + l.get('league', {}).get('name'),
-                                    'team1': team1,
-                                    'team2': team2,
-                                    'name': team1 + '-' + team2,
-                                    'score': str(score1) + ':' + str(score2),
-                                    'state': l.get('state', {}).get('state'),
-                                    'minute': float(l.get('state', {}).get('minutes', 0)),
-                                    'sport_id': sport_id,
-                                    'sport_name': sport_name,
-                                    'start_time': int(datetime.datetime.strptime(l.get('startTime'), '%Y-%m-%dT%H:%M:%SZ').timestamp()),
-                                    'units': l.get('units'),
-                                    'liveMode': l.get('liveMode')
-                                }
+                        sx = requests.get
+                        # utils.prnts('session get_matches: ' + str(session))
+                    resp = sx(
+                        url.format(sport_id),
+                        headers=head,
+                        timeout=timeout,
+                        verify=False,
+                        proxies=proxies,
+                    )
+                    try:
+                        res = resp.json()
+                        check_data(res, sport_id, place, api_key)
+                        # {'detail': 'The requested URL was not found on the server.  If you entered the URL manually please check your spelling and try again.', 'status': 404, 'title': 'Not Found', 'type': 'about:blank'}
+                        # print(json.dumps(res))
+                        # print('---')
+                        res_status = 200
+                        if type(res) != list:
+                            res_status = res.get('status', 404)
+                        if res_status != 200:
+                            err_str = bk_name + ' ' + url.format(sport_id) + ' ' + 'error, res_status: ' + str(res_status) + ', res: ' + str(res.text)
+                            utils.prnts(err_str)
+                            pass
+                        else:
+                            for l in filter(
+                                    lambda x: (
+                                                      x.get('league', {}).get('sport', {}).get('name', '') != 'Hockey' and x.get('liveMode', '') == 'live_delay'
+                                                      and x.get('units', '') == 'Regular'  # разкомментить для удаления угловых
+                                                      and (x.get('parent') if x.get('parent') else {}).get('participants', [{}])[0].get('name', '') == x.get('participants', [{}])[0].get('name', '')
+                                                      # закомментить для добавления сетов и геймов
+                                              ) or (x.get('league', {}).get('sport', {}).get('name', '') == 'Hockey'),
+                                    res):
+                                if str(l.get('id')) in '1102576922':
+                                    print(json.dumps(l))
+                                # if place == 'pre':
+                                #     print(l)
+                                # {'ageLimit': 0, 'altTeaser': False, 'external': {}, 'hasLive': True, 'hasMarkets': True, 'id': 1094249412, 'isHighlighted': False, 'isLive': True, 'isPromoted': False,
+                                # 'league': {'ageLimit': 0, 'external': {}, 'featureOrder': -1, 'group': 'World', 'id': 1863, 'isFeatured': False, 'isHidden': False, 'isPromoted': False, 'isSticky': False,
+                                # 'matchupCount': 3, 'name': 'Club Friendlies', 'sport': {'featureOrder': 0, 'id': 29, 'isFeatured': True, 'isHidden': False, 'isSticky': False, 'matchupCount': 532,
+                                # 'name': 'Soccer', 'primaryMarketType': 'moneyline'}}, 'liveMode': 'live_delay', 'parent': {'id': 1094249362, 'participants': [{'alignment': 'home', 'name': 'Club Sport Emelec', 'score': None},
+                                # {'alignment': 'away', 'name': 'LDU de Portoviejo', 'score': None}], 'startTime': '2020-01-31T01:30:00+00:00'}, 'parentId': 1094249362, 'parlayRestriction': 'unique_matchups', 'participants':
+                                # [{'alignment': 'home', 'name': 'Club Sport Emelec', 'order': 0, 'state': {'score': 2}}, {'alignment': 'away', 'name': 'LDU de Portoviejo', 'order': 1, 'state': {'score': 0}}],
+                                # 'periods': [{'cutoffAt': '2020-01-31T04:14:42Z', 'period': 0, 'status': 'open'}, {'cutoffAt': None, 'period': 1, 'status': 'settled'}], 'rotation': 1301, 'startTime': '2020-01-31T01:30:00Z',
+                                # 'state': {'minutes': 39, 'state': 3}, 'status': 'started', 'totalMarketCount': 2, 'type': 'matchup', 'units': 'Regular', 'version': 256440882}
+                                participants = l.get('participants', [{}])
+                                participant_0 = participants[0]
+                                participant_1 = participants[1]
+                                # TODO witout home/ away
+                                # [{'alignment': 'neutral', 'id': 1103553309, 'name': 'Over', 'order': 0, 'rotation': 16}, {'alignment': 'neutral', 'id': 1103553310, 'name': 'Under', 'order': 0, 'rotation': 17}]
+                                if participant_0.get('alignment') in ('home', 'away'):
+                                    if participant_0.get('alignment') == 'home':
+                                        team1 = participant_0.get('name')
+                                        team2 = participant_1.get('name')
+                                        score1 = participant_0.get('state', {}).get('score', participant_0.get('score', ''))
+                                        score2 = participant_1.get('state', {}).get('score', participant_1.get('score', ''))
+                                    elif participant_0.get('alignment') == 'away':
+                                        team2 = participant_0.get('name')
+                                        team1 = participant_1.get('name')
+                                        score2 = participant_0.get('state', {}).get('score', participant_0.get('score', ''))
+                                        score1 = participant_1.get('state', {}).get('score', participant_1.get('score', ''))
+                                    data[l.get('id')] = {
+                                        'time_req': round(time.time()),
+                                        'place': place,
+                                        'bk_name': bk_name,
+                                        'match_id': l.get('id'),
+                                        'league': l.get('league', {}).get('group') + '-' + l.get('league', {}).get('name'),
+                                        'team1': team1,
+                                        'team2': team2,
+                                        'name': team1 + '-' + team2,
+                                        'score': str(score1) + ':' + str(score2),
+                                        'state': l.get('state', {}).get('state'),
+                                        'minute': float(l.get('state', {}).get('minutes', 0)),
+                                        'sport_id': sport_id,
+                                        'sport_name': sport_name,
+                                        'start_time': int(datetime.datetime.strptime(l.get('startTime'), '%Y-%m-%dT%H:%M:%SZ').timestamp()),
+                                        'units': l.get('units'),
+                                        'liveMode': l.get('liveMode')
+                                    }
+                    except Exception as e:
+                        exc_type, exc_value, exc_traceback = sys.exc_info()
+                        err_str = bk_name + ' ' + url.format(sport_id) + ' ' + 'error: ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
+                        if resp:
+                            err_str + '\ndata:' + resp.text
+                        utils.prnts(err_str)
+                        raise ValueError('Exception: ' + str(e))
+                    if resp.status_code != 200:
+                        err_str = res.get("error")
+                        err_str = bk_name + ' ' + url.format(sport_id) + ' ' + 'error : ' + str(err_str)
+                        utils.prnts(err_str)
+                        raise ValueError(str(err_str))
+
+                except requests.exceptions.Timeout as e:
+                    exc_type, exc_value, exc_traceback = sys.exc_info()
+                    err_str = bk_name + ' ' + url.format(sport_id) + ' ' + 'error: ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
+                    utils.prnts(err_str)
+                    proxies = proxy_worker.del_proxy(proxy, proxy_list)
+                    raise exceptions.TimeOut(err_str)
+                except requests.exceptions.ConnectionError as e:
+                    exc_type, exc_value, exc_traceback = sys.exc_info()
+                    err_str = bk_name + ' ' + url.format(sport_id) + ' ' + 'error: ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
+                    utils.prnts(err_str)
+                    proxies = proxy_worker.del_proxy(proxy, proxy_list)
+                    raise ValueError(err_str)
+                except requests.exceptions.RequestException as e:
+                    exc_type, exc_value, exc_traceback = sys.exc_info()
+                    err_str = bk_name + ' ' + url.format(sport_id) + ' ' + 'error: ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
+                    utils.prnts(err_str)
+                    proxies = proxy_worker.del_proxy(proxy, proxy_list)
+                    raise ValueError(err_str)
+                except ValueError as e:
+                    exc_type, exc_value, exc_traceback = sys.exc_info()
+                    err_str = bk_name + ' ' + url.format(sport_id) + ' ' + 'error1: ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
+                    utils.prnts(err_str)
+                    proxi_list = proxy_worker.del_proxy(proxy, proxy_list)
+                    raise ValueError(err_str)
                 except Exception as e:
                     exc_type, exc_value, exc_traceback = sys.exc_info()
                     err_str = bk_name + ' ' + url.format(sport_id) + ' ' + 'error: ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
-                    if resp:
-                        err_str + '\ndata:' + resp.text
                     utils.prnts(err_str)
-                    raise ValueError('Exception: ' + str(e))
-                if resp.status_code != 200:
-                    err_str = res.get("error")
-                    err_str = bk_name + ' ' + url.format(sport_id) + ' ' + 'error : ' + str(err_str)
-                    utils.prnts(err_str)
-                    raise ValueError(str(err_str))
-
-            except requests.exceptions.Timeout as e:
-                exc_type, exc_value, exc_traceback = sys.exc_info()
-                err_str = bk_name + ' ' + url.format(sport_id) + ' ' + 'error: ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
-                utils.prnts(err_str)
-                proxies = proxy_worker.del_proxy(proxy, proxy_list)
-                raise exceptions.TimeOut(err_str)
-            except requests.exceptions.ConnectionError as e:
-                exc_type, exc_value, exc_traceback = sys.exc_info()
-                err_str = bk_name + ' ' + url.format(sport_id) + ' ' + 'error: ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
-                utils.prnts(err_str)
-                proxies = proxy_worker.del_proxy(proxy, proxy_list)
-                raise ValueError(err_str)
-            except requests.exceptions.RequestException as e:
-                exc_type, exc_value, exc_traceback = sys.exc_info()
-                err_str = bk_name + ' ' + url.format(sport_id) + ' ' + 'error: ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
-                utils.prnts(err_str)
-                proxies = proxy_worker.del_proxy(proxy, proxy_list)
-                raise ValueError(err_str)
-            except ValueError as e:
-                exc_type, exc_value, exc_traceback = sys.exc_info()
-                err_str = bk_name + ' ' + url.format(sport_id) + ' ' + 'error1: ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
-                utils.prnts(err_str)
-                proxi_list = proxy_worker.del_proxy(proxy, proxy_list)
-                raise ValueError(err_str)
-            except Exception as e:
-                exc_type, exc_value, exc_traceback = sys.exc_info()
-                err_str = bk_name + ' ' + url.format(sport_id) + ' ' + 'error: ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback)))
-                utils.prnts(err_str)
-                proxies = proxy_worker.del_proxy(proxy, proxy_list)
-                raise ValueError(err_str)
-    return data, resp.elapsed.total_seconds()
+                    proxies = proxy_worker.del_proxy(proxy, proxy_list)
+                    raise ValueError(err_str)
+            return data, resp.elapsed.total_seconds()
+    if not data:
+        return {}, 0
 
 
 MAX_VERSION = {}
