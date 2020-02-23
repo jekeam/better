@@ -94,7 +94,7 @@ def get_olimp(resp, arr_matchs, place='live', sport_id=None, arr_top_matchs=None
                                 prnts('my_slag ' + place + ' Event added: ' + str(match_id_str) + ', liga_name ' + str(liga_name) + ', liga_id: ' + str(liga_id))
                                 arr_top_matchs['slag'].append(match_id)
                             # elif liga_name not in my_top + my_middle + my_slag:
-                            elif max(list(map(lambda s: 1 if liga_name.lower() in s.lower()[0:len(liga_name)] else 0,  my_top + my_middle + my_slag))) == 0:
+                            elif max(list(map(lambda s: 1 if liga_name.lower() in s.lower()[0:len(liga_name)] else 0, my_top + my_middle + my_slag))) == 0:
                                 if liga_name not in liga_unknown:
                                     liga_unknown.append(liga_name)
                                     v_str = if_exists(sport_list, 'olimp', v_sport_id, 'name') + ';' + str(liga_name) + ';\n'
@@ -203,7 +203,8 @@ def get_fonbet(resp, arr_matchs, place):
         # if event['id'] == mid and event['kind'] > 1 and event['name'] in ['1st half', '2nd half', 'corners']:
     # print_j(len(arr_matchs))
     # ['16453828': {'bk_name': 'fonbet', 'sport_id': 1, 'sport_name': 'Football', 'name': '', 'team1': 'Nadi', 'team2': 'Suva'}, ....]
-    
+
+
 def set_matches_pinnacle(bk_name, resp, arr_matchs, match_id_work):
     for match_id, match_data in resp.items():
         for key in list(match_data):
@@ -232,14 +233,14 @@ def set_api(bk_name, proxy, session):
             except Exception as e:
                 # print(res.status_code, res.text)
                 raise ValueError(bk_name + ', возникла ошибка при запросе ключа, код ответа ' + str(res.status_code) + ': ' + str(e))
-    
+
             head.update({'x-api-key': api_key})
             head.update({'x-device-uuid': util_pinnacle.x_device_uuid_temp})
             if session:
                 xs = session.post
             else:
                 xs = requests.post
-                
+
             if DEBUG:
                 username = "ES1096942"
                 password = "11112007_A"
@@ -270,19 +271,20 @@ def set_api(bk_name, proxy, session):
     if util_pinnacle.x_device_uuid_temp:
         pinn_session_data.update({'x_device_uuid': util_pinnacle.x_device_uuid_temp})
     if x_session:
-        pinn_session_data.update({'x_session': x_session})    
+        pinn_session_data.update({'x_session': x_session})
+
 
 def start_seeker_matchs(bk_name, proxies_container, arr_matchs, place, session):
     global TIMEOUT_LIST, TIMEOUT_PRE_LIST, pinn_session_data
-    
+
     proxy = proxies_container[bk_name]['gen_proxi'].next()
     fail_proxy = 0
-    
+
     if 'pinnacle' == bk_name:
         api_key = pinn_session_data.get('api_key')
         x_session = pinn_session_data.get('x_session')
         x_device_uuid = pinn_session_data.get('x_device_uuid')
-    
+
     if 'olimp' == bk_name:
         try:
             df = pd.read_csv('top_by_name.csv', encoding='utf-8', sep=';')
@@ -295,7 +297,7 @@ def start_seeker_matchs(bk_name, proxies_container, arr_matchs, place, session):
                 prnts('my_slag: ' + str(my_slag))
         except Exception as e:
             prnts('err liga_top: ' + str(e))
-                
+
     while True:
         match_id_work = []
         if place == 'pre':
@@ -425,7 +427,7 @@ def start_seeker_matchs(bk_name, proxies_container, arr_matchs, place, session):
         # pass
         # prnts('Олимп, поиск матчей, время ответа: ' + str(time_resp) + ', запрос через ' + str(time_sleep) + ' ' + proxy)
 
-        time.sleep(time_sleep)        
+        time.sleep(time_sleep)
 
 
 def start_seeker_top_matchs_fonbet(proxies_container, arr_top_matchs, pair_mathes, arr_fonbet_top_kofs):
@@ -552,6 +554,7 @@ def start_seeker_bets_olimp(bets, match_id_olimp, proxies_container, pair_mathes
         n = n + 1
         time.sleep(time_sleep)
 
+
 def start_seeker_bets_fonbet(bets, match_id_fonbet, proxies_container, pair_mathes, mathes_complite, stat_reqs, arr_fonbet_top_kofs, place):
     global TIMEOUT_MATCH, TIMEOUT_MATCH_MINUS
     global TIMEOUT_PRE_MATCH, TIMEOUT_PRE_MATCH_MINUS
@@ -646,12 +649,12 @@ def starter_bets(bets, pair_mathes, mathes_complite, mathes_id_is_work, proxies_
             # print(pair_match)
             # pair_match: ['55486968', '19530853', 'volleyball', 'live', 'volleyball;55486968;Metallurg (W);Chromtau Women;19530853;Metallurg Temirtau (w);Hromtay (w);', 1.381, 'olimp', 'fonbet']
             match_id_bk1, match_id_bk2, event_type, place, event_name, kof_compare, bk_name1, bk_name2 = pair_match
-            
+
             if bk_name1 == 'olimp':
                 matchs_id = match_id_bk1
             elif bk_name2 == 'olimp':
                 matchs_id = match_id_bk2
-            if 'olimp' in bk_name1+bk_name2:
+            if 'olimp' in bk_name1 + bk_name2:
                 if matchs_id:
                     if matchs_id not in mathes_id_is_work:
                         mathes_id_is_work.append(matchs_id)
@@ -660,20 +663,20 @@ def starter_bets(bets, pair_mathes, mathes_complite, mathes_id_is_work, proxies_
                             args=(bets, matchs_id, proxies_container, pair_mathes, mathes_complite, stat_reqs, place)
                         )
                         start_seeker_olimp_bets_by_id.start()
-                        
+
             if bk_name1 == 'fonbet':
                 matchs_id = match_id_bk1
             elif bk_name2 == 'fonbet':
                 matchs_id = match_id_bk2
-            if 'fonbet' in bk_name1+bk_name2:
+            if 'fonbet' in bk_name1 + bk_name2:
                 if matchs_id not in mathes_id_is_work:
                     mathes_id_is_work.append(matchs_id)
-    
+
                     start_seeker_fonbet_bets_by_id = threading.Thread(
                         target=start_seeker_bets_fonbet,
                         args=(bets, matchs_id, proxies_container, pair_mathes, mathes_complite, stat_reqs, arr_fonbet_top_kofs, place))
                     start_seeker_fonbet_bets_by_id.start()
-        
+
             v_bk_name = 'pinnacle'
             if v_bk_name in bk_working:
                 # TODO onle exists successfull compare matches
@@ -732,7 +735,7 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
     prnts('start_event_mapping, need: ' + str(need))
     for id, js in arr_matchs.items():
         print(id, str(js))
-    
+
     while True:
         try:
             pair_bk = list(itertools.combinations(bk_working, 2))
@@ -752,14 +755,14 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                         json_bk2_copy[j] = arr_matchs[j]
                 for bk1_match_id, bk1_match_info in json_bk1_copy.items():
                     if [bk_name1 for bk_name1 in bk1_match_info.values() if bk_name1 is not None]:
-    
+
                         for bk2_match_id, bk2_match_info in json_bk2_copy.items():
                             if [bk_name2 for bk_name2 in bk2_match_info.values() if bk_name2 is not None]:
                                 # Проверим что матч не завершен:
                                 if bk1_match_id in mathes_complite.get(bk1_match_info.get('place'), []) or bk2_match_id in mathes_complite.get(bk2_match_info.get('place'), []):
                                     pass
                                 else:
-    
+
                                     match_name = str(bk1_match_info.get('sport_name')) + ';' + \
                                                  str(bk1_match_id) + ';' + \
                                                  str(bk1_match_info.get('team1')) + ';' + \
@@ -843,7 +846,7 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                     pair.append(bk_name1)
                     pair.append(bk_name2)
                     # ['55492410', '19534237', 'volleyball', 'live', 'volleyball;55492410;BGPU Minsk (W);Immanuel Kant Baltic Federal University (W);19534237;BGPU Minsk (w);BFU im. I. Kant (w);', 1.298, 'olimp', 'fonbet']
-                    
+
                     if pair[0] in mathes_complite.get(pair[3], []) or pair[1] in mathes_complite.get(pair[3], []):
                         pass
                     else:
@@ -870,18 +873,18 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                                         is_exists = True
                                 if conflict:
                                     pair_mathes.remove(p)
-                                    serv_log('compare_teams', 'del;' + str(p[poz_rate-1]) + 'conflict')
+                                    serv_log('compare_teams', 'del;' + str(p[poz_rate - 1]) + 'conflict')
                                     pair_mathes.append(pair)
-                                    serv_log('compare_teams', 'add;' + pair[poz_rate-1] + 'conflict')
-                                
-                                    pair_key = str(pair[0])+ '-' + str(pair[1])
+                                    serv_log('compare_teams', 'add;' + pair[poz_rate - 1] + 'conflict')
+
+                                    pair_key = str(pair[0]) + '-' + str(pair[1])
                                     if not pair_mathes_found.get(pair_key):
                                         pair_mathes_found.update({pair_key: 0})
                             if not conflict and not is_exists:
                                 pair_mathes.append(pair)
-                                serv_log('compare_teams', 'add;' + pair[poz_rate-1])
-                                
-                                pair_key = str(pair[0])+ '-' + str(pair[1])
+                                serv_log('compare_teams', 'add;' + pair[poz_rate - 1])
+
+                                pair_key = str(pair[0]) + '-' + str(pair[1])
                                 if not pair_mathes_found.get(pair_key):
                                     pair_mathes_found.update({pair_key: 0})
                 # for x in pair_mathes:
@@ -899,6 +902,7 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
 
 def get_forks(forks, forks_meta, pair_mathes, bets, arr_top_matchs, arr_values):
     global opposition
+
     def forks_meta_upd(forks_meta, forks):
         # Перед удалением сохраним время жизни вылки
         live_fork_total = forks_meta.get(bet_key, {}).get('live_fork_total', 0) + forks.get(bet_key, {}).get('live_fork', 0)
@@ -913,7 +917,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets, arr_top_matchs, arr_values):
                     is_top = 'top'
                 elif int(pair_math[0]) in arr_top_matchs.get('middle', []) or int(pair_math[1]) in arr_top_matchs.get('middle', []):
                     is_top = 'middle'
-                
+
                 # BK1 - old - olimp
                 math_json_bk1 = bets.copy().get(pair_math[0], {})
                 math_json_bk2 = bets.copy().get(pair_math[1], {})
@@ -966,63 +970,63 @@ def get_forks(forks, forks_meta, pair_mathes, bets, arr_top_matchs, arr_values):
 
                         k_bk1 = math_json_bk1.get('kofs', {}).get(kof_type_bk1, {})
                         k_bk2 = math_json_bk2.get('kofs', {}).get(kof_type_bk2, {})
-                        
-                        v_bk1 = k_bk1.get('value', 0.0) # 1
-                        v_bk1_2 = math_json_bk1.get('kofs', {}).get(kof_type_bk2, {}).get('value', 0.0) # X2
+
+                        v_bk1 = k_bk1.get('value', 0.0)  # 1
+                        v_bk1_2 = math_json_bk1.get('kofs', {}).get(kof_type_bk2, {}).get('value', 0.0)  # X2
                         if v_bk1 and v_bk1_2:
-                            v_bk1_margin = round((1/v_bk1+1/v_bk1_2-1) * 100, 2)
+                            v_bk1_margin = round((1 / v_bk1 + 1 / v_bk1_2 - 1) * 100, 2)
                         else:
                             v_bk1_margin = None
-                            
-                        v_bk2 = k_bk2.get('value', 0.0) # X2
-                        v_bk2_2 = math_json_bk2.get('kofs', {}).get(kof_type_bk1, {}).get('value', 0.0) # 1
+
+                        v_bk2 = k_bk2.get('value', 0.0)  # X2
+                        v_bk2_2 = math_json_bk2.get('kofs', {}).get(kof_type_bk1, {}).get('value', 0.0)  # 1
                         if v_bk2 and v_bk2_2:
-                            v_bk2_margin = round((1/v_bk2+1/v_bk2_2-1) * 100, 2)
+                            v_bk2_margin = round((1 / v_bk2 + 1 / v_bk2_2 - 1) * 100, 2)
                         else:
                             v_bk2_margin = None
-                            
+
                         v_name = math_json_bk1.get('name', '')
-                        
+
                         try:
-                            if type_time == 'pre' and 1==0:
-                            # if event_type in ('football', 'hockey'):
+                            if type_time == 'pre' and 1 == 0:
+                                # if event_type in ('football', 'hockey'):
                                 # ОП=В*(К-1)*С-(1-В)*С
                                 value_arr = [
                                     [v_bk1, v_bk2_2, 'Олимп на {}\nсобытие:' + kof_type_bk1 + '={}\nзавышен ~ на: {}\nожидаемая прибыль: {}%', kof_type_bk1],
-                                    [v_bk2, v_bk1_2, 'Фонбет на {}\nсобытие:' + kof_type_bk2 + '={}\nзавышен ~ на: {}\nожидаемая прибыль: {}%', kof_type_bk2], 
+                                    [v_bk2, v_bk1_2, 'Фонбет на {}\nсобытие:' + kof_type_bk2 + '={}\nзавышен ~ на: {}\nожидаемая прибыль: {}%', kof_type_bk2],
                                     # [v_bk2_2, v_bk1, 'Валуйная ставка в\nФонбет на {}\nсобытие:' + kof_type_bk1 + '={}\nзавышен ~ на: {}\nожидаемая прибыль: {}%', kof_type_bk1], 
                                     # [v_bk1_2, v_bk2, 'Валуйная ставка в\nОлимп на {}\nсобытие:' + kof_type_bk2 + '={}\nзавышен ~ на: {}\nожидаемая прибыль: {}%', kof_type_bk2]
                                 ]
                                 msg = ''
                                 for p_vals in value_arr:
-                                    K = p_vals[0] # Коф в одной БК
-                                    V = p_vals[1] # Коф в другой БК (считаем как нашу вероятность)
-                                    if K and V and K <= 2.3 and start_after_min <= 60*20:
+                                    K = p_vals[0]  # Коф в одной БК
+                                    V = p_vals[1]  # Коф в другой БК (считаем как нашу вероятность)
+                                    if K and V and K <= 2.3 and start_after_min <= 60 * 20:
                                         # ОП=В*(К-1)*С-(1-В)*С, где
                                         # ОП — ожидаемая прибыль;
                                         # В — математическая вероятность наступления исхода (выражается значением от 0 до 1);
                                         # С — сумма ставки;
                                         # К — котировка события.
-                                        B = 1/V
+                                        B = 1 / V
                                         C = 1000
-                                        val = round((B*(K-1)*C) -((1-B)*C), 2)
+                                        val = round((B * (K - 1) * C) - ((1 - B) * C), 2)
                                         if val >= 150:
-                                            if msg!='':
+                                            if msg != '':
                                                 msg = msg + '\n\nили\n\n'
                                             else:
                                                 msg = 'Валуйная ставка в\n'
-                                            msg = msg + p_vals[2].format(event_type[0:1].upper() + event_type[1:] + ', лига:' + str(is_top) + '\n' + 
-                                              v_name + '\n' + 
-                                              'Старт через: ' + str(round(start_after_min/60, 1)) + 'ч.',
-                                              K, 
-                                              round(K-V, 2), 
-                                              round(val/C*100, 2)
-                                            )
+                                            msg = msg + p_vals[2].format(event_type[0:1].upper() + event_type[1:] + ', лига:' + str(is_top) + '\n' +
+                                                                         v_name + '\n' +
+                                                                         'Старт через: ' + str(round(start_after_min / 60, 1)) + 'ч.',
+                                                                         K,
+                                                                         round(K - V, 2),
+                                                                         round(val / C * 100, 2)
+                                                                         )
                                             # TODO_REF
                                             # bet_key_values = v_name + ' ' + str(K) + '/' + str(V)
                                             # skolko stavit (КхV-1)/(К-1)=% от банка.
                                 if msg != '':
-                                    temp_key = v_name+p_vals[3]
+                                    temp_key = v_name + p_vals[3]
                                     if temp_key not in arr_values and msg not in arr_values:
                                         arr_values.append(temp_key)
                                         arr_values.append(msg)
@@ -1052,7 +1056,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets, arr_top_matchs, arr_values):
                                 fork_hide_time = 4
                             is_fork = True if L < 1 and deff_time < fork_hide_time else False
                             if is_fork:  # or True
-                                
+
                                 # TODO ID BK_NAME = FONBET
                                 time_break_fonbet = False
                                 period = 0
@@ -1233,6 +1237,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets, arr_top_matchs, arr_values):
         finally:
             time.sleep(1)
 
+
 def set_stat_reqs(stat_reqs, bk_name, time_resp=None):
     if stat_reqs.get(bk_name) is None:
         stat_reqs[bk_name] = [[], 0]
@@ -1251,19 +1256,19 @@ def stat_req(stat_reqs):
                     err_cnt = cnt[1]
                     req_cnt = list(cnt[0])
                     if req_cnt:
-                        prnts(bk_name + ' cnt:' + str(len(req_cnt)) + 
+                        prnts(bk_name + ' cnt:' + str(len(req_cnt)) +
                               '/' + str(err_cnt) +
                               ' err: ' + str(round(err_cnt / len(req_cnt) * 100)) +
                               '% avg:' + str(round(sum(req_cnt) / len(req_cnt), 2)) +
                               ' max:' + str(max(req_cnt)) +
                               ' mode:' + str(round(find_max_mode(req_cnt), 2)) +
                               ' median:' + str(round(median(req_cnt), 2))
-                        )
+                              )
             time.sleep(time_sleep_proc)
         except Exception:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             prnts('scan error stat_req: ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
-            time.sleep(time_sleep_proc/3)
+            time.sleep(time_sleep_proc / 3)
 
 
 def mon_cupon(arr_cupon):
@@ -1285,7 +1290,7 @@ def mon_cupon(arr_cupon):
             id_old = df[(df['time'] >= (cur_time - (60 * minute)))]['cupon_id'].min()
             arr_cupon[0] = str(int((curr_id - id_old) / minute)) + ' куп./мин.\n' + 'Прематч доступен на ' + str(round(max_min_prematch / 60)) + ' ч.'
             prnts('activity ' + str(arr_cupon[0]) + ' coupons per/min')
-            time.sleep( (minute * 60 - 20) / 3 )
+            time.sleep((minute * 60 - 20) / 3)
         except Exception:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             prnts('scan error mon_cupon: ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
@@ -1312,7 +1317,7 @@ if __name__ == '__main__':
         prnts('time_sleep_proc: ' + str(time_sleep_proc))
         prnts('max_hour_prematch: ' + str(max_min_prematch / 60))
         time.sleep(3)
-        
+
         proxies_container = dict()
         for bk_name in bk_working:
             proxies_container[bk_name] = {}
@@ -1322,7 +1327,7 @@ if __name__ == '__main__':
             else:
                 proxies_container[bk_name]['proxy_list'] = get_proxy_from_file(proxies_container[bk_name]['proxy_filename'])
             proxies_container[bk_name]['gen_proxi'] = createBatchGenerator(get_next_proxy(copy.deepcopy(proxies_container[bk_name]['proxy_list'])))
-            
+
         pinn_session_data = {}
         session = requests.session()
         if 'pinnacle' in bk_working:
@@ -1348,7 +1353,7 @@ if __name__ == '__main__':
                         prnts(err_msg)
         time.sleep(3)
 
-        proxy_saver = threading.Thread(target=start_proxy_saver, args=(proxies_container, ))
+        proxy_saver = threading.Thread(target=start_proxy_saver, args=(proxies_container,))
         proxy_saver.start()
         prnts(' ')
         prnts('START: proxy_saver')
@@ -1360,18 +1365,18 @@ if __name__ == '__main__':
         arr_fonbet_top_kofs = {}
         # Completed Events
         mathes_complite = {'live': [], 'pre': []}
-        
+
         # univers
         bets = dict()
         forks = dict()
         forks_meta = dict()
         stat_reqs = {}
         pair_mathes = []
-        
+
         bk_seeker_matchs = []
         for bk_name in bk_working:
             for place in ['pre', 'live']:
-            # for place in ['live']:
+                # for place in ['live']:
                 seeker_matchs = threading.Thread(target=start_seeker_matchs, args=(bk_name, proxies_container, arr_matchs, place, session))
                 bk_seeker_matchs.append(seeker_matchs)
                 seeker_matchs.start()
@@ -1386,34 +1391,34 @@ if __name__ == '__main__':
         prnts(' ')
         prnts('START: fonbet_seeker_top_matchs')
         time.sleep(time_sleep_proc / 3)
-        
+
         # Event mapping
         event_mapping = threading.Thread(target=start_event_mapping, args=(pair_mathes, arr_matchs, mathes_complite))
         event_mapping.start()
         prnts(' ')
         prnts('START: event_mapping')
         time.sleep(time_sleep_proc / 3)
-        
+
         mathes_id_is_work = []
         starter_bets = threading.Thread(
-            target=starter_bets, 
+            target=starter_bets,
             args=(bets, pair_mathes, mathes_complite, mathes_id_is_work, proxies_container, stat_reqs, arr_fonbet_top_kofs, arr_matchs, session)
         )
         starter_bets.start()
         prnts(' ')
         prnts('START: starter_bets')
-    
-        started_stat_req = threading.Thread(target=stat_req, args=(stat_reqs, ))
+
+        started_stat_req = threading.Thread(target=stat_req, args=(stat_reqs,))
         started_stat_req.start()
         prnts(' ')
         prnts('START: started_stat_req')
-    
+
         arr_values = []
         starter_forks = threading.Thread(target=get_forks, args=(forks, forks_meta, pair_mathes, bets, arr_top_matchs, arr_values))
         starter_forks.start()
         prnts(' ')
         prnts('START: starter_forks')
-        
+
         if not DEBUG:
             started_mon_cupon = threading.Thread(target=mon_cupon, args=(arr_cupon,))
             started_mon_cupon.start()

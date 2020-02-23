@@ -34,9 +34,11 @@ head_odds = {
     # 'sec-fetch-site': 'same-site',
     'user-agent': 'Mozilla/5.0 (WindoWs nt 10.0; wiN64; X64) applewebkiT/537.36 (khTml, liKe gecko) chrome/78.0.3904.108 safari/537.36',
 }
-url_live_odds = 'https://api.arcadia.pinnacle.com/0.1/sports/{}/markets/live/straight?primaryOnly=false'  
-url_pre_odds = 'https://api.arcadia.pinnacle.com/0.1/sports/{}/markets/straight?primaryOnly=false'  
+url_live_odds = 'https://api.arcadia.pinnacle.com/0.1/sports/{}/markets/live/straight?primaryOnly=false'
+url_pre_odds = 'https://api.arcadia.pinnacle.com/0.1/sports/{}/markets/straight?primaryOnly=false'
 x_device_uuid_temp = 'f46d6637-4581a07c-36898a69-87694cf6'
+
+
 # x_session = '8rnHMqfFTy5osJ59q9vytaWgGytFiW0v'
 
 
@@ -62,41 +64,46 @@ def american_to_decimal(odd, status):
 
 
 def straight_normalize(data):
-    def designations(d:str):
+    def designations(d: str):
         if d == 'over':
             return 'Б'
-        elif d=='under':
+        elif d == 'under':
             return 'М'
-        elif d=='home':
+        elif d == 'home':
             return '1'
-        elif d=='away':
+        elif d == 'away':
             return '2'
         elif d == 'draw':
             return 'Н'
         else:
             return ''
-    def periods(p:str):
+
+    def periods(p: str):
         try:
             p = int(p)
             return str(p)
         except:
             return ''
-    def types(t:str):
+
+    def types(t: str):
         if 'total' in t:
             return 'Т'
-        elif t=='spread':
+        elif t == 'spread':
             return 'Ф'
         else:
             return ''
-    def sides(s:str):
+
+    def sides(s: str):
         if s == 'home':
             return '1'
         elif s == 'away':
             return '2'
         else:
             ''
+
     norm_designations = lambda x: x if x == 'Н' else 'П' + x
-    def norm_periods(p:str):
+
+    def norm_periods(p: str):
         if p:
             if str(p) == '0':
                 return ''
@@ -104,8 +111,8 @@ def straight_normalize(data):
                 return str(p)
         else:
             return ''
-            
-    def norm_total(t:str):
+
+    def norm_total(t: str):
         if t in ('(-0.0)', '(0.0)'):
             return '(0)'
         else:
@@ -115,13 +122,13 @@ def straight_normalize(data):
     # print('period:{}, type:{}, designation:{}, side:{}, points:{}, unit:{}'.format(data.get('period', ''), data.get('type'), data.get('designation'), data.get('side'), data.get('points'), unit))
     try:
         if data.get('type', '') == 'team_total':
-            return {norm_periods(data.get('period', '')) + unit + types(data.get('type','')) + designations(data.get('designation', '')) + sides(data.get('side')) + '({})'.format(data.get('points')).replace('+', ''): data}
+            return {norm_periods(data.get('period', '')) + unit + types(data.get('type', '')) + designations(data.get('designation', '')) + sides(data.get('side')) + '({})'.format(data.get('points')).replace('+', ''): data}
         if data.get('type', '') == 'total':
-            return {norm_periods(data.get('period', '')) + unit + types(data.get('type','')) + designations(data.get('designation', '')) + '({})'.format(data.get('points')).replace('+', ''): data}
+            return {norm_periods(data.get('period', '')) + unit + types(data.get('type', '')) + designations(data.get('designation', '')) + '({})'.format(data.get('points')).replace('+', ''): data}
         if data.get('type', '') == 'moneyline':
             return {unit + norm_designations(designations(data.get('designation', ''))): data}
         if data.get('type', '') == 'spread':
-            return {norm_periods(data.get('period', '')) + unit + types(data.get('type','')) + designations(data.get('designation', '')) + '({})'.format(
+            return {norm_periods(data.get('period', '')) + unit + types(data.get('type', '')) + designations(data.get('designation', '')) + '({})'.format(
                 str(data.get('points', '')) if data.get('points') >= 0 != '-' else data.get('points')).replace('+', ''): data}
         else:
             return {}
@@ -136,7 +143,7 @@ def get_matches(bk_name, proxy, timeout, api_key, x_session, x_device_uuid, prox
         head = list_matches_head
     if api_key:
         head.update({'x-api-key': api_key})
-    if x_device_uuid:        
+    if x_device_uuid:
         head.update({'x-device-uuid': x_device_uuid})
     if x_session:
         head.update({'x-session': x_session})
@@ -280,6 +287,7 @@ def get_matches(bk_name, proxy, timeout, api_key, x_session, x_device_uuid, prox
 
 MAX_VERSION = {}
 
+
 def check_data(data, sport_id, place, api_key):
     if type(data) == dict and data.get('status'):
         utils.prnts('data: ' + str(data))
@@ -289,7 +297,7 @@ def check_data(data, sport_id, place, api_key):
         elif title_err == 'AUTH_SUPERSEDED':
             utils.prnts('Session expired! TODO: relogin')
         else:
-            utils.prnts('error data: ' + place + ' ' + str(sport_id) + ' '  + str(data), hide=True)
+            utils.prnts('error data: ' + place + ' ' + str(sport_id) + ' ' + str(data), hide=True)
 
 
 def get_odds(bets, api_key, x_session, x_device_uuid, pair_mathes, sport_id, proxi_list, proxy, timeout, arr_matchs, session, place):
@@ -312,7 +320,7 @@ def get_odds(bets, api_key, x_session, x_device_uuid, pair_mathes, sport_id, pro
     if api_key:
         pass
         head.update({'x-api-key': api_key})
-    if x_device_uuid:        
+    if x_device_uuid:
         pass
         head.update({'x-device-uuid': x_device_uuid})
     if x_session:
@@ -343,16 +351,16 @@ def get_odds(bets, api_key, x_session, x_device_uuid, pair_mathes, sport_id, pro
     # {'detail': 'Session superseded by a login on another device', 'status': 401, 'title': 'AUTH_SUPERSEDED', 'type': 'about:blank'} -- SESSION EXPIRED
     # {"detail": "The requested URL was not found on the server.  If you entered the URL manually please check your spelling and try again.", "status": 404, "title": "Not Found", "type": "about:blank"}
     check_data(data, sport_id, place, api_key)
-    
+
     for match_id in match_id_list:
-        check_vertion = False # vershion check need by kof
+        check_vertion = False  # vershion check need by kof
         res = {}
         version = None
         # print('match_id: ' + str(match_id))
         for bet in filter(lambda x: str(x.get('matchupId')) == str(match_id), data):
             version = bet.get('version', -1)
             # if str(match_id) == '1096611547':
-                # print(json.dumps(bet))
+            # print(json.dumps(bet))
             if (check_vertion and version > MAX_VERSION.get(str(sport_id), 0)) or not check_vertion:
                 MAX_VERSION.update({str(sport_id): version})
                 for price in bet.get('prices', []):
@@ -361,7 +369,7 @@ def get_odds(bets, api_key, x_session, x_device_uuid, pair_mathes, sport_id, pro
                     # v_kof = str(price.get('price')) + ' -> ' + str(american_to_decimal(price.get('price'), status))
                     v_kof = float(american_to_decimal(price.get('price'), status))
                     # else:
-                        # v_kof = 0
+                    # v_kof = 0
                     res.update(straight_normalize({
                         'bk_name': 'pinnacle',
                         'time_req': round(time.time()),
