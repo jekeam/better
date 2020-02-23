@@ -1271,7 +1271,7 @@ def stat_req(stat_reqs):
             time.sleep(time_sleep_proc / 3)
 
 
-def mon_cupon(arr_cupon):
+def mon_cupon(arr_cupon, stat_reqs):
     global max_min_prematch
     file_name = 'cupon_hist.csv'
     minute = 30
@@ -1288,7 +1288,18 @@ def mon_cupon(arr_cupon):
             df = df.append(df2, ignore_index=True)
             df.to_csv(file_name, encoding='utf-8', index=False, sep=';')
             id_old = df[(df['time'] >= (cur_time - (60 * minute)))]['cupon_id'].min()
-            arr_cupon[0] = str(int((curr_id - id_old) / minute)) + ' куп./мин.\n' + 'Прематч доступен на ' + str(round(max_min_prematch / 60)) + ' ч.'
+
+            bk_stat = ''
+            for bk_name, cnt in stat_reqs.items():
+                if cnt:
+                    err_cnt = cnt[1]
+                    req_cnt = list(cnt[0])
+                    if req_cnt:
+                        bk_stat = bk_stat + '\n' + bk_name + \
+                                  ', err=' + str(round(err_cnt / len(req_cnt) * 100)) + '%' + \
+                                  ', avg_sec=' + str(round(median(req_cnt), 2))
+            arr_cupon[0] = str(int((curr_id - id_old) / minute)) + ' куп./мин.\n' + 'Прематч доступен на ' + str(round(max_min_prematch / 60)) + ' ч.' + bk_stat
+
             prnts('activity ' + str(arr_cupon[0]) + ' coupons per/min')
             time.sleep((minute * 60 - 20) / 3)
         except Exception:
@@ -1420,7 +1431,7 @@ if __name__ == '__main__':
         prnts('START: starter_forks')
 
         if not DEBUG:
-            started_mon_cupon = threading.Thread(target=mon_cupon, args=(arr_cupon,))
+            started_mon_cupon = threading.Thread(target=mon_cupon, args=(arr_cupon, stat_reqs,))
             started_mon_cupon.start()
             prnts(' ')
             prnts('START: mon_cupon')
