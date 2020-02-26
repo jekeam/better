@@ -957,13 +957,11 @@ def get_forks(forks, forks_meta, pair_mathes, bets, arr_top_matchs, arr_values):
                     for pair in add_if_draw:
                         curr_opposition.append(pair)
                 if 'tennis' in event_type:
-                    p_num = 0
                     for pair in list(curr_opposition):
                         for kof in list(pair):
                             if 'Ф' in kof:
                                 curr_opposition.remove(pair)
                                 break
-                        p_num += 1
                                 
                 for opposition_pair in curr_opposition:
                     for kof_type_bk1, kof_type_bk2 in opposition_pair.items():
