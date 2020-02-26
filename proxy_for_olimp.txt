@@ -1,9 +1,5 @@
 http://shaggy:hzsyk@445.91.9.104:1408
 http://shaggy:hzsyk4@45.90.197.244:1408
-http://shaggy:hzsyk4@139.28.37.237:2107
-http://shaggy:hzsyk4@139.28.37.201:2107
-http://shaggy:hzsyk4@193.22.99.176:2107
-http://shaggy:hzsyk4@185.157.78.104:2107
 http://shaggy:hzsyk4@87.247.155.57:4350
 http://shaggy:hzsyk4@87.247.153.81:4350
 http://shaggy:hzsyk4@176.107.180.143:4350
@@ -20,3 +16,8 @@ http://shaggy:hzsyk4@45.89.68.143:8771
 http://shaggy:hzsyk4@45.88.208.173:8771
 http://shaggy:hzsyk4@45.88.208.178:8771
 http://a89823703090_gmail_com:I6cm0FkE@37.203.246.194:19990
+http://shaggy:hzsyk4@87.247.152.126:5492
+http://shaggy:hzsyk4@139.28.37.208:5492
+http://shaggy:hzsyk4@193.22.97.125:5492
+http://shaggy:hzsyk4@212.90.111.61:5492
+http://shaggy:hzsyk4@193.22.97.40:5492
