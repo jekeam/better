@@ -956,7 +956,15 @@ def get_forks(forks, forks_meta, pair_mathes, bets, arr_top_matchs, arr_values):
                 else:
                     for pair in add_if_draw:
                         curr_opposition.append(pair)
-                # if 18967944 == int(pair_math[0]) or 18967944 == int(pair_math[1]):
+                if 'tennis' in event_type:
+                    p_num = 0
+                    for pair in list(curr_opposition):
+                        for kof in list(pair):
+                            if 'Ф' in kof:
+                                curr_opposition.remove(pair)
+                                break
+                        p_num += 1
+                                
                 for opposition_pair in curr_opposition:
                     for kof_type_bk1, kof_type_bk2 in opposition_pair.items():
                         # print(kof_type_bk1, kof_type_bk2)
@@ -1002,7 +1010,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets, arr_top_matchs, arr_values):
                                     if K and V and K <= 2.3 and start_after_min <= 60 * 20:
                                         # ОП=В*(К-1)*С-(1-В)*С, где
                                         # ОП — ожидаемая прибыль;
-                                        # В — математическая вероятность наступления исхода (выражается значением от 0 до 1);
+                                        # В — м��тематическая вероятность наступления исхода (выражается значением от 0 до 1);
                                         # С — сумма ставки;
                                         # К — котировка события.
                                         B = 1 / V
