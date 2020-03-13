@@ -452,6 +452,7 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
                                 or 'ничья'.lower() \
                                 in d.get('n', '').lower() \
                                 or 'форы' in group_kof:
+                            prnts(d.get('n', ''))
                             if 'форы' in group_kof:
                                 key_r = d.get('n', '').replace(resp.get('c1', ''), 'П1сфорой').replace(resp.get('c2', ''), 'П2сфорой')
                                 key_r = key_r.replace(' ', '')
