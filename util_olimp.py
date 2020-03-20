@@ -452,11 +452,13 @@ def get_bets_olimp(bets_olimp, match_id, proxies_olimp, proxy, time_out, pair_ma
                                 or 'ничья'.lower() \
                                 in d.get('n', '').lower() \
                                 or 'форы' in group_kof:
+                            c1 = str(resp.get('c1', ''))
+                            c2 = str(resp.get('c2', ''))
                             if 'форы' in group_kof:
-                                key_r = d.get('n', '').replace(resp.get('c1', ''), 'П1сфорой').replace(resp.get('c2', ''), 'П2сфорой')
+                                key_r = d.get('n', '').replace(c1, 'П1сфорой').replace(c2, 'П2сфорой')
                                 key_r = key_r.replace(' ', '')
                             else:
-                                key_r = d.get('n', '').replace(resp.get('c1', ''), 'Т1').replace(resp.get('c2', ''), 'Т2')
+                                key_r = d.get('n', '').replace(c1, 'Т1').replace(c2, 'Т2')
                             coef = str([
                                            abbreviations[c.replace(' ', '')]
                                            if c.replace(' ', '') in abbreviations.keys()

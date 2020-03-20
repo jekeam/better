@@ -816,7 +816,7 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                         bk_rate_sorted.append(bkr)
                     else:
                         if 'del;' + bkr.get('match_name') not in not_compare:
-                            serv_log('compare_teams', 'del;' + bkr.get('match_name'))
+                            # serv_log('compare_teams', 'del;' + bkr.get('match_name'))
                             not_compare.append('del;' + bkr.get('match_name'))
                 bk_rate_sorted = list(filter(lambda x: x is not None, bk_rate_sorted))
                 bk_rate_sorted.sort(key=lambda val: val.get('rate', 0), reverse=True)
@@ -871,16 +871,16 @@ def start_event_mapping(pair_mathes, arr_matchs, mathes_complite):
                                         is_exists = True
                                 if conflict:
                                     pair_mathes.remove(p)
-                                    serv_log('compare_teams', 'del;' + str(p[poz_rate - 1]) + 'conflict')
+                                    # serv_log('compare_teams', 'del;' + str(p[poz_rate - 1]) + 'conflict')
                                     pair_mathes.append(pair)
-                                    serv_log('compare_teams', 'add;' + pair[poz_rate - 1] + 'conflict')
+                                    # serv_log('compare_teams', 'add;' + pair[poz_rate - 1] + 'conflict')
 
                                     pair_key = str(pair[0]) + '-' + str(pair[1])
                                     if not pair_mathes_found.get(pair_key):
                                         pair_mathes_found.update({pair_key: 0})
                             if not conflict and not is_exists:
                                 pair_mathes.append(pair)
-                                serv_log('compare_teams', 'add;' + pair[poz_rate - 1])
+                                # serv_log('compare_teams', 'add;' + pair[poz_rate - 1])
 
                                 pair_key = str(pair[0]) + '-' + str(pair[1])
                                 if not pair_mathes_found.get(pair_key):
@@ -956,7 +956,13 @@ def get_forks(forks, forks_meta, pair_mathes, bets, arr_top_matchs, arr_values):
                 else:
                     for pair in add_if_draw:
                         curr_opposition.append(pair)
-                # if 18967944 == int(pair_math[0]) or 18967944 == int(pair_math[1]):
+                if 'tennis' in event_type:
+                    for pair in list(curr_opposition):
+                        for kof in list(pair):
+                            if 'Ф' in kof:
+                                curr_opposition.remove(pair)
+                                break
+                                
                 for opposition_pair in curr_opposition:
                     for kof_type_bk1, kof_type_bk2 in opposition_pair.items():
                         # print(kof_type_bk1, kof_type_bk2)
@@ -1002,7 +1008,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets, arr_top_matchs, arr_values):
                                     if K and V and K <= 2.3 and start_after_min <= 60 * 20:
                                         # ОП=В*(К-1)*С-(1-В)*С, где
                                         # ОП — ожидаемая прибыль;
-                                        # В — математическая вероятность наступления исхода (выражается значением от 0 до 1);
+                                        # В — м��тематическая вероятность наступления исхода (выражается значением от 0 до 1);
                                         # С — сумма ставки;
                                         # К — котировка события.
                                         B = 1 / V
