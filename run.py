@@ -1223,7 +1223,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets, arr_top_matchs, arr_values):
                                         'place': type_time,
                                     }
                                     try:
-                                        if L <= 1:  # and type_time == 'pre':  # start_after_min <= 60 * 20
+                                        if L <= 0.98:  # and type_time == 'pre':  # start_after_min <= 60 * 20
                                             msg = event_type[0:1].upper() + event_type[1:] + ', лига:' + str(is_top) + '\n' + v_name + '\n'
                                             if msg not in arr_values:
                                                 msg = msg + \
