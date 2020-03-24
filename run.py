@@ -1228,8 +1228,8 @@ def get_forks(forks, forks_meta, pair_mathes, bets, arr_top_matchs, arr_values):
                                             if msg not in arr_values:
                                                 msg = msg + \
                                                       str(round(1 - L, 2) * 100) + '%, ' + \
-                                                      name_bk1 + '=' + str(k_bk1) + ', ' + \
-                                                      name_bk2 + '=' + str(k_bk2) + '\n'
+                                                      name_bk1 + '=' + str(k_bk1.get('value')) + ', ' + \
+                                                      name_bk2 + '=' + str(k_bk2.get('value')) + '\n'
                                                 if type_time == 'pre':
                                                     msg = msg + 'Старт через: ' + str(round(start_after_min / 60, 1)) + 'ч.'
                                                 else:
