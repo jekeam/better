@@ -1227,7 +1227,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets, arr_top_matchs, arr_values):
                                             msg = event_type[0:1].upper() + event_type[1:] + ', лига:' + str(is_top) + '\n' + v_name + '\n'
                                             if msg not in arr_values:
                                                 msg = msg + \
-                                                      str(round(1 - L, 2) * 100) + '%, ' + \
+                                                      'Прибыль: ' + str(round(1 - L, 2) * 100) + ' %, ' + \
                                                       name_bk1 + '=' + str(k_bk1.get('value')) + ', ' + \
                                                       name_bk2 + '=' + str(k_bk2.get('value')) + '\n'
                                                 if type_time == 'pre':
