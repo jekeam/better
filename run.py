@@ -1229,8 +1229,11 @@ def get_forks(forks, forks_meta, pair_mathes, bets, arr_top_matchs, arr_values):
                                                 msg = msg + \
                                                       str(round(1 - L, 2) * 100) + '%, ' + \
                                                       name_bk1 + '=' + str(k_bk1) + ', ' + \
-                                                      name_bk2 + '=' + str(k_bk2) + '\n' + \
-                                                      'Старт через: ' + str(round(start_after_min / 60, 1)) + 'ч.' if type_time == 'pre' else 'Идет ' + str(math_json_bk2.get('minute', 0)) + ' минута'
+                                                      name_bk2 + '=' + str(k_bk2) + '\n'
+                                                if type_time == 'pre':
+                                                    msg = msg + 'Старт через: ' + str(round(start_after_min / 60, 1)) + 'ч.'
+                                                else:
+                                                    msg = msg + 'Идет ' + str(round(math_json_bk2.get('minute', 0))) + ' минута'
                                                 bot.send_msg(msg)
                                     except Exception:
                                         exc_type, exc_value, exc_traceback = sys.exc_info()
