@@ -962,7 +962,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets, arr_top_matchs, arr_values):
                             if 'Ф' in kof:
                                 curr_opposition.remove(pair)
                                 break
-                                
+
                 for opposition_pair in curr_opposition:
                     for kof_type_bk1, kof_type_bk2 in opposition_pair.items():
                         # print(kof_type_bk1, kof_type_bk2)
@@ -992,7 +992,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets, arr_top_matchs, arr_values):
                         v_name = math_json_bk1.get('name', '')
 
                         try:
-                            if type_time == 'pre' and 1 == 0:
+                            if type_time == 'pre':  # and 1 == 0:
                                 # if event_type in ('football', 'hockey'):
                                 # ОП=В*(К-1)*С-(1-В)*С
                                 value_arr = [
