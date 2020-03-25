@@ -992,7 +992,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets, arr_top_matchs, arr_values):
                         v_name = math_json_bk1.get('name', '')
 
                         try:
-                            if type_time == 'pre':  # and 1 == 0:
+                            if type_time == 'pre' and 1 == 0:
                                 # if event_type in ('football', 'hockey'):
                                 # ОП=В*(К-1)*С-(1-В)*С
                                 value_arr = [
@@ -1223,17 +1223,17 @@ def get_forks(forks, forks_meta, pair_mathes, bets, arr_top_matchs, arr_values):
                                         'place': type_time,
                                     }
                                     try:
-                                        if L <= 0.98:  # and type_time == 'pre':  # start_after_min <= 60 * 20
-                                            msg = event_type[0:1].upper() + event_type[1:] + ', лига:' + str(is_top) + '\n' + v_name + '\n'
+                                        if L <= 0.99 and type_time == 'pre':  # start_after_min <= 60 * 20
+                                            msg = event_type[0:1].upper().strip() + event_type[1:].strip() + ', лига:' + str(is_top) + '\n' + v_name + '\n'
                                             if msg not in arr_values:
                                                 msg = msg + \
                                                       'Прибыль: ' + str(round(1 - L, 2) * 100) + ' %, ' + \
                                                       name_bk1 + '=' + str(k_bk1.get('value')) + ', ' + \
                                                       name_bk2 + '=' + str(k_bk2.get('value')) + '\n'
                                                 if type_time == 'pre':
-                                                    msg = msg + 'Старт через: ' + str(round(start_after_min / 60, 1)) + 'ч.'
+                                                    msg = msg + 'Старт через: ' + str(round(start_after_min / 60, 1)) + ' ч.'
                                                 else:
-                                                    msg = msg + 'Идет ' + str(round(math_json_bk2.get('minute', 0))) + ' минута'
+                                                    msg = msg + 'Время ' + str(math_json_bk2.get('time', '00:00'))
                                                 bot.send_msg(msg)
                                     except Exception:
                                         exc_type, exc_value, exc_traceback = sys.exc_info()
