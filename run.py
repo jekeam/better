@@ -992,7 +992,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets, arr_top_matchs, arr_values):
                         v_name = math_json_bk1.get('name', '')
 
                         try:
-                            if type_time == 'pre' and 1 == 0:
+                            if type_time == 'pre':  # TODO SEE LIVE
                                 # if event_type in ('football', 'hockey'):
                                 # ОП=В*(К-1)*С-(1-В)*С
                                 value_arr = [
@@ -1034,7 +1034,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets, arr_top_matchs, arr_values):
                                     if temp_key not in arr_values and msg not in arr_values:
                                         arr_values.append(temp_key)
                                         arr_values.append(msg)
-                                        bot.send_msg(msg)
+                                        bot.send_msg(msg=msg, for_admin=True)
                         except Exception:
                             exc_type, exc_value, exc_traceback = sys.exc_info()
                             prnts('scan error values: ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
@@ -1332,7 +1332,7 @@ def mon_cupon(arr_cupon, stat_reqs):
 if __name__ == '__main__':
     try:
         if not DEBUG:
-            bot.send_msg('Перезапуск сканера...')
+            bot.send_msg('Перезапуск сканера...', for_admin=True)
         prnts('DEBUG: ' + str(DEBUG))
         prnts('BK WORKING: ' + str(bk_working))
         prnts(str(list(itertools.combinations(bk_working, 2))))
@@ -1461,7 +1461,7 @@ if __name__ == '__main__':
         prnts(' ')
         prnts('START: server')
         if not DEBUG:
-            bot.send_msg('Сканер начал работу.')
+            bot.send_msg('Сканер начал работу.', for_admin=True)
 
         # proxy_saver.join()
         # event_mapping.join()
@@ -1470,10 +1470,10 @@ if __name__ == '__main__':
         # # bk_seeker_matchs
         # started_mon_cupon.join()
         # server.join()
-        # bot.send_msg('Сканнер выключен')
+        # bot.send_msg('Сканнер выключен', only_admin=True)
     except Exception as e:
         exc_type, exc_value, exc_traceback = sys.exc_info()
         err_msg = str(traceback.format_exception(exc_type, exc_value, exc_traceback))
         prnts('scan error:' + err_msg)
         if not DEBUG:
-            bot.send_msg('Сканнер упал с ошибкой: ' + str(e))
+            bot.send_msg('Сканнер упал с ошибкой: ' + str(e), for_admin=True)
