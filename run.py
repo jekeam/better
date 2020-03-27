@@ -1230,7 +1230,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets, arr_top_matchs, arr_values):
                                             else:
                                                 msg = msg + '#live\n'
 
-                                            msg = event_type[0:1].upper().strip() + event_type[1:].strip() + ', лига: ' + str(is_top) + '\n' + v_name.replace('  ', ' ') + '\n'
+                                            msg = msg + event_type[0:1].upper().strip() + event_type[1:].strip() + ', лига: ' + str(is_top) + '\n' + v_name.replace('  ', ' ') + '\n'
                                             if msg not in arr_values:
                                                 arr_values.append(msg)
                                                 if type_time == 'pre':
