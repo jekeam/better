@@ -1253,9 +1253,9 @@ def get_forks(forks, forks_meta, pair_mathes, bets, arr_top_matchs, arr_values):
                                                     name_bk2_with_link = name_bk2 + '\n{}\n' + url_fonbet_all.format(sport_name=event_type, liga_id=str(k_bk2.get('liga_id')), event_id=str(k_bk2.get('event')))
 
                                                 msg = msg + \
-                                                      'Прибыль: ' + str(round((1 - L) * 100, 2)) + ' %\n' + \
-                                                      name_bk1_with_link.format(kof_type_bk1 + '=' + str(k_bk1.get('value'))) + \
-                                                      name_bk2_with_link.format(kof_type_bk2 + '=' + str(k_bk2.get('value')))
+                                                      'Прибыль: ' + str(round((1 - L) * 100, 2)) + ' %\n\n' + \
+                                                      name_bk1_with_link.format(kof_type_bk1 + '=' + str(k_bk1.get('value'))) + '\n' + \
+                                                      name_bk2_with_link.format(kof_type_bk2 + '=' + str(k_bk2.get('value'))) + '\n'
                                                 if type_time == 'pre':
                                                     msg = msg + 'Начало через: ' + str(round(start_after_min / 60, 1)) + ' ч.'
                                                 else:
