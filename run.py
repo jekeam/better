@@ -1224,7 +1224,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets, arr_top_matchs, arr_values):
                                     }
                                     try:
                                         if L <= 0.99:  # start_after_min <= 60 * 20
-                                            msg = event_type[0:1].upper().strip() + event_type[1:].strip() + ', лига:' + str(is_top) + '\n' + v_name.replace('  ', ' ') + '\n'
+                                            msg = event_type[0:1].upper().strip() + event_type[1:].strip() + ', лига: ' + str(is_top) + '\n' + v_name.replace('  ', ' ') + '\n'
                                             if msg not in arr_values:
                                                 arr_values.append(msg)
 
@@ -1234,8 +1234,8 @@ def get_forks(forks, forks_meta, pair_mathes, bets, arr_top_matchs, arr_values):
                                                     msg = msg + '#live'
 
                                                 msg = msg + \
-                                                      'Прибыль: ' + str(round((1 - L) * 100, 2)) + ' %, ' + \
-                                                      name_bk1 + ', ' + kof_type_bk1 + '=' + str(k_bk1.get('value')) + ', ' + \
+                                                      'Прибыль: ' + str(round((1 - L) * 100, 2)) + ' %\n' + \
+                                                      name_bk1 + ', ' + kof_type_bk1 + '=' + str(k_bk1.get('value')) + '\n' + \
                                                       name_bk2 + ', ' + kof_type_bk1 + '=' + str(k_bk2.get('value')) + '\n'
                                                 if type_time == 'pre':
                                                     msg = msg + 'Начало через: ' + str(round(start_after_min / 60, 1)) + ' ч.'
