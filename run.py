@@ -1223,17 +1223,24 @@ def get_forks(forks, forks_meta, pair_mathes, bets, arr_top_matchs, arr_values):
                                         'place': type_time,
                                     }
                                     try:
-                                        if L <= 0.99 and type_time == 'pre':  # start_after_min <= 60 * 20
-                                            msg = event_type[0:1].upper().strip() + event_type[1:].strip() + ', лига:' + str(is_top) + '\n' + v_name + '\n'
+                                        if L <= 0.99:  # start_after_min <= 60 * 20
+                                            msg = event_type[0:1].upper().strip() + event_type[1:].strip() + ', лига:' + str(is_top) + '\n' + v_name.replace('  ', ' ') + '\n'
                                             if msg not in arr_values:
-                                                msg = msg + \
-                                                      'Прибыль: ' + str(round(1 - L, 2) * 100) + ' %, ' + \
-                                                      name_bk1 + '=' + str(k_bk1.get('value')) + ', ' + \
-                                                      name_bk2 + '=' + str(k_bk2.get('value')) + '\n'
+                                                arr_values.append(msg)
+
                                                 if type_time == 'pre':
-                                                    msg = msg + 'Старт через: ' + str(round(start_after_min / 60, 1)) + ' ч.'
+                                                    msg = msg + '#pre_match'
                                                 else:
-                                                    msg = msg + 'Время ' + str(math_json_bk2.get('time', '00:00'))
+                                                    msg = msg + '#live'
+
+                                                msg = msg + \
+                                                      'Прибыль: ' + str(round((1 - L) * 100, 2)) + ' %, ' + \
+                                                      name_bk1 + ', ' + kof_type_bk1 + '=' + str(k_bk1.get('value')) + ', ' + \
+                                                      name_bk2 + ', ' + kof_type_bk1 + '=' + str(k_bk2.get('value')) + '\n'
+                                                if type_time == 'pre':
+                                                    msg = msg + 'Начало через: ' + str(round(start_after_min / 60, 1)) + ' ч.'
+                                                else:
+                                                    msg = msg + 'Время матча: ' + str(math_json_bk2.get('time', '-'))
                                                 bot.send_msg(msg)
                                     except Exception:
                                         exc_type, exc_value, exc_traceback = sys.exc_info()
