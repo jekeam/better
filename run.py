@@ -1240,7 +1240,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets, arr_top_matchs, arr_values):
                                                     elif name_bk2 == 'olimp':
                                                         name_bk2_with_link = name_bk2 + '\n{}\n' + url_olimp_pre.format(str(k_bk2.get('event')))
                                                 else:
-                                                    url_olimp_live = 'https://olimp.com/index.php?page=line&action=2&live[]={}&sid[]=1\n'
+                                                    url_olimp_live = 'https://olimp.com/index.php?page=line&action=2&live\[\]={}&sid\[\]=1\n'
                                                     if name_bk1 == 'olimp':
                                                         name_bk1_with_link = name_bk1 + '\n{}\n' + url_olimp_live.format(str(k_bk1.get('event')))
                                                     elif name_bk2 == 'olimp':
