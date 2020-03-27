@@ -354,6 +354,7 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
                                                     {
                                                         'time_req': round(time.time()),
                                                         'event': event.get('id'),
+                                                        'liga_id': liga_id,
                                                         'value': value,
                                                         'param': '',
                                                         'factor': factorId,
@@ -402,6 +403,7 @@ def get_bets_fonbet(bets_fonbet, match_id, proxies_fonbet, proxy, time_out, pair
                                                     {
                                                         'time_req': round(time.time()),
                                                         'event': event.get('id'),
+                                                        'liga_id': liga_id,
                                                         'value': value,
                                                         'param': pValue,
                                                         'factor': factorId,

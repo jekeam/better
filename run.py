@@ -1233,11 +1233,29 @@ def get_forks(forks, forks_meta, pair_mathes, bets, arr_top_matchs, arr_values):
                                             msg = event_type[0:1].upper().strip() + event_type[1:].strip() + ', лига: ' + str(is_top) + '\n' + v_name.replace('  ', ' ') + '\n'
                                             if msg not in arr_values:
                                                 arr_values.append(msg)
+                                                if type_time == 'pre':
+                                                    url_olimp_pre = 'https://olimp.com/index.php?page=line&addons=1&action=2&mid={}'
+                                                    if name_bk1 == 'olimp':
+                                                        name_bk1_with_link = name_bk1 + '\n{}\n' + url_olimp_pre.format(str(k_bk1.get('event')))
+                                                    elif name_bk2 == 'olimp':
+                                                        name_bk2_with_link = name_bk2 + '\n{}\n' + url_olimp_pre.format(str(k_bk2.get('event')))
+                                                else:
+                                                    url_olimp_live = 'https://olimp.com/index.php?page=line&action=2&live[]={}&sid[]=1'
+                                                    if name_bk1 == 'olimp':
+                                                        name_bk1_with_link = name_bk1 + '\n{}\n' + url_olimp_live.format(str(k_bk1.get('event')))
+                                                    elif name_bk2 == 'olimp':
+                                                        name_bk2_with_link = name_bk2 + '\n{}\n' + url_olimp_live.format(str(k_bk2.get('event')))
+
+                                                url_fonbet_all = 'https://www.fonbet.ru/sport/event/{sport_name}/{liga_id}/{event_id}/'
+                                                if name_bk1 == 'fonbet':
+                                                    name_bk1_with_link = name_bk1 + '\n{}\n' + url_fonbet_all.format(sport_name=event_type, liga_id=str(k_bk1.get('liga_id')), event_id=str(k_bk1.get('event')))
+                                                elif name_bk2 == 'fonbet':
+                                                    name_bk2_with_link = name_bk2 + '\n{}\n' + url_fonbet_all.format(sport_name=event_type, liga_id=str(k_bk2.get('liga_id')), event_id=str(k_bk2.get('event')))
 
                                                 msg = msg + \
                                                       'Прибыль: ' + str(round((1 - L) * 100, 2)) + ' %\n' + \
-                                                      name_bk1 + ', ' + kof_type_bk1 + '=' + str(k_bk1.get('value')) + '\n' + \
-                                                      name_bk2 + ', ' + kof_type_bk1 + '=' + str(k_bk2.get('value')) + '\n'
+                                                      name_bk1_with_link.format(kof_type_bk1 + '=' + str(k_bk1.get('value'))) + \
+                                                      name_bk2_with_link.format(kof_type_bk2 + '=' + str(k_bk2.get('value'))) + '\n'
                                                 if type_time == 'pre':
                                                     msg = msg + 'Начало через: ' + str(round(start_after_min / 60, 1)) + ' ч.'
                                                 else:
