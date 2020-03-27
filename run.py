@@ -1261,6 +1261,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets, arr_top_matchs, arr_values):
                                                 else:
                                                     msg = msg + 'Время матча: ' + str(math_json_bk2.get('time', '-'))
                                                 bot.send_msg(msg)
+                                                msg = ''
                                     except Exception:
                                         exc_type, exc_value, exc_traceback = sys.exc_info()
                                         prnts('scan error values 2: ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
