@@ -56,7 +56,7 @@ bk_working = [
     'fonbet',
 ]
 
-max_min_prematch = 1440 / 4  # 120 = 2 hour
+max_min_prematch = 1440 / 2  # 120 = 2 hour
 assert max_min_prematch % 60 == 0, 'Время должно быть кратно 60 минутам'
 assert max_min_prematch >= 60, 'Время должно быть больше 60 минут'
 
