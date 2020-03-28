@@ -1249,9 +1249,9 @@ def get_forks(forks, forks_meta, pair_mathes, bets, arr_top_matchs, arr_values):
                                                 # url_fonbet_all = 'https://www.fonbet.ru/sport/event/{sport_name}/{liga_id}/{event_id}/\n'
                                                 url_fonbet_all = 'https://www.fonbet.ru/sport/event/{sport_name}/{liga_id}\n'
                                                 if name_bk1 == 'fonbet':
-                                                    name_bk1_with_link = name_bk1 + '\n{}\n' + url_fonbet_all.format(sport_name=event_type, liga_id=str(k_bk1.get('liga_id')), event_id=str(k_bk1.get('event')))
+                                                    name_bk1_with_link = name_bk1 + '\n{}\n' + url_fonbet_all.format(sport_name=event_type, liga_id=str(k_bk1.get('liga_id')))  # , event_id=str(k_bk1.get('event')))
                                                 elif name_bk2 == 'fonbet':
-                                                    name_bk2_with_link = name_bk2 + '\n{}\n' + url_fonbet_all.format(sport_name=event_type, liga_id=str(k_bk2.get('liga_id')), event_id=str(k_bk2.get('event')))
+                                                    name_bk2_with_link = name_bk2 + '\n{}\n' + url_fonbet_all.format(sport_name=event_type, liga_id=str(k_bk2.get('liga_id')))  # , event_id=str(k_bk2.get('event')))
 
                                                 msg = msg + \
                                                       'Прибыль: ' + str(round((1 - L) * 100, 2)) + ' %\n\n' + \
