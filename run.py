@@ -1224,7 +1224,7 @@ def get_forks(forks, forks_meta, pair_mathes, bets, arr_top_matchs, arr_values):
                                     }
                                     try:
                                         if L <= 0.99:  # start_after_min <= 60 * 20
-
+                                            msg = ''
                                             if type_time == 'pre':
                                                 msg = msg + '#pre_match\n'
                                             else:
@@ -1246,7 +1246,8 @@ def get_forks(forks, forks_meta, pair_mathes, bets, arr_top_matchs, arr_values):
                                                     elif name_bk2 == 'olimp':
                                                         name_bk2_with_link = name_bk2 + '\n{}\n' + url_olimp_live.format(str(k_bk2.get('event')))
 
-                                                url_fonbet_all = 'https://www.fonbet.ru/sport/event/{sport_name}/{liga_id}/{event_id}/\n'
+                                                # url_fonbet_all = 'https://www.fonbet.ru/sport/event/{sport_name}/{liga_id}/{event_id}/\n'
+                                                url_fonbet_all = 'https://www.fonbet.ru/sport/event/{sport_name}/{liga_id}\n'
                                                 if name_bk1 == 'fonbet':
                                                     name_bk1_with_link = name_bk1 + '\n{}\n' + url_fonbet_all.format(sport_name=event_type, liga_id=str(k_bk1.get('liga_id')), event_id=str(k_bk1.get('event')))
                                                 elif name_bk2 == 'fonbet':
@@ -1261,7 +1262,6 @@ def get_forks(forks, forks_meta, pair_mathes, bets, arr_top_matchs, arr_values):
                                                 else:
                                                     msg = msg + 'Время матча: ' + str(math_json_bk2.get('time', '-'))
                                                 bot.send_msg(msg)
-                                                msg = ''
                                     except Exception:
                                         exc_type, exc_value, exc_traceback = sys.exc_info()
                                         prnts('scan error values 2: ' + str(repr(traceback.format_exception(exc_type, exc_value, exc_traceback))))
