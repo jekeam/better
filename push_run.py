@@ -11,4 +11,4 @@ if __name__=='__main__':
     subprocess.call('python3.6 proxy_push.py', shell=True, cwd='/home/scan/')
     time.sleep(5)
     subprocess.call('systemctl restart scan.service', shell=True)
-    bot.send_msg('Сканер выполнил суточное обновление')
+    bot.send_msg('Сканер выполнил суточное обновление', for_admin=True)
