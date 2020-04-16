@@ -5,11 +5,11 @@ http://shaggy:hzsyk4@212.90.111.61:5492
 http://shaggy:hzsyk4@193.22.97.40:5492
 http://shaggy:hzsyk4@45.89.68.112:8771
 http://shaggy:hzsyk4@45.128.130.81:8771
-http://shaggy:hzsyk4@85.235.82.141:8771
+http://shaggy:hzsyk4@212.115.48.228:8771
 http://shaggy:hzsyk4@213.166.95.142:8771
 http://shaggy:hzsyk4@85.8.187.251:8771
 http://shaggy:hzsyk4@78.142.238.217:8771
-http://shaggy:hzsyk4@85.235.82.32:8771
+http://shaggy:hzsyk4@194.32.240.43:8771
 http://shaggy:hzsyk4@45.89.68.143:8771
 http://shaggy:hzsyk4@45.88.208.173:8771
 http://shaggy:hzsyk4@45.88.208.178:8771
