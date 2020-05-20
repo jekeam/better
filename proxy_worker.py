@@ -18,8 +18,8 @@ from utils import DEBUG
 urllib3.disable_warnings()
 
 TIME_OUT = 4
-# CHUNKS = 550
-CHUNKS = 5
+CHUNKS = 250
+# CHUNKS = 5
 
 UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3163.100 Safari/537.36'
 
@@ -338,9 +338,9 @@ if __name__ == '__main__':
     save_list(proxy_list_olimp, ol_fl, clone=4000)
     time.sleep(3)
     # # FB
-    # proxy_list_fonbet = check_proxies_fonbet(proxy_list)
-    # save_list(proxy_list_fonbet, fb_fl, clone=20)
-    # time.sleep(3)
+    proxy_list_fonbet = check_proxies_fonbet(proxy_list)
+    save_list(proxy_list_fonbet, fb_fl, clone=20)
+    time.sleep(3)
     # PINNACLE
     prnts('get api_key from pinnacle')
     url_pinnacle = 'www.pinnacle.com'
