@@ -10,7 +10,8 @@ def send_msg(msg: str, for_admin: bool = False):
         out = subprocess.Popen(
             ['python3.6', p, msg, str(for_admin)],
             stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT
+            stderr=subprocess.STDOUT,
+            shell=True
         )
         stdout, stderr = out.communicate()
         print(stdout, stderr)

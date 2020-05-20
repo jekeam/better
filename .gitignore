@@ -21,3 +21,5 @@ test.py
 __pycache__
 *.txt1
 test2.py
+*.pyd
+venv2
