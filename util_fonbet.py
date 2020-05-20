@@ -10,7 +10,8 @@ import traceback
 import copy
 import math
 
-url_fonbet = 'https://line-01.ccf4ab51771cacd46d.com'
+# url_fonbet = 'https://line-01.ccf4ab51771cacd46d.com'
+url_fonbet = 'clientsapi02a.bkfon-resource.ru'
 # url_fonbet = 'https://clientsapi11.bkfon-resource.ru'
 url_fonbet_matchs = url_fonbet + '/live/currentLine/en/?2lzf1earo8wjksbh22s'
 url_fonbet_pre_matchs = url_fonbet + '/line/currentLine/en/?2lzf1earo8wjksbh22s'
